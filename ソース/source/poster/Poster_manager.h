@@ -37,7 +37,13 @@ public:
 	/// プレイヤーからのアクション
 	//**************************************************
 
-	void Do_poster(Player *player, TEAM_COLOR color); // 破る貼る
-	void Rend_poster(Player *player, TEAM_COLOR color); // 破る
-	void Paste_poster(Player *player, TEAM_COLOR color); // 貼る
+	// 破れる、貼れるポスターの番号
+	int Can_do(Player *player, TEAM_COLOR color);
+	
+	// Can_doの後で呼ぶ
+	bool Can_rend(TEAM_COLOR color, int poster_num);          bool Can_paste(TEAM_COLOR color, int poster_num);
+
+	// 破る貼る
+	void Rend_poster(TEAM_COLOR color, int poster_num);
+	void Paste_poster(TEAM_COLOR color, int poster_num);
 };

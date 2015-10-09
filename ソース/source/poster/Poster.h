@@ -93,10 +93,12 @@ public:
 
 	// プレイヤーからのアクション
 	void Do_playeraction(Player *player, TEAM_COLOR color, Texture2D *tex); // 破る貼る
-	void Rend(Player *player, TEAM_COLOR color, Texture2D *tex); // 破る
-	void Paste(Player *player, TEAM_COLOR color, Texture2D *tex); // 貼る
+	void Rend(TEAM_COLOR color); // 破る
+	void Paste(TEAM_COLOR color, Texture2D *tex); // 貼る
 
 	bool Can_do(Player *player, TEAM_COLOR color); // playerがポスターに何かできる状態
+	bool Can_rend(TEAM_COLOR color); // 破ける
+	bool Can_paste(TEAM_COLOR color); // 貼れる
 
 	// テスト
 	void Change_color(TEAM_COLOR color, Texture2D *tex);

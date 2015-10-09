@@ -214,7 +214,21 @@ void Player::Action::Move::Update()
 	// Zキーでアクション
 	if (KEY(KEY_A) == 3)
 	{
-		me->poster_mng->Do_poster(me, me->team_col);
+		int poster_num = me->poster_mng->Can_do(me, me->team_col);
+		if (poster_num != -1)
+		{
+			if (me->poster_mng->Can_paste(me->team_col, poster_num))
+			{
+				me->do_flag = DO_FLAG::PASTE;
+				me->poster_mng->Paste_poster(me->team_col, poster_num);
+			}
+
+			if (me->poster_mng->Can_rend(me->team_col, poster_num))
+			{
+				me->do_flag = DO_FLAG::REND;
+				me->poster_mng->Rend_poster(me->team_col, poster_num);
+			}
+		}
 
 		switch (me->do_flag)
 		{

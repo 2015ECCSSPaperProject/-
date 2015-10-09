@@ -89,26 +89,37 @@ void Poster_manager::Render()
 
 
 
-void Poster_manager::Do_poster(Player *player, TEAM_COLOR color)
+int Poster_manager::Can_do(Player *player, TEAM_COLOR color)
 {
-	for (auto it : posters)
+	int num = -1;
+
+	for (int i = 0; i < posters.size(); i++)
 	{
-		it->Do_playeraction(player, color, poster_textures[(int)color]);
+		if (posters[i]->Can_do(player, color))
+		{
+			num = i;
+		}
 	}
+
+	return num;
 }
 
-void Poster_manager::Rend_poster(Player *player, TEAM_COLOR color)
+bool Poster_manager::Can_rend(TEAM_COLOR color, int poster_num)
 {
-	for (auto it : posters)
-	{
-		it->Rend(player, color, poster_textures[(int)color]);
-	}
+	return posters[poster_num]->Can_rend(color);
 }
 
-void Poster_manager::Paste_poster(Player *player, TEAM_COLOR color)
+bool Poster_manager::Can_paste(TEAM_COLOR color, int poster_num)
 {
-	for (auto it : posters)
-	{
-		it->Paste(player, color, poster_textures[(int)color]);
-	}
+	return posters[poster_num]->Can_paste(color);
+}
+
+void Poster_manager::Rend_poster(TEAM_COLOR color, int poster_num)
+{
+	posters[poster_num]->Rend(color);
+}
+
+void Poster_manager::Paste_poster(TEAM_COLOR color, int poster_num)
+{
+	posters[poster_num]->Paste(color, poster_textures[(int)color]);
 }

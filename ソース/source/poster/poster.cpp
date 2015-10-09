@@ -174,30 +174,16 @@ void Poster::Do_playeraction(Player *player, TEAM_COLOR color, Texture2D *tex)
 	}
 }
 
-void Poster::Rend(Player *player, TEAM_COLOR color, Texture2D *tex)
+void Poster::Rend(TEAM_COLOR color)
 {
-	assert(player != nullptr);
-
-	if (!Can_do(player, color)) return;
-
-	if (force == TEAM_COLOR::NONE) return;
-
 	Change_mode(MODE::REND);
-	player->Set_do_flag(Player::DO_FLAG::REND);
 }
 
-void Poster::Paste(Player *player, TEAM_COLOR color, Texture2D *tex)
+void Poster::Paste(TEAM_COLOR color, Texture2D *tex)
 {
-	assert(player != nullptr);
-
-	if (!Can_do(player, color)) return;
-
-	if (force != TEAM_COLOR::NONE) return;
-
 	force = color;
 	Change_mode(MODE::WAITE);
 	model->SetTexture(tex, 0);
-	player->Set_do_flag(Player::DO_FLAG::PASTE);
 }
 
 bool Poster::Can_do(Player *player, TEAM_COLOR color)
@@ -228,6 +214,16 @@ bool Poster::Can_do(Player *player, TEAM_COLOR color)
 	if (Vector3Dot(player->Get_forward(), poster_player) >= 0.0f) return false;
 
 	return true;
+}
+
+bool Poster::Can_rend(TEAM_COLOR color)
+{
+	return (force != TEAM_COLOR::NONE && force != color);
+}
+
+bool Poster::Can_paste(TEAM_COLOR color)
+{
+	return (force == TEAM_COLOR::NONE);
 }
 
 
