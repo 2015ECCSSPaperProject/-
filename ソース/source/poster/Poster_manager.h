@@ -37,5 +37,7 @@ public:
 	/// プレイヤーからのアクション
 	//**************************************************
 
-	void Do_poster(Player *player, TEAM_COLOR color);
+	void Do_poster(Player *player, TEAM_COLOR color); // 破る貼る
+	void Rend_poster(Player *player, TEAM_COLOR color); // 破る
+	void Paste_poster(Player *player, TEAM_COLOR color); // 貼る
 };

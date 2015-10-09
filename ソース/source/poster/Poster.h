@@ -92,7 +92,11 @@ public:
 	void Set_pose(const float angle, const Vector3& pos); // 姿勢を計算する
 
 	// プレイヤーからのアクション
-	void Do_playeraction(Player *player, TEAM_COLOR color, Texture2D *tex);
+	void Do_playeraction(Player *player, TEAM_COLOR color, Texture2D *tex); // 破る貼る
+	void Rend(Player *player, TEAM_COLOR color, Texture2D *tex); // 破る
+	void Paste(Player *player, TEAM_COLOR color, Texture2D *tex); // 貼る
+
+	bool Can_do(Player *player, TEAM_COLOR color); // playerがポスターに何かできる状態
 
 	// テスト
 	void Change_color(TEAM_COLOR color, Texture2D *tex);

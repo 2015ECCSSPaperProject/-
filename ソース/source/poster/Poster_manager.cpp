@@ -96,3 +96,19 @@ void Poster_manager::Do_poster(Player *player, TEAM_COLOR color)
 		it->Do_playeraction(player, color, poster_textures[(int)color]);
 	}
 }
+
+void Poster_manager::Rend_poster(Player *player, TEAM_COLOR color)
+{
+	for (auto it : posters)
+	{
+		it->Rend(player, color, poster_textures[(int)color]);
+	}
+}
+
+void Poster_manager::Paste_poster(Player *player, TEAM_COLOR color)
+{
+	for (auto it : posters)
+	{
+		it->Paste(player, color, poster_textures[(int)color]);
+	}
+}

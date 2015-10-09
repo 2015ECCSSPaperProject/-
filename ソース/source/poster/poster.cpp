@@ -156,31 +156,7 @@ void Poster::Do_playeraction(Player *player, TEAM_COLOR color, Texture2D *tex)
 {
 	assert(player != nullptr);
 
-	if (mode == MODE::REND) // 破れてる途中
-		return;
-
-	if (force == color) // 同じ色
-		return;
-
-	// 位置と向き判定
-	Vector3 ppos; // playerの位置
-
-	ppos = player->Get_pos();
-
-	Vector3 poster_player(ppos - position); // ポスターからプレイヤー
-	if (poster_player.y < range.min_y || range.max_y < poster_player.y) return; // y軸
-
-	float length(0);
-	length = Vector3Dot(poster_player, forward);
-	if (length < 0 || length > range.forward) return; // ポスターz軸
-
-	Vector3 right(forward.z, forward.y, -forward.x);
-	length = Vector3Dot(poster_player, right);
-	if (length < -range.wide || length > range.wide) return; // ポスターx軸
-
-	// 向き
-	if (Vector3Dot(player->Get_forward(), poster_player) >= 0.0f) return;
-
+	if (!Can_do(player, color)) return;
 
 	// 貼る
 	if (force == TEAM_COLOR::NONE)
@@ -196,6 +172,62 @@ void Poster::Do_playeraction(Player *player, TEAM_COLOR color, Texture2D *tex)
 		Change_mode(MODE::REND);
 		player->Set_do_flag(Player::DO_FLAG::REND);
 	}
+}
+
+void Poster::Rend(Player *player, TEAM_COLOR color, Texture2D *tex)
+{
+	assert(player != nullptr);
+
+	if (!Can_do(player, color)) return;
+
+	if (force == TEAM_COLOR::NONE) return;
+
+	Change_mode(MODE::REND);
+	player->Set_do_flag(Player::DO_FLAG::REND);
+}
+
+void Poster::Paste(Player *player, TEAM_COLOR color, Texture2D *tex)
+{
+	assert(player != nullptr);
+
+	if (!Can_do(player, color)) return;
+
+	if (force != TEAM_COLOR::NONE) return;
+
+	force = color;
+	Change_mode(MODE::WAITE);
+	model->SetTexture(tex, 0);
+	player->Set_do_flag(Player::DO_FLAG::PASTE);
+}
+
+bool Poster::Can_do(Player *player, TEAM_COLOR color)
+{
+	if (mode == MODE::REND) // 破れてる途中
+		return false;
+
+	if (force == color) // 同じ色
+		return false;
+
+	// 位置と向き判定
+	Vector3 ppos; // playerの位置
+
+	ppos = player->Get_pos();
+
+	Vector3 poster_player(ppos - position); // ポスターからプレイヤー
+	if (poster_player.y < range.min_y || range.max_y < poster_player.y) return false; // y軸
+
+	float length(0);
+	length = Vector3Dot(poster_player, forward);
+	if (length < 0 || length > range.forward) return false; // ポスターz軸
+
+	Vector3 right(forward.z, forward.y, -forward.x);
+	length = Vector3Dot(poster_player, right);
+	if (length < -range.wide || length > range.wide) return false; // ポスターx軸
+
+	// 向き
+	if (Vector3Dot(player->Get_forward(), poster_player) >= 0.0f) return false;
+
+	return true;
 }
 
 
