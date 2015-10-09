@@ -3,7 +3,12 @@
 #include	"../stage/Stage.h"
 #include	"../poster/Poster_manager.h"
 #include	"Player.h"
+#include	"../sound/SoundManager.h"
 
+#include	"../Mouse/Mouse.h"
+
+#define GAME_PAD
+//#define MOUSE
 
 Player::Player() : model(nullptr)
 {
@@ -20,21 +25,26 @@ void Player::Initialize(iex3DObj *obj, Poster_manager *poster_mng, TEAM_COLOR co
 	// 基本パラメータ初期化
 	pos = Vector3(0, 0, 0);
 	angle = Vector3(0, 0, 0);
-	scale = .5f;
+	scale = .25f;
 	move = Vector3(0, 0, 0);
-	speed = 3.0f;
+	speed = 5.0f;
 	fallspeed = .0f;
+	se_receive = 0;
+
+	// その他初期化
+	poster_num = 0;
+	camera_mode = CAMERA_MODE::TPS;
 
 	// 3D実体
 	model = obj->Clone();
 
 	// 行動状態初期化
-	action[(unsigned int)ACTION_PART::MOVE] = new Player::Action::Move(this);
-	action[(unsigned int)ACTION_PART::MOVE_FPS] = new Player::Action::MoveFPS(this);
-	action[(unsigned int)ACTION_PART::ATTACK] = new Player::Action::Attack(this);
-	action[(unsigned int)ACTION_PART::PASTE] = new Player::Action::Paste(this);
-	action[(unsigned int)ACTION_PART::REND] = new Player::Action::Rend(this);
-	action[(unsigned int)ACTION_PART::DIE] = new Player::Action::Die(this);
+	action[(int)ACTION_PART::MOVE] = new Player::Action::Move(this);
+	action[(int)ACTION_PART::MOVE_FPS] = new Player::Action::MoveFPS(this);
+	action[(int)ACTION_PART::ATTACK] = new Player::Action::Attack(this);
+	action[(int)ACTION_PART::PASTE] = new Player::Action::Paste(this);
+	action[(int)ACTION_PART::REND] = new Player::Action::Rend(this);
+	action[(int)ACTION_PART::DIE] = new Player::Action::Die(this);
 
 	Change_action(ACTION_PART::MOVE);	// 最初は移動状態
 	do_flag = DO_FLAG::NONE;	// Zキー押しても何もしない
@@ -61,7 +71,7 @@ void Player::Release()
 {
 	delete model;
 
-	for (unsigned int i = 0; i < (unsigned int)ACTION_PART::MAX; i++)
+	for (int i = 0; i < (int)ACTION_PART::MAX; i++)
 	{
 		delete action[i], action[i] = nullptr;
 	}
@@ -69,7 +79,7 @@ void Player::Release()
 
 void Player::Update(Stage *stage)
 {
-	action[(unsigned int)action_part]->Update();
+	action[(int)action_part]->Update();
 
 	fallspeed -= 0.1f;
 	move.y = fallspeed;
@@ -77,7 +87,7 @@ void Player::Update(Stage *stage)
 	if (stage->Collision_rand(pos, &move, .0f))
 		fallspeed = .0f;
 
-	action[(unsigned int)action_part]->Update_obj();
+	action[(int)action_part]->Update_obj();
 }
 
 void Player::Render()
@@ -147,17 +157,22 @@ void Player::Action::Move::Initialize()
 	me->do_flag = DO_FLAG::NONE;	// Zキー押しても何もしない
 
 	// 待機モーションセット
-	Set_motion(0);
+	Set_motion(1);
 }
 
 void Player::Action::Move::Update()
 {
+	float AxisX = 0, AxisY = 0;
+
+#ifndef GAME_PAD
+
 	//	左スティック取得
-	float AxisX = (float)KEY_GetAxisX() * .001f;
-	float AxisY = (float)-KEY_GetAxisY()* .001f;
+	float dist;
+	AxisX = (float)KEY_GetAxisX() * .001f;
+	AxisY = (float)-KEY_GetAxisY()* .001f;
 
 	// 微々たるスティックの傾きを排除
-	float dist = sqrtf(AxisX * AxisX + AxisY * AxisY);
+	dist = sqrtf(AxisX * AxisX + AxisY * AxisY);
 	if (dist < .35f) {
 		AxisX = 0;
 		AxisY = 0;
@@ -168,24 +183,48 @@ void Player::Action::Move::Update()
 		AxisY /= dist;
 	}
 
-	//	移動ベクトル設定
 	Vector3 front(matView._13, 0, matView._33);
 	Vector3 right(matView._11, 0, matView._31);
+#endif
+
+#ifndef MOUSE
+	if (KEY(KEY_LEFT) == 1) AxisX = -1;
+	else if (KEY(KEY_RIGHT) == 1) AxisX = 1;
+	if (KEY(KEY_UP) == 1) AxisY = 1;
+	else if (KEY(KEY_DOWN) == 1) AxisY = -1;
+
+	Vector3 front(sinf(me->angle.y), 0, cosf(me->angle.y));
+	Vector3 right(sinf(me->angle.y + PI * .5f), 0, cosf(me->angle.y + PI * .5f));
+#endif
+
 	front.Normalize();
 	right.Normalize();
-	//	移動量決定
+	// 移動量決定
 	me->move = (front*AxisY + right*AxisX) * (me->speed * .1f);
+
+#ifndef GAME_PAD
+	me->angle.y += AxisX * .05f;
+#endif
+
+#ifndef MOUSE
+	me->angle.y += Mouse::Get_axis_x() * .1f;
+#endif
+
 
 
 	// 止まってる状態
 	if (me->move.Length() == 0)
 	{
 		// 待機モーション
-		Set_motion(0);
+		Set_motion(1);
+
+		se->Stop(me->se_receive);
 	}
 	// 何かしら動いてる状態
 	else
 	{
+
+#ifndef GAME_PAD
 		//	左右判定
 		float x1 = me->move.x, z1 = me->move.z;
 		float x2 = sinf(me->angle.y), z2 = cosf(me->angle.y);
@@ -199,65 +238,57 @@ void Player::Action::Move::Update()
 		//	方向転換
 		if (g < 0) me->angle.y -= adjust;
 		else me->angle.y += adjust;
+#endif
 
 		// 移動モーション
-		Set_motion(1);
+		Set_motion(0);
+
+		int receive = se->Play("歩行", true);
+		if (receive != SoundBase::NOT_FOUND)
+			me->se_receive = receive;
 	}
 
-
-	// Zキーで攻撃
-	//if (KEY(KEY_A) == 3) me->Change_action(ACTION_PART::ATTACK);
-
-	// Xキーでポスター貼り付け
-	//if (KEY(KEY_B) == 3) me->Change_action(ACTION_PART::PASTE);
-
-	// Zキーでアクション
-	if (KEY(KEY_A) == 3)
+	// 右クリック貼る
+	if (Mouse::isPushRight())
 	{
-		int poster_num = me->poster_mng->Can_do(me, me->team_col);
-		if (poster_num != -1)
-		{
-			if (me->poster_mng->Can_paste(me->team_col, poster_num))
-			{
-				me->do_flag = DO_FLAG::PASTE;
-				me->poster_mng->Paste_poster(me->team_col, poster_num);
-			}
+		me->poster_num = me->poster_mng->Can_do(me, me->team_col);
 
-			if (me->poster_mng->Can_rend(me->team_col, poster_num))
+		// ポスターがあった
+		if (me->poster_num != -1)
+		{
+			if (me->poster_mng->Can_paste(me->team_col, me->poster_num))
 			{
-				me->do_flag = DO_FLAG::REND;
-				me->poster_mng->Rend_poster(me->team_col, poster_num);
+				me->Change_action(ACTION_PART::PASTE);
+				return;
 			}
 		}
+	}
 
-		switch (me->do_flag)
+	// 左クリックで破る
+	else if (Mouse::isPushLeft())
+	{
+		me->poster_num = me->poster_mng->Can_do(me, me->team_col);
+
+		// ポスターがあった
+		if (me->poster_num != -1)
 		{
-		case DO_FLAG::NONE:	 // 何もしない
-			break;
-
-		case DO_FLAG::ATTACK:// 攻撃
-			me->Change_action(ACTION_PART::ATTACK);
-			break;
-
-		case DO_FLAG::PASTE:// 貼る
-			me->Change_action(ACTION_PART::PASTE);
-			break;
-
-		case DO_FLAG::REND:	// 破く
-			me->Change_action(ACTION_PART::REND);
-			break;
+			if (me->poster_mng->Can_rend(me->team_col, me->poster_num))
+			{
+				me->Change_action(ACTION_PART::REND);
+				return;
+			}
 		}
 	}
 
 	// Bキーでカラーチェンジ
-	if (KEY(KEY_B) == 3) me->Change_color();
+	//if (KEY(KEY_B) == 3) me->Change_color();
 
 	// Cキーでカメラモード切替
-	if (KEY(KEY_C) == 3) me->Change_action(ACTION_PART::MOVE_FPS);
-
-
-	// 3DObj更新
-	Update_obj();
+	if (KEY(KEY_C) == 3)
+	{
+		me->Change_action(ACTION_PART::MOVE_FPS);
+		me->camera_mode = CAMERA_MODE::FPS;
+	}
 }
 
 void Player::Action::Move::Render()
@@ -283,49 +314,19 @@ void Player::Action::MoveFPS::Initialize()
 
 void Player::Action::MoveFPS::Update()
 {
-	//===============================================
-	//	方向転換(右スティック)
-	//===============================================
+	float AxisX = 0, AxisY = 0;
 
-	//	右スティック取得
-	float AxisX = (float)KEY_GetAxisX2() * .001f;
-	float AxisY = (float)-KEY_GetAxisY2()* .001f;
+#ifndef MOUSE
+	if (KEY(KEY_LEFT) == 1) AxisX = -1;
+	else if (KEY(KEY_RIGHT) == 1) AxisX = 1;
+	if (KEY(KEY_UP) == 1) AxisY = 1;
+	else if (KEY(KEY_DOWN) == 1) AxisY = -1;
 
-	// 微々たるスティックの傾きを排除
-	float dist = sqrtf(AxisX * AxisX + AxisY * AxisY);
-	if (dist < .35f) {
-		AxisX = 0;
-		AxisY = 0;
-	}
-	if (dist > 1.0f)
-	{
-		AxisX /= dist;
-		AxisY /= dist;
-	}
-
-	me->angle.y += AxisX * .05f;
+	me->angle.y += Mouse::Get_axis_x() * .05f;
+#endif
 
 
 
-	//===============================================
-	//	移動(左スティック)
-	//===============================================
-
-	//	左スティック取得
-	AxisX = (float)KEY_GetAxisX() * .001f;
-	AxisY = (float)-KEY_GetAxisY()* .001f;
-
-	// 微々たるスティックの傾きを排除
-	dist = sqrtf(AxisX * AxisX + AxisY * AxisY);
-	if (dist < .35f) {
-		AxisX = 0;
-		AxisY = 0;
-	}
-	if (dist > 1.0f)
-	{
-		AxisX /= dist;
-		AxisY /= dist;
-	}
 
 	//	移動ベクトル設定
 	Vector3 front(sinf(me->angle.y), 0, cosf(me->angle.y));
@@ -340,35 +341,60 @@ void Player::Action::MoveFPS::Update()
 	if (me->move.Length() == 0)
 	{
 		// 待機モーション
-		Set_motion(0);
+		Set_motion(1);
+
+		se->Stop(me->se_receive);
 	}
 	// 何かしら動いてる状態
 	else
 	{
 		// 移動モーション
-		Set_motion(1);
+		Set_motion(0);
+
+		int receive = se->Play("歩行", true);
+		if (receive != SoundBase::NOT_FOUND)
+			me->se_receive = receive;
 	}
 
-
-	//// Zキーで攻撃
-	//if (KEY(KEY_A) == 3) me->Change_action(ACTION_PART::ATTACK);
-
-	//// Xキーでポスター貼り付け
-	//if (KEY(KEY_B) == 3) me->Change_action(ACTION_PART::PASTE);
-
-
-	// Zキーでアクション
-	if (KEY(KEY_A) == 3)
+	// 右クリック貼る
+	if (Mouse::isPushRight())
 	{
+		me->poster_num = me->poster_mng->Can_do(me, me->team_col);
 
+		// ポスターがあった
+		if (me->poster_num != -1)
+		{
+			if (me->poster_mng->Can_paste(me->team_col, me->poster_num))
+			{
+				me->Change_action(ACTION_PART::PASTE);
+				return;
+			}
+		}
+	}
+
+	// 左クリックで破る
+	else if (Mouse::isPushLeft())
+	{
+		me->poster_num = me->poster_mng->Can_do(me, me->team_col);
+
+		// ポスターがあった
+		if (me->poster_num != -1)
+		{
+			if (me->poster_mng->Can_rend(me->team_col, me->poster_num))
+			{
+				me->Change_action(ACTION_PART::REND);
+				return;
+			}
+		}
 	}
 
 	// Cキーでカメラモード切替
-	if (KEY(KEY_C) == 3) me->Change_action(ACTION_PART::MOVE);
+	if (KEY(KEY_C) == 3)
+	{
+		me->Change_action(ACTION_PART::MOVE);
+		me->camera_mode = CAMERA_MODE::TPS;
+	}
 
-
-	// 3DObj更新
-	Update_obj();
 }
 
 void Player::Action::MoveFPS::Render()
@@ -392,19 +418,17 @@ void Player::Action::Attack::Initialize()
 	me->move = Vector3(0, 0, 0);
 
 	// 攻撃モーションセット
-	Set_motion(8);
+	//Set_motion(8);
 }
 
 void Player::Action::Attack::Update()
 {
 	// 攻撃モーション終了
-	if (me->model->GetParam(0) == 1)
-	{
+	//if (me->model->GetParam(0) == 1)
+	//{
 		me->Change_action(ACTION_PART::MOVE);
-	}
+	//}
 
-	// 3DObj更新
-	Update_obj();
 }
 
 void Player::Action::Attack::Render()
@@ -429,26 +453,26 @@ void Player::Action::Paste::Initialize()
 	me->move = Vector3(0, 0, 0);
 
 	// 貼り付けモーションセット
-	Set_motion(9);
+	//Set_motion(9);
 }
 
 void Player::Action::Paste::Update()
 {
 	// 貼り付けモーション終了
-	if (me->model->GetParam(0) == 3)
-	{
-		me->Change_action(ACTION_PART::MOVE);
-	}
+	//if (me->model->GetParam(0) == 3)
+	//{
+		me->Change_action((me->camera_mode == CAMERA_MODE::TPS) ? ACTION_PART::MOVE : ACTION_PART::MOVE_FPS);
+	//}
 
 	// 貼り付けフレーム
-	if (me->model->GetParam(0) == 1)
-	{
+	//if (me->model->GetParam(0) == 1)
+	//{
+		me->poster_mng->Paste_poster(me->team_col, me->poster_num);
+		se->Play("ポスター貼る");
 		//me->poster_mng->Do_poster(0, me->team_col);
 		//me->poster_mng->Do_poster(0, TEAM_COLOR::ONE);
-	}
+	//}
 
-	// 3DObj更新
-	Update_obj();
 }
 
 void Player::Action::Paste::Render()
@@ -471,26 +495,23 @@ void Player::Action::Rend::Initialize()
 	me->move = Vector3(0, 0, 0);
 
 	// 破りモーションセット
-	Set_motion(9);
+	Set_motion(2);
 }
 
 void Player::Action::Rend::Update()
 {
 	// 破りモーション終了
-	if (me->model->GetParam(0) == 3)
+	if (me->model->GetParam(0) == 2)
 	{
-		me->Change_action(ACTION_PART::MOVE);
+		me->Change_action((me->camera_mode == CAMERA_MODE::TPS) ? ACTION_PART::MOVE : ACTION_PART::MOVE_FPS);
 	}
 
 	// 破るフレーム
 	if (me->model->GetParam(0) == 1)
 	{
-		//me->poster_mng->Do_poster(0, me->team_col);
-		//me->poster_mng->Do_poster(0, TEAM_COLOR::TWO);
+		me->poster_mng->Rend_poster(me->team_col, me->poster_num);
+		se->Play("ポスター破る");
 	}
-
-	// 3DObj更新
-	Update_obj();
 }
 
 void Player::Action::Rend::Render()
@@ -516,7 +537,7 @@ void Player::Action::Die::Initialize()
 	me->move = Vector3(0, 0, 0);
 
 	// 死ぬモーションセット
-	Set_motion(4);
+	//Set_motion(4);
 }
 
 void Player::Action::Die::Update()

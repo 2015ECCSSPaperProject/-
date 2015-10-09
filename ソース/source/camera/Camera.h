@@ -12,7 +12,7 @@ public:
 	//===============================================
 	//	定数
 	//===============================================
-	enum MODE_PART{ M_TPS, M_FPS, M_MAX };
+	enum MODE_PART{ M_TPS, M_FPS, M_STOP, M_PASTE, M_MAX };
 
 
 private:
@@ -40,6 +40,8 @@ private:
 		{
 		protected:
 			Camera *me;
+			float dist;	// カメラ→プレイヤの距離
+			const static float DIST;
 			void Collision();
 
 		public:
@@ -52,9 +54,6 @@ private:
 		//	3人称視点モード
 		class TPS : public Base
 		{
-		private:
-			float dist;	// カメラ→プレイヤの距離
-
 		public:
 			TPS(Camera *me) :Base(me){}
 
@@ -68,6 +67,28 @@ private:
 		{
 		public:
 			FPS(Camera *me) :Base(me){}
+
+			void Initialize();
+			void Update();
+		};
+
+		//===========================================
+		//	止まっているモード
+		class Stop : public Base
+		{
+		public:
+			Stop(Camera *me) :Base(me){}
+
+			void Initialize();
+			void Update();
+		};
+
+		//===========================================
+		//	プレイヤーポスター破くモード
+		class Paste : public Base
+		{
+		public:
+			Paste(Camera *me) :Base(me){}
 
 			void Initialize();
 			void Update();

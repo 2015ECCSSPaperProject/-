@@ -9,6 +9,8 @@
 #include "../Enum_public.h"
 #include "../score/Score.h"
 
+#include "../sound/SoundManager.h"
+
 //*****************************************************************************************************************************
 //
 //	‰Šú‰»
@@ -41,6 +43,8 @@ bool sceneMain::Initialize()
 	camera->Set(Vector3(0, 10.0f, -20.0f), Vector3(0, 0, 0));
 	camera->Initialize(player_mng);
 
+	bgm->Fade_in("ƒoƒgƒ‹Œn", 2, true);
+
 	return true;
 }
 
@@ -52,6 +56,8 @@ sceneMain::~sceneMain()
 	delete stage;
 
 	delete	camera;
+
+	bgm->Fade_out("ƒoƒgƒ‹Œn", 4);
 }
 
 //*****************************************************************************************************************************
@@ -62,6 +68,11 @@ sceneMain::~sceneMain()
 
 void	sceneMain::Update()
 {
+	//if (GetKeyState('1') < 0)
+	//	poster_mng->Do_poster(0, TEAM_COLOR::ONE);
+	//if (GetKeyState('2') < 0)
+	//	poster_mng->Do_poster(0, TEAM_COLOR::TWO);
+
 	player_mng->Update(stage, poster_mng);
 	poster_mng->Update();
 	stage->Update();

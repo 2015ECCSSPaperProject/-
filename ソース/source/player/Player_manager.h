@@ -11,7 +11,7 @@ class Player_manager
 {
 private:
 	std::vector<Player*> players;
-	iex3DObj *obj; // クローン関数使う用
+	iex3DObj *obj[2]; // クローン関数使う用
 	Poster_manager *poster_mng;
 
 public:

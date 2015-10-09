@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <crtdbg.h>
 
+#include	"../sound/SoundManager.h"
+
 //*****************************************************************************************************************************
 //
 //
@@ -30,6 +32,9 @@ BOOL	InitApp( HWND hWnd )
 	IEX_Initialize( hWnd, bFullScreen, ScreenMode );
 	IEX_InitAudio();
 	IEX_InitInput();
+
+	// サウンドマネージャー
+	SoundManager::Initialize();
 
 	//	システムの初期化
 	SYSTEM_Initialize();
@@ -135,6 +140,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	IEX_ReleaseAudio();
 	IEX_ReleaseInput();
 	IEX_Release();
+	SoundManager::Release();
 
 	return 0;
 }

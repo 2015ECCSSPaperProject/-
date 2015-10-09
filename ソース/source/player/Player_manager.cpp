@@ -18,7 +18,8 @@ Player_manager::~Player_manager()
 
 void Player_manager::Initialize(Poster_manager *poster_mng)
 {
-	obj = new iex3DObj("DATA/CHR/teki_full.IEM");
+	obj[0] = new iex3DObj("DATA/CHR/player/run.IEM");
+
 	this->poster_mng = poster_mng;
 
 	// ‚±‚±‚Ç‚¤‚·‚é‚©
@@ -27,14 +28,14 @@ void Player_manager::Initialize(Poster_manager *poster_mng)
 	Player *p;
 
 	p = new Player();
-	p->Initialize(obj, poster_mng, col);
+	(col == TEAM_COLOR::ONE) ? p->Initialize(obj[0], poster_mng, col) : p->Initialize(obj[1], poster_mng, col);
 
 	players.push_back(p);
 }
 
 void Player_manager::Release()
 {
-	delete obj;
+	delete obj[0];
 
 	for (auto it : players) delete it;
 

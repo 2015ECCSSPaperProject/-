@@ -5,6 +5,12 @@
 #include	"../player/Player_manager.h"
 #include	"../player/Player.h"
 
+#include	"../Mouse/Mouse.h"
+
+// カメラ⇒プレイヤーの基本距離
+const float Camera::Mode::Base::DIST = 20.0f;
+
+
 Camera::Camera() : iexView()
 {
 	// 基本パラメータ初期化
@@ -14,14 +20,13 @@ Camera::Camera() : iexView()
 	itarget = Vector3(0, 0, 0);
 	angle = Vector3(0, 0, 0);
 
-
 	// 行動状態初期化
 	mode[MODE_PART::M_TPS] = new Camera::Mode::TPS(this);
 	mode[MODE_PART::M_FPS] = new Camera::Mode::FPS(this);
+	mode[MODE_PART::M_STOP] = new Camera::Mode::Stop(this);
+	mode[MODE_PART::M_PASTE] = new Camera::Mode::Paste(this);
 
 	Change_mode(MODE_PART::M_TPS);	// 最初は三人称
-
-
 }
 
 Camera::~Camera()
@@ -80,26 +85,20 @@ void Camera::Mode::Base::Collision()
 void Camera::Mode::TPS::Initialize()
 {
 	me->angle.x = 0;
-	dist = 20.0f;
+	dist = DIST;
 }
 
 void Camera::Mode::TPS::Update()
 {
-	// 微傾き排除
-	float axis_x = (float)KEY_GetAxisX2()*.001f;
-	float axis_y = (float)KEY_GetAxisY2()*.001f;
-	float dist = sqrtf(axis_x * axis_x + axis_y * axis_y);
-	if (dist < .35f) {
-		axis_x = 0;
-		axis_y = 0;
-	}
-	if (dist > 1.f)
-	{
-		axis_x /= dist;
-		axis_y /= dist;
-	}
-	me->angle.y += axis_x*.05f;
-	me->angle.x -= axis_y*.05f;
+#ifndef MOUSE
+
+	// プレイヤー角度取得
+	Vector3 p_angle;
+	me->player_mng->Get_Player()->Get_angle(p_angle);
+	me->angle.y = p_angle.y;
+	me->angle.x += Mouse::Get_axis_y() * .05f;
+
+#endif
 
 	//カメラの上下移動に制限
 	if (me->angle.x < -0.4f)me->angle.x = -0.4f;
@@ -154,8 +153,9 @@ void Camera::Mode::TPS::Update()
 
 
 
-	// プレイヤーモードがFPSならカメラ切り替え
+	// プレイヤーモードでカメラ切り替え
 	if (me->player_mng->Get_Player()->Get_action() == Player::ACTION_PART::MOVE_FPS) me->Change_mode(MODE_PART::M_FPS);
+	//else if (me->player_mng->Get_Player()->Get_action() == Player::ACTION_PART::PASTE) me->Change_mode(MODE_PART::M_PASTE);
 }
 
 
@@ -170,21 +170,11 @@ void Camera::Mode::FPS::Initialize()
 
 void Camera::Mode::FPS::Update()
 {
-	// 右スティック取得
-	float axis_x = (float)KEY_GetAxisX2()*.001f;
-	float axis_y = (float)KEY_GetAxisY2()*.001f;
-	float dist = sqrtf(axis_x * axis_x + axis_y * axis_y);
-	if (dist < .35f) {
-		axis_x = 0;
-		axis_y = 0;
-	}
-	if (dist > 1.f)
-	{
-		axis_x /= dist;
-		axis_y /= dist;
-	}
+#ifndef MOUSE
+	me->angle.x += Mouse::Get_axis_y() *.05f;
+#endif
 
-	me->angle.x += axis_y*.05f;
+
 	if (me->angle.x < -0.4f)me->angle.x = -0.4f;
 	if (me->angle.x > 0.4f)me->angle.x = 0.4f;
 
@@ -225,6 +215,105 @@ void Camera::Mode::FPS::Update()
 	me->Set(me->pos, me->target);
 
 
-	// プレイヤーモードがTPSならカメラ切り替え
+	// プレイヤーモードでカメラ切り替え
 	if (me->player_mng->Get_Player()->Get_action() == Player::ACTION_PART::MOVE) me->Change_mode(MODE_PART::M_TPS);
+	//else if (me->player_mng->Get_Player()->Get_action() == Player::ACTION_PART::PASTE) me->Change_mode(MODE_PART::M_PASTE);
+}
+
+
+
+
+//*****************************************************************************
+//
+//		「止まってる」状態処理
+//
+//*****************************************************************************
+
+void Camera::Mode::Stop::Initialize()
+{}
+
+void Camera::Mode::Stop::Update()
+{
+	// 何もしない
+	me->Set(me->pos, me->target);
+}
+
+
+//*****************************************************************************
+//
+//		「プレイヤーがポスターを張り付けてる」状態処理
+//
+//*****************************************************************************
+
+void Camera::Mode::Paste::Initialize()
+{
+	dist = DIST * .5f;
+}
+
+void Camera::Mode::Paste::Update()
+{
+#ifndef MOUSE
+
+	// プレイヤー角度取得
+	Vector3 p_angle;
+	me->player_mng->Get_Player()->Get_angle(p_angle);
+	me->angle.y = p_angle.y;
+	me->angle.x += Mouse::Get_axis_y() * .05f;
+
+#endif
+
+	//カメラの上下移動に制限
+	if (me->angle.x < -0.4f)me->angle.x = -0.4f;
+	if (me->angle.x > 0.2f)me->angle.x = 0.2f;
+
+	// オーバーフロー防止
+	if (me->angle.y > PI * 2)me->angle.y -= PI * 2;
+	else if (me->angle.y < -PI * 2)me->angle.y += PI * 2;
+
+
+	// 角度の値によるベクトルを作成
+	float ay_x = sinf(me->angle.y);
+	float ay_z = cosf(me->angle.y);
+	float ax_y = sinf(me->angle.x);
+	float ax_z = cosf(me->angle.x);
+
+	Vector3 vec(
+		ay_x * ax_z,
+		ax_y,
+		ay_z * ax_z);
+
+	// ベクトルの長さ決定
+	vec *= this->dist;
+
+
+	// プレイヤー座標取得
+	Vector3 p_pos;
+	me->player_mng->Get_Player()->Get_pos(p_pos);
+
+	p_pos.y += 2.5f;	// 少し上に
+
+
+
+	// 角度の値のベクトルとプレイヤーからカメラ位置算出
+	me->ipos.x = p_pos.x - vec.x;
+	me->ipos.y = p_pos.y - vec.y;
+	me->ipos.z = p_pos.z - vec.z;
+
+	me->ipos.y += 4.0f;	// 少し上に
+
+	// 注視点はプレイヤー
+	me->target = p_pos;
+
+
+	//壁判定
+	//Collision();
+
+	// 目標座標までゆっくり動かす
+	me->pos = me->pos * .85f + me->ipos * .15f;
+
+	// 何もしない
+	me->Set(me->pos, me->target);
+
+	// プレイヤーモードがTPSならカメラ切り替え
+	if (me->player_mng->Get_Player()->Get_action() != Player::ACTION_PART::PASTE) me->Change_mode(MODE_PART::M_TPS);
 }

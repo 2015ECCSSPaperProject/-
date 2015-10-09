@@ -27,13 +27,19 @@ private:
 	Vector3			move;
 	float			speed;
 	float			fallspeed;
+	int				se_receive;
 
 	iex3DObj		*model;
 
 	Poster_manager	*poster_mng;
 	TEAM_COLOR		team_col;
 
-
+	//===============================================
+	//	‚»‚Ì‘¼
+	//===============================================
+	int				poster_num;
+	enum class CAMERA_MODE{ TPS, FPS };
+	CAMERA_MODE		camera_mode;
 
 
 	//===============================================

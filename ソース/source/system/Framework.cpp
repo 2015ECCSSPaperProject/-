@@ -5,6 +5,9 @@
 #include	"scene/sceneMain.h"
 #include <time.h>
 
+#include	"../Mouse/Mouse.h"
+#include	"../sound/SoundManager.h"
+
 
 //*****************************************************************************************************************************
 //
@@ -71,6 +74,9 @@ bool Framework::Update()
 
 	//	XVˆ—
 	KEY_SetInfo();
+	Mouse::Update();
+	SoundManager::Update();
+
 	if( scene != NULL ) scene->Update();
 
 	return true;
