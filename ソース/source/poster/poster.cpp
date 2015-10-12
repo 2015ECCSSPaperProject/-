@@ -42,7 +42,7 @@ void Poster::Mode_rend::Update()
 	if (me->model)
 		me->model->Animation();
 
-	if (me->model->GetFrame() >= 58)
+	if (me->model->GetFrame() >= 47)
 	{
 		me->force = TEAM_COLOR::NONE;
 		me->Change_mode(MODE::WAITE);

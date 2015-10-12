@@ -15,6 +15,9 @@ void Stage::Initialize()
 	// ‰¼
 	show_model = new iexMesh("DATA/Stage/yakyu/stage_kyujyo-.IMO");
 	collision_model = new iexMesh("DATA/Stage/yakyu/stage_atari.IMO");
+
+	//show_model = new iexMesh("./DATA/Stage/MATI/stage_machi.IMO");
+	//collision_model = new iexMesh("./DATA/Stage/MATI/stage_atari.IMO");
 }
 
 void Stage::Release()
