@@ -93,16 +93,16 @@ void SceneMainServer::ThreadFunc(void* pData, bool*isEnd)
 		if (*isEnd)
 			return;
 
-		/*フレーム制限*/
-		DWORD CurrentTime = clock() * 10;
-		if (CurrentTime < dwFrameTime + 167)
-			continue;
+		///*フレーム制限*/
+		//DWORD CurrentTime = clock() * 10;
+		//if (CurrentTime < dwFrameTime + 167) // 0.0167f (1フレーム)
+		//	continue;
 
-		/*経過時間*/
-		DWORD	dTime = CurrentTime - dwFrameTime;
-		if (dTime > 2000) dwFrameTime = CurrentTime;
+		///*経過時間*/
+		//DWORD	dTime = CurrentTime - dwFrameTime;
+		//if (dTime > 2000) dwFrameTime = CurrentTime;
 
-		dwFrameTime += 167;
+		//dwFrameTime += 167;
 
 		/*ネットワーク更新*/
 		ServerManager::Update();
