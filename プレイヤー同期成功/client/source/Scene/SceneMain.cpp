@@ -174,7 +174,7 @@ void SceneMain::Render()
 	{
 		player[i]->Render();
 		Text::Draw(1100, 20 + (i * 32), 0xff00ffff, "pos.x->%.2f", player[i]->GetPos().x);
-
+		Text::Draw(950, 20 + (i * 32), 0xff00ffff, "–¼‘OF%s", SOCKET_MANAGER->GetUser(i).name);
 	}
 
 
