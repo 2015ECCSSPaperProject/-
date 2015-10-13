@@ -11,6 +11,9 @@
 
 using namespace std;
 
+// アラミタマ
+iexMesh *set;
+
 //******************************************************************
 //		初期化・解放
 //******************************************************************
@@ -27,13 +30,17 @@ SceneMainServer::SceneMainServer()
 	view->Set(Vector3(0, 100, -60), Vector3(0, 0, 0));
 	view->Activate();
 
+	//stage = new iexMesh2("DATA/BG/stage_puroto.imo");
 	stage = new Stage;
 	stage->Initialize();
+
+	set = new iexMesh("DATA/a.IMO");
 
 	//　プレイヤー初期化
 	for (int i = 0; i < PLAYER_MAX; i++)
 	{
 		player[i] = new NetPlayer(i);
+		player[i]->Initialize(set);
 	}
 	
 
@@ -60,7 +67,7 @@ bool SceneMainServer::Initialize()
 	//view->Set(Vector3(0, 100, -60), Vector3(0, 0, 0));
 	//view->Activate();
 
-	//stage = new iexMesh("DATA/BG/stage_puroto.imo");
+	//stage = new iexMesh2("DATA/BG/stage_puroto.imo");
 
 	////	スレッド開始
 	//m_pThread = 0;
@@ -118,15 +125,17 @@ SceneMainServer::~SceneMainServer()
 	delete view;
 	delete stage;
 	
-	for (int i = 0; i < PLAYER_MAX; i++)
-	{
-		delete player[i];
-	}
-
 	//isRun = false;
 	//　今ここで消す
 	ServerManager::Release();
 	delete m_pThread;
+
+	for (int i = 0; i < PLAYER_MAX; i++)
+	{
+		SAFE_DELETE(player[i]);
+	}
+
+	delete set;
 }
 
 
@@ -141,6 +150,8 @@ void SceneMainServer::Update()
 
 	//フェード処理
 	FadeControl::Update();
+
+	stage->Render();
 
 	// サーバー
 	for (int i = 0; i < PLAYER_MAX; i++)
@@ -166,7 +177,7 @@ void SceneMainServer::Render()
 	for (int i = 0; i < PLAYER_MAX; i++)
 	{
 		player[i]->Render();
-		Text::Draw(1000, 50 + (i * 40), 0xffff00ff, "pos.x->%.2f", player[i]->GetPos().x);
+		Text::Draw(1000, 50 + (i * 40), 0xffff00ff, "pos.x->%.2f", player[i]->Get_pos().x);
 
 	}
 

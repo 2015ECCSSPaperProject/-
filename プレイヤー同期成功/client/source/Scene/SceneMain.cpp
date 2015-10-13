@@ -28,10 +28,14 @@
 #include	"../bench/Bench_mark.h"
 extern Bench_mark bench;
 
+// アラミタマ
+iexMesh *set;
+
+#include "../camera/Camera.h"
+#include "../stage/Stage.h"
+
 
 using namespace std;
-
-#include "../stage/Stage.h"
 
 //******************************************************************
 //		初期化・解放
@@ -46,10 +50,12 @@ bool SceneMain::Initialize()
 	// Fade処理
 	FadeControl::Setting(FadeControl::FADE_IN, 26);
 
-	view = new iexView();
-	view->Set(Vector3(0, 10, -60), Vector3(0, 10, 0));
+	//view = new iexView();
+	//view->Set(Vector3(0, 10, -60), Vector3(0, 10, 0));
+	camera = new Camera;
 
 
+	//stage = new iexMesh2("DATA/BG/stage_puroto.imo");
 	stage = new Stage;
 	stage->Initialize();
 
@@ -58,14 +64,19 @@ bool SceneMain::Initialize()
 	sky->SetPos(0, -100, 0);
 	sky->Update();
 
+	set = new iexMesh("DATA/a.IMO");
 
 	//■■■　相手と自分で分ける
 	for (int i = 0; i <PLAYER_MAX; ++i)
 	{
-		if (i == SOCKET_MANAGER->GetID())
+		if (i == SOCKET_MANAGER->GetID()){
 			player[i] = new MyPlayer();
+			camera->Initialize(player[i]);	// カメラ設定
+		}
 		else
 			player[i] = new NetPlayer();
+
+		player[i]->Initialize(set);
 	}
 
 	// 開始フラグを送る
@@ -85,10 +96,18 @@ bool SceneMain::Initialize()
 
 SceneMain::~SceneMain()
 {
-	delete view;
+	delete camera;
+	//delete view;
 	delete stage;
 	delete sky;
 	delete m_pThread;//　なんかスレッド消さないとエラー起こる
+
+	delete set;
+
+	for (int i = 0; i <PLAYER_MAX; ++i)
+	{
+		SAFE_DELETE(player[i]);
+	}
 }
 
 //===================================================================================
@@ -140,10 +159,13 @@ void SceneMain::Update()
 		//　ここのながれ一番重要
 		//　送られてきた情報を各プレイヤーにセット！！
 		PlayerData sendPlayer = SOCKET_MANAGER->GetPlayer(i);
-		player[i]->SetPos(sendPlayer.pos);
+		player[i]->Set_pos(sendPlayer.pos);
 
 		player[i]->Update();
 	}
+
+	// カメラ
+	camera->Update();
 
 	//ナンバーエフェクト
 	Number_Effect::Update();
@@ -167,8 +189,10 @@ void SceneMain::Update()
 
 void SceneMain::Render()
 {
-	view->Activate();
-	view->Clear();
+	//view->Activate();
+	//view->Clear();
+	camera->Activate();
+	camera->Clear();
 
 	stage->Render();
 	sky->Render();
@@ -177,8 +201,9 @@ void SceneMain::Render()
 	for (int i = 0; i < PLAYER_MAX; ++i)
 	{
 		player[i]->Render();
-		Text::Draw(1100, 20 + (i * 32), 0xff00ffff, "pos.x->%.2f", player[i]->GetPos().x);
+		Text::Draw(1100, 20 + (i * 32), 0xff00ffff, "pos.x->%.2f", player[i]->Get_pos().x);
 
+		Text::Draw(950, 20 + (i * 32), 0xff00ffff, "名前：%s", SOCKET_MANAGER->GetUser(i).name);
 	}
 
 

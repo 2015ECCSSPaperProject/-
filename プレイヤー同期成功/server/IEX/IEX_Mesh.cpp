@@ -12,6 +12,7 @@
 iexMesh::iexMesh( char* filename )
 {
 	lpMesh = NULL;
+	lpTexture = NULL;
 	lpNormal = NULL;
 	lpSpecular = NULL;
 	lpHeight = NULL;
@@ -52,16 +53,17 @@ iexMesh::~iexMesh()
 
 		//	テクスチャ解放
 		for( DWORD i=0 ; i<MaterialCount ; i++ ){
+			if( lpTexture[i] != NULL ) iexTexture::Release(lpTexture[i]);
 			if( lpNormal[i] != NULL ) iexTexture::Release(lpNormal[i]);
 			if( lpSpecular[i] != NULL ) iexTexture::Release(lpSpecular[i]);
 			if( lpHeight[i] != NULL ) iexTexture::Release(lpHeight[i]);
 		}
-		Texture.Release();
 		delete[] lpMaterial;
 		delete[] lpNormal;
 		delete[] lpSpecular;
 		delete[] lpHeight;
 	}
+	delete[] lpTexture;
 }
 
 //------------------------------------------------------
@@ -70,6 +72,11 @@ iexMesh::~iexMesh()
 iexMesh*	iexMesh::Clone()
 {
 	iexMesh* obj = new iexMesh(*this);
+
+	int num_tex = sizeof(this->lpTexture) / sizeof(*this->lpTexture);
+	obj->lpTexture = new Texture2D*[num_tex];
+	for (int i = 0; i < num_tex; i++) obj->lpTexture[i] = this->lpTexture[i];
+
 	obj->bLoad = FALSE;
 	return obj;
 }
@@ -186,7 +193,7 @@ void iexMesh::Render( u32 dwFlags, float param )
 		//	透明度設定
 		if( param != -1.0f ) lpMaterial[i].Diffuse.a = lpMaterial[i].Ambient.a = param;
 		//	材質設定
-		iexRenderState::Set( dwFlags, &lpMaterial[i], Texture.t[i] );
+		iexRenderState::Set( dwFlags, &lpMaterial[i], lpTexture[i] );
 		//	材質グループ描画
 		lpMesh->DrawSubset( i );
 	}
@@ -212,7 +219,7 @@ void iexMesh::Render( iexShader* shader, char* name )
 		for( u32 i=0 ; i<MaterialCount ; i++ )
 		{
 			//	テクスチャ指定
-			shader->SetTexture( Texture.t[i] );
+			shader->SetTexture( lpTexture[i] );
 			shader->SetValue( "NormalMap", lpNormal[i] );
 			shader->SetValue( "SpecularMap", lpSpecular[i] );
 			shader->SetValue( "HeightMap", lpHeight[i] );
@@ -433,35 +440,6 @@ int	iexMesh::RayPickUD( Vector3* out, Vector3* pos, Vector3* vec, float *Dist )
 	return	ret;
 }
 
-int	iexMesh::RayPick2(Vector3* out, const Vector3* pos, Vector3* vec, float *Dist)
-{
-	Matrix inv;
-	D3DXMatrixInverse(&inv, NULL, &TransMatrix);
-
-	Vector3 raypos(pos->x * inv._11 + pos->y * inv._21 + pos->z * inv._31 + inv._41,
-		pos->x * inv._12 + pos->y * inv._22 + pos->z * inv._32 + inv._42,
-		pos->x * inv._13 + pos->y * inv._23 + pos->z * inv._33 + inv._43);
-
-	*vec = Vector3(vec->x * inv._11 + vec->y * inv._21 + vec->z * inv._31,
-		vec->x * inv._12 + vec->y * inv._22 + vec->z * inv._32,
-		vec->x * inv._13 + vec->y * inv._23 + vec->z * inv._33);
-
-	vec->Normalize();
-
-	int ret = RayPick(out, &raypos, vec, Dist);
-
-	*out = Vector3(out->x * TransMatrix._11 + out->y * TransMatrix._21 + out->z * TransMatrix._31 + TransMatrix._41,
-		out->x * TransMatrix._12 + out->y * TransMatrix._22 + out->z * TransMatrix._32 + TransMatrix._42,
-		out->x * TransMatrix._13 + out->y * TransMatrix._23 + out->z * TransMatrix._33 + 
-		TransMatrix._43);
-
-	*vec = Vector3(vec->x * TransMatrix._11 + vec->y * TransMatrix._21 + vec->z * TransMatrix._31,
-		vec->x * TransMatrix._12 + vec->y * TransMatrix._22 + vec->z * TransMatrix._32,
-		vec->x * TransMatrix._13 + vec->y * TransMatrix._23 + vec->z * TransMatrix._33);
-
-	return ret;
-}
-
 //**************************************************************************************************
 //
 //	ファイル読み込み
@@ -612,13 +590,14 @@ BOOL iexMesh::LoadIMO( LPSTR filename )
 	lpMaterial = new D3DMATERIAL9[ MaterialCount ];
 	CopyMemory( lpMaterial, imo.Material, sizeof(D3DMATERIAL9)*imo.NumMaterial );
 	//	テクスチャ設定
-	Texture.Create(imo.NumMaterial);
+	lpTexture  = new Texture2D* [ imo.NumMaterial ];
 	lpNormal   = new Texture2D* [ imo.NumMaterial ];
 	lpSpecular = new Texture2D* [ imo.NumMaterial ];
 	lpHeight   = new Texture2D* [ imo.NumMaterial ];
 
 	char temp[256];
 	for( i=0 ; i<MaterialCount ; i++ ){
+		lpTexture[i]  = NULL;
 		lpNormal[i]   = NULL;
 		lpSpecular[i] = NULL;
 		lpHeight[i]   = NULL;
@@ -626,7 +605,7 @@ BOOL iexMesh::LoadIMO( LPSTR filename )
 		if( imo.Texture[i][0] == '\0' ) continue;
 		//	テクスチャ読み込み
 		sprintf( temp, "%s%s", workpath, imo.Texture[i] );
-		Texture.Load(i, temp);
+		lpTexture[i] = iexTexture::Load( temp );
 
 		sprintf( temp, "%sN%s", workpath, imo.Texture[i] );
 		lpNormal[i] = iexTexture::Load( temp );
@@ -683,7 +662,7 @@ BOOL	iexMesh::LoadX( LPSTR filename )
 
 	// テクスチャ＆マテリアル用バッファ生成
 	lpMaterial = new D3DMATERIAL9 [ MaterialCount ];
-	Texture.Create(MaterialCount);
+	lpTexture  = new LPDIRECT3DTEXTURE9 [ MaterialCount ];
 	lpNormal   = new Texture2D* [ MaterialCount ];
 	lpSpecular = new Texture2D* [ MaterialCount ];
 	lpHeight   = new Texture2D* [ MaterialCount ];
@@ -697,6 +676,7 @@ BOOL	iexMesh::LoadX( LPSTR filename )
 		lpMaterial[i].Ambient.b = lpMaterial[i].Diffuse.b;
 		// テクスチャ
 		char temp[256];
+		lpTexture[i]  = NULL;
 		lpNormal[i]   = NULL;
 		lpSpecular[i] = NULL;
 		lpHeight[i]   = NULL;
@@ -704,7 +684,7 @@ BOOL	iexMesh::LoadX( LPSTR filename )
 		if( d3dxMaterial[i].pTextureFilename != NULL ){
 			//	テクスチャ読み込み
 			sprintf( temp, "%s%s", workpath, d3dxMaterial[i].pTextureFilename );
-			Texture.Load(i, temp);
+			lpTexture[i] = iexTexture::Load( temp );
 
 			sprintf( temp, "%sN%s", workpath, d3dxMaterial[i].pTextureFilename );
 			lpNormal[i] = iexTexture::Load( temp );
@@ -861,66 +841,3 @@ int	IEX_RayPickMesh( iexMesh* lpMesh, Vector3* out, Vector3* pos, Vector3* vec, 
 	return	ret;
 }
 
-
-
-//
-iexMesh2_textures::iexMesh2_textures(){}
-
-iexMesh2_textures::~iexMesh2_textures(){}
-
-void iexMesh2_textures::Release()
-{
-	if (t == nullptr) return;
-
-	for (int j = 0; j < sizeof(t) / sizeof(t[0]); j++)
-	{
-		if (t[j] != nullptr) iexTexture::Release(t[j]);
-	}
-	delete[] t;
-}
-
-void iexMesh2_textures::Create(int number)
-{
-	t = new Texture2D*[number]{};
-}
-
-void iexMesh2_textures::Load(int index, char* filename)
-{
-	t[index] = iexTexture::Load(filename);
-}
-
-void iexMesh2_textures::Create_load(int number, ...)
-{
-	t = new Texture2D*[number]{};
-
-	va_list list;
-	va_start(list, number);
-
-	char* filename(nullptr);
-	for (int i = 0; i < number; i++)
-	{
-		filename = va_arg(list, char*);
-		t[i] = iexTexture::Load(filename);
-	}
-
-	va_end(list);
-}
-
-
-
-void iexMesh::Texture_change(iexMesh2_textures& in)
-{
-	iexMesh2_textures re = Texture;
-	Texture = in;
-	in = re;
-}
-
-void iexMesh::Texture_set_null()
-{
-	Texture.t = nullptr;
-}
-
-void iexMesh::Get_texture(iexMesh2_textures* out)
-{
-	out = &this->Texture;
-}

@@ -22,7 +22,6 @@ public:
 	
 private:
 	iexView* view;
-	Stage* stage;
 
 
 	//	’ÊM—p

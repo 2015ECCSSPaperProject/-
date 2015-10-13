@@ -307,13 +307,14 @@ void ServerManager::UpdateUser(char* data, int client)
 	struct
 	{
 		Vector3 pos;
-
+		Vector3 angle;
 	}send[PLAYER_MAX];
 
 
 	for (int i = 0; i<PLAYER_MAX; ++i)
 	{
-		send[i].pos = player[i]->GetPos();
+		player[i]->Get_pos(send[i].pos);
+		player[i]->Get_angle(send[i].angle);
 	}
 
 	m_pServer->Send(client, (char*)&send, sizeof(send));

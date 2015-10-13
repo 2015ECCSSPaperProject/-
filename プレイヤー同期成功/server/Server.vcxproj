@@ -160,6 +160,7 @@
     <ClInclude Include="IEX\ogg\vorbisenc.h" />
     <ClInclude Include="IEX\ogg\vorbisfile.h" />
     <ClInclude Include="IEX\OKB.h" />
+    <ClInclude Include="source\Enum_public.h" />
     <ClInclude Include="source\Net\PaperServer.h" />
     <ClInclude Include="source\Net\UDPServer.h" />
     <ClInclude Include="source\Player\BasePlayer.h" />

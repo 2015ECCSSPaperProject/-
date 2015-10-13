@@ -1,4 +1,4 @@
-#include "iextreme.h"
+#include	"iextreme.h"
 
 //*****************************************************************************
 //
@@ -16,14 +16,14 @@ DIDEVICEINSTANCE	iexInputManager::didi[4];
 //------------------------------------------------------
 //		コントローラー列挙
 //------------------------------------------------------
-BOOL CALLBACK iexInputManager::EnumDeviceCallback(const DIDEVICEINSTANCE* pdidi, VOID* pContext)
+BOOL CALLBACK iexInputManager::EnumDeviceCallback( const DIDEVICEINSTANCE* pdidi, VOID* pContext )
 {
 	//	情報のコピー
-	memcpy(&didi[NumDevice], pdidi, sizeof(DIDEVICEINSTANCE));
+	memcpy( &didi[NumDevice], pdidi, sizeof(DIDEVICEINSTANCE) );
 	//	パッド数更新
 	NumDevice++;
 	//	最大４コまで。
-	if (NumDevice >= 4) return DIENUM_STOP;
+	if( NumDevice >= 4 ) return DIENUM_STOP;
 
 	return DIENUM_CONTINUE;
 }
@@ -33,11 +33,11 @@ BOOL CALLBACK iexInputManager::EnumDeviceCallback(const DIDEVICEINSTANCE* pdidi,
 //------------------------------------------------------
 void iexInputManager::Initialize()
 {
-	if (DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&pDI, NULL) != DI_OK) return;
-	pDI->Initialize(GetModuleHandle(NULL), DIRECTINPUT_VERSION);
+	if( DirectInput8Create( GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&pDI, NULL) != DI_OK ) return;
+	pDI->Initialize( GetModuleHandle(NULL), DIRECTINPUT_VERSION);
 	//	ゲームパッドの列挙
 	NumDevice = 0;
-	pDI->EnumDevices(DI8DEVCLASS_GAMECTRL, EnumDeviceCallback, pDI, DIEDFL_ATTACHEDONLY);
+	pDI->EnumDevices( DI8DEVCLASS_GAMECTRL, EnumDeviceCallback, pDI, DIEDFL_ATTACHEDONLY );
 }
 
 
@@ -52,40 +52,40 @@ BOOL CALLBACK iexInputManager::EnumAxes(LPCDIDEVICEOBJECTINSTANCE lpddoi, LPVOID
 	// 軸範囲を設定（-1000～1000）
 	DIPROPRANGE diprg;
 	ZeroMemory(&diprg, sizeof(diprg));
-	diprg.diph.dwSize = sizeof(diprg);
-	diprg.diph.dwHeaderSize = sizeof(diprg.diph);
-	diprg.diph.dwObj = lpddoi->dwType;
-	diprg.diph.dwHow = DIPH_BYID;
-	diprg.lMin = -1000;
-	diprg.lMax = +1000;
-	if (((LPDIRECTINPUTDEVICE8)pvRef)->SetProperty(DIPROP_RANGE, &diprg.diph) != DI_OK) return DIENUM_STOP;
-
+	diprg.diph.dwSize       = sizeof(diprg); 
+	diprg.diph.dwHeaderSize	= sizeof(diprg.diph); 
+	diprg.diph.dwObj	    = lpddoi->dwType;
+	diprg.diph.dwHow	    = DIPH_BYID;
+	diprg.lMin	            = -1000;
+	diprg.lMax	            = +1000;
+	if( ((LPDIRECTINPUTDEVICE8)pvRef)->SetProperty(DIPROP_RANGE, &diprg.diph) != DI_OK ) return DIENUM_STOP;
+		
 	return DIENUM_CONTINUE;
 }
 
 //------------------------------------------------------
 //		コントローラー初期化
 //------------------------------------------------------
-LPDIRECTINPUTDEVICE8 iexInputManager::GetDevice(int n)
+LPDIRECTINPUTDEVICE8 iexInputManager::GetDevice( int n )
 {
 	HRESULT	hr;
 	LPDIRECTINPUTDEVICE8	lpDevice;
 
 	//	デバイス生成
-	hr = pDI->CreateDevice(didi[n].guidInstance, &lpDevice, NULL);
-	if (FAILED(hr)) return NULL;
+	hr = pDI->CreateDevice( didi[n].guidInstance, &lpDevice, NULL);
+	if( FAILED(hr) ) return NULL;
 
-	if (lpDevice->SetDataFormat(&c_dfDIJoystick2) != DI_OK) return FALSE;
-	if (lpDevice->SetCooperativeLevel(iexSystem::Window, DISCL_EXCLUSIVE | DISCL_FOREGROUND) != DI_OK) return FALSE;
+	if( lpDevice->SetDataFormat( &c_dfDIJoystick2 ) != DI_OK ) return FALSE;
+	if( lpDevice->SetCooperativeLevel( iexSystem::Window, DISCL_EXCLUSIVE | DISCL_FOREGROUND ) != DI_OK ) return FALSE;
 
 	//	自動センタリング無効
 	DIPROPDWORD	dipdw;
-	dipdw.diph.dwSize = sizeof(DIPROPDWORD);
-	dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-	dipdw.diph.dwObj = 0;
-	dipdw.diph.dwHow = DIPH_DEVICE;
-	dipdw.dwData = DIPROPAUTOCENTER_OFF;
-	lpDevice->SetProperty(DIPROP_AUTOCENTER, &dipdw.diph);
+    dipdw.diph.dwSize       = sizeof(DIPROPDWORD);
+    dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
+    dipdw.diph.dwObj        = 0;
+    dipdw.diph.dwHow        = DIPH_DEVICE;
+    dipdw.dwData            = DIPROPAUTOCENTER_OFF;
+    lpDevice->SetProperty( DIPROP_AUTOCENTER, &dipdw.diph );
 
 	// 各軸設定
 	lpDevice->EnumObjects(EnumAxes, lpDevice, DIDFT_AXIS);
@@ -104,7 +104,7 @@ LPDIRECTINPUTDEVICE8 iexInputManager::GetDevice(int n)
 //**************************************************************************************************
 
 const int iexInput::OrgKeyMap[20] = { 'W', 'S', 'A', 'D', 'Z', 'X', 'C', 'V', '1', '2', VK_F1, VK_F2, VK_F3, VK_F4, VK_RETURN, VK_SPACE, VK_BACK, VK_SHIFT, VK_CONTROL, VK_F5 };
-const int iexInput::OrgJoyMap[20] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+const int iexInput::OrgJoyMap[20] = { 0,1,2,3, 4,5,6,7, 8,9,10,11,12,13,14,15,16,17,18,19 };
 
 //*****************************************************************************
 //
@@ -112,24 +112,24 @@ const int iexInput::OrgJoyMap[20] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 
 //------------------------------------------------------
 //		初期化
 //------------------------------------------------------
-iexInput::iexInput(int n)
+iexInput::iexInput( int n )
 {
 	//	ゲームパッド初期化
 	lpDevice = NULL;
 	pEffect = NULL;
 
-	if (n != -1){
+	if( n != -1 ){
 		lpDevice = iexInputManager::GetDevice(n);
-		if (lpDevice) InitVibration();
+		if( lpDevice ) InitVibration();
 	}
-	memcpy(KeyMap, OrgKeyMap, sizeof(KeyMap));
-	memcpy(JoyMap, OrgJoyMap, sizeof(JoyMap));
+	memcpy( KeyMap, OrgKeyMap, sizeof(KeyMap) );
+	memcpy( JoyMap, OrgJoyMap, sizeof(JoyMap) );
 
 	PadAxisX = 0;
 	PadAxisY = 0;
 	PadAxisX2 = 0;
 	PadAxisY2 = 0;
-	for (int i = 0; i<20; i++) KeyInfo[i] = 0;
+	for( int i=0 ; i<20 ; i++ ) KeyInfo[i] = 0;
 }
 
 //------------------------------------------------------
@@ -137,11 +137,11 @@ iexInput::iexInput(int n)
 //------------------------------------------------------
 iexInput::~iexInput()
 {
-	if (lpDevice){
+	if( lpDevice ){
 		lpDevice->Unacquire();
 		lpDevice->Release();
 	}
-	if (pEffect){
+	if( pEffect ){
 		pEffect->Stop();
 		pEffect->Release();
 	}
@@ -159,35 +159,35 @@ BOOL	iexInput::InitVibration()
 
 	// エフェクト周期設定
 	DIPERIODIC diPeriodic;
-	diPeriodic.dwMagnitude = DI_FFNOMINALMAX;
-	diPeriodic.lOffset = 0;
-	diPeriodic.dwPhase = 0;
-	diPeriodic.dwPeriod = (DWORD)(0.5f * DI_SECONDS);
+	diPeriodic.dwMagnitude = DI_FFNOMINALMAX; 
+	diPeriodic.lOffset = 0; 
+	diPeriodic.dwPhase = 0; 
+	diPeriodic.dwPeriod = (DWORD)(0.5f * DI_SECONDS); 
 
 	// 振動エフェクト設定
 	DIEFFECT diEffect;
-	diEffect.dwSize = sizeof(diEffect);
-	diEffect.dwFlags = DIEFF_OBJECTOFFSETS;
-	diEffect.dwDuration = 0;
+	diEffect.dwSize         = sizeof(diEffect);
+	diEffect.dwFlags        = DIEFF_OBJECTOFFSETS;
+	diEffect.dwDuration     = 0;
 	diEffect.dwSamplePeriod = 0;
-	diEffect.dwGain = DI_FFNOMINALMAX;
+	diEffect.dwGain         = DI_FFNOMINALMAX;
 	//	トリガー設定
-	diEffect.dwTriggerButton = DIEB_NOTRIGGER;
+	diEffect.dwTriggerButton         = DIEB_NOTRIGGER;
 	diEffect.dwTriggerRepeatInterval = 0;
 	//	エフェクト軸設定
-	diEffect.dwFlags |= DIEFF_POLAR;
-	DWORD Axes[] = { DIJOFS_X, DIJOFS_Y }; // エフェクト軸
-	LONG Direction[] = { 1, 0 };				 // エフェクト方向
-	diEffect.cAxes = 2;
-	diEffect.rgdwAxes = Axes;
+	diEffect.dwFlags     |= DIEFF_POLAR;
+	DWORD Axes[]          ={DIJOFS_X, DIJOFS_Y}; // エフェクト軸
+	LONG Direction[]      = {1, 0};				 // エフェクト方向
+	diEffect.cAxes        = 2;
+	diEffect.rgdwAxes     = Axes;
 	diEffect.rglDirection = Direction;
 	//	周期設定
-	diEffect.lpEnvelope = NULL; // エンベロープ構造体
-	diEffect.cbTypeSpecificParams = sizeof(diPeriodic); // エフェクト周期構造体のサイズ
+	diEffect.lpEnvelope   = NULL; // エンベロープ構造体
+	diEffect.cbTypeSpecificParams  = sizeof(diPeriodic); // エフェクト周期構造体のサイズ
 	diEffect.lpvTypeSpecificParams = &diPeriodic; // エフェクト周期構造体
 
-	hr = lpDevice->CreateEffect(GUID_Square, &diEffect, &pEffect, NULL);
-	if (FAILED(hr))
+	hr = lpDevice->CreateEffect( GUID_Square, &diEffect, &pEffect, NULL );
+	if (FAILED(hr)) 
 	{
 		return FALSE;
 	}
@@ -198,21 +198,21 @@ BOOL	iexInput::InitVibration()
 //------------------------------------------------------
 //		振動
 //------------------------------------------------------
-void iexInput::Vibration(u32 gain, float period)
+void iexInput::Vibration( u32 gain, float period )
 {
-	if (pEffect == NULL) return;
+	if( pEffect == NULL ) return;
 
 	pEffect->Stop();
-	if (gain == 0) return;
+	if( gain == 0 ) return;
 
 	// 振動エフェクト設定
 	DIEFFECT diEffect;
-	diEffect.dwSize = sizeof(diEffect);
-	diEffect.dwFlags = DIEFF_POLAR | DIEFF_OBJECTOFFSETS;
-	diEffect.dwDuration = (DWORD)((period + 0.2f) * DI_SECONDS); // エフェクト継続時間
-	diEffect.dwGain = gain;
+	diEffect.dwSize     = sizeof(diEffect);
+	diEffect.dwFlags    = DIEFF_POLAR | DIEFF_OBJECTOFFSETS;
+	diEffect.dwDuration = (DWORD)( (period+0.2f) * DI_SECONDS); // エフェクト継続時間
+	diEffect.dwGain     = gain;
 	// 振動エフェクト適用
-	pEffect->SetParameters(&diEffect, DIEP_DURATION | DIEP_GAIN);
+	pEffect->SetParameters( &diEffect, DIEP_DURATION | DIEP_GAIN );
 	//	振動
 	pEffect->Start(1, 0);
 }
@@ -223,19 +223,19 @@ void iexInput::Vibration(u32 gain, float period)
 //*****************************************************************************
 
 //                  左X軸   左Y軸   右X軸    右Y軸    A  B  X  Y   LB LT L3   R1 R2 R3   St Sel
-PADSET	iexInput::ps101 = { AXIS_X, AXIS_Y, AXIS_Z, AXIS_RZ, 2, 3, 1, 4, 7, 5, 11, 8, 6, 12, 9, 10 };	// ELECOM JS-PS101USV
-PADSET	iexInput::sixaxis = { AXIS_X, AXIS_Y, AXIS_Z, AXIS_RZ, 2, 3, 1, 4, 7, 5, 10, 8, 6, 11, 12, 9 };	// SixAxis	
-PADSET	iexInput::xbox360 = { AXIS_X, AXIS_Y, AXIS_RX, AXIS_RY, 1, 2, 3, 4, 5, 11, 9, 6, 12, 10, 7, 8 };	// XBOX360 Controller
+PADSET	iexInput::ps101   = { AXIS_X, AXIS_Y, AXIS_Z,  AXIS_RZ, 2, 3, 1, 4,   7, 5,11,   8, 6,12,   9,10 };	// ELECOM JS-PS101USV
+PADSET	iexInput::sixaxis = { AXIS_X, AXIS_Y, AXIS_Z,  AXIS_RZ, 2, 3, 1, 4,   7, 5,10,   8, 6,11,  12, 9 };	// SixAxis	
+PADSET	iexInput::xbox360 = { AXIS_X, AXIS_Y, AXIS_RX, AXIS_RY, 1, 2, 3, 4,   5,11, 9,   6,12,10,   7, 8 };	// XBOX360 Controller
 
 //------------------------------------------------------
 //		キーボード設定
 //------------------------------------------------------
-void iexInput::Asign(KEYSET& keyset)
+void iexInput::Asign( KEYSET& keyset )
 {
 	//	上下左右キー
-	KeyMap[KEY_UP] = keyset.up;
-	KeyMap[KEY_DOWN] = keyset.down;
-	KeyMap[KEY_LEFT] = keyset.left;
+	KeyMap[KEY_UP]    = keyset.up;
+	KeyMap[KEY_DOWN]  = keyset.down;
+	KeyMap[KEY_LEFT]  = keyset.left;
 	KeyMap[KEY_RIGHT] = keyset.right;
 	//	メインボタン
 	KeyMap[KEY_A] = keyset.A;
@@ -251,20 +251,20 @@ void iexInput::Asign(KEYSET& keyset)
 	KeyMap[KEY_R2] = keyset.R2;
 	KeyMap[KEY_R3] = keyset.R3;
 	//	スタート・セレクト
-	KeyMap[KEY_START] = keyset.START;
+	KeyMap[KEY_START]  = keyset.START;
 	KeyMap[KEY_SELECT] = keyset.SELECT;
 }
 //------------------------------------------------------
 //		ゲームパッド設定
 //------------------------------------------------------
-void iexInput::PadAsign(PADSET& padset)
+void iexInput::PadAsign( PADSET& padset )
 {
 	//	左スティック
-	JoyMap[0] = padset.lx;
-	JoyMap[1] = padset.ly;
+	JoyMap[0]     = padset.lx;
+	JoyMap[1]     = padset.ly;
 	//	右スティック
-	JoyMap[2] = padset.rx;
-	JoyMap[3] = padset.ry;
+	JoyMap[2]     = padset.rx;
+	JoyMap[3]     = padset.ry;
 	//	メインボタン
 	JoyMap[KEY_A] = padset.A - 1;
 	JoyMap[KEY_B] = padset.B - 1;
@@ -279,30 +279,30 @@ void iexInput::PadAsign(PADSET& padset)
 	JoyMap[KEY_R2] = padset.R2 - 1;
 	JoyMap[KEY_R3] = padset.R3 - 1;
 	//	スタート・セレクト
-	JoyMap[KEY_START] = padset.START - 1;
+	JoyMap[KEY_START]  = padset.START - 1;
 	JoyMap[KEY_SELECT] = padset.SELECT - 1;
 }
 
 //**************************************************************************************************
 //		情報設定
 //**************************************************************************************************
-void iexInput::SetInfo(int n)
+void iexInput::SetInfo()
 {
-	PadAxisX = PadAxisY = 0;
+	PadAxisX  = PadAxisY  = 0;
 	PadAxisX2 = PadAxisY2 = 0;
 
-	if (lpDevice){
+	if( lpDevice ){
 		//------------------------------------------------------
 		//	パッド
 		//------------------------------------------------------
-		if (FAILED(lpDevice->Poll())){
+		if( FAILED(lpDevice->Poll()) ){
 			HRESULT hr;
-			do { hr = lpDevice->Acquire(); } while (hr == DIERR_INPUTLOST);
+			do { hr = lpDevice->Acquire(); } while( hr == DIERR_INPUTLOST );
 			lpDevice->Poll();
 		}
-
+		
 		DIJOYSTATE2 js;
-		if (lpDevice->GetDeviceState(sizeof(DIJOYSTATE2), &js) == DI_OK){
+		if( lpDevice->GetDeviceState(sizeof(DIJOYSTATE2),&js) == DI_OK ){
 			//	軸状態保存
 			long	axis[6];
 			axis[0] = js.lX;
@@ -313,87 +313,77 @@ void iexInput::SetInfo(int n)
 			axis[5] = js.lRz;
 
 			//	軸設定
-			PadAxisX = axis[JoyMap[0]];	//	左スティックＸ軸
-			PadAxisY = axis[JoyMap[1]];	//	左スティックＹ軸
-			PadAxisX2 = axis[JoyMap[2]];	//	右スティックＸ軸
-			PadAxisY2 = axis[JoyMap[3]];	//	右スティックＹ軸
-
+			PadAxisX  = axis[ JoyMap[0] ];	//	左スティックＸ軸
+			PadAxisY  = axis[ JoyMap[1] ];	//	左スティックＹ軸
+			PadAxisX2 = axis[ JoyMap[2] ];	//	右スティックＸ軸
+			PadAxisY2 = axis[ JoyMap[3] ];	//	右スティックＹ軸
+			
 			//	ハットスイッチ判定
 			u32	angle = 8;
 			u8	povkey[9] = { 0x01, 0x09, 0x08, 0x0A, 0x02, 0x06, 0x04, 0x05, 0x00 };
 			//	８方向取得
-			if (LOWORD(js.rgdwPOV[0]) != 0xFFFF) angle = js.rgdwPOV[0] / 4500;
+			if( LOWORD(js.rgdwPOV[0]) != 0xFFFF ) angle = js.rgdwPOV[0] / 4500;
 			//	上下左右キー設定
-			for (int dir = 0; dir<4; dir++)
+			for( int dir=0 ; dir<4 ; dir++ )
 			{
-				if (povkey[angle] & (0x01 << dir)){
-					if (JoyInfo[dir] & 0x01) JoyInfo[dir] = 1; else JoyInfo[dir] = 3;
-				}
-				else {
-					if (JoyInfo[dir] & 0x01) JoyInfo[dir] = 2; else JoyInfo[dir] = 0;
+				if( povkey[angle] & (0x01<<dir) ){
+					if( JoyInfo[dir] & 0x01 ) JoyInfo[dir] = 1; else JoyInfo[dir] = 3;
+				} else {
+					if( JoyInfo[dir] & 0x01 ) JoyInfo[dir] = 2; else JoyInfo[dir] = 0;
 				}
 			}
 
 			//	ボタン
-			for (int i = 4; i<16; i++){
-				if (js.rgbButtons[JoyMap[i]] & 0x80){
-					if (JoyInfo[i] & 0x01) JoyInfo[i] = 1; else JoyInfo[i] = 3;
-				}
-				else {
-					if (JoyInfo[i] & 0x01) JoyInfo[i] = 2; else JoyInfo[i] = 0;
+			for( int i=4 ; i<16 ; i++ ){
+				if( js.rgbButtons[ JoyMap[i] ] & 0x80 ){
+					if( JoyInfo[i] & 0x01 ) JoyInfo[i] = 1; else JoyInfo[i] = 3;
+				} else {
+					if( JoyInfo[i] & 0x01 ) JoyInfo[i] = 2; else JoyInfo[i] = 0;
 				}
 			}
 		}
-	}
-	else
-	{
-		//iexInputManager::Release();
-		//iexInputManager::Initialize();
-		//lpDevice = iexInputManager::GetDevice(n);
-		//if (lpDevice) InitVibration();
 	}
 
 	//------------------------------------------------------
 	//	キーボード
 	//------------------------------------------------------
 	//	キーによる軸設定
-	if (GetAsyncKeyState(VK_UP)    < 0) PadAxisY = -1000;
-	if (GetAsyncKeyState(VK_DOWN)  < 0) PadAxisY = 1000;
-	if (GetAsyncKeyState(VK_LEFT)  < 0) PadAxisX = -1000;
-	if (GetAsyncKeyState(VK_RIGHT) < 0) PadAxisX = 1000;
+	if( GetAsyncKeyState(VK_UP)    < 0 ) PadAxisY = -1000;
+	if( GetAsyncKeyState(VK_DOWN)  < 0 ) PadAxisY = 1000;
+	if( GetAsyncKeyState(VK_LEFT)  < 0 ) PadAxisX = -1000;
+	if( GetAsyncKeyState(VK_RIGHT) < 0 ) PadAxisX = 1000;
 	//	軸正規化
 	int	work = PadAxisX*PadAxisX + PadAxisY*PadAxisY;
-	if (work > 1000 * 1000)
+	if( work > 1000*1000 )
 	{
 		work = (int)sqrtf((float)work);
-		PadAxisX = PadAxisX * 1000 / work;
-		PadAxisY = PadAxisY * 1000 / work;
+		PadAxisX = PadAxisX*1000 / work;
+		PadAxisY = PadAxisY*1000 / work;
 	}
 
 	//	キーによる軸設定
-	if (GetAsyncKeyState(VK_NUMPAD8) < 0) PadAxisY2 = -1000;
-	if (GetAsyncKeyState(VK_NUMPAD2) < 0) PadAxisY2 = 1000;
-	if (GetAsyncKeyState(VK_NUMPAD4) < 0) PadAxisX2 = -1000;
-	if (GetAsyncKeyState(VK_NUMPAD6) < 0) PadAxisX2 = 1000;
+	if( GetAsyncKeyState(VK_NUMPAD8) < 0 ) PadAxisY2 = -1000;
+	if( GetAsyncKeyState(VK_NUMPAD2) < 0 ) PadAxisY2 = 1000;
+	if( GetAsyncKeyState(VK_NUMPAD4) < 0 ) PadAxisX2 = -1000;
+	if( GetAsyncKeyState(VK_NUMPAD6) < 0 ) PadAxisX2 = 1000;
 	//	軸正規化
 	work = PadAxisX2*PadAxisX2 + PadAxisY2*PadAxisY2;
-	if (work > 1000 * 1000)
+	if( work > 1000*1000 )
 	{
 		work = (int)sqrtf((float)work);
-		PadAxisX2 = PadAxisX2 * 1000 / work;
-		PadAxisY2 = PadAxisY2 * 1000 / work;
+		PadAxisX2 = PadAxisX2*1000 / work;
+		PadAxisY2 = PadAxisY2*1000 / work;
 	}
 
 
 	//	ボタン情報設定
-	for (int i = 0; i<16; i++){
-		if (lpDevice && JoyInfo[i] != 0x00){
+	for( int i=0 ; i<16 ; i++ ){
+		if( lpDevice && JoyInfo[i] != 0x00 ){
 			KeyInfo[i] = JoyInfo[i];
-		}
-		else {
-			if (GetAsyncKeyState(KeyMap[i]) & 0x8000) work = 1; else work = 0;
-			if (KeyInfo[i] & 0x01){ if (work) KeyInfo[i] = 1; else KeyInfo[i] = 2; }
-			else                  { if (work) KeyInfo[i] = 3; else KeyInfo[i] = 0; }
+		} else {
+			if( GetAsyncKeyState(KeyMap[i]) & 0x8000 ) work = 1; else work = 0;
+			if( KeyInfo[i] & 0x01 ){ if( work ) KeyInfo[i] = 1; else KeyInfo[i] = 2; }
+			 else                  { if( work ) KeyInfo[i] = 3; else KeyInfo[i] = 0; }
 		}
 
 	}
@@ -403,11 +393,11 @@ void iexInput::SetInfo(int n)
 //*****************************************************************************
 //		情報取得
 //*****************************************************************************
-int	iexInput::Get(KEYCODE key)
+int	iexInput::Get( KEYCODE key )
 {
 	//if( GetForegroundWindow() != iexSystem::Window ) return 0;
 
-	switch (key)
+	switch( key )
 	{
 	case KEY_AXISX:		return PadAxisX;
 	case KEY_AXISY:		return PadAxisY;
@@ -425,34 +415,31 @@ int	iexInput::Get(KEYCODE key)
 //
 //**************************************************************************************************
 
-static iexInput*	input[4];
+static iexInput*	input;
 
 //*****************************************************************************************************************************
 //		キー情報関連
 //*****************************************************************************************************************************
 
-#define  P_MAX 4
-
-void KEY_PadAsign(PADSET& padset, int num){ input[num]->PadAsign(padset); }
-
-void KEY_Asign(KEYSET& keyset, int num){ input[num]->Asign(keyset); }
+void KEY_PadAsign( PADSET& padset ){ input->PadAsign(padset); }
+void KEY_Asign( KEYSET& keyset ){ input->Asign(keyset); }
 
 
-void KEY_Vibration(u32 gain, float period, int num){ input[num]->Vibration(gain, period); }
+void KEY_Vibration( u32 gain, float period ){ input->Vibration( gain, period ); }
 
 
 //------------------------------------------------------
 //		キー状態設定・取得
 //------------------------------------------------------
 //	キー状態設定
-void KEY_SetInfo(int num){ input[num]->SetInfo(num); }
+void KEY_SetInfo(){ input->SetInfo(); }
 //	キー状態取得
-int	KEY_Get(KEYCODE key, int num){ return input[num]->Get(key); }
+int	KEY_Get( KEYCODE key ){ return input->Get(key); }
 //	軸取得
-int KEY_GetAxisX(int num) { return input[num]->Get(KEY_AXISX); }
-int KEY_GetAxisY(int num) { return input[num]->Get(KEY_AXISY); }
-int KEY_GetAxisX2(int num){ return input[num]->Get(KEY_AXISX2); }
-int KEY_GetAxisY2(int num){ return input[num]->Get(KEY_AXISY2); }
+int KEY_GetAxisX() { return input->Get(KEY_AXISX);  }
+int KEY_GetAxisY() { return input->Get(KEY_AXISY);  }
+int KEY_GetAxisX2(){ return input->Get(KEY_AXISX2); }
+int KEY_GetAxisY2(){ return input->Get(KEY_AXISY2); }
 
 //*****************************************************************************************************************************
 //	入力関連初期化・解放
@@ -460,23 +447,14 @@ int KEY_GetAxisY2(int num){ return input[num]->Get(KEY_AXISY2); }
 BOOL	IEX_InitInput()
 {
 	iexInputManager::Initialize();
-	for (int i = 0; i < P_MAX; i++)
-	{
-		input[i] = new iexInput(i);
-	}
-
-
+	input = new iexInput(0);
 	return TRUE;
 }
 
 void	IEX_ReleaseInput()
 {
-	//input->Vibration( 0, 0 );
-	for (int i = 0; i < P_MAX; i++)
-	{
-		delete	input[i];
-	}
-
+	input->Vibration( 0, 0 );
+	delete	input;
 	iexInputManager::Release();
 }
 

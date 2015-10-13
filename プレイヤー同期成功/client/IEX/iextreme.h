@@ -740,7 +740,7 @@ public:
 	//------------------------------------------------------
 	//	初期化
 	//------------------------------------------------------
-	iexMesh(char* filename);
+	iexMesh( char* filename );
 	iexMesh(){ bLoad = FALSE; }
 	iexMesh*	Clone();
 	~iexMesh();
@@ -748,8 +748,8 @@ public:
 	//------------------------------------------------------
 	//	読み込み
 	//------------------------------------------------------
-	BOOL LoadIMO(char* filename);
-	BOOL LoadX(char* filename);
+	BOOL LoadIMO( char* filename );
+	BOOL LoadX( char* filename );
 
 	//------------------------------------------------------
 	//	更新
@@ -760,37 +760,37 @@ public:
 	//	描画
 	//------------------------------------------------------
 	void Render();
-	void Render(u32 dwFlags, float param = -1);
-	void Render(iexShader* shader, char* name);
+	void Render( u32 dwFlags, float param=-1 );
+	void Render( iexShader* shader, char* name );
 
 	//------------------------------------------------------
 	//	レイ判定
 	//------------------------------------------------------
-	int	RayPick(Vector3* out, Vector3* pos, Vector3* vec, float *Dist);
-	int	RayPickUD(Vector3* out, Vector3* pos, Vector3* vec, float *Dist);
+	int	RayPick( Vector3* out, Vector3* pos, Vector3* vec, float *Dist );
+	int	RayPickUD( Vector3* out, Vector3* pos, Vector3* vec, float *Dist );
 
 	//------------------------------------------------------
 	//	情報設定・取得
 	//------------------------------------------------------
 	//	位置
-	void SetPos(Vector3& pos);
-	void SetPos(float x, float y, float z);
+	void SetPos( Vector3& pos );
+	void SetPos( float x, float y, float z );
 	inline Vector3	GetPos(){ return Pos; }
 	//	角度
-	void SetAngle(Vector3& angle);
-	void SetAngle(float angle);
-	void SetAngle(float x, float y, float z);
+	void SetAngle( Vector3& angle );
+	void SetAngle( float angle );
+	void SetAngle( float x, float y, float z );
 	inline Vector3	GetAngle(){ return Angle; }
 	//	スケール
-	void SetScale(Vector3& scale);
-	void SetScale(float scale);
-	void SetScale(float x, float y, float z);
+	void SetScale( Vector3& scale );
+	void SetScale( float scale );
+	void SetScale( float x, float y, float z );
 	inline Vector3	GetScale(){ return Scale; }
 
 	//	情報
 	LPD3DXMESH	GetMesh(){ return lpMesh; }
 
-	Texture2D*	GetTexture(int n){ return lpTexture[n]; }
+	Texture2D*	GetTexture( int n ){ return lpTexture[n]; }
 	void SetTexture(Texture2D *t, int n){ lpTexture[n] = t; }
 	Texture2D*	ChangeTexture(Texture2D *t, int n){ Texture2D *ret = lpTexture[n]; lpTexture[n] = t; return ret; }
 };
@@ -858,55 +858,55 @@ protected:
 	Vector3*		CurPos;
 
 public:
-	void	SetLoadFlag(BOOL bLoad){ this->bLoad = bLoad; }
+	void	SetLoadFlag( BOOL bLoad ){ this->bLoad = bLoad; }
 	iex3DObj(){
 		bLoad = FALSE;
-		for (int i = 0; i<16; i++) Param[i] = 0;
+		for( int i=0 ; i<16 ; i++ ) Param[i] = 0;
 	}
-	iex3DObj(char* filename);
+	iex3DObj( char* filename );
 	~iex3DObj();
 
 	iex3DObj*	Clone();
 
-	BOOL LoadObject(char* filename);
-	int LoadiEM(LPIEMFILE lpIem, LPSTR filename);
-	BOOL CreateFromIEM(char* path, LPIEMFILE lpIem);
+	BOOL LoadObject( char* filename );
+	int LoadiEM( LPIEMFILE lpIem, LPSTR filename );
+	BOOL CreateFromIEM( char* path, LPIEMFILE lpIem );
 
-	LPD3DXSKININFO	CreateSkinInfo(LPIEMFILE lpIem);
-	LPD3DXMESH	CreateMesh(LPIEMFILE lpIem);
+	LPD3DXSKININFO	CreateSkinInfo( LPIEMFILE lpIem );
+	LPD3DXMESH	CreateMesh( LPIEMFILE lpIem );
 
 
 
-	static BOOL SaveObject(LPIEMFILE lpIem, LPSTR filename);
+	static BOOL SaveObject( LPIEMFILE lpIem, LPSTR filename );
 
 	void Update();
-	void SetMotion(int motion);
+	void SetMotion( int motion );
 	inline int GetMotion(){ return Motion; }
-	inline WORD GetMotionOffset(int m){ return M_Offset[m]; }
+	inline WORD GetMotionOffset( int m ){ return M_Offset[m]; }
 
-	inline void SetFrame(int frame){ dwFrame = frame; }
+	inline void SetFrame( int frame ){ dwFrame = frame; }
 	inline int GetFrame(){ return dwFrame; }
 
 	void Animation();
 
 	void Render();
-	void Render(DWORD flag, float alpha = -1);
-	void Render(iexShader* shader, char* name);
+	void Render( DWORD flag, float alpha=-1 );
+	void Render( iexShader* shader, char* name );
 
-	inline int GetParam(int n){ return Param[n]; }
-	inline void SetParam(int n, int p){ Param[n] = p; }
+	inline int GetParam( int n ){ return Param[n]; }
+	inline void SetParam( int n, int p ){ Param[n] = p; }
 
-	inline WORD GetFrameFlag(int frame){ return dwFrameFlag[frame]; }
-	inline void SetFrameFlag(int frame, WORD p){ dwFrameFlag[frame] = p; }
+	inline WORD GetFrameFlag( int frame ){ return dwFrameFlag[frame]; }
+	inline void SetFrameFlag( int frame, WORD p ){ dwFrameFlag[frame] = p; }
 
 	inline int GetNumFrame(){ return NumFrame; }
 
-	inline Quaternion*	GetPose(int n){ return &CurPose[n]; }
-	inline Vector3*		GetBonePos(int n){ return &CurPos[n]; }
+	inline Quaternion*	GetPose( int n ){ return &CurPose[n]; }
+	inline Vector3*		GetBonePos( int n ){ return &CurPos[n]; }
 	inline int	GetNumBone(){ return NumBone; }
-	inline Matrix*	GetBone(int n){ return &lpBoneMatrix[n]; }
+	inline Matrix*	GetBone( int n ){ return &lpBoneMatrix[n]; }
 
-	void UpdateSkinMeshFrame(float frame);
+	void UpdateSkinMeshFrame( float frame );
 	void UpdateBoneMatrix();
 	void UpdateSkinMesh();
 };
@@ -1055,175 +1055,12 @@ void	IEX_ReleaseText( void );
 void	IEX_DrawText( LPSTR str, s32 x, s32 y, s32 width, s32 height, COLOR color, BOOL bMini=FALSE );
 void	IEX_DrawText( s32 x, s32 y, s32 width, s32 height, COLOR color, const char *format, ... );
 
-////*****************************************************************************************************************************
-////
-////		入力関連
-////
-////*****************************************************************************************************************************
+//*****************************************************************************************************************************
 //
-////*****************************************************************************
-////		入力デバイス管理
-////*****************************************************************************
-//class iexInputManager
-//{
-//private:
-//	static LPDIRECTINPUT8 pDI;
+//		入力関連
 //
-//	static int NumDevice;
-//	static DIDEVICEINSTANCE	didi[4];
-//
-//	static BOOL CALLBACK EnumDeviceCallback( const DIDEVICEINSTANCE* pdidi, VOID* pContext );
-//	static BOOL CALLBACK EnumAxes(LPCDIDEVICEOBJECTINSTANCE lpddoi, LPVOID pvRef);
-//
-//public:
-//	static void Initialize();
-//	static LPDIRECTINPUTDEVICE8 GetDevice( int n );
-//
-//	static void Release()
-//	{
-//		if( pDI ) pDI->Release();
-//	}
-//};
-//
-//
-//typedef u8	KEYCODE, *LPKEYCODE;
-//
-//#define	KEY_UP		0
-//#define	KEY_DOWN	1
-//#define	KEY_LEFT		2
-//#define	KEY_RIGHT	3
-//
-//#define	KEY_A		4
-//#define	KEY_B		5
-//#define	KEY_C		6
-//#define	KEY_D		7
-//#define	KEY_X		6
-//#define	KEY_Y		7
-//
-//#define	KEY_L		8
-//#define	KEY_L1		8
-//#define	KEY_L2		10
-//#define	KEY_L3		12
-//
-//#define	KEY_R		9
-//#define	KEY_R1		9
-//#define	KEY_R2		11
-//#define	KEY_R3		13
-//
-//#define	KEY_START	14
-//#define	KEY_SELECT	15
-//#define	KEY_BACK	15
-//
-//#define	KEY_ENTER	14
-//#define	KEY_SPACE	15
-//
-//#define	KEY_B1		4
-//#define	KEY_B2		5
-//#define	KEY_B3		6
-//#define	KEY_B4		7
-//#define	KEY_B5		8
-//#define	KEY_B6		9
-//#define	KEY_B7		10
-//#define	KEY_B8		11
-//#define	KEY_B9		12
-//#define	KEY_B10		13
-//#define	KEY_B11		14
-//#define	KEY_B12		15
-//#define	KEY_B13		16
-//#define	KEY_B14		17
-//#define	KEY_B15		18
-//
-//#define	KEY_AXISX	200
-//#define	KEY_AXISY	201
-//#define	KEY_AXISX2	202
-//#define	KEY_AXISY2	203
-//
-//typedef struct tagKEYSET 
-//{
-//	u8	up, down, left, right;
-//	u8	A, B, X, Y;
-//	u8	L1, L2, L3;
-//	u8	R1, R2, R3;
-//	u8	START, SELECT;
-//} KEYSET, *LPKEYSET;
-//
-//
-//#define	AXIS_X	0
-//#define	AXIS_Y	1
-//#define	AXIS_Z	2
-//#define	AXIS_RX	3
-//#define	AXIS_RY	4
-//#define	AXIS_RZ	5
-//
-//typedef struct tagPADSET 
-//{
-//	u8	lx, ly, rx, ry;
-//	u8	A, B, X, Y;
-//	u8	L1, L2, L3;
-//	u8	R1, R2, R3;
-//	u8	START, SELECT;
-//} PADSET, *LPPADSET;
-//
-//class iexInput
-//{
-//private:
-//	LPDIRECTINPUTDEVICE8 lpDevice;
-//	LPDIRECTINPUTEFFECT	 pEffect;
-//
-//	static const int OrgKeyMap[20];
-//	static const int OrgJoyMap[20];
-//	int KeyMap[20];
-//	int JoyMap[20];
-//	u8	KeyInfo[20], JoyInfo[20];
-//	int		PadAxisX, PadAxisY;
-//	int		PadAxisX2, PadAxisY2;
-//
-//	BOOL InitVibration();
-//
-//
-//public:
-//	static PADSET	ps101;
-//	static PADSET	sixaxis;
-//	static PADSET	xbox360;
-//
-//	iexInput( int n );
-//	~iexInput();
-//
-//	void Asign( KEYSET& keyset );
-//	void PadAsign( PADSET& padset );
-//
-//	void SetInfo();
-//	int Get( KEYCODE key );
-//
-//	void Vibration( u32 gain, float period );
-//};
-//
-//
-////*****************************************************************************
-////		アクセス関数
-////*****************************************************************************
-//void	KEY_Asign( KEYSET& padset );
-//void	KEY_PadAsign( PADSET& padset );
-//
-//void	KEY_SetInfo();
-//int		KEY_Get( KEYCODE key );
-//void	KEY_Vibration( u32 gain, float period );
-//
-//int		KEY_GetAxisX();
-//int		KEY_GetAxisY();
-//int		KEY_GetAxisX2();
-//int		KEY_GetAxisY2();
-//
-//BOOL	IEX_InitInput();
-//void	IEX_ReleaseInput();
-//
-//#define	KEY(x)	KEY_Get(x)
+//*****************************************************************************************************************************
 
-//*****************************************************************************
-//
-//		トイレ入力関連
-//
-//*****************************************************************************
 //*****************************************************************************
 //		入力デバイス管理
 //*****************************************************************************
@@ -1253,7 +1090,7 @@ typedef u8	KEYCODE, *LPKEYCODE;
 
 #define	KEY_UP		0
 #define	KEY_DOWN	1
-#define	KEY_LEFT		2
+#define	KEY_LEFT	2
 #define	KEY_RIGHT	3
 
 #define	KEY_A		4
@@ -1355,7 +1192,7 @@ public:
 	void Asign(KEYSET& keyset);
 	void PadAsign(PADSET& padset);
 
-	void SetInfo(int n);
+	void SetInfo();
 	int Get(KEYCODE key);
 
 	void Vibration(u32 gain, float period);
@@ -1365,22 +1202,22 @@ public:
 //*****************************************************************************
 //		アクセス関数
 //*****************************************************************************
-void	KEY_Asign(KEYSET& padset, int num);
-void	KEY_PadAsign(PADSET& padset, int num);
+void	KEY_Asign(KEYSET& padset);
+void	KEY_PadAsign(PADSET& padset);
 
-void	KEY_SetInfo(int num);
-int		KEY_Get(KEYCODE key, int num);
+void	KEY_SetInfo();
+int		KEY_Get(KEYCODE key);
 void	KEY_Vibration(u32 gain, float period);
 
-int		KEY_GetAxisX(int num);
-int		KEY_GetAxisY(int num);
-int		KEY_GetAxisX2(int num);
-int		KEY_GetAxisY2(int num);
+int		KEY_GetAxisX();
+int		KEY_GetAxisY();
+int		KEY_GetAxisX2();
+int		KEY_GetAxisY2();
 
 BOOL	IEX_InitInput();
 void	IEX_ReleaseInput();
 
-#define	KEY(x,pad)	KEY_Get(x,pad)
+#define	KEY(x)	KEY_Get(x)
 
 
 

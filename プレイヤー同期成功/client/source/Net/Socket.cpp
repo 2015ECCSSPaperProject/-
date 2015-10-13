@@ -199,8 +199,8 @@ void SocketManager::UpdateUser()	/* プレイヤー更新 */
 	/*受信*/
 	struct
 	{
-		Vector3					pos;
-
+		Vector3	pos;
+		Vector3 angle;
 	}receive[PLAYER_MAX];
 
 	m_pClient->Receive((char*)&receive, sizeof(receive));
@@ -217,7 +217,7 @@ void SocketManager::UpdateUser()	/* プレイヤー更新 */
 		//	tank[i]->Born();
 
 		m_player[i].pos = receive[i].pos;
-
+		m_player[i].angle = receive[i].angle;
 
 	}
 

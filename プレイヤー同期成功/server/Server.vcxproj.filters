@@ -153,6 +153,9 @@
     <ClInclude Include="source\system\Thread.h" />
     <ClInclude Include="source\Player\BasePlayer.h" />
     <ClInclude Include="source\Player\NetPlayer.h" />
+    <ClInclude Include="source\Enum_public.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
     <ClInclude Include="source\stage\Stage.h" />
   </ItemGroup>
   <ItemGroup>

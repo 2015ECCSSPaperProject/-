@@ -128,6 +128,7 @@
       <DeploymentContent>true</DeploymentContent>
     </ClCompile>
     <ClCompile Include="source\bench\bench_mark.cpp" />
+    <ClCompile Include="source\camera\Camera.cpp" />
     <ClCompile Include="source\Net\Socket.cpp" />
     <ClCompile Include="source\Net\UDPClient.cpp" />
     <ClCompile Include="source\Player\BasePlayer.cpp" />
@@ -166,6 +167,8 @@
     <ClInclude Include="IEX\ogg\vorbisfile.h" />
     <ClInclude Include="IEX\OKB.h" />
     <ClInclude Include="source\bench\Bench_mark.h" />
+    <ClInclude Include="source\camera\Camera.h" />
+    <ClInclude Include="source\Enum_public.h" />
     <ClInclude Include="source\Net\Socket.h" />
     <ClInclude Include="source\Net\UDPClient.h" />
     <ClInclude Include="source\Player\BasePlayer.h" />

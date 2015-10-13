@@ -4,57 +4,49 @@
 #include	"BasePlayer.h"
 #include	"MyPlayer.h"
 
+#include	"../../../share_data/Enum_public.h"
+#include	"../Mouse/Mouse.h"
 
-// OLL ENUM
-enum {
-	UP = 1, DOWN = 2, LEFT = 4, RIGHT = 8,
-	BUTTON1 = 16, BUTTON2 = 32, BUTTON3 = 64
-};
 
 
 //****************************************************************************************************************
 //
-//  
+//  初期化
 //
 //****************************************************************************************************************
 MyPlayer::MyPlayer() :BasePlayer()
-{
+{}
 
+MyPlayer::~MyPlayer()
+{}
+
+void MyPlayer::Initialize(iex3DObj *obj)
+{
+	BasePlayer::Initialize(obj);
 }
+
+void MyPlayer::Release()
+{
+	BasePlayer::Release();
+}
+
+
 
 
 //*************************************************************************************************************************
 //		更新
 //*************************************************************************************************************************
-void MyPlayer::Update(void)
-{
-	/*操作*/
-	Control();
 
-	//プレイヤー更新
+void MyPlayer::Update()
+{
 	BasePlayer::Update();
 }
 
-/*	操作　*/
-void MyPlayer::Control()
+
+//*************************************************************************************************************************
+//		描画
+//*************************************************************************************************************************
+void MyPlayer::Render()
 {
-	m_controlDesc.moveFlag = 0;
-
-	if (KEY_Get(KEY_UP,0))
-	{
-		m_controlDesc.moveFlag |= UP;
-	}
-	if (KEY_Get(KEY_DOWN, 0))
-	{
-		m_controlDesc.moveFlag |= DOWN;
-	}
-	if (KEY_Get(KEY_RIGHT, 0))
-	{
-		m_controlDesc.moveFlag |= RIGHT;
-	}
-	if (KEY_Get(KEY_LEFT, 0))
-	{
-		m_controlDesc.moveFlag |= LEFT;
-	}
-
+	BasePlayer::Render();
 }

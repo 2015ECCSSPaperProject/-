@@ -143,7 +143,7 @@ void SceneSelect::Update()
 	{
 	case STEP::START_NO:
 		//　Aボタン押したら
-		if (KEY_Get(KEY_ENTER, 0) == 3)
+		if (KEY_Get(KEY_ENTER) == 3)
 		{
 			step = STEP::START_OK;
 		}
@@ -152,7 +152,7 @@ void SceneSelect::Update()
 	case STEP::START_OK:
 	{
 		   //　まだ準備できてないので戻ります
-		   if (KEY_Get(KEY_ENTER, 0) == 3)
+		   if (KEY_Get(KEY_ENTER) == 3)
 		   {
 			   step = STEP::START_NO;
 		   }

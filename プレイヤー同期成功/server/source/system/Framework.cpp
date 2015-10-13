@@ -71,11 +71,7 @@ bool Framework::Update()
 	dwGameFrame++;	//	ゲームフレーム数更新
 
 	//	更新処理(トイレ用)
-	for (int i = 0; i < 4; i++)
-	{
-		KEY_SetInfo(i);
-	}
-	//KEY_SetInfo();
+	KEY_SetInfo();
 	
 
 //#ifdef _DEBUG

@@ -28,3 +28,5 @@ public:
 	void Collision(const Vector3 &pos, Vector3 *move, float radius, // ”¼Œa
 		int recursive_counter); // Ä‹A”
 };
+
+extern Stage *stage;

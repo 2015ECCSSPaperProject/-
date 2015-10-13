@@ -95,4 +95,9 @@ void Stage::Collision(const Vector3 &pos, Vector3 *move, float radius, int recur
 
 	sink_nl += radius;
 	*move += vec * sink_nl;
+
+	Collision(pos, move, radius, recursive_counter - 1);
 }
+
+
+Stage *stage;

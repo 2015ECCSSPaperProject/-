@@ -49,7 +49,7 @@ void SceneTitle::Update()
 	//フェード処理
 	FadeControl::Update();
 
-	if (KEY_Get(KEY_ENTER,0) == 3)
+	if (KEY_Get(KEY_ENTER) == 3)
 	{
 		//	初期シーン登録
 		MainFrame->ChangeScene(new SceneSelect());
