@@ -22,7 +22,7 @@ public:
 	
 private:
 	iexView* view;
-	iexMesh* stage;
+	Stage* stage;
 
 
 	//	’ÊM—p

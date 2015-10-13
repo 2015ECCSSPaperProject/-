@@ -7,6 +7,7 @@
 #include	"../Player/BasePlayer.h"
 #include	"../Player/NetPlayer.h"
 
+#include	"../stage/Stage.h"
 
 using namespace std;
 
@@ -26,8 +27,8 @@ SceneMainServer::SceneMainServer()
 	view->Set(Vector3(0, 100, -60), Vector3(0, 0, 0));
 	view->Activate();
 
-	stage = new iexMesh("DATA/BG/stage_puroto.imo");
-
+	stage = new Stage;
+	stage->Initialize();
 
 	//　プレイヤー初期化
 	for (int i = 0; i < PLAYER_MAX; i++)
@@ -117,6 +118,11 @@ SceneMainServer::~SceneMainServer()
 	delete view;
 	delete stage;
 	
+	for (int i = 0; i < PLAYER_MAX; i++)
+	{
+		delete player[i];
+	}
+
 	//isRun = false;
 	//　今ここで消す
 	ServerManager::Release();

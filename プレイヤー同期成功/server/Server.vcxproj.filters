@@ -119,6 +119,9 @@
     <ClCompile Include="source\Player\NetPlayer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\stage\Stage.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IEX\iextreme.h">
@@ -150,6 +153,7 @@
     <ClInclude Include="source\system\Thread.h" />
     <ClInclude Include="source\Player\BasePlayer.h" />
     <ClInclude Include="source\Player\NetPlayer.h" />
+    <ClInclude Include="source\stage\Stage.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DATA\Shader\2D.fx">

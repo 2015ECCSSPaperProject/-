@@ -131,6 +131,7 @@
     <ClCompile Include="source\Player\BasePlayer.cpp" />
     <ClCompile Include="source\Player\NetPlayer.cpp" />
     <ClCompile Include="source\Scene\SceneMainServer.cpp" />
+    <ClCompile Include="source\stage\Stage.cpp" />
     <ClCompile Include="source\system\Framework.cpp" />
     <ClCompile Include="source\system\System.cpp" />
     <ClCompile Include="source\system\Thread.cpp" />
@@ -165,6 +166,7 @@
     <ClInclude Include="source\Player\NetPlayer.h" />
     <ClInclude Include="source\Scene\SceneMainServer.h" />
     <ClInclude Include="source\ShareData\EventData.h" />
+    <ClInclude Include="source\stage\Stage.h" />
     <ClInclude Include="source\system\DebugDrawManager.h" />
     <ClInclude Include="source\system\Framework.h" />
     <ClInclude Include="source\system\ItDebug.h" />
