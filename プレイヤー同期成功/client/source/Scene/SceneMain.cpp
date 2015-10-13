@@ -31,6 +31,8 @@ extern Bench_mark bench;
 
 using namespace std;
 
+#include "../stage/Stage.h"
+
 //******************************************************************
 //		‰Šú‰»E‰ð•ú
 //******************************************************************
@@ -48,8 +50,10 @@ bool SceneMain::Initialize()
 	view->Set(Vector3(0, 10, -60), Vector3(0, 10, 0));
 
 
-	stage = new iexMesh2("DATA/BG/stage_puroto.imo");
-	sky = new iexMesh2("DATA/Skydome/Skydome.IMO");
+	stage = new Stage;
+	stage->Initialize();
+
+	sky = new iexMesh("DATA/Skydome/Skydome.IMO");
 	sky->SetScale(2.0f);
 	sky->SetPos(0, -100, 0);
 	sky->Update();

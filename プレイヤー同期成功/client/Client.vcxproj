@@ -136,6 +136,7 @@
     <ClCompile Include="source\Scene\SceneMain.cpp" />
     <ClCompile Include="source\Scene\SceneSelect.cpp" />
     <ClCompile Include="source\Scene\SceneTitle.cpp" />
+    <ClCompile Include="source\stage\Stage.cpp" />
     <ClCompile Include="source\system\Framework.cpp" />
     <ClCompile Include="source\system\System.cpp" />
     <ClCompile Include="source\system\Thread.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="source\Scene\SceneSelect.h" />
     <ClInclude Include="source\Scene\SceneTitle.h" />
     <ClInclude Include="source\ShareData\EventData.h" />
+    <ClInclude Include="source\stage\Stage.h" />
     <ClInclude Include="source\system\DebugDrawManager.h" />
     <ClInclude Include="source\system\Framework.h" />
     <ClInclude Include="source\system\ItDebug.h" />

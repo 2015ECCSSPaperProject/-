@@ -1,5 +1,4 @@
 #include	"iExtreme.h"
-#include <assert.h>
 
 //*****************************************************************************
 //
@@ -13,15 +12,10 @@
 //------------------------------------------------------
 //	コンストラクタ
 //------------------------------------------------------
-iex3DObj2::iex3DObj2(char* filename, int number_of_motion_data) : number_of_motion_data(number_of_motion_data)
+iex3DObj::iex3DObj( char* filename )
 {
-	assert(number_of_motion_data != 0);
-
-	if (LoadObject(filename) == FALSE) return;
-
-	motion_data = new Motion_data[number_of_motion_data]{};
-	bone_motion_number = new u32[NumBone]{};
-
+	if( LoadObject(filename) == FALSE ) return;
+	for( int i=0 ; i<16 ; i++ ) Param[i] = 0;
 
 	bLoad = TRUE;
 }
@@ -29,11 +23,8 @@ iex3DObj2::iex3DObj2(char* filename, int number_of_motion_data) : number_of_moti
 //------------------------------------------------------
 //	デストラクタ
 //------------------------------------------------------
-iex3DObj2::~iex3DObj2()
+iex3DObj::~iex3DObj()
 {
-	delete[] motion_data;
-	delete[] bone_motion_number;
-
 	if( bLoad )
 	{
 		if( lpSkinInfo ) lpSkinInfo->Release();
@@ -70,9 +61,14 @@ iex3DObj2::~iex3DObj2()
 //------------------------------------------------------
 //	クローンの作成
 //------------------------------------------------------
-iex3DObj2*	iex3DObj2::Clone()
+iex3DObj*	iex3DObj::Clone()
 {
-	iex3DObj2*	obj = new iex3DObj2(*this);
+	iex3DObj*	obj = new iex3DObj(*this);
+
+	int num_tex = sizeof(this->lpTexture) / sizeof(*this->lpTexture);
+	obj->lpTexture = new Texture2D*[num_tex];
+	for (int i = 0; i < num_tex; i++) obj->lpTexture[i] = this->lpTexture[i];
+
 	obj->SetLoadFlag(FALSE);
 	return obj;
 }
@@ -83,96 +79,61 @@ iex3DObj2*	iex3DObj2::Clone()
 //------------------------------------------------------
 //	モーション設定
 //------------------------------------------------------
-void iex3DObj2::SetMotion(int data_number, int motion)
+void iex3DObj::SetMotion( int motion )
 {
 	int		param;
 
-	if (M_Offset[motion] == 65535) return;
+	if( M_Offset[motion] == 65535 ) return;
+	Motion  = motion;
+	dwFrame = M_Offset[motion];
+	bChanged = TRUE;
 
-	if (motion_data[data_number].Motion == motion)
-		return;
-
-	motion_data[data_number].Motion = motion;
-	motion_data[data_number].dwFrame = M_Offset[motion];
-	motion_data[data_number].bChanged = TRUE;
-
-	param = dwFrameFlag[motion_data[data_number].dwFrame];
-	if ((param != 0xFFFF) && (param & 0x4000)) motion_data[data_number].Param[(param & 0x0F00) >> 8] = (u8)(param & 0x00FF);
+	param = dwFrameFlag[dwFrame];
+	if( (param!=0xFFFF) && (param&0x4000) ) Param[(param&0x0F00)>>8] = (u8)(param&0x00FF);
 }
 
-void iex3DObj2::Motion_reset(int data_number)
-{
-	motion_data[data_number].dwFrame = M_Offset[motion_data[data_number].Motion];
-	motion_data[data_number].bChanged = TRUE;
-}
-
-void iex3DObj2::Set_bone_motions(int motion_data, int num, ...)
-{
-	va_list val;
-	va_start(val, num);
-
-	for (int n = 0; n < num; n++)
-	{
-		int i = va_arg(val, int);
-		bone_motion_number[i] = motion_data;
-	}
-
-	va_end(val);
-}
 
 //*****************************************************************************
 //		更新処理
 //*****************************************************************************
-void iex3DObj2::Update()
+void iex3DObj::Update()
 {
-	/*	スキンメッシュ更新	*/
-	UpdateSkinMeshFrame();
+	/*	スキンメッシュ更新	*/ 
+	UpdateSkinMeshFrame( (float)dwFrame );
 	UpdateBoneMatrix();
 	UpdateSkinMesh();
 
-	if (iexMesh_Update_use)
-		iexMesh2::Update();
+	iexMesh::Update();
+	RenderFrame = dwFrame;
+	bChanged = FALSE;
 }
 
 //------------------------------------------------------
 //	モーション
 //------------------------------------------------------
-void iex3DObj2::Animation()
+void iex3DObj::Animation()
 {
 	int		param;
 	u32	work;
 
-	for (int i = 0; i < (int)number_of_motion_data; i++)
-	{
-		work = motion_data[i].dwFrame;
-		param = dwFrameFlag[work];
-		if (param & 0x4000) // 0x4 == 0100
-			param = 0xFFFF;
-
-		if (param != 0xFFFF)
-		{
-			//	アニメーションジャンプ
-			if (param & 0x8000) // 0x8 == 1000
-			{
-				SetMotion(i, param & 0xFF);
-			}
-			else
-				motion_data[i].dwFrame = param;
-		}
-		else
-		{
-			motion_data[i].dwFrame++;
-			if (motion_data[i].dwFrame >= NumFrame)
-				motion_data[i].dwFrame = 0;
-		}
-
-		if (motion_data[i].dwFrame != work)
-			motion_data[i].bChanged = TRUE;
-
-		param = dwFrameFlag[motion_data[i].dwFrame];
-		if ((param != 0xFFFF) && (param & 0x4000))
-			motion_data[i].Param[(param & 0x0F00) >> 8] = (u8)(param & 0x00FF);
+	work = dwFrame;
+	param = dwFrameFlag[dwFrame];
+	if( param & 0x4000 ) param = 0xFFFF;
+	if( param != 0xFFFF ){
+		//	アニメーションジャンプ
+		if( param & 0x8000 ){
+			SetMotion( param&0xFF );
+		} else dwFrame = param;
+	} else {
+		dwFrame ++;
+		if( dwFrame >= NumFrame ) dwFrame = 0;
 	}
+
+	if( dwFrame != work ) bChanged = TRUE;
+
+	param = dwFrameFlag[dwFrame];
+	if( (param!=0xFFFF) && (param&0x4000) ) Param[(param&0x0F00)>>8] = (u8)(param&0x00FF);
+
 }
 
 //**************************************************************************************************
@@ -182,37 +143,34 @@ void iex3DObj2::Animation()
 //------------------------------------------------------
 //		固定機能通常描画
 //------------------------------------------------------
-void iex3DObj2::Render()
+void iex3DObj::Render()
 {
 	//	情報更新
-	///if (RenderFrame != dwFrame)
-	Update();
+	if( RenderFrame != dwFrame ) Update();
 	//	メイン行列設定
-	iexMesh2::Render();
+	iexMesh::Render();
 }
 
 //------------------------------------------------------
 //		固定機能フラグ指定
 //------------------------------------------------------
-void iex3DObj2::Render( DWORD flag, float alpha )
+void iex3DObj::Render( DWORD flag, float alpha )
 {
 	//	情報更新
-	//if( RenderFrame != dwFrame )
-	Update();
+	if( RenderFrame != dwFrame ) Update();
 	//	メイン行列設定
-	iexMesh2::Render( flag, alpha );
+	iexMesh::Render( flag, alpha );
 }
 
 //------------------------------------------------------
 //		シェーダー描画
 //------------------------------------------------------
-void iex3DObj2::Render( iexShader* shader, char* name )
+void iex3DObj::Render( iexShader* shader, char* name )
 {
 	//	情報更新
-	//if( RenderFrame != dwFrame )
-	Update();
+	if( RenderFrame != dwFrame ) Update();
 	//	メイン行列設定
-	iexMesh2::Render( shader, name );
+	iexMesh::Render( shader, name );
 }
 
 //*****************************************************************************
@@ -297,7 +255,7 @@ struct tagIEMFILE
 //------------------------------------------------------
 //		スキン情報作成
 //------------------------------------------------------
-LPD3DXSKININFO	iex3DObj2::CreateSkinInfo( LPIEMFILE lpIem )
+LPD3DXSKININFO	iex3DObj::CreateSkinInfo( LPIEMFILE lpIem )
 {
 	int				i;
 	LPD3DXSKININFO	lpInfo;
@@ -316,7 +274,7 @@ LPD3DXSKININFO	iex3DObj2::CreateSkinInfo( LPIEMFILE lpIem )
 //------------------------------------------------------
 //		DirectXメッシュの作成
 //------------------------------------------------------
-LPD3DXMESH	iex3DObj2::CreateMesh( LPIEMFILE lpIem )
+LPD3DXMESH	iex3DObj::CreateMesh( LPIEMFILE lpIem )
 {
 	LPD3DXMESH	lpMesh;
 	u8			*pVertex, *pFace;
@@ -358,9 +316,11 @@ LPD3DXMESH	iex3DObj2::CreateMesh( LPIEMFILE lpIem )
 //------------------------------------------------------
 //		ＩＥＭから３Dオブジェクト作成
 //------------------------------------------------------
-BOOL iex3DObj2::CreateFromIEM( char* path, LPIEMFILE lpIem )
+BOOL iex3DObj::CreateFromIEM( char* path, LPIEMFILE lpIem )
 {
 	u32		i, j;
+
+	dwFrame = 0;
 
 	//	メッシュ作成
 	lpSkinInfo = CreateSkinInfo( lpIem );
@@ -382,10 +342,11 @@ BOOL iex3DObj2::CreateFromIEM( char* path, LPIEMFILE lpIem )
 	lpMaterial = new D3DMATERIAL9[ MaterialCount ];
 	CopyMemory( lpMaterial, lpIem->Material, sizeof(D3DMATERIAL9)*MaterialCount );
 	//	テクスチャ設定
-	Texture.Create(MaterialCount);
+	lpTexture  = new Texture2D* [ MaterialCount ];
 	lpNormal   = new Texture2D* [ MaterialCount ];
 	lpSpecular = new Texture2D* [ MaterialCount ];
 	lpHeight   = new Texture2D* [ MaterialCount ];
+	ZeroMemory( lpTexture,  sizeof(Texture2D*)*MaterialCount );
 	ZeroMemory( lpNormal,   sizeof(Texture2D*)*MaterialCount );
 	ZeroMemory( lpSpecular, sizeof(Texture2D*)*MaterialCount );
 	ZeroMemory( lpHeight,   sizeof(Texture2D*)*MaterialCount );
@@ -395,7 +356,7 @@ BOOL iex3DObj2::CreateFromIEM( char* path, LPIEMFILE lpIem )
 		//	テクスチャ読み込み
 		char	temp[256];
 		sprintf( temp, "%s%s", path, lpIem->Texture[i] );
-		Texture.Load(i, temp);
+		lpTexture[i] = iexTexture::Load( temp );
 
 		sprintf( temp, "%sN%s", path, lpIem->Texture[i] );
 		lpNormal[i] = iexTexture::Load( temp );
@@ -461,7 +422,7 @@ BOOL iex3DObj2::CreateFromIEM( char* path, LPIEMFILE lpIem )
 	SetAngle( .0f, .0f, .0f );
 	SetScale( 1.0f, 1.0f, 1.0f );
 	dwFlags = 0;
-	iexMesh2::Update();
+	iexMesh::Update();
 	
 	return TRUE;
 }
@@ -469,7 +430,7 @@ BOOL iex3DObj2::CreateFromIEM( char* path, LPIEMFILE lpIem )
 //*****************************************************************************************************************************
 //	iEMファイル読み込み
 //*****************************************************************************************************************************
-int		iex3DObj2::LoadiEM( LPIEMFILE lpIem, LPSTR filename )
+int		iex3DObj::LoadiEM( LPIEMFILE lpIem, LPSTR filename )
 {
 	HANDLE	hfile;
 	u32		dum, FileID;
@@ -550,7 +511,7 @@ int		iex3DObj2::LoadiEM( LPIEMFILE lpIem, LPSTR filename )
 //*****************************************************************************************************************************
 //	オブジェクト読み込み
 //*****************************************************************************************************************************
-BOOL	iex3DObj2::LoadObject( char* filename )
+BOOL	iex3DObj::LoadObject( char* filename )
 {
 	IEMFILE		iem;
 	char		workpath[MAX_PATH];
@@ -597,7 +558,7 @@ BOOL	iex3DObj2::LoadObject( char* filename )
 //*****************************************************************************************************************************
 //		３Ｄオブジェクト保存
 //*****************************************************************************************************************************
-BOOL iex3DObj2::SaveObject( LPIEMFILE lpIem, LPSTR filename )
+BOOL iex3DObj::SaveObject( LPIEMFILE lpIem, LPSTR filename )
 {
 	HANDLE	hfile;
 	int		i;
@@ -668,11 +629,11 @@ BOOL iex3DObj2::SaveObject( LPIEMFILE lpIem, LPSTR filename )
 //*****************************************************************************************************************************
 
 //		３Ｄオブジェクト読み込み
-//LPIEX3DOBJ	IEX_Load3DObject( LPSTR filename )
-//{
-//	LPIEX3DOBJ	lpObj = new iex3DObj2(filename);
-//	return lpObj;
-//}
+LPIEX3DOBJ	IEX_Load3DObject( LPSTR filename )
+{
+	LPIEX3DOBJ	lpObj = new iex3DObj(filename);
+	return lpObj;
+}
 
 //		解放
 void	IEX_Release3DObject( LPIEX3DOBJ lpObj )
@@ -715,18 +676,18 @@ void	IEX_ObjectFrameNext( LPIEX3DOBJ lpObj )
 }
 
 //		モーション設定
-//void	IEX_SetObjectMotion( LPIEX3DOBJ lpObj, int motion )
-//{
-//	if( !lpObj ) return;
-//	lpObj->SetMotion(motion);
-//}
+void	IEX_SetObjectMotion( LPIEX3DOBJ lpObj, int motion )
+{
+	if( !lpObj ) return;
+	lpObj->SetMotion(motion);
+}
 
 //		モーション取得
-//int		IEX_GetObjectMotion( LPIEX3DOBJ lpObj )
-//{
-//	if( !lpObj ) return -1;
-//	return	lpObj->GetMotion(0);
-//}
+int		IEX_GetObjectMotion( LPIEX3DOBJ lpObj )
+{
+	if( !lpObj ) return -1;
+	return	lpObj->GetMotion();
+}
 
 //		座標変更
 void	IEX_SetObjectPos( LPIEX3DOBJ lpObj, float x, float y, float z  )
@@ -756,12 +717,13 @@ void	IEX_SetObjectScale( LPIEX3DOBJ lpObj, float scaleX, float scaleY, float sca
 }
 
 //		パラメータ取得
-//u8	IEX_GetObjectParam( LPIEX3DOBJ lpObj, int index )
-//{
-//	return	lpObj->GetParam(index);
-//}
+u8	IEX_GetObjectParam( LPIEX3DOBJ lpObj, int index )
+{
+	return	lpObj->GetParam(index);
+}
 
-//void	IEX_SetObjectParam( LPIEX3DOBJ lpObj, int index, u8 param )
-//{
-//	lpObj->SetParam( index, param );
-//}
+void	IEX_SetObjectParam( LPIEX3DOBJ lpObj, int index, u8 param )
+{
+	lpObj->SetParam( index, param );
+}
+

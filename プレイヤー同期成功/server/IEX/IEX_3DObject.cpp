@@ -13,7 +13,7 @@
 //------------------------------------------------------
 //	コンストラクタ
 //------------------------------------------------------
-iex3DObj2::iex3DObj2(char* filename, int number_of_motion_data) : number_of_motion_data(number_of_motion_data)
+iex3DObj::iex3DObj(char* filename, int number_of_motion_data) : number_of_motion_data(number_of_motion_data)
 {
 	assert(number_of_motion_data != 0);
 
@@ -29,7 +29,7 @@ iex3DObj2::iex3DObj2(char* filename, int number_of_motion_data) : number_of_moti
 //------------------------------------------------------
 //	デストラクタ
 //------------------------------------------------------
-iex3DObj2::~iex3DObj2()
+iex3DObj::~iex3DObj()
 {
 	delete[] motion_data;
 	delete[] bone_motion_number;
@@ -70,9 +70,9 @@ iex3DObj2::~iex3DObj2()
 //------------------------------------------------------
 //	クローンの作成
 //------------------------------------------------------
-iex3DObj2*	iex3DObj2::Clone()
+iex3DObj*	iex3DObj::Clone()
 {
-	iex3DObj2*	obj = new iex3DObj2(*this);
+	iex3DObj*	obj = new iex3DObj(*this);
 	obj->SetLoadFlag(FALSE);
 	return obj;
 }
@@ -83,7 +83,7 @@ iex3DObj2*	iex3DObj2::Clone()
 //------------------------------------------------------
 //	モーション設定
 //------------------------------------------------------
-void iex3DObj2::SetMotion(int data_number, int motion)
+void iex3DObj::SetMotion(int data_number, int motion)
 {
 	int		param;
 
@@ -100,13 +100,13 @@ void iex3DObj2::SetMotion(int data_number, int motion)
 	if ((param != 0xFFFF) && (param & 0x4000)) motion_data[data_number].Param[(param & 0x0F00) >> 8] = (u8)(param & 0x00FF);
 }
 
-void iex3DObj2::Motion_reset(int data_number)
+void iex3DObj::Motion_reset(int data_number)
 {
 	motion_data[data_number].dwFrame = M_Offset[motion_data[data_number].Motion];
 	motion_data[data_number].bChanged = TRUE;
 }
 
-void iex3DObj2::Set_bone_motions(int motion_data, int num, ...)
+void iex3DObj::Set_bone_motions(int motion_data, int num, ...)
 {
 	va_list val;
 	va_start(val, num);
@@ -123,7 +123,7 @@ void iex3DObj2::Set_bone_motions(int motion_data, int num, ...)
 //*****************************************************************************
 //		更新処理
 //*****************************************************************************
-void iex3DObj2::Update()
+void iex3DObj::Update()
 {
 	/*	スキンメッシュ更新	*/
 	UpdateSkinMeshFrame();
@@ -131,13 +131,13 @@ void iex3DObj2::Update()
 	UpdateSkinMesh();
 
 	if (iexMesh_Update_use)
-		iexMesh2::Update();
+		iexMesh::Update();
 }
 
 //------------------------------------------------------
 //	モーション
 //------------------------------------------------------
-void iex3DObj2::Animation()
+void iex3DObj::Animation()
 {
 	int		param;
 	u32	work;
@@ -182,37 +182,37 @@ void iex3DObj2::Animation()
 //------------------------------------------------------
 //		固定機能通常描画
 //------------------------------------------------------
-void iex3DObj2::Render()
+void iex3DObj::Render()
 {
 	//	情報更新
 	///if (RenderFrame != dwFrame)
 	Update();
 	//	メイン行列設定
-	iexMesh2::Render();
+	iexMesh::Render();
 }
 
 //------------------------------------------------------
 //		固定機能フラグ指定
 //------------------------------------------------------
-void iex3DObj2::Render( DWORD flag, float alpha )
+void iex3DObj::Render( DWORD flag, float alpha )
 {
 	//	情報更新
 	//if( RenderFrame != dwFrame )
 	Update();
 	//	メイン行列設定
-	iexMesh2::Render( flag, alpha );
+	iexMesh::Render( flag, alpha );
 }
 
 //------------------------------------------------------
 //		シェーダー描画
 //------------------------------------------------------
-void iex3DObj2::Render( iexShader* shader, char* name )
+void iex3DObj::Render( iexShader* shader, char* name )
 {
 	//	情報更新
 	//if( RenderFrame != dwFrame )
 	Update();
 	//	メイン行列設定
-	iexMesh2::Render( shader, name );
+	iexMesh::Render( shader, name );
 }
 
 //*****************************************************************************
@@ -297,7 +297,7 @@ struct tagIEMFILE
 //------------------------------------------------------
 //		スキン情報作成
 //------------------------------------------------------
-LPD3DXSKININFO	iex3DObj2::CreateSkinInfo( LPIEMFILE lpIem )
+LPD3DXSKININFO	iex3DObj::CreateSkinInfo( LPIEMFILE lpIem )
 {
 	int				i;
 	LPD3DXSKININFO	lpInfo;
@@ -316,7 +316,7 @@ LPD3DXSKININFO	iex3DObj2::CreateSkinInfo( LPIEMFILE lpIem )
 //------------------------------------------------------
 //		DirectXメッシュの作成
 //------------------------------------------------------
-LPD3DXMESH	iex3DObj2::CreateMesh( LPIEMFILE lpIem )
+LPD3DXMESH	iex3DObj::CreateMesh( LPIEMFILE lpIem )
 {
 	LPD3DXMESH	lpMesh;
 	u8			*pVertex, *pFace;
@@ -358,7 +358,7 @@ LPD3DXMESH	iex3DObj2::CreateMesh( LPIEMFILE lpIem )
 //------------------------------------------------------
 //		ＩＥＭから３Dオブジェクト作成
 //------------------------------------------------------
-BOOL iex3DObj2::CreateFromIEM( char* path, LPIEMFILE lpIem )
+BOOL iex3DObj::CreateFromIEM( char* path, LPIEMFILE lpIem )
 {
 	u32		i, j;
 
@@ -461,7 +461,7 @@ BOOL iex3DObj2::CreateFromIEM( char* path, LPIEMFILE lpIem )
 	SetAngle( .0f, .0f, .0f );
 	SetScale( 1.0f, 1.0f, 1.0f );
 	dwFlags = 0;
-	iexMesh2::Update();
+	iexMesh::Update();
 	
 	return TRUE;
 }
@@ -469,7 +469,7 @@ BOOL iex3DObj2::CreateFromIEM( char* path, LPIEMFILE lpIem )
 //*****************************************************************************************************************************
 //	iEMファイル読み込み
 //*****************************************************************************************************************************
-int		iex3DObj2::LoadiEM( LPIEMFILE lpIem, LPSTR filename )
+int		iex3DObj::LoadiEM( LPIEMFILE lpIem, LPSTR filename )
 {
 	HANDLE	hfile;
 	u32		dum, FileID;
@@ -550,7 +550,7 @@ int		iex3DObj2::LoadiEM( LPIEMFILE lpIem, LPSTR filename )
 //*****************************************************************************************************************************
 //	オブジェクト読み込み
 //*****************************************************************************************************************************
-BOOL	iex3DObj2::LoadObject( char* filename )
+BOOL	iex3DObj::LoadObject( char* filename )
 {
 	IEMFILE		iem;
 	char		workpath[MAX_PATH];
@@ -597,7 +597,7 @@ BOOL	iex3DObj2::LoadObject( char* filename )
 //*****************************************************************************************************************************
 //		３Ｄオブジェクト保存
 //*****************************************************************************************************************************
-BOOL iex3DObj2::SaveObject( LPIEMFILE lpIem, LPSTR filename )
+BOOL iex3DObj::SaveObject( LPIEMFILE lpIem, LPSTR filename )
 {
 	HANDLE	hfile;
 	int		i;
@@ -670,7 +670,7 @@ BOOL iex3DObj2::SaveObject( LPIEMFILE lpIem, LPSTR filename )
 //		３Ｄオブジェクト読み込み
 //LPIEX3DOBJ	IEX_Load3DObject( LPSTR filename )
 //{
-//	LPIEX3DOBJ	lpObj = new iex3DObj2(filename);
+//	LPIEX3DOBJ	lpObj = new iex3DObj(filename);
 //	return lpObj;
 //}
 

@@ -37,7 +37,7 @@ bool Collision_Sphere(Vector3 PosA, float RadiusA, Vector3 PosB, float RadiusB)
 //****************************************************************
 //		特定のボーンのローカル座標の取得
 //****************************************************************
-Vector3 LocalBonePos(iex3DObj2* lpObj, int BoneNo)
+Vector3 LocalBonePos(iex3DObj* lpObj, int BoneNo)
 {
 	// ボーンのローカルマトリックスを取得する
 	D3DXMATRIX LocalMat = *lpObj->GetBone(BoneNo);
@@ -49,7 +49,7 @@ Vector3 LocalBonePos(iex3DObj2* lpObj, int BoneNo)
 //****************************************************************
 //		特定のボーンのワールド座標の取得
 //****************************************************************
-Vector3 WorldBonePos(iex3DObj2* lpObj, int BoneNo)
+Vector3 WorldBonePos(iex3DObj* lpObj, int BoneNo)
 {
 	// ボーンのローカルマトリックスを取得する
 	D3DXMATRIX LocalMat = *lpObj->GetBone(BoneNo);

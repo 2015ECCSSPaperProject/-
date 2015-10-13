@@ -93,7 +93,7 @@ int Poster_manager::Can_do(Player *player, TEAM_COLOR color)
 {
 	int num = -1;
 
-	for (int i = 0; i < posters.size(); i++)
+	for (unsigned int i = 0; i < posters.size(); i++)
 	{
 		if (posters[i]->Can_do(player, color))
 		{

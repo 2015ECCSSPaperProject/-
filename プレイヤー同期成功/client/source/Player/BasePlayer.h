@@ -16,7 +16,7 @@ public:
 
 protected:
 
-	iexMesh2* obj;
+	iexMesh* obj;
 	Vector3 pos;
 	Vector3 move;
 

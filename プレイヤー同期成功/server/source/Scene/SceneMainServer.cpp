@@ -26,7 +26,7 @@ SceneMainServer::SceneMainServer()
 	view->Set(Vector3(0, 100, -60), Vector3(0, 0, 0));
 	view->Activate();
 
-	stage = new iexMesh2("DATA/BG/stage_puroto.imo");
+	stage = new iexMesh("DATA/BG/stage_puroto.imo");
 
 
 	//　プレイヤー初期化
@@ -59,7 +59,7 @@ bool SceneMainServer::Initialize()
 	//view->Set(Vector3(0, 100, -60), Vector3(0, 0, 0));
 	//view->Activate();
 
-	//stage = new iexMesh2("DATA/BG/stage_puroto.imo");
+	//stage = new iexMesh("DATA/BG/stage_puroto.imo");
 
 	////	スレッド開始
 	//m_pThread = 0;

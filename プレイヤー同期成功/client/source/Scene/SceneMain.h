@@ -6,6 +6,8 @@
 class PaperClient;
 class Thread;
 
+class Stage;
+
 class SceneMain : public Scene
 {
 public:
@@ -19,8 +21,8 @@ public:
 	
 private:
 	iexView* view;
-	iexMesh2* stage;
-	iexMesh2* sky;
+	Stage* stage;
+	iexMesh* sky;
 
 	PaperClient* net;
 

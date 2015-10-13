@@ -9,7 +9,7 @@
 //*****************************************************************************
 //	フレーム更新
 //*****************************************************************************
-void	iex3DObj2::UpdateSkinMeshFrame( float frame )
+void	iex3DObj::UpdateSkinMeshFrame( float frame )
 {
 	u32			i, j;
 	LPIEXANIME2	lpAnime;
@@ -58,7 +58,7 @@ void	iex3DObj2::UpdateSkinMeshFrame( float frame )
 	}
 }
 
-void iex3DObj2::UpdateSkinMeshFrame()
+void iex3DObj::UpdateSkinMeshFrame()
 {
 	u32			i, j;
 	LPIEXANIME2	lpAnime;
@@ -114,7 +114,7 @@ void iex3DObj2::UpdateSkinMeshFrame()
 //*****************************************************************************
 //	ボーン行列更新
 //*****************************************************************************
-void iex3DObj2::UpdateBoneMatrix()
+void iex3DObj::UpdateBoneMatrix()
 {
 	u32			i;
 
@@ -139,7 +139,7 @@ void iex3DObj2::UpdateBoneMatrix()
 //*****************************************************************************
 //	スキンメッシュ更新
 //*****************************************************************************
-void	iex3DObj2::UpdateSkinMesh()
+void	iex3DObj::UpdateSkinMesh()
 {
 	//	メッシュ更新
 	void*	pVertex;
@@ -152,7 +152,7 @@ void	iex3DObj2::UpdateSkinMesh()
 //*****************************************************************************
 //	剣の軌跡のために追加
 //*****************************************************************************
-void iex3DObj2::UpdateBone(float frame)
+void iex3DObj::UpdateBone(float frame)
 {
 	UpdateSkinMeshFrame(frame);
 	UpdateBoneMatrix();

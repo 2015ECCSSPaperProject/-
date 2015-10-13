@@ -1,6 +1,6 @@
 
 #include "Stage.h"
-#include "../player/Player.h"
+//#include "../player/Player.h"
 
 Stage::Stage() : show_model(nullptr), collision_model(nullptr)
 {}

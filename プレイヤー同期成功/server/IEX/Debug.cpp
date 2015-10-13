@@ -11,8 +11,8 @@ int Debug::x256, Debug::y256;
 int Debug::speed = 1;
 
 //球
-iexMesh2* Debug::ball;
-iexMesh2* Debug::Hitball;
+iexMesh* Debug::ball;
+iexMesh* Debug::Hitball;
 
 void Debug::Init()
 {
@@ -26,8 +26,8 @@ void Debug::Init()
 
 	//球
 	//	判定描画用メッシュ読み込み
-	ball = new iexMesh2("DATA/debug/BALL.IMO");
-	Hitball = new iexMesh2("DATA/debug/BALLR.IMO");
+	ball = new iexMesh("DATA/debug/BALL.IMO");
+	Hitball = new iexMesh("DATA/debug/BALLR.IMO");
 
 }
 
@@ -126,7 +126,7 @@ void Debug::Draw256TRG()
 //****************************************************************
 void Debug::Ball_Render(Vector3 Pos, float Radius, bool Hit)
 {
-	iexMesh2		*Obj;
+	iexMesh		*Obj;
 
 	//  もし、ヒットフラグが true のときは
 	if (Hit){

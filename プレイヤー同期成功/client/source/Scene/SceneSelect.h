@@ -24,7 +24,7 @@ public:
 
 private:
 	iexView* view;
-	iexMesh2* stage;
+	iexMesh* stage;
 	iex2DObj* Select;
 
 	PaperClient* net;

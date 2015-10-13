@@ -739,7 +739,7 @@ public:
 <Texture_set_null()>
 */
 
-class iexMesh2 {
+class iexMesh {
 private:
 protected:
 	u32				dwFlags;		//	フラグ
@@ -765,10 +765,10 @@ public:
 	//------------------------------------------------------
 	//	初期化
 	//------------------------------------------------------
-	iexMesh2( char* filename );
-	iexMesh2(){ bLoad = FALSE; }
-	iexMesh2*	Clone();
-	~iexMesh2();
+	iexMesh( char* filename );
+	iexMesh(){ bLoad = FALSE; }
+	iexMesh*	Clone();
+	~iexMesh();
 
 	//------------------------------------------------------
 	//	読み込み
@@ -831,7 +831,7 @@ public:
 	Texture2D*	GetTexture( int n ){ return Texture.t[n]; }
 };
 
-typedef iexMesh2 IEXMESH, *LPIEXMESH;
+typedef iexMesh IEXMESH, *LPIEXMESH;
 
 //*****************************************************************************************************************************
 //
@@ -857,7 +857,7 @@ typedef struct tagIEXANIME2 {
 //------------------------------------------------------
 //	３Ｄオブジェクト
 //------------------------------------------------------
-class iex3DObj2 : public iexMesh2
+class iex3DObj : public iexMesh
 {
 protected:
 	u8				version;
@@ -913,17 +913,17 @@ protected:
 
 	void UpdateSkinMeshFrame();
 
-	bool iexMesh_Update_use = true; // iexMesh2::Update を使うか
+	bool iexMesh_Update_use = true; // iexMesh::Update を使うか
 
 public:
 	void	SetLoadFlag( BOOL bLoad ){ this->bLoad = bLoad; }
-	iex3DObj2(){
+	iex3DObj(){
 		bLoad = FALSE;
 	}
-	iex3DObj2(char* filename, int number_of_motion_data);
-	~iex3DObj2();
+	iex3DObj(char* filename, int number_of_motion_data);
+	~iex3DObj();
 
-	iex3DObj2*	Clone();
+	iex3DObj*	Clone();
 
 	BOOL LoadObject( char* filename );
 	int LoadiEM( LPIEMFILE lpIem, LPSTR filename );
@@ -967,7 +967,7 @@ public:
 	{
 		bone_motion_number[bone] = motion_data;
 	}
-	void iex3DObj2::Set_bone_motions(int motion_data, int num, ...);
+	void iex3DObj::Set_bone_motions(int motion_data, int num, ...);
 
 	void UpdateSkinMeshFrame( float frame );
 	void UpdateBoneMatrix();
@@ -977,7 +977,7 @@ public:
 	void Is_use_iexMesh_Update(bool in){ iexMesh_Update_use = in; }
 };
 
-typedef iex3DObj2 IEX3DOBJ, *LPIEX3DOBJ;
+typedef iex3DObj IEX3DOBJ, *LPIEX3DOBJ;
 
 //*****************************************************************************************************************************
 //
@@ -1960,8 +1960,8 @@ private:
 	static int speed;
 
 	//球
-	static iexMesh2* ball;
-	static iexMesh2* Hitball;
+	static iexMesh* ball;
+	static iexMesh* Hitball;
 
 
 public:
@@ -1979,8 +1979,8 @@ public:
 /*便利関数ゾーン※今はIEX＿Meshに作成*/
 inline float Length(Vector3 PosA, Vector3 PosB);
 bool Collision_Sphere(Vector3 PosA, float RadiusA, Vector3 PosB, float RadiusB);
-Vector3 LocalBonePos(iex3DObj2* lpObj, int BoneNo);
-Vector3 WorldBonePos(iex3DObj2* lpObj, int BoneNo);
+Vector3 LocalBonePos(iex3DObj* lpObj, int BoneNo);
+Vector3 WorldBonePos(iex3DObj* lpObj, int BoneNo);
 
 
 class AllEnum{

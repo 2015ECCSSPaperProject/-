@@ -9,9 +9,10 @@
 //------------------------------------------------------
 //	コンストラクタ
 //------------------------------------------------------
-iexMesh2::iexMesh2( char* filename )
+iexMesh::iexMesh( char* filename )
 {
 	lpMesh = NULL;
+	lpTexture = NULL;
 	lpNormal = NULL;
 	lpSpecular = NULL;
 	lpHeight = NULL;
@@ -24,7 +25,7 @@ iexMesh2::iexMesh2( char* filename )
 	if( lpMesh == NULL )
 	{
 		//	読み込み失敗
-		iexSystem::printf( "*エラー[iexMesh2] ---> ロード失敗: \"%s\"\n", filename );
+		iexSystem::printf( "*エラー[iexMesh] ---> ロード失敗: \"%s\"\n", filename );
 		bLoad = FALSE;
 	} else {
 		DWORD* pAdjacency = new DWORD [ lpMesh->GetNumFaces() * 3 ];
@@ -44,7 +45,7 @@ iexMesh2::iexMesh2( char* filename )
 //------------------------------------------------------
 //	デストラクタ
 //------------------------------------------------------
-iexMesh2::~iexMesh2()
+iexMesh::~iexMesh()
 {
 	if( bLoad )
 	{
@@ -52,24 +53,30 @@ iexMesh2::~iexMesh2()
 
 		//	テクスチャ解放
 		for( DWORD i=0 ; i<MaterialCount ; i++ ){
+			if( lpTexture[i] != NULL ) iexTexture::Release(lpTexture[i]);
 			if( lpNormal[i] != NULL ) iexTexture::Release(lpNormal[i]);
 			if( lpSpecular[i] != NULL ) iexTexture::Release(lpSpecular[i]);
 			if( lpHeight[i] != NULL ) iexTexture::Release(lpHeight[i]);
 		}
-		Texture.Release();
 		delete[] lpMaterial;
 		delete[] lpNormal;
 		delete[] lpSpecular;
 		delete[] lpHeight;
 	}
+	delete[] lpTexture;
 }
 
 //------------------------------------------------------
 //	クローンの作成
 //------------------------------------------------------
-iexMesh2*	iexMesh2::Clone()
+iexMesh*	iexMesh::Clone()
 {
-	iexMesh2* obj = new iexMesh2(*this);
+	iexMesh* obj = new iexMesh(*this);
+
+	int num_tex = sizeof(this->lpTexture) / sizeof(*this->lpTexture);
+	obj->lpTexture = new Texture2D*[num_tex];
+	for (int i = 0; i < num_tex; i++) obj->lpTexture[i] = this->lpTexture[i];
+
 	obj->bLoad = FALSE;
 	return obj;
 }
@@ -80,7 +87,7 @@ iexMesh2*	iexMesh2::Clone()
 //------------------------------------------------------
 //	位置設定
 //------------------------------------------------------
-void iexMesh2::SetPos( float x, float y, float z )
+void iexMesh::SetPos( float x, float y, float z )
 {
 	Pos.x = x;
 	Pos.y = y;
@@ -88,7 +95,7 @@ void iexMesh2::SetPos( float x, float y, float z )
 	bChanged = TRUE;
 }
 
-void iexMesh2::SetPos( Vector3& pos )
+void iexMesh::SetPos( Vector3& pos )
 {
 	Pos = pos;
 	bChanged = TRUE;
@@ -97,7 +104,7 @@ void iexMesh2::SetPos( Vector3& pos )
 //------------------------------------------------------
 //	回転設定
 //------------------------------------------------------
-void iexMesh2::SetAngle( float x, float y, float z )
+void iexMesh::SetAngle( float x, float y, float z )
 {
 	Angle.x = x;
 	Angle.y = y;
@@ -105,7 +112,7 @@ void iexMesh2::SetAngle( float x, float y, float z )
 	bChanged = TRUE;
 }
 
-void iexMesh2::SetAngle( float angle )
+void iexMesh::SetAngle( float angle )
 {
 	Angle.x = .0f;
 	Angle.y = angle;
@@ -113,7 +120,7 @@ void iexMesh2::SetAngle( float angle )
 	bChanged = TRUE;
 }
 
-void iexMesh2::SetAngle( Vector3& angle )
+void iexMesh::SetAngle( Vector3& angle )
 {
 	Angle = angle;
 	bChanged = TRUE;
@@ -122,7 +129,7 @@ void iexMesh2::SetAngle( Vector3& angle )
 //------------------------------------------------------
 //	スケール設定
 //------------------------------------------------------
-void iexMesh2::SetScale( float x, float y, float z )
+void iexMesh::SetScale( float x, float y, float z )
 {
 	Scale.x = x;
 	Scale.y = y;
@@ -130,14 +137,14 @@ void iexMesh2::SetScale( float x, float y, float z )
 	bChanged = TRUE;
 }
 
-void iexMesh2::SetScale( float scale )
+void iexMesh::SetScale( float scale )
 {
 	Scale.x = scale;
 	Scale.y = scale;
 	Scale.z = scale;
 	bChanged = TRUE;
 }
-void iexMesh2::SetScale( Vector3& scale )
+void iexMesh::SetScale( Vector3& scale )
 {
 	Scale = scale;
 	bChanged = TRUE;
@@ -148,7 +155,7 @@ void iexMesh2::SetScale( Vector3& scale )
 //		更新処理
 //
 //**************************************************************************************************
-void	iexMesh2::Update()
+void	iexMesh::Update()
 {
 	Matrix MatScale;
 
@@ -170,12 +177,12 @@ void	iexMesh2::Update()
 //------------------------------------------------------
 //	通常描画
 //------------------------------------------------------
-void iexMesh2::Render(){ Render( RS_COPY, -1.0f ); }
+void iexMesh::Render(){ Render( RS_COPY, -1.0f ); }
 
 //------------------------------------------------------
 //	フラグ指定描画
 //------------------------------------------------------
-void iexMesh2::Render( u32 dwFlags, float param )
+void iexMesh::Render( u32 dwFlags, float param )
 {
 	if( !lpMesh ) return;
 
@@ -186,7 +193,7 @@ void iexMesh2::Render( u32 dwFlags, float param )
 		//	透明度設定
 		if( param != -1.0f ) lpMaterial[i].Diffuse.a = lpMaterial[i].Ambient.a = param;
 		//	材質設定
-		iexRenderState::Set( dwFlags, &lpMaterial[i], Texture.t[i] );
+		iexRenderState::Set( dwFlags, &lpMaterial[i], lpTexture[i] );
 		//	材質グループ描画
 		lpMesh->DrawSubset( i );
 	}
@@ -195,7 +202,7 @@ void iexMesh2::Render( u32 dwFlags, float param )
 //------------------------------------------------------
 //	シェーダー描画
 //------------------------------------------------------
-void iexMesh2::Render( iexShader* shader, char* name )
+void iexMesh::Render( iexShader* shader, char* name )
 {
 	//	シェーダーの適用
 	u32 pass = shader->Begine(name);
@@ -212,7 +219,7 @@ void iexMesh2::Render( iexShader* shader, char* name )
 		for( u32 i=0 ; i<MaterialCount ; i++ )
 		{
 			//	テクスチャ指定
-			shader->SetTexture( Texture.t[i] );
+			shader->SetTexture( lpTexture[i] );
 			shader->SetValue( "NormalMap", lpNormal[i] );
 			shader->SetValue( "SpecularMap", lpSpecular[i] );
 			shader->SetValue( "HeightMap", lpHeight[i] );
@@ -234,7 +241,7 @@ void iexMesh2::Render( iexShader* shader, char* name )
 //------------------------------------------------------
 //		レイピック
 //------------------------------------------------------
-int	iexMesh2::RayPick( Vector3* out, Vector3* pos, Vector3* vec, float *Dist )
+int	iexMesh::RayPick( Vector3* out, Vector3* pos, Vector3* vec, float *Dist )
 {
 	int		ret = -1;
 
@@ -342,7 +349,7 @@ int	iexMesh2::RayPick( Vector3* out, Vector3* pos, Vector3* vec, float *Dist )
 //------------------------------------------------------
 //		上下最適化
 //------------------------------------------------------
-int	iexMesh2::RayPickUD( Vector3* out, Vector3* pos, Vector3* vec, float *Dist )
+int	iexMesh::RayPickUD( Vector3* out, Vector3* pos, Vector3* vec, float *Dist )
 {
 	float	t, neart;
 	float	vy;
@@ -433,35 +440,6 @@ int	iexMesh2::RayPickUD( Vector3* out, Vector3* pos, Vector3* vec, float *Dist )
 	return	ret;
 }
 
-int	iexMesh2::RayPick2(Vector3* out, const Vector3* pos, Vector3* vec, float *Dist)
-{
-	Matrix inv;
-	D3DXMatrixInverse(&inv, NULL, &TransMatrix);
-
-	Vector3 raypos(pos->x * inv._11 + pos->y * inv._21 + pos->z * inv._31 + inv._41,
-		pos->x * inv._12 + pos->y * inv._22 + pos->z * inv._32 + inv._42,
-		pos->x * inv._13 + pos->y * inv._23 + pos->z * inv._33 + inv._43);
-
-	*vec = Vector3(vec->x * inv._11 + vec->y * inv._21 + vec->z * inv._31,
-		vec->x * inv._12 + vec->y * inv._22 + vec->z * inv._32,
-		vec->x * inv._13 + vec->y * inv._23 + vec->z * inv._33);
-
-	vec->Normalize();
-
-	int ret = RayPick(out, &raypos, vec, Dist);
-
-	*out = Vector3(out->x * TransMatrix._11 + out->y * TransMatrix._21 + out->z * TransMatrix._31 + TransMatrix._41,
-		out->x * TransMatrix._12 + out->y * TransMatrix._22 + out->z * TransMatrix._32 + TransMatrix._42,
-		out->x * TransMatrix._13 + out->y * TransMatrix._23 + out->z * TransMatrix._33 + 
-		TransMatrix._43);
-
-	*vec = Vector3(vec->x * TransMatrix._11 + vec->y * TransMatrix._21 + vec->z * TransMatrix._31,
-		vec->x * TransMatrix._12 + vec->y * TransMatrix._22 + vec->z * TransMatrix._32,
-		vec->x * TransMatrix._13 + vec->y * TransMatrix._23 + vec->z * TransMatrix._33);
-
-	return ret;
-}
-
 //**************************************************************************************************
 //
 //	ファイル読み込み
@@ -488,7 +466,7 @@ typedef struct tagIMOOBJ {
 //------------------------------------------------------
 //	ＩＭＯ読み込み
 //------------------------------------------------------
-BOOL iexMesh2::LoadIMO( LPSTR filename )
+BOOL iexMesh::LoadIMO( LPSTR filename )
 {
 	IMOOBJ		imo;
 	DWORD		i;
@@ -612,13 +590,14 @@ BOOL iexMesh2::LoadIMO( LPSTR filename )
 	lpMaterial = new D3DMATERIAL9[ MaterialCount ];
 	CopyMemory( lpMaterial, imo.Material, sizeof(D3DMATERIAL9)*imo.NumMaterial );
 	//	テクスチャ設定
-	Texture.Create(imo.NumMaterial);
+	lpTexture  = new Texture2D* [ imo.NumMaterial ];
 	lpNormal   = new Texture2D* [ imo.NumMaterial ];
 	lpSpecular = new Texture2D* [ imo.NumMaterial ];
 	lpHeight   = new Texture2D* [ imo.NumMaterial ];
 
 	char temp[256];
 	for( i=0 ; i<MaterialCount ; i++ ){
+		lpTexture[i]  = NULL;
 		lpNormal[i]   = NULL;
 		lpSpecular[i] = NULL;
 		lpHeight[i]   = NULL;
@@ -626,7 +605,7 @@ BOOL iexMesh2::LoadIMO( LPSTR filename )
 		if( imo.Texture[i][0] == '\0' ) continue;
 		//	テクスチャ読み込み
 		sprintf( temp, "%s%s", workpath, imo.Texture[i] );
-		Texture.Load(i, temp);
+		lpTexture[i] = iexTexture::Load( temp );
 
 		sprintf( temp, "%sN%s", workpath, imo.Texture[i] );
 		lpNormal[i] = iexTexture::Load( temp );
@@ -655,7 +634,7 @@ BOOL iexMesh2::LoadIMO( LPSTR filename )
 //------------------------------------------------------
 //	Ｘファイル読み込み
 //------------------------------------------------------
-BOOL	iexMesh2::LoadX( LPSTR filename )
+BOOL	iexMesh::LoadX( LPSTR filename )
 {
 	HRESULT hr;
 	LPD3DXBUFFER	lpD3DXMtrlBuffer;
@@ -683,7 +662,7 @@ BOOL	iexMesh2::LoadX( LPSTR filename )
 
 	// テクスチャ＆マテリアル用バッファ生成
 	lpMaterial = new D3DMATERIAL9 [ MaterialCount ];
-	Texture.Create(MaterialCount);
+	lpTexture  = new LPDIRECT3DTEXTURE9 [ MaterialCount ];
 	lpNormal   = new Texture2D* [ MaterialCount ];
 	lpSpecular = new Texture2D* [ MaterialCount ];
 	lpHeight   = new Texture2D* [ MaterialCount ];
@@ -697,6 +676,7 @@ BOOL	iexMesh2::LoadX( LPSTR filename )
 		lpMaterial[i].Ambient.b = lpMaterial[i].Diffuse.b;
 		// テクスチャ
 		char temp[256];
+		lpTexture[i]  = NULL;
 		lpNormal[i]   = NULL;
 		lpSpecular[i] = NULL;
 		lpHeight[i]   = NULL;
@@ -704,7 +684,7 @@ BOOL	iexMesh2::LoadX( LPSTR filename )
 		if( d3dxMaterial[i].pTextureFilename != NULL ){
 			//	テクスチャ読み込み
 			sprintf( temp, "%s%s", workpath, d3dxMaterial[i].pTextureFilename );
-			Texture.Load(i, temp);
+			lpTexture[i] = iexTexture::Load( temp );
 
 			sprintf( temp, "%sN%s", workpath, d3dxMaterial[i].pTextureFilename );
 			lpNormal[i] = iexTexture::Load( temp );
@@ -742,28 +722,28 @@ BOOL	iexMesh2::LoadX( LPSTR filename )
 //------------------------------------------------------
 //		情報設定
 //------------------------------------------------------
-void	IEX_SetMeshPos( iexMesh2* lpMesh, float x, float y, float z )
+void	IEX_SetMeshPos( iexMesh* lpMesh, float x, float y, float z )
 {
 	if( !lpMesh ) return;
 	lpMesh->SetPos( x, y, z );
 	lpMesh->Update();
 }
 
-void	IEX_SetMeshAngle( iexMesh2* lpMesh, float x, float y, float z )
+void	IEX_SetMeshAngle( iexMesh* lpMesh, float x, float y, float z )
 {
 	if( !lpMesh ) return;
 	lpMesh->SetAngle( x, y, z );
 	lpMesh->Update();
 }
 
-void	IEX_SetMeshScale( iexMesh2* lpMesh, float x, float y, float z )
+void	IEX_SetMeshScale( iexMesh* lpMesh, float x, float y, float z )
 {
 	if( !lpMesh ) return;
 	lpMesh->SetScale( x, y, z );
 	lpMesh->Update();
 }
 
-void	IEX_SetMeshScale( iexMesh2* lpMesh, float scale )
+void	IEX_SetMeshScale( iexMesh* lpMesh, float scale )
 {
 	if( !lpMesh ) return;
 	lpMesh->SetScale( scale );
@@ -776,20 +756,20 @@ void	IEX_SetMeshScale( iexMesh2* lpMesh, float scale )
 //
 //*****************************************************************************
 
-void	IEX_RenderMesh( iexMesh2* lpMesh, u32 dwFlags, float param )
+void	IEX_RenderMesh( iexMesh* lpMesh, u32 dwFlags, float param )
 {
 	if( !lpMesh ) return;
 	lpMesh->Render(dwFlags, param);
 }
 
 
-void	IEX_RenderMesh( iexMesh2* lpMesh, iexShader* shader, char* name )
+void	IEX_RenderMesh( iexMesh* lpMesh, iexShader* shader, char* name )
 {
 	if( !lpMesh ) return;
 	lpMesh->Render( shader, name);
 }
 
-void	IEX_RenderMesh( iexMesh2* lpMesh )
+void	IEX_RenderMesh( iexMesh* lpMesh )
 {
 	IEX_RenderMesh( lpMesh, RS_COPY, -1.0f );
 }
@@ -804,18 +784,18 @@ void	IEX_RenderMesh( iexMesh2* lpMesh )
 //		Ｘファイルメッシュ作成
 //------------------------------------------------------
 
-iexMesh2*	IEX_LoadMeshFromX( LPSTR filename )
+iexMesh*	IEX_LoadMeshFromX( LPSTR filename )
 {
-	iexMesh2*	mesh = new iexMesh2(filename);
+	iexMesh*	mesh = new iexMesh(filename);
 	return mesh;
 }
 
 //------------------------------------------------------
 //		iMoファイル
 //------------------------------------------------------
-iexMesh2*	IEX_LoadIMO( LPSTR filename )
+iexMesh*	IEX_LoadIMO( LPSTR filename )
 {
-	iexMesh2*	mesh = new iexMesh2(filename);
+	iexMesh*	mesh = new iexMesh(filename);
 	return mesh;
 }
 
@@ -829,7 +809,7 @@ iexMesh2*	IEX_LoadIMO( LPSTR filename )
 //		メッシュの解放
 //
 
-void	IEX_ReleaseMesh( iexMesh2* lpMesh )
+void	IEX_ReleaseMesh( iexMesh* lpMesh )
 {
 	if( !lpMesh ) return;
 	delete	lpMesh;
@@ -845,7 +825,7 @@ void	IEX_ReleaseMesh( iexMesh2* lpMesh )
 //		レイピック（真上・真下）
 //
 
-int	IEX_RayPickMeshUD( iexMesh2* lpMesh, Vector3* out, Vector3* pos, Vector3* vec, float *Dist )
+int	IEX_RayPickMeshUD( iexMesh* lpMesh, Vector3* out, Vector3* pos, Vector3* vec, float *Dist )
 {
 	int ret = lpMesh->RayPickUD( out, pos, vec, Dist );
 	return	ret;
@@ -855,72 +835,9 @@ int	IEX_RayPickMeshUD( iexMesh2* lpMesh, Vector3* out, Vector3* pos, Vector3* ve
 //		レイピック（通常）
 //
 
-int	IEX_RayPickMesh( iexMesh2* lpMesh, Vector3* out, Vector3* pos, Vector3* vec, float *Dist )
+int	IEX_RayPickMesh( iexMesh* lpMesh, Vector3* out, Vector3* pos, Vector3* vec, float *Dist )
 {
 	int ret = lpMesh->RayPick( out, pos, vec, Dist );
 	return	ret;
 }
 
-
-
-//
-iexMesh2_textures::iexMesh2_textures(){}
-
-iexMesh2_textures::~iexMesh2_textures(){}
-
-void iexMesh2_textures::Release()
-{
-	if (t == nullptr) return;
-
-	for (int j = 0; j < sizeof(t) / sizeof(t[0]); j++)
-	{
-		if (t[j] != nullptr) iexTexture::Release(t[j]);
-	}
-	delete[] t;
-}
-
-void iexMesh2_textures::Create(int number)
-{
-	t = new Texture2D*[number]{};
-}
-
-void iexMesh2_textures::Load(int index, char* filename)
-{
-	t[index] = iexTexture::Load(filename);
-}
-
-void iexMesh2_textures::Create_load(int number, ...)
-{
-	t = new Texture2D*[number]{};
-
-	va_list list;
-	va_start(list, number);
-
-	char* filename(nullptr);
-	for (int i = 0; i < number; i++)
-	{
-		filename = va_arg(list, char*);
-		t[i] = iexTexture::Load(filename);
-	}
-
-	va_end(list);
-}
-
-
-
-void iexMesh2::Texture_change(iexMesh2_textures& in)
-{
-	iexMesh2_textures re = Texture;
-	Texture = in;
-	in = re;
-}
-
-void iexMesh2::Texture_set_null()
-{
-	Texture.t = nullptr;
-}
-
-void iexMesh2::Get_texture(iexMesh2_textures* out)
-{
-	out = &this->Texture;
-}

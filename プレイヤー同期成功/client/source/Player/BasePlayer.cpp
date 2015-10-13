@@ -8,7 +8,7 @@
 BasePlayer::BasePlayer()
 {
 
-	obj = new iexMesh2("DATA/a.imo");
+	obj = new iexMesh("DATA/a.imo");
 
 	pos = VECTOR_ZERO;
 	move = VECTOR_ZERO;

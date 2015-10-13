@@ -9,7 +9,7 @@
 //*****************************************************************************
 //	フレーム更新
 //*****************************************************************************
-void	iex3DObj2::UpdateSkinMeshFrame( float frame )
+void	iex3DObj::UpdateSkinMeshFrame( float frame )
 {
 	u32			i, j;
 	LPIEXANIME2	lpAnime;
@@ -58,63 +58,10 @@ void	iex3DObj2::UpdateSkinMeshFrame( float frame )
 	}
 }
 
-void iex3DObj2::UpdateSkinMeshFrame()
-{
-	u32			i, j;
-	LPIEXANIME2	lpAnime;
-	float		t;
-
-	u32 frame;
-	for (i = 0; i<NumBone; i++)
-	{
-		frame = motion_data[bone_motion_number[i]].dwFrame;
-
-		lpAnime = &this->lpAnime[i];
-
-		//	ポーズ設定
-		if (lpAnime->rotNum == 0) CurPose[i] = orgPose[i];
-		else if (lpAnime->rotNum == 1) CurPose[i] = lpAnime->rot[0];
-		else {
-			//	回転キー補間
-			for (j = 0; j<lpAnime->rotNum - 1; j++)
-			{
-				//	現在位置検索
-				if ((frame >= lpAnime->rotFrame[j]) && (frame<lpAnime->rotFrame[j + 1]))
-				{
-					//	経過フレーム計算
-					t = (float)(frame - lpAnime->rotFrame[j]) / (float)(lpAnime->rotFrame[j + 1] - lpAnime->rotFrame[j]);
-					//	補間
-					CurPose[i] = QuaternionSlerp(lpAnime->rot[j], lpAnime->rot[j + 1], t);
-					break;
-				}
-			}
-			if (j == lpAnime->rotNum - 1) CurPose[i] = lpAnime->rot[lpAnime->rotNum - 1];
-		}
-		//	座標設定
-		if (lpAnime->posNum == 0) CurPos[i] = orgPos[i];
-		else {
-			//	位置補間
-			for (j = 0; j<lpAnime->posNum - 1; j++)
-			{
-				//	現在位置検索
-				if ((frame >= lpAnime->posFrame[j]) && (frame<lpAnime->posFrame[j + 1]))
-				{
-					//	経過フレーム計算
-					t = (float)(frame - lpAnime->posFrame[j]) / (float)(lpAnime->posFrame[j + 1] - lpAnime->posFrame[j]);
-					//	補間
-					CurPos[i] = lpAnime->pos[j] + (lpAnime->pos[j + 1] - lpAnime->pos[j])*t;
-					break;
-				}
-			}
-			if (j == lpAnime->posNum - 1) CurPos[i] = lpAnime->pos[lpAnime->posNum - 1];
-		}
-	}
-}
-
 //*****************************************************************************
 //	ボーン行列更新
 //*****************************************************************************
-void iex3DObj2::UpdateBoneMatrix()
+void iex3DObj::UpdateBoneMatrix()
 {
 	u32			i;
 
@@ -139,7 +86,7 @@ void iex3DObj2::UpdateBoneMatrix()
 //*****************************************************************************
 //	スキンメッシュ更新
 //*****************************************************************************
-void	iex3DObj2::UpdateSkinMesh()
+void	iex3DObj::UpdateSkinMesh()
 {
 	//	メッシュ更新
 	void*	pVertex;
@@ -148,12 +95,3 @@ void	iex3DObj2::UpdateSkinMesh()
 	lpMesh->UnlockVertexBuffer();
 }
 
-
-//*****************************************************************************
-//	剣の軌跡のために追加
-//*****************************************************************************
-void iex3DObj2::UpdateBone(float frame)
-{
-	UpdateSkinMeshFrame(frame);
-	UpdateBoneMatrix();
-}

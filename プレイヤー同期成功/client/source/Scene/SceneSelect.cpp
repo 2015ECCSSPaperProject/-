@@ -37,7 +37,7 @@ bool SceneSelect::Initialize()
 	view = new iexView();
 	view->Set(Vector3(0, 30, -60), Vector3(0, 0, 0));
 
-	stage = new iexMesh2("DATA/BG/stage_puroto.imo");
+	stage = new iexMesh("DATA/BG/stage_puroto.imo");
 
 	Select = new iex2DObj("DATA/select.png");
 
