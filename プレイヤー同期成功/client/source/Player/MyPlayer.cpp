@@ -5,7 +5,7 @@
 #include	"MyPlayer.h"
 
 #include	"../../../share_data/Enum_public.h"
-#include	"../Mouse/Mouse.h"
+//#include	"../Mouse/Mouse.h"
 
 
 

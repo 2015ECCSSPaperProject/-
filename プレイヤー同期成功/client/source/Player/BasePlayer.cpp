@@ -3,7 +3,7 @@
 #include	"BasePlayer.h"
 
 #include	"../../../share_data/Enum_public.h"
-#include	"../Mouse/Mouse.h"
+//#include	"../Mouse/Mouse.h"
 
 /*	ベースプレイヤー	*/
 
@@ -98,20 +98,20 @@ void BasePlayer::Control_all()
 		m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::LEFT;
 	}
 
-	if (Mouse::isPushLeft())
-	{
-		m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::LEFT_CLICK;
-	}
+	//if (Mouse::isPushLeft())
+	//{
+	//	m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::LEFT_CLICK;
+	//}
 
-	else if (Mouse::isPushRight())
-	{
-		m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::RIGHT_CLICK;
-	}
+	//else if (Mouse::isPushRight())
+	//{
+	//	m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::RIGHT_CLICK;
+	//}
 
-	if (Mouse::isPushCenter())
-	{
-		m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::CENTER_CLICK;
-	}
+	//if (Mouse::isPushCenter())
+	//{
+	//	m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::CENTER_CLICK;
+	//}
 
 }
 
@@ -255,10 +255,10 @@ void BasePlayer::Action::Rend::Update()
 	me->m_controlDesc.moveFlag = 0;
 
 	// 左クリック受付
-	if (Mouse::isPushLeft())
-	{
-		me->m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::LEFT_CLICK;
-	}
+	//if (Mouse::isPushLeft())
+	//{
+	//	me->m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::LEFT_CLICK;
+	//}
 }
 
 void BasePlayer::Action::Rend::Render()

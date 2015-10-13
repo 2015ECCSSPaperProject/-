@@ -5,7 +5,7 @@
 #include	"../Player/BasePlayer.h"
 #include	"../Player/MyPlayer.h"
 
-#include	"../Mouse/Mouse.h"
+//#include	"../Mouse/Mouse.h"
 
 // カメラ⇒プレイヤーの基本距離
 const float Camera::Mode::Base::DIST = 20.0f;
