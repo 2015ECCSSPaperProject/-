@@ -309,7 +309,7 @@ void ServerManager::UpdateUser(char* data, int client)
 		Vector3 pos;
 		float angleY;
 		int motion_no;
-
+		int action_part;
 	}send[PLAYER_MAX];
 
 
@@ -318,6 +318,7 @@ void ServerManager::UpdateUser(char* data, int client)
 		player[i]->Get_pos(send[i].pos);
 		send[i].angleY = player[i]->Get_angleY();
 		send[i].motion_no = player[i]->Get_motion_no();
+		send[i].action_part = (int)player[i]->Get_action();
 	}
 
 	m_pServer->Send(client, (char*)&send, sizeof(send));

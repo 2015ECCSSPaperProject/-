@@ -209,6 +209,7 @@ void SocketManager::UpdateUser()	/* プレイヤー更新 */
 		Vector3	pos;
 		float angleY;
 		int motion_no;
+		int action_part;
 	}receive[PLAYER_MAX];
 
 	m_pClient->Receive((char*)&receive, sizeof(receive));
@@ -227,6 +228,7 @@ void SocketManager::UpdateUser()	/* プレイヤー更新 */
 		m_player[i].pos = receive[i].pos;
 		m_player[i].angleY = receive[i].angleY;
 		m_player[i].motion_no = receive[i].motion_no;
+		m_player[i].action_part = receive[i].action_part;
 	}
 
 

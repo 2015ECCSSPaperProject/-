@@ -112,6 +112,8 @@ protected:
 		//	ポスター貼り付け状態
 		class Paste : public Base
 		{
+		private:
+			int timer;
 		public:
 			Paste(BasePlayer*me) :Base(me){}
 
@@ -225,6 +227,7 @@ public:
 	void Set_do_flag(DO_FLAG flag){ do_flag = flag; }
 
 	int Get_motion_no(){ return motion_no; }
+	void Set_motion(int no);
 
 };
 

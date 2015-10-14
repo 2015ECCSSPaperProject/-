@@ -117,6 +117,15 @@ void BasePlayer::Render()
 }
 
 
+void BasePlayer::Set_motion(int no)
+{
+	if (model->GetMotion() != no)
+	{
+		model->SetMotion(no);
+	}
+}
+
+
 //*****************************************************************************
 //
 //		「TPS移動」状態処理
@@ -208,6 +217,15 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 		// なうモーション
 		//Set_motion()
 	}
+
+	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT_CLICK)
+	{
+		me->Change_action(ACTION_PART::REND);
+	}
+	else if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT_CLICK)
+	{
+		me->Change_action(ACTION_PART::PASTE);
+	}
 }
 
 
@@ -279,10 +297,21 @@ void BasePlayer::Action::Attack::Update(const CONTROL_DESC &_ControlDesc)
 //*****************************************************************************
 
 void BasePlayer::Action::Paste::Initialize()
-{}
+{
+	timer = 0;
+	me->move = VECTOR_ZERO;
+	me->Set_motion(3);
+}
 
 void BasePlayer::Action::Paste::Update(const CONTROL_DESC &_ControlDesc)
-{}
+{
+	me->motion_no = 3;
+	if (timer++ > 120)
+	{
+		me->Change_action(ACTION_PART::MOVE);
+		me->Set_motion(0);
+	}
+}
 
 
 //*****************************************************************************
@@ -292,11 +321,20 @@ void BasePlayer::Action::Paste::Update(const CONTROL_DESC &_ControlDesc)
 //*****************************************************************************
 
 void BasePlayer::Action::Rend::Initialize()
-{}
+{
+	rended = false;
+	me->move = VECTOR_ZERO;
+	me->Set_motion(2);
+}
 
 void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
 {
-
+	me->motion_no = 2;
+	if (me->model->GetParam(0) == 2)
+	{
+		me->Change_action(ACTION_PART::MOVE);
+		me->Set_motion(0);
+	}
 }
 
 

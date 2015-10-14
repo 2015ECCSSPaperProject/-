@@ -221,7 +221,7 @@ void Camera::Mode::TPS::Update()
 
 	// プレイヤーモードでカメラ切り替え
 	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::MOVE_FPS) me->Change_mode(MODE_PART::M_FPS);
-	else if (me->my_player->Get_action() == BasePlayer::ACTION_PART::REND) me->Change_mode(MODE_PART::M_ZOOM);
+	//else if (me->my_player->Get_action() == BasePlayer::ACTION_PART::REND) me->Change_mode(MODE_PART::M_ZOOM);
 }
 
 

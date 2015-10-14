@@ -102,6 +102,9 @@ public:
 	{
 		m_room.desc[i].com = 0;
 		m_room.desc[i].moveFlag = 0;
+
+		//m_room.desc[i].mouseX = .0f;
+		//m_room.desc[i].mouseY = .0f;
 	}
 
 };

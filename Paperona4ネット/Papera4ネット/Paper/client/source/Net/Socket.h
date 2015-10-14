@@ -39,6 +39,7 @@ struct PlayerData
 	Vector3 pos;
 	float angleY;
 	int motion_no;
+	int action_part;
 };
 
 //=======================================================================

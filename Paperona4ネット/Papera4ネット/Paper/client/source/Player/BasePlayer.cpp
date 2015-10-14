@@ -5,6 +5,8 @@
 #include	"../../../share_data/Enum_public.h"
 //#include	"../Mouse/Mouse.h"
 
+#include	"../../IEX/OKB.h"
+
 /*	ベースプレイヤー	*/
 
 //****************************************************************************************************************
@@ -107,15 +109,15 @@ void BasePlayer::Control_all()
 		m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::LEFT;
 	}
 
-	//if (Mouse::isPushLeft())
-	//{
-	//	m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::LEFT_CLICK;
-	//}
+	if (KeyBoard(MOUSE_LEFT))
+	{
+		m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::LEFT_CLICK;
+	}
 
-	//else if (Mouse::isPushRight())
-	//{
-	//	m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::RIGHT_CLICK;
-	//}
+	else if (KeyBoard(MOUSE_RIGHT))
+	{
+		m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::RIGHT_CLICK;
+	}
 
 	//if (Mouse::isPushCenter())
 	//{
@@ -131,7 +133,6 @@ void BasePlayer::Control_all()
 //*************************************************************************************************************************
 void BasePlayer::Render()
 {
-	action[(int)action_part]->Update_obj();
 	action[(unsigned int)action_part]->Render();
 }
 
@@ -146,6 +147,7 @@ void BasePlayer::Action::Base::Update_obj()
 	//me->pos += me->move;
 	//me->move = Vector3(0, 0, 0);
 
+	// 扱いに注意
 	me->Set_motion(me->motion_no);
 
 	me->model->Animation();
@@ -173,15 +175,18 @@ void BasePlayer::Set_motion(int no)
 //*****************************************************************************
 
 void BasePlayer::Action::Move::Initialize()
-{}
+{
+}
 
 void BasePlayer::Action::Move::Update()
 {
 	me->Control_all();	// 全キー受付
 
-
-
-	if (me->m_controlDesc.moveFlag & 0xff)
+	if (me->m_controlDesc.moveFlag & (int)PLAYER_IMPUT::RIGHT ||
+		me->m_controlDesc.moveFlag & (int)PLAYER_IMPUT::LEFT ||
+		me->m_controlDesc.moveFlag & (int)PLAYER_IMPUT::UP ||
+		me->m_controlDesc.moveFlag & (int)PLAYER_IMPUT::DOWN
+		)
 	{
 		me->m_controlDesc.motion_no = 0;	// ここで送るモーションの番号を変更
 	}
@@ -193,6 +198,7 @@ void BasePlayer::Action::Move::Update()
 
 void BasePlayer::Action::Move::Render()
 {
+	Update_obj();
 	//me->model->Render(shader,"toon");
 	me->model->Render();
 }
@@ -220,6 +226,7 @@ void BasePlayer::Action::MoveFPS::Update()
 
 void BasePlayer::Action::MoveFPS::Render()
 {
+	Update_obj();
 	me->model->Render();
 }
 
@@ -252,13 +259,29 @@ void BasePlayer::Action::Attack::Render()
 //*****************************************************************************
 
 void BasePlayer::Action::Paste::Initialize()
-{}
+{
+	timer = 0;
+	me->m_controlDesc.moveFlag = 0;	// 超大事
+
+	me->Set_motion(3);
+}
 
 void BasePlayer::Action::Paste::Update()
-{}
+{
+	if (timer++ > 120)
+	{
+		me->m_controlDesc.motion_no = 1;
+		me->Change_action(ACTION_PART::MOVE);
+	}
+}
 
 void BasePlayer::Action::Paste::Render()
 {
+	me->model->Animation();
+	me->model->SetScale(me->scale);
+	me->model->SetAngle(me->angleY);
+	me->model->SetPos(me->pos);
+	me->model->Update();
 	me->model->Render();
 }
 
@@ -270,21 +293,24 @@ void BasePlayer::Action::Paste::Render()
 //*****************************************************************************
 
 void BasePlayer::Action::Rend::Initialize()
-{}
+{
+	me->m_controlDesc.moveFlag = 0;	// 超大事
+
+	me->Set_motion(2);
+}
 
 void BasePlayer::Action::Rend::Update()
 {
-	me->m_controlDesc.moveFlag = 0;
 
-	// 左クリック受付
-	//if (Mouse::isPushLeft())
-	//{
-	//	me->m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::LEFT_CLICK;
-	//}
 }
 
 void BasePlayer::Action::Rend::Render()
 {
+	me->model->Animation();
+	me->model->SetScale(me->scale);
+	me->model->SetAngle(me->angleY);
+	me->model->SetPos(me->pos);
+	me->model->Update();
 	me->model->Render();
 }
 
@@ -303,6 +329,7 @@ void BasePlayer::Action::Die::Update()
 
 void BasePlayer::Action::Die::Render()
 {
+	Update_obj();
 	me->model->Render();
 }
 
@@ -325,6 +352,7 @@ void BasePlayer::Action::Hikouki::Update()
 
 void BasePlayer::Action::Hikouki::Render()
 {
+	Update_obj();
 	me->model->Render();
 }
 
@@ -345,6 +373,7 @@ void BasePlayer::Action::Gun::Update()
 
 void BasePlayer::Action::Gun::Render()
 {
+	Update_obj();
 	me->model->Render();
 }
 

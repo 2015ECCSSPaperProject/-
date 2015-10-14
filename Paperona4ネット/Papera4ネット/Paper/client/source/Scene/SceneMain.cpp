@@ -162,6 +162,7 @@ void SceneMain::Update()
 		player[i]->Set_angleY(sendPlayer.angleY);
 
 		player[i]->Set_motion_no(sendPlayer.motion_no);	// ここで帰ってきたモーションの番号をセット
+		player[i]->Set_aciton((BasePlayer::ACTION_PART)sendPlayer.action_part);
 		player[i]->Update();
 	}
 

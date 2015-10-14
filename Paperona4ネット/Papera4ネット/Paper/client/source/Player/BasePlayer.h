@@ -122,6 +122,8 @@ protected:
 		//	ポスター貼り付け状態
 		class Paste : public Base
 		{
+		private:
+			int timer;
 		public:
 			Paste(BasePlayer*me) :Base(me){}
 
@@ -230,6 +232,13 @@ public:
 
 	// プレイヤーのモード
 	ACTION_PART Get_action(){ return action_part; }
+	void Set_aciton(ACTION_PART part)
+	{
+		if (action_part != part)
+		{
+			Change_action(part);
+		}
+	}
 	void Change_action(ACTION_PART part)
 	{
 		action_part = part;
