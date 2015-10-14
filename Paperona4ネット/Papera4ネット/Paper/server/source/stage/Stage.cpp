@@ -72,7 +72,7 @@ void Stage::Collision(const Vector3 &pos, Vector3 *move, float radius, int recur
 	float dist(FLT_MAX);
 	// レイの始点を上げる
 	ray_pos = pos;
-	ray_pos.y += 1.0f;
+	ray_pos.y += recursive_counter * 4.0f;
 	// レイの方向を決める
 	vec = move_xz;
 	vec.y = 0;

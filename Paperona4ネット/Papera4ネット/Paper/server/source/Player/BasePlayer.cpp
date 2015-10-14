@@ -90,7 +90,7 @@ void BasePlayer::Update()
 	if (stage->Collision_rand(pos, &move, 0))
 	{
 		// îÚÇŒÇ»Ç≠Ç∑ÇÈ
-		//pos.y += move.y, move.y = 0;
+		pos.y += move.y, move.y = 0;
 	}
 	// ç¿ïWçXêV
 	pos += move;
