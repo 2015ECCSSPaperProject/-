@@ -1,0 +1,23 @@
+bone8 お腹
+bone9 背中
+bone10 顔
+bone20 頭てっぺん
+bone19 背中装備の目印
+
+腕
+bone1　右肩
+bone3　右ひじ
+bone15　右手首
+bone17 右剣の目印
+
+bone0?　左肩
+bone2　左ひじ
+bone16　左手首
+bone18 左剣の目印
+
+
+下半身
+bone11 右ふともも
+bone12 右足
+bone13 左ふともも
+bone14 左足
