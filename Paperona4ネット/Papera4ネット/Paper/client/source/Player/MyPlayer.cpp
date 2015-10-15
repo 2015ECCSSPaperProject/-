@@ -53,8 +53,12 @@ void MyPlayer::Mouse_Update()
 	//	キー設定	カーソル
 	GetCursorPos(&mousePos);
 
-	mousePos.x -= iexSystem::ScreenWidth / 2;
-	mousePos.y -= iexSystem::ScreenHeight / 2;
+	//　画面の真ん中へ移動
+	RECT rc;
+	GetWindowRect(iexSystem::Window, &rc);
+
+	mousePos.x -= rc.left + iexSystem::ScreenWidth / 2;
+	mousePos.y -= rc.top + iexSystem::ScreenHeight / 2;
 	//if (mousePos.x < -128) mousePos.x = -128;
 	//if (mousePos.x >  127) mousePos.x = 127;
 	//if (mousePos.y < -128) mousePos.y = -128;
@@ -64,8 +68,8 @@ void MyPlayer::Mouse_Update()
 	if (GetActiveWindow() == IEX_GetWindow())
 	{
 		ShowCursor(FALSE);
-		SetCursorPos(iexSystem::ScreenWidth / 2, iexSystem::ScreenHeight / 2);
-	}
+		SetCursorPos(rc.left + iexSystem::ScreenWidth / 2, rc.top + iexSystem::ScreenHeight / 2);
+	}				 
 
 	//　マウスの動きをデスクに渡す
 	m_controlDesc.mouseX = mousePos.x * 1000;
