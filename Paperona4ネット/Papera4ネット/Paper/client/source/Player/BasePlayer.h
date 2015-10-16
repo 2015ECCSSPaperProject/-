@@ -17,7 +17,10 @@ public:
 		float	mouseX;			//　マウスX
 		float	mouseY;			//　マウスY
 
-		int motion_no;			// モーション番号
+		BYTE motion_no;			// モーション番号
+
+		BYTE rendFlag;			// 破く時に送る
+		BYTE controlFlag;		// ボタン
 
 	};
 	CONTROL_DESC m_controlDesc;//　コントロール

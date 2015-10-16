@@ -5,7 +5,7 @@
 #include <vector>
 
 class iexMesh;
-class Player;
+class BasePlayer;
 
 class Stage
 {

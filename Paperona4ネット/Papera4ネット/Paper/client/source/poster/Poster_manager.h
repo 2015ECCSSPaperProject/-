@@ -12,7 +12,7 @@ class Poster;
 class Poster_frame;
 class Score;
 enum class TEAM_COLOR;
-class Player;
+class BasePlayer;
 
 class Poster_manager
 {
@@ -38,7 +38,7 @@ public:
 	//**************************************************
 
 	// 破れる、貼れるポスターの番号
-	int Can_do(Player *player, TEAM_COLOR color);
+	int Can_do(BasePlayer *player, TEAM_COLOR color);
 	
 	// Can_doの後で呼ぶ
 	bool Can_rend(TEAM_COLOR color, int poster_num);          bool Can_paste(TEAM_COLOR color, int poster_num);

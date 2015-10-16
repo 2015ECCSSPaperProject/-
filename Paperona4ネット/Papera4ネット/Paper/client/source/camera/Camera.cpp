@@ -8,7 +8,7 @@
 //#include	"../Mouse/Mouse.h"
 
 // カメラ⇒プレイヤーの基本距離
-const float Camera::Mode::Base::DIST = 20.0f;
+const float Camera::Mode::Base::DIST = 50.0f;
 
 Camera::Camera() : iexView()
 {
@@ -153,18 +153,8 @@ void Camera::Mode::TPS::Initialize()
 void Camera::Mode::TPS::Update()
 {
 	// 角度
-#ifndef TYPE1
-	me->angle.y += Mouse::Get_axis_x() * .05f;
-#endif
-#ifndef TYPE2
 	float p_angle=me->my_player->Get_angleY();
 	me->angle.y = p_angle;
-#endif
-
-
-	//me->angle.x += Mouse::Get_axis_y() * .025f;
-
-
 
 	//カメラの上下移動に制限
 	if (me->angle.x < -0.2f)me->angle.x = -0.2f;
@@ -199,11 +189,12 @@ void Camera::Mode::TPS::Update()
 
 
 	// 角度の値のベクトルとプレイヤーからカメラ位置算出
-	me->pos.x = p_pos.x - vec.x;
-	me->pos.y = p_pos.y - vec.y;
-	me->pos.z = p_pos.z - vec.z;
+	me->ipos.x = p_pos.x - vec.x;
+	me->ipos.y = p_pos.y - vec.y;
+	me->ipos.z = p_pos.z - vec.z;
 
-	me->pos.y += 4.0f;	// 少し上に
+	me->ipos.y += 8.0f;	// 少し上に
+
 
 	// 注視点はプレイヤー
 	me->target = p_pos;
@@ -212,16 +203,21 @@ void Camera::Mode::TPS::Update()
 	//壁判定
 	//Collision();
 
+	me->ipos += Vector3(0, 5, 0);
+	me->target += Vector3(0, 6, 0);
+
 	// 目標座標までゆっくり動かす
-	me->pos = me->pos * .85f + me->pos * .15f;
+	me->pos = me->pos * .0f + me->ipos * 1.0f;
 
-	me->Set(me->pos + Vector3(0, 2, 0), me->target + Vector3(0, 5, 0));
-
+	me->Set(me->pos, me->target);
 
 
 	// プレイヤーモードでカメラ切り替え
 	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::MOVE_FPS) me->Change_mode(MODE_PART::M_FPS);
-	//else if (me->my_player->Get_action() == BasePlayer::ACTION_PART::REND) me->Change_mode(MODE_PART::M_ZOOM);
+	else if (me->my_player->Get_action() == BasePlayer::ACTION_PART::REND || me->my_player->Get_action() == BasePlayer::ACTION_PART::PASTE)
+	{
+		me->Change_mode(MODE_PART::M_ZOOM);
+	}
 }
 
 
@@ -263,12 +259,11 @@ void Camera::Mode::FPS::Update()
 
 	// 座標設定
 	me->pos = p_pos;
-	me->pos.x = p_pos.x - (vec.x*-0.5f);
-	me->pos.y = p_pos.y - (vec.y*-0.5f);
-	me->pos.z = p_pos.z - (vec.z*-0.5f);
+	me->pos.x = p_pos.x - (vec.x*-3.5f);
+	me->pos.y = p_pos.y - (vec.y*-3.5f);
+	me->pos.z = p_pos.z - (vec.z*-3.5f);
 
-	me->pos.y += 1.25f;	// 少し上に
-
+	me->pos.y += 15.0f;	// 少し上に
 
 
 	me->target.x = me->pos.x + (sinf(me->angle.y));
@@ -280,6 +275,8 @@ void Camera::Mode::FPS::Update()
 
 	// プレイヤーモードでカメラ切り替え
 	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::MOVE) me->Change_mode(MODE_PART::M_TPS);
+	else if (me->my_player->Get_action() == BasePlayer::ACTION_PART::REND || me->my_player->Get_action() == BasePlayer::ACTION_PART::PASTE) me->Change_mode(MODE_PART::M_ZOOM);
+
 }
 
 
@@ -309,28 +306,32 @@ void Camera::Mode::Stop::Update()
 
 void Camera::Mode::Zoom::Initialize()
 {
-	dist = DIST * .5f;
+	dist = DIST * .75f;
 }
 
 void Camera::Mode::Zoom::Update()
 {
-#ifndef MOUSE
-
-	// プレイヤー角度取得
-	//Vector3 p_angle;
-	//me->player_mng->Get_Player()->Get_angle(p_angle);
-	//me->angle.y = p_angle.y;
-	//me->angle.x += Mouse::Get_axis_y() * .05f;
-
+	// 角度
+#ifndef TYPE1
+	me->angle.y += Mouse::Get_axis_x() * .05f;
+#endif
+#ifndef TYPE2
+	float p_angle = me->my_player->Get_angleY();
+	me->angle.y = p_angle;
 #endif
 
+
+	//me->angle.x += Mouse::Get_axis_y() * .025f;
+
+
+
 	//カメラの上下移動に制限
-	//if (me->angle.x < -0.4f)me->angle.x = -0.4f;
-	//if (me->angle.x > 0.2f)me->angle.x = 0.2f;
+	if (me->angle.x < -0.2f)me->angle.x = -0.2f;
+	if (me->angle.x > 0.2f)me->angle.x = 0.2f;
 
 	// オーバーフロー防止
-	//if (me->angle.y > PI * 2)me->angle.y -= PI * 2;
-	//else if (me->angle.y < -PI * 2)me->angle.y += PI * 2;
+	if (me->angle.y > PI * 2)me->angle.y -= PI * 2;
+	else if (me->angle.y < -PI * 2)me->angle.y += PI * 2;
 
 
 	// 角度の値によるベクトルを作成
@@ -352,7 +353,7 @@ void Camera::Mode::Zoom::Update()
 	Vector3 p_pos;
 	me->my_player->Get_pos(p_pos);
 
-	p_pos.y += 2.5f;	// 少し上に
+	p_pos.y += 10.0f;	// 少し上に
 
 
 
@@ -373,12 +374,20 @@ void Camera::Mode::Zoom::Update()
 	// 目標座標までゆっくり動かす
 	me->pos = me->pos * .85f + me->ipos * .15f;
 
-	// 何もしない
-	me->Set(me->pos, me->target);
+	me->Set(me->pos + Vector3(0, 1, 0), me->target + Vector3(0, 3, 0));
 
-	// プレイヤーモードがTPSならカメラ切り替え
-	if (me->my_player->Get_action() != BasePlayer::ACTION_PART::REND &&
-		me->my_player->Get_action() != BasePlayer::ACTION_PART::PASTE) me->Change_mode(MODE_PART::M_TPS);
+	if (me->my_player->Get_action() != BasePlayer::ACTION_PART::REND && me->my_player->Get_action() != BasePlayer::ACTION_PART::PASTE)
+	{
+		// プレイヤーモードがTPSならカメラ切り替え
+		if (me->my_player->Get_action() == BasePlayer::ACTION_PART::MOVE)
+		{
+			me->Change_mode(MODE_PART::M_TPS);
+		}
+		else if (me->my_player->Get_action() == BasePlayer::ACTION_PART::MOVE_FPS)
+		{
+			me->Change_mode(MODE_PART::M_FPS);
+		}
+	}
 }
 
 

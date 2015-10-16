@@ -189,6 +189,9 @@ void SceneMainServer::Render()
 
 	}
 
+	poster_mng->Render();
+
+
 	// サーバー描画
 	ServerManager::Render();
 

@@ -184,8 +184,9 @@ void SocketManager::UpdateUser()	/* プレイヤー更新 */
 		BYTE	moveFlag;			//	上下左右操作フラグ
 		float mouseX;	//マウスX
 		float mouseY;	//マウスY
-		int motion_no;	// モーション番号
-
+		BYTE motion_no;	// モーション番号
+		BYTE	rendFlag;	// 破くときに送る
+		BYTE	controlFlag;
 	}send;
 
 	//　※ベースプレイヤーのコントロールデスクを持ってくる
@@ -197,7 +198,8 @@ void SocketManager::UpdateUser()	/* プレイヤー更新 */
 	send.mouseX = desc.mouseX;
 	send.mouseY = desc.mouseY;
 	send.motion_no = desc.motion_no;
-
+	send.rendFlag = desc.rendFlag;
+	send.controlFlag = desc.controlFlag;
 
 	m_pClient->Send(&send, sizeof(send)); //自分の操作した情報を渡す
 
@@ -207,8 +209,8 @@ void SocketManager::UpdateUser()	/* プレイヤー更新 */
 	{
 		Vector3	pos;
 		float angleY;
-		int motion_no;
-		int action_part;
+		BYTE motion_no;
+		BYTE action_part;
 	}receive[PLAYER_MAX];
 
 	m_pClient->Receive((char*)&receive, sizeof(receive));

@@ -22,7 +22,8 @@ BasePlayer::BasePlayer()
 	m_controlDesc.motion_no = 0;
 	m_controlDesc.mouseX = .0f;
 	m_controlDesc.mouseY = .0f;
-
+	m_controlDesc.rendFlag &= 0x00000000;
+	m_controlDesc.controlFlag &= 0x00000000;
 }
 
 BasePlayer::~BasePlayer()
@@ -90,39 +91,48 @@ void BasePlayer::Update()
 /*	操作　*/
 void BasePlayer::Control_all()
 {
-	m_controlDesc.moveFlag = 0;
+	// 初期化
+	m_controlDesc.moveFlag &= 0x00000000;
+	m_controlDesc.controlFlag &= 0x00000000;
 
-	if (KEY_Get(KEY_UP))
+	if (KEY_Get(KEY_UP) == 1)
 	{
-		m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::UP;
+		m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::UP;
 	}
-	else if (KEY_Get(KEY_DOWN))
+	else if (KEY_Get(KEY_DOWN) == 1)
 	{
-		m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::DOWN;
+		m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::DOWN;
 	}
-	if (KEY_Get(KEY_RIGHT))
+	if (KEY_Get(KEY_RIGHT) == 1)
 	{
-		m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::RIGHT;
+		m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::RIGHT;
 	}
-	else if (KEY_Get(KEY_LEFT))
+	else if (KEY_Get(KEY_LEFT) == 1)
 	{
-		m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::LEFT;
+		m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::LEFT;
 	}
 
+	//if (GetAsyncKeyState(0x01) & 0x8000)
 	if (KeyBoard(MOUSE_LEFT))
 	{
-		m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::LEFT_CLICK;
+		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::LEFT_CLICK;
 	}
 
 	else if (KeyBoard(MOUSE_RIGHT))
 	{
-		m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::RIGHT_CLICK;
+		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::RIGHT_CLICK;
 	}
 
-	//if (Mouse::isPushCenter())
-	//{
-	//	m_controlDesc.moveFlag |= (int)PLAYER_IMPUT::CENTER_CLICK;
-	//}
+	if (KeyBoard(KB_SPACE))
+	{
+		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::SPACE;
+	}
+
+	//if (KeyBoardTRG(KB_C))
+	if (!(GetKeyState('C') & 0x1))	// トグル
+	{
+		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::TRG_C;
+	}
 
 }
 
@@ -134,6 +144,16 @@ void BasePlayer::Control_all()
 void BasePlayer::Render()
 {
 	action[(unsigned int)action_part]->Render();
+
+	if (m_controlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
+	{
+		Text::Draw(0, 600, 0xff000000, "クライアント:左クリック中だよ");
+	}
+
+	if (m_controlDesc.controlFlag & (BYTE)PLAYER_CONTROL::RIGHT_CLICK)
+	{
+		Text::Draw(0, 560, 0xff000000, "クライアント:右クリック中だよ");
+	}
 }
 
 
@@ -176,6 +196,11 @@ void BasePlayer::Set_motion(int no)
 
 void BasePlayer::Action::Move::Initialize()
 {
+	me->m_controlDesc.mouseX = .0f;
+	me->m_controlDesc.mouseY = .0f;
+
+	// 待機モーションセット
+	me->Set_motion(1);
 }
 
 void BasePlayer::Action::Move::Update()
@@ -213,15 +238,29 @@ void BasePlayer::Action::Move::Render()
 
 void BasePlayer::Action::MoveFPS::Initialize()
 {
-	//me->do_flag = DO_FLAG::NONE;	// Zキー押しても何もしない
+	me->m_controlDesc.mouseX = .0f;
+	me->m_controlDesc.mouseY = .0f;
 
 	// 待機モーションセット
-	//Set_motion(0);
+	me->Set_motion(1);
 }
 
 void BasePlayer::Action::MoveFPS::Update()
 {
 	me->Control_all();	// 全キー受付
+
+	if (me->m_controlDesc.moveFlag & (int)PLAYER_IMPUT::RIGHT ||
+		me->m_controlDesc.moveFlag & (int)PLAYER_IMPUT::LEFT ||
+		me->m_controlDesc.moveFlag & (int)PLAYER_IMPUT::UP ||
+		me->m_controlDesc.moveFlag & (int)PLAYER_IMPUT::DOWN
+		)
+	{
+		me->m_controlDesc.motion_no = 0;	// ここで送るモーションの番号を変更
+	}
+	else
+	{
+		me->m_controlDesc.motion_no = 1;	// ここで送るモーションの番号を変更
+	}
 }
 
 void BasePlayer::Action::MoveFPS::Render()
@@ -260,19 +299,16 @@ void BasePlayer::Action::Attack::Render()
 
 void BasePlayer::Action::Paste::Initialize()
 {
-	timer = 0;
-	me->m_controlDesc.moveFlag = 0;	// 超大事
+	me->m_controlDesc.controlFlag &= 0x00000000;
+	me->m_controlDesc.moveFlag &= 0x00000000;
+	me->m_controlDesc.rendFlag &= 0x00000000;
 
 	me->Set_motion(3);
 }
 
 void BasePlayer::Action::Paste::Update()
 {
-	if (timer++ > 120)
-	{
-		me->m_controlDesc.motion_no = 1;
-		me->Change_action(ACTION_PART::MOVE);
-	}
+
 }
 
 void BasePlayer::Action::Paste::Render()
@@ -294,14 +330,37 @@ void BasePlayer::Action::Paste::Render()
 
 void BasePlayer::Action::Rend::Initialize()
 {
-	me->m_controlDesc.moveFlag = 0;	// 超大事
+	me->m_controlDesc.controlFlag &= 0x00000000; 
+	me->m_controlDesc.moveFlag &= 0x00000000;
+	me->m_controlDesc.rendFlag &= 0x00000000;
 
-	me->Set_motion(2);
+	//me->Set_motion(2);
+	me->Set_motion(1);
 }
 
 void BasePlayer::Action::Rend::Update()
 {
+	me->m_controlDesc.controlFlag &= 0x00000000;
+	me->m_controlDesc.rendFlag &= 0x00000000;
 
+	if (me->motion_no == 2)
+	{
+		me->Set_motion(2);
+	}
+
+	// おしっぱ中
+	if (GetAsyncKeyState(0x01) & 0x8000)
+	{
+		me->m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::LEFT_CLICK;
+	}
+
+
+	// マウススラッシュ
+	const float mouse_move = sqrtf(me->m_controlDesc.mouseX*me->m_controlDesc.mouseX + me->m_controlDesc.mouseY + me->m_controlDesc.mouseY);
+	if (mouse_move > 80000)
+	{
+		me->m_controlDesc.rendFlag |= (BYTE)REND_FLAG::RIGHT;
+	}
 }
 
 void BasePlayer::Action::Rend::Render()

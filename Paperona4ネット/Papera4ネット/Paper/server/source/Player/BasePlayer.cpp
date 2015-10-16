@@ -6,6 +6,8 @@
 #include	"../../../share_data/Enum_public.h"
 #include	"../stage/Stage.h"
 
+#include	"../poster/Poster_manager.h"
+
 /*	ベースプレイヤー	*/
 
 //****************************************************************************************************************
@@ -26,12 +28,16 @@ void BasePlayer::Initialize(iex3DObj *obj)
 	angleY = 0.0f;
 	scale = .5f;
 	move = Vector3(0, 0, 0);
-	speed = 1.0f;
+	speed = 1.5f;
 	fallspeed = .1f;
 	se_receive = 0;
+	isJump = isLand = false;
+	jump_pow = 0;
 
 	// 3D実体
 	model = obj->Clone();
+
+	team_col = TEAM_COLOR::ONE;
 
 	// 行動状態初期化
 	action[(int)ACTION_PART::MOVE] = new BasePlayer::Action::Move(this);
@@ -42,6 +48,7 @@ void BasePlayer::Initialize(iex3DObj *obj)
 	action[(int)ACTION_PART::DIE] = new BasePlayer::Action::Die(this);
 
 	Change_action(ACTION_PART::MOVE);	// 最初は移動状態
+	camera_mode = CAMERA_MODE::TPS;
 
 	// モーション番号
 	motion_no = 0;
@@ -79,6 +86,11 @@ void BasePlayer::Update()
 	// ここの代入をmotion_noも代入するようにしたら動いた(ゲッターで返すから)
 	controlDesc.motion_no = motion_no = ServerManager::GetDesc(m_id).motion_no;//モーション番号
 
+	// 破くフラグ
+	controlDesc.rendFlag = ServerManager::GetDesc(m_id).rendFlag;
+
+	// ぼたん
+	controlDesc.controlFlag = ServerManager::GetDesc(m_id).controlFlag;
 
 	//	コントローラーに操作パラメータをパス
 	//Control_Update(controlDesc);//←デスクセット
@@ -91,12 +103,15 @@ void BasePlayer::Update()
 	{
 		// 飛ばなくする
 		pos.y += move.y, move.y = 0;
+		isLand = true;
+		isJump = false;
+	}
+	else
+	{
+		isLand = false;
 	}
 	// 座標更新
 	pos += move;
-
-
-
 
 
 	//	デスク初期化
@@ -133,7 +148,9 @@ void BasePlayer::Set_motion(int no)
 //*****************************************************************************
 
 void BasePlayer::Action::Move::Initialize()
-{}
+{
+	me->camera_mode = CAMERA_MODE::TPS;
+}
 
 void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 {
@@ -145,11 +162,25 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	//if (KEY(KEY_UP) == 1) AxisY = 1;
 	//else if (KEY(KEY_DOWN) == 1) AxisY = -1;
 
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT) AxisX = -1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT) AxisX = 1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY = 1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY = -1;
+	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT) AxisX += -1;
+	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT) AxisX += 1;
+	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY += 1;
+	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY += -1;
 
+	// ジャンプ
+	if (!me->isJump && me->isLand)
+	{
+		if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::SPACE)
+		{
+			me->jump_pow = 2.0f;
+			me->isJump = true;
+		}
+	}
+	if (me->isJump)
+	{
+		me->move.y = me->jump_pow;
+		me->jump_pow -= me->fallspeed;
+	}
 
 	//アングル処理	角度補正
 	float	work;
@@ -157,31 +188,15 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	if (work > 0.1f) work = 0.1f;
 	me->angleY += work;// Angleに加算
 
-#ifndef TYPE1
-
-	Vector3 front(matView._13, 0, matView._33);
-	Vector3 right(matView._11, 0, matView._31);
-
-	me->angle.y += AxisX * .05f;
-
-#endif
-
-#ifndef TYPE2
-
 	Vector3 front(sinf(me->angleY), 0, cosf(me->angleY));
 	Vector3 right(sinf(me->angleY + PI * .5f), 0, cosf(me->angleY + PI * .5f));
-
-	//me->angle.y += Mouse::Get_axis_x() * .065f;
-
-#endif
 
 
 	front.Normalize();
 	right.Normalize();
 	// 移動量決定
-	me->move = (front*AxisY + right*AxisX) * (me->speed) +
-		Vector3(0, me->move.y - me->fallspeed, 0);
-
+	me->move.x = (front.x*AxisY + right.x*AxisX) * (me->speed);
+	me->move.z = (front.z*AxisY + right.z*AxisX) * (me->speed);
 
 	// 止まってる状態
 	if (me->move.Length() == 0)
@@ -192,24 +207,6 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	// 何かしら動いてる状態
 	else
 	{
-
-#ifndef TYPE1
-		//	左右判定
-		float x1 = me->move.x, z1 = me->move.z;
-		float x2 = sinf(me->angle.y), z2 = cosf(me->angle.y);
-		//	外積
-		float g = x1*z2 - x2*z1;
-		//	補整量調整	
-		float d = sqrtf(x1*x1 + z1*z1);
-		float n = (x1*x2 + z1*z2) / d;
-		float adjust = (1 - n) * 2.0f;
-		if (adjust > 0.3f) adjust = 0.3f;
-		//	方向転換
-		if (g < 0) me->angle.y -= adjust;
-		else me->angle.y += adjust;
-#endif
-
-
 		// 移動モーション
 		//Set_motion(0);
 
@@ -218,13 +215,40 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 		//Set_motion()
 	}
 
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT_CLICK)
+	
+	me->move += Vector3(0, me->move.y - me->fallspeed, 0);
+
+	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
 	{
-		me->Change_action(ACTION_PART::REND);
+		me->poster_num = poster_mng->Can_do(me, me->team_col);
+
+		// ポスターがあった
+		if (me->poster_num != -1)
+		{
+			if (poster_mng->Can_rend(me->team_col, me->poster_num))
+			{
+				me->Change_action(ACTION_PART::REND);
+				return;
+			}
+		}
 	}
-	else if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT_CLICK)
+	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::RIGHT_CLICK)
 	{
-		me->Change_action(ACTION_PART::PASTE);
+		me->poster_num = poster_mng->Can_do(me, me->team_col);
+
+		// ポスターがあった
+		if (me->poster_num != -1)
+		{
+			if (poster_mng->Can_paste(me->team_col, me->poster_num))
+			{
+				me->Change_action(ACTION_PART::PASTE);
+				return;
+			}
+		}
+	}
+	else if (!(_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::TRG_C))
+	{
+		me->Change_action(ACTION_PART::MOVE_FPS);
 	}
 }
 
@@ -237,8 +261,7 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 
 void BasePlayer::Action::MoveFPS::Initialize()
 {
-	// 待機モーションセット
-	//Set_motion(0);
+	me->camera_mode = CAMERA_MODE::FPS;
 }
 
 void BasePlayer::Action::MoveFPS::Update(const CONTROL_DESC &_ControlDesc)
@@ -246,12 +269,30 @@ void BasePlayer::Action::MoveFPS::Update(const CONTROL_DESC &_ControlDesc)
 
 	float AxisX = 0, AxisY = 0;
 
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT) AxisX = -1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT) AxisX = 1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY = -1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY = -1;
+	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT) AxisX += -1;
+	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT) AxisX += 1;
+	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY += 1;
+	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY += -1;
 
-	//me->angle.y += Mouse::Get_axis_x() * .05f;
+	if (!me->isJump && me->isLand)
+	{
+		if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::SPACE)
+		{
+			me->jump_pow = 2.0f;
+			me->isJump = true;
+		}
+	}
+	if (me->isJump)
+	{
+		me->move.y = me->jump_pow;
+		me->jump_pow -= me->fallspeed;
+	}
+
+	//アングル処理	角度補正
+	float	work;
+	work = _ControlDesc.mouseX *0.000001f;
+	if (work > 0.1f) work = 0.1f;
+	me->angleY += work;// Angleに加算
 
 	//	移動ベクトル設定
 	Vector3 front(sinf(me->angleY), 0, cosf(me->angleY));
@@ -260,7 +301,8 @@ void BasePlayer::Action::MoveFPS::Update(const CONTROL_DESC &_ControlDesc)
 	right.Normalize();
 
 	//	移動量決定
-	me->move = (front*AxisY + right*AxisX) * (me->speed * .1f);
+	me->move.x = (front.x*AxisY + right.x*AxisX) * (me->speed);
+	me->move.z = (front.z*AxisY + right.z*AxisX) * (me->speed);
 
 	// 止まってる状態
 	if (me->move.Length() == 0)
@@ -273,6 +315,41 @@ void BasePlayer::Action::MoveFPS::Update(const CONTROL_DESC &_ControlDesc)
 	{
 		// 移動モーション
 		//Set_motion(0);
+	}
+
+	me->move += Vector3(0, me->move.y - me->fallspeed, 0);
+
+	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
+	{
+		me->poster_num = poster_mng->Can_do(me, me->team_col);
+
+		// ポスターがあった
+		if (me->poster_num != -1)
+		{
+			if (poster_mng->Can_rend(me->team_col, me->poster_num))
+			{
+				me->Change_action(ACTION_PART::REND);
+				return;
+			}
+		}
+	}
+	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::RIGHT_CLICK)
+	{
+		me->poster_num = poster_mng->Can_do(me, me->team_col);
+
+		// ポスターがあった
+		if (me->poster_num != -1)
+		{
+			if (poster_mng->Can_paste(me->team_col, me->poster_num))
+			{
+				me->Change_action(ACTION_PART::PASTE);
+				return;
+			}
+		}
+	}
+	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::TRG_C)
+	{
+		me->Change_action(ACTION_PART::MOVE);
 	}
 }
 
@@ -301,15 +378,27 @@ void BasePlayer::Action::Paste::Initialize()
 	timer = 0;
 	me->move = VECTOR_ZERO;
 	me->Set_motion(3);
+
+	// ポスターに応じて座標と向きを変更
+	const static float dist = 5.0f;
+	me->pos = poster_mng->Get_pos(me->poster_num);
+	me->angleY = poster_mng->Get_angle(me->poster_num) + PI;
+	me->pos += (Vector3(-sinf(me->angleY), 0, -cosf(me->angleY)) * dist);
 }
 
 void BasePlayer::Action::Paste::Update(const CONTROL_DESC &_ControlDesc)
 {
 	me->motion_no = 3;
-	if (timer++ > 120)
+	if (timer++ > 60)
 	{
-		me->Change_action(ACTION_PART::MOVE);
+		(me->camera_mode == CAMERA_MODE::TPS) ? me->Change_action(ACTION_PART::MOVE) : me->Change_action(ACTION_PART::MOVE_FPS);
 		me->Set_motion(0);
+	}
+
+	if (timer == 45)
+	{
+		// 貼り付ける処理
+		poster_mng->Paste_poster(me->team_col, me->poster_num);
 	}
 }
 
@@ -324,16 +413,52 @@ void BasePlayer::Action::Rend::Initialize()
 {
 	rended = false;
 	me->move = VECTOR_ZERO;
-	me->Set_motion(2);
+	//me->Set_motion(2);
+
+	// ポスターに応じて座標と向きを変更
+	const static float dist = 5.0f;
+	me->pos = poster_mng->Get_pos(me->poster_num);
+	me->angleY = poster_mng->Get_angle(me->poster_num) + PI;
+	me->pos += (Vector3(-sinf(me->angleY), 0, -cosf(me->angleY)) * dist);
 }
 
 void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
 {
-	me->motion_no = 2;
-	if (me->model->GetParam(0) == 2)
+	// まだ破いていない
+	if (!rended)
 	{
-		me->Change_action(ACTION_PART::MOVE);
-		me->Set_motion(0);
+		// 破けコマンドがONなら
+		if (_ControlDesc.rendFlag & (BYTE)REND_FLAG::RIGHT)
+		{
+			me->motion_no = 2;
+			me->Set_motion(2);
+			rended = true;
+		}
+		// マウス離したらモード戻す
+		else if ((_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK) == 0)
+		{
+			(me->camera_mode == CAMERA_MODE::TPS) ? me->Change_action(ACTION_PART::MOVE) : me->Change_action(ACTION_PART::MOVE_FPS);
+			me->Set_motion(0);
+		}
+	}
+	else // 破き中
+	{
+		me->motion_no = 2;
+		me->Set_motion(2);
+
+		// モーション終了
+		if (me->model->GetParam(0) == 2)
+		{
+			(me->camera_mode == CAMERA_MODE::TPS) ? me->Change_action(ACTION_PART::MOVE) : me->Change_action(ACTION_PART::MOVE_FPS);
+			me->Set_motion(0);
+		}
+
+		// 破くモーションのフレーム
+		else if (me->model->GetParam(0) == 1)
+		{
+			// 破く処理
+			poster_mng->Rend_poster(me->team_col, me->poster_num);
+		}
 	}
 }
 
@@ -362,7 +487,68 @@ void BasePlayer::Action::Hikouki::Initialize()
 {}
 
 void BasePlayer::Action::Hikouki::Update(const CONTROL_DESC &_ControlDesc)
-{}
+{
+	float AxisX = 0, AxisY = 0;
+
+	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT) AxisX = -1;
+	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT) AxisX = 1;
+	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY = 1;
+	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY = -1;
+
+	// ジャンプ
+	if (!me->isJump && me->isLand)
+	{
+		if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::SPACE)
+		{
+			me->jump_pow = 2.0f;
+			me->isJump = true;
+		}
+	}
+	if (me->isJump)
+	{
+		me->move.y = me->jump_pow;
+		me->jump_pow -= me->fallspeed;
+	}
+
+	//アングル処理	角度補正
+	float	work;
+	work = _ControlDesc.mouseX *0.000001f;
+	if (work > 0.1f) work = 0.1f;
+	me->angleY += work;// Angleに加算
+
+
+	Vector3 front(sinf(me->angleY), 0, cosf(me->angleY));
+	Vector3 right(sinf(me->angleY + PI * .5f), 0, cosf(me->angleY + PI * .5f));
+
+	//me->angle.y += Mouse::Get_axis_x() * .065f;
+
+
+	front.Normalize();
+	right.Normalize();
+	// 移動量決定
+	me->move.x = (front.x*AxisY + right.x*AxisX) * (me->speed);
+	me->move.z = (front.z*AxisY + right.z*AxisX) * (me->speed);
+
+	// 止まってる状態
+	if (me->move.Length() == 0)
+	{
+		// 待機モーション
+		//Set_motion(1);
+	}
+	// 何かしら動いてる状態
+	else
+	{
+		// 移動モーション
+		//Set_motion(0);
+
+
+		// なうモーション
+		//Set_motion()
+	}
+
+
+	me->move += Vector3(0, me->move.y - me->fallspeed, 0);
+}
 
 
 

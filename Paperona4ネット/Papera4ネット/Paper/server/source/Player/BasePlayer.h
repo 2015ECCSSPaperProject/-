@@ -2,6 +2,8 @@
 
 /*	ベースプレイヤー	*/
 
+#include "../../../share_data/Enum_public.h"
+
 //	操作デスク
 struct	CONTROL_DESC
 {
@@ -10,7 +12,10 @@ struct	CONTROL_DESC
 	float	mouseX; //マウス
 	float	mouseY;
 
-	int		motion_no;// モーションの番号
+	BYTE	motion_no;// モーションの番号
+
+	BYTE	rendFlag;	// 破くときに使う
+	BYTE	controlFlag;// ボタン
 };
 
 #define TYPE1
@@ -40,9 +45,14 @@ protected:
 	float			fallspeed;
 	int				se_receive;
 
-	iex3DObj			*model;
+	iex3DObj		*model;
 
 	int				motion_no;
+
+	bool			isLand;
+	bool			isJump;
+	float			jump_pow;
+
 
 	//===============================================
 	//	その他
@@ -50,6 +60,8 @@ protected:
 	int				poster_num;
 	enum class CAMERA_MODE{ TPS, FPS };
 	CAMERA_MODE		camera_mode;
+
+	TEAM_COLOR team_col;
 
 
 	//===============================================

@@ -41,7 +41,10 @@ struct ContorlDesc
 	float	mouseX;			//　マウスX
 	float	mouseY;			//　マウスY
 
-	int		motion_no;		// モーションの番号
+	BYTE	motion_no;		// モーションの番号
+
+	BYTE	rendFlag;		// 破くときに送るフラグ
+	BYTE	controlFlag;	// ぼたん
 };
 
 
