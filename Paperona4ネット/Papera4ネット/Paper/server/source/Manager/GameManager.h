@@ -8,7 +8,7 @@
 
 class	Scene;
 struct	UserData;
-class	Player;
+class	BasePlayer;
 class	Framework;
 class Thread;
 

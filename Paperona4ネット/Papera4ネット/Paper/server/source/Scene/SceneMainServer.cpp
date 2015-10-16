@@ -160,14 +160,13 @@ void SceneMainServer::Update()
 	//フェード処理
 	FadeControl::Update();
 
-	stage->Render();
-
 	// サーバー
 	for (int i = 0; i < PLAYER_MAX; i++)
 	{
 		player[i]->Update();
 	}
 	
+	poster_mng->Update();
 }
 
 
@@ -189,6 +188,9 @@ void SceneMainServer::Render()
 		Text::Draw(1000, 50 + (i * 40), 0xffff00ff, "pos.x->%.2f", player[i]->Get_pos().x);
 
 	}
+
+	poster_mng->Render();
+
 
 	// サーバー描画
 	ServerManager::Render();

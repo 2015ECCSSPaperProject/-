@@ -5,7 +5,7 @@
 #include "../Enum_public.h"
 
 class Score;
-class Player;
+class BasePlayer;
 
 class Poster
 {
@@ -92,11 +92,11 @@ public:
 	void Set_pose(const float angle, const Vector3& pos); // 姿勢を計算する
 
 	// プレイヤーからのアクション
-	void Do_playeraction(Player *player, TEAM_COLOR color, Texture2D *tex); // 破る貼る
+	void Do_playeraction(BasePlayer *player, TEAM_COLOR color, Texture2D *tex); // 破る貼る
 	void Rend(TEAM_COLOR color); // 破る
 	void Paste(TEAM_COLOR color, Texture2D *tex); // 貼る
 
-	bool Can_do(Player *player, TEAM_COLOR color); // playerがポスターに何かできる状態
+	bool Can_do(BasePlayer *player, TEAM_COLOR color); // playerがポスターに何かできる状態
 	bool Can_rend(TEAM_COLOR color); // 破ける
 	bool Can_paste(TEAM_COLOR color); // 貼れる
 

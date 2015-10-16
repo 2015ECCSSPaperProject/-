@@ -1,7 +1,7 @@
 
 #include "Poster.h"
 //#include "../score/Score.h"
-//#include "../player/Player.h"
+#include "../player/BasePlayer.h"
 
 //**************************************************
 /// ƒ‚[ƒh
@@ -92,10 +92,10 @@ void Poster::Initialize(iex3DObj *model, Score *score, int point)
 	this->model->SetPos(0, 0, 0);
 	this->model->Update();
 
-	range.forward = 4.0f;
-	range.wide = 2.0f;
-	range.min_y = -1.0f;
-	range.max_y = 1.0f;
+	range.forward = 10.0f;
+	range.wide = 5.0f;
+	range.min_y = -2.0f;
+	range.max_y = 2.0f;
 }
 
 void Poster::Release()
@@ -153,7 +153,7 @@ void Poster::Set_pose(float angle, const Vector3& pos)
 
 
 
-void Poster::Do_playeraction(Player *player, TEAM_COLOR color, Texture2D *tex)
+void Poster::Do_playeraction(BasePlayer *player, TEAM_COLOR color, Texture2D *tex)
 {
 	assert(player != nullptr);
 
@@ -187,7 +187,7 @@ void Poster::Paste(TEAM_COLOR color, Texture2D *tex)
 	model->SetTexture(tex, 0);
 }
 
-bool Poster::Can_do(Player *player, TEAM_COLOR color)
+bool Poster::Can_do(BasePlayer *player, TEAM_COLOR color)
 {
 	if (mode == MODE::REND) // ”j‚ê‚Ä‚é“r’†
 		return false;
@@ -195,7 +195,6 @@ bool Poster::Can_do(Player *player, TEAM_COLOR color)
 	if (force == color) // “¯‚¶F
 		return false;
 
-	/* –ß‚·
 	// ˆÊ’u‚ÆŒü‚«”»’è
 	Vector3 ppos; // player‚ÌˆÊ’u
 
@@ -214,7 +213,7 @@ bool Poster::Can_do(Player *player, TEAM_COLOR color)
 
 	// Œü‚«
 	if (Vector3Dot(player->Get_forward(), poster_player) >= 0.0f) return false;
-	*/
+	
 
 	return true;
 }

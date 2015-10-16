@@ -153,7 +153,7 @@ void Poster::Set_pose(float angle, const Vector3& pos)
 
 
 
-void Poster::Do_playeraction(Player *player, TEAM_COLOR color, Texture2D *tex)
+void Poster::Do_playeraction(BasePlayer *player, TEAM_COLOR color, Texture2D *tex)
 {
 	assert(player != nullptr);
 
@@ -187,7 +187,7 @@ void Poster::Paste(TEAM_COLOR color, Texture2D *tex)
 	model->SetTexture(tex, 0);
 }
 
-bool Poster::Can_do(Player *player, TEAM_COLOR color)
+bool Poster::Can_do(BasePlayer *player, TEAM_COLOR color)
 {
 	if (mode == MODE::REND) // ”j‚ê‚Ä‚é“r’†
 		return false;

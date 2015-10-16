@@ -5,6 +5,8 @@
 #include "../../../share_data/Enum_public.h"
 #include "Poster_frame.h"
 
+#include "../Player/BasePlayer.h"
+
 Poster_manager::Poster_manager() : poster_model(nullptr), frame(nullptr)
 {
 	posters.resize(0);
@@ -43,18 +45,24 @@ void Poster_manager::Initialize(Score *score)
 
 	p = new Poster;
 	p->Initialize(poster_model, score, 1);
-	p->Set_pose(PI * -0.5f, Vector3(50, 0, 0));
+	p->Set_pose(PI, Vector3(50, 0, 50));
 	posters.push_back(p);
 
 	p = new Poster;
 	p->Initialize(poster_model, score, 1);
-	p->Set_pose(PI * 0.5f, Vector3(-50, 0, 0));
+	p->Set_pose(PI, Vector3(-50, 0, 50));
 	posters.push_back(p);
 
 	p = new Poster;
 	p->Initialize(poster_model, score, 1);
-	p->Set_pose(0, Vector3(0, 0, -50));
+	p->Set_pose(PI, Vector3(100, 0, 50));
 	posters.push_back(p);
+
+	p = new Poster;
+	p->Initialize(poster_model, score, 1);
+	p->Set_pose(PI, Vector3(-100, 0, 50));
+	posters.push_back(p);
+
 }
 
 void Poster_manager::Release()
@@ -91,7 +99,7 @@ void Poster_manager::Render()
 
 
 
-int Poster_manager::Can_do(Player *player, TEAM_COLOR color)
+int Poster_manager::Can_do(BasePlayer *player, TEAM_COLOR color)
 {
 	int num = -1;
 
@@ -132,9 +140,21 @@ TEAM_COLOR Poster_manager::Get_color(int index)
 {
 	return posters[index]->Get_color();
 }
+
 int Poster_manager::Get_animation_frame(int index)
 {
 	return posters[index]->Get_animation_frame();
+}
+
+
+const Vector3& Poster_manager::Get_pos(int index)
+{
+	return posters[index]->Get_pos();
+}
+
+float Poster_manager::Get_angle(int index)
+{
+	return posters[index]->Get_angle();
 }
 
 
