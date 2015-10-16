@@ -151,6 +151,7 @@ void SceneMain::ThreadFunc(void* pData, bool*isEnd)
 		{
 			FLAME = 0;
 			SOCKET_MANAGER->UpdateUser();
+			SOCKET_MANAGER->UpdatePoster();
 		}
 
 	}

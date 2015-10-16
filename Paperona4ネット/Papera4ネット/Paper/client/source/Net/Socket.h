@@ -78,6 +78,7 @@ private:
 		INIT_GAME_DATA = 4,
 		/*INIT_GAME,*/
 		USER_DATA = 5 ,
+		POSTER_DATA = 6,
 	};
 
 private:
@@ -96,6 +97,7 @@ public:
 	void InitGame();				/* 試合前 */
 
 	void UpdateUser();				/* プレイヤー更新 */
+	void UpdatePoster();			/* ポスター更新 */
 
 	/*	ゲッター・セッター	*/
 	int					GetID()				const{ return m_myID; }

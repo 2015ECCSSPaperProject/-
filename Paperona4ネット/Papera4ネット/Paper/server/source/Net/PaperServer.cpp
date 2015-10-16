@@ -83,6 +83,9 @@ void ServerManager::Update()
 	case USER_DATA:
 		UpdateUser(data, client);
 		break;
+	case POSTER_DATA:
+		UpdatePoster(client);
+		break;
 	}
 }
 
@@ -322,11 +325,13 @@ void ServerManager::UpdateUser(char* data, int client)
 	}
 
 	m_pServer->Send(client, (char*)&send, sizeof(send));
+}
 
-	//**************************************************
-	/// ここからポスター
-	//**************************************************
-
+//---------------------------------------------------------------------
+//   ★ポスターの更新
+//---------------------------------------------------------------------
+void ServerManager::UpdatePoster(int client)
+{
 	struct PosterData
 	{
 		BYTE color;

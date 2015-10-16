@@ -247,9 +247,12 @@ void SocketManager::UpdateUser()	/* プレイヤー更新 */
 
 		//}
 	}
+};
 
-
-	//　ポスター
+void SocketManager::UpdatePoster()
+{
+	BYTE comcom = POSTER_DATA;
+	m_pClient->Send(&comcom, sizeof(comcom)); //自分の操作した情報を渡す
 
 	int num_poster = poster_mng->Get_numof();
 	PosterData *poster_data = new PosterData[num_poster];
@@ -265,4 +268,4 @@ void SocketManager::UpdateUser()	/* プレイヤー更新 */
 	delete[] poster_data;
 
 	bench.End();
-};				
+}

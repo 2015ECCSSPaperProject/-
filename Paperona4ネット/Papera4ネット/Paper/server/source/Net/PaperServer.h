@@ -60,7 +60,8 @@ public:
 		TEAM_DATA = 3,
 		INIT_GAME_DATA = 4,
 		/*	USER_INIT,*/
-		USER_DATA = 5 ,
+		USER_DATA = 5,
+		POSTER_DATA = 6,
 	
 	};
 
@@ -84,7 +85,7 @@ private:
 	static void GameInitData(char* data, int client);		/*	全員がisReady==trueだとゲーム開始！						*/
 	//static void InitUser(char* data, int client);
 	static void UpdateUser(char* data, int client);			/*	プレイヤーの更新										*/
-
+	static void UpdatePoster(int client);		/*	ポスターの更新											*/
 public:
 	static void Init();			/*	ネットプログラム開始	*/
 	static void Release();		/*	ネットプログラム終り	*/
