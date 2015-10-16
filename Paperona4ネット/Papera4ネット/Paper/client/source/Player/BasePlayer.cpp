@@ -129,7 +129,7 @@ void BasePlayer::Control_all()
 	}
 
 	//if (KeyBoardTRG(KB_C))
-	if (!(GetKeyState('C') & 0x1))	// トグル
+	if (GetKeyState('C') & 0x1)	// トグル
 	{
 		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::TRG_C;
 	}
@@ -308,7 +308,10 @@ void BasePlayer::Action::Paste::Initialize()
 
 void BasePlayer::Action::Paste::Update()
 {
-
+	if (GetKeyState('C') & 0x1)	// トグル
+	{
+		me->m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::TRG_C;
+	}
 }
 
 void BasePlayer::Action::Paste::Render()
@@ -346,6 +349,11 @@ void BasePlayer::Action::Rend::Update()
 	if (me->motion_no == 2)
 	{
 		me->Set_motion(2);
+	}
+
+	if (GetKeyState('C') & 0x1)	// トグル
+	{
+		me->m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::TRG_C;
 	}
 
 	// おしっぱ中

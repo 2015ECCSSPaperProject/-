@@ -34,7 +34,7 @@ void Poster_manager::Initialize(Score *score)
 	poster_textures[(int)TEAM_COLOR::TWO] = iexTexture::Load("DATA/Poster/blue.png");
 
 	// ここでポスターの配置を決める
-	number_of_posters = 4;
+	number_of_posters = 5;
 
 	Poster *p;
 
