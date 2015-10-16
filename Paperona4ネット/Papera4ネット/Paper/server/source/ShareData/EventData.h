@@ -2,10 +2,6 @@
 
 enum EventType
 {
-	CharacterGoFront,
-	CharacterGoBack,
-	CharacterRotateRight,
-	CharacterRotateLeft,
 	MazeRotateRight,
 	MazeRotateLeft,
 	Ready,
@@ -15,6 +11,8 @@ enum EventType
 	WinChallenger,
 	WinDefender,
 	Disconnect,
+
+	PosterUpdate,
 };
 
 #pragma pack(1)

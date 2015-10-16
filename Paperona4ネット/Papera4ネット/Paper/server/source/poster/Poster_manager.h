@@ -2,7 +2,7 @@
 #pragma once
 
 #include <vector>
-#include "../Enum_public.h"
+#include "../../../share_data/Enum_public.h"
 
 struct IDirect3DTexture9;
 typedef IDirect3DTexture9 Texture2D;
@@ -52,8 +52,8 @@ public:
 	//**************************************************
 
 	int Get_numof(){ return number_of_posters; }
-	void Set_color(int index, TEAM_COLOR color);
-	void Set_animframe(int index, int frame);
+	TEAM_COLOR Get_color(int index);
+	int Get_animation_frame(int index);
 };
 
 extern Poster_manager *poster_mng;

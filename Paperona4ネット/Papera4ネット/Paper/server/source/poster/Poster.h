@@ -2,7 +2,7 @@
 #pragma once
 
 #include "iextreme.h"
-#include "../Enum_public.h"
+#include "../../../share_data/Enum_public.h"
 
 class Score;
 class Player;
@@ -103,9 +103,12 @@ public:
 	// ƒeƒXƒg
 	void Change_color(TEAM_COLOR color, Texture2D *tex);
 
+
+
 	//**************************************************
 	/// Get Set
 	//**************************************************
 
-	void Set_anim_frame(int frame){ model->SetFrame(frame); }
+	TEAM_COLOR Get_color(){ return force; }
+	int Get_animation_frame(){ return model->GetFrame(); }
 };

@@ -11,6 +11,7 @@
 #include	"../Player/BasePlayer.h"
 
 #include	"../bench/Bench_mark.h"
+#include "../poster/Poster_manager.h"
 Bench_mark bench;
 
 //*****************************************************************************************
@@ -121,9 +122,7 @@ void SocketManager::UpdateTeam(int isReady)
 			break;
 
 		m_user[i] = receive;
-
 	}
-
 }
 
 
@@ -214,7 +213,6 @@ void SocketManager::UpdateUser()	/* プレイヤー更新 */
 
 	m_pClient->Receive((char*)&receive, sizeof(receive));
 	
-	bench.End();
 
 
 	for (int i = 0; i<PLAYER_MAX; ++i)
@@ -250,4 +248,21 @@ void SocketManager::UpdateUser()	/* プレイヤー更新 */
 		//}
 	}
 
+
+	//　ポスター
+
+	int num_poster = poster_mng->Get_numof();
+	PosterData *poster_data = new PosterData[num_poster];
+
+	m_pClient->Receive((char*)poster_data, sizeof(*poster_data)*num_poster);
+
+	for (int i = 0; i < num_poster; i++)
+	{
+		poster_mng->Set_color(i, (TEAM_COLOR)poster_data[i].color);
+		poster_mng->Set_animframe(i, poster_data[i].anim_no);
+	}
+
+	delete[] poster_data;
+
+	bench.End();
 };				

@@ -233,7 +233,6 @@ bool Poster::Can_paste(TEAM_COLOR color)
 
 void Poster::Change_color(TEAM_COLOR color, Texture2D *tex)
 {
-	if (force == color) return;
 	force = color;
 	Change_mode(MODE::WAITE);
 	model->SetTexture(tex, 0);

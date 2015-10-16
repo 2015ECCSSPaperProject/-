@@ -34,6 +34,8 @@ iex3DObj *set;
 #include "../camera/Camera.h"
 #include "../stage/Stage.h"
 
+#include "../poster/Poster_manager.h"
+#include "../score/Score.h"
 
 using namespace std;
 
@@ -79,6 +81,10 @@ bool SceneMain::Initialize()
 		player[i]->Initialize(set);
 	}
 
+	score = new Score;
+	poster_mng = new Poster_manager;
+	poster_mng->Initialize(score);
+
 	// 開始フラグを送る
 	m_pThread = new Thread(ThreadFunc, this);
 
@@ -107,6 +113,9 @@ SceneMain::~SceneMain()
 	{
 		SAFE_DELETE(player[i]);
 	}
+
+	SAFE_DELETE(poster_mng);
+	SAFE_DELETE(score);
 }
 
 //===================================================================================
@@ -208,6 +217,7 @@ void SceneMain::Render()
 		Text::Draw(950, 20 + (i * 32), 0xff00ffff, "名前：%s", SOCKET_MANAGER->GetUser(i).name);
 	}
 
+	poster_mng->Render();
 
 	Text::Draw(100, 20, 0xff00ffff, "受信時間%.2f", bench.Get_time());
 

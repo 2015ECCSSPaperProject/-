@@ -1,11 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "server\Server.vcxproj", "{D4253F6F-13A8-42B2-832D-C0DF58E5C990}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Client", "client\Client.vcxproj", "{5C6AE8A5-ED18-4EEE-8705-CEA31982235E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3C611C18-07A6-41FC-A6C2-4677E486427B}"
+	ProjectSection(SolutionItems) = preProject
+		share_data\Enum_public.h = share_data\Enum_public.h
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

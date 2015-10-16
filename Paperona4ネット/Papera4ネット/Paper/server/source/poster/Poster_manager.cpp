@@ -2,7 +2,7 @@
 #include "Poster_manager.h"
 #include "Poster.h"
 #include "iextreme.h"
-#include "../Enum_public.h"
+#include "../../../share_data/Enum_public.h"
 #include "Poster_frame.h"
 
 Poster_manager::Poster_manager() : poster_model(nullptr), frame(nullptr)
@@ -128,13 +128,15 @@ void Poster_manager::Paste_poster(TEAM_COLOR color, int poster_num)
 
 
 
-void Poster_manager::Set_color(int index, TEAM_COLOR color)
+TEAM_COLOR Poster_manager::Get_color(int index)
 {
-	posters[index]->Change_color(color, poster_textures[(int)color]);
+	return posters[index]->Get_color();
 }
-void Poster_manager::Set_animframe(int index, int frame)
+int Poster_manager::Get_animation_frame(int index)
 {
-	posters[index]->Set_anim_frame(frame);
+	return posters[index]->Get_animation_frame();
 }
 
-Poster_manager *poster_mng;
+
+
+Poster_manager *poster_mng = nullptr;

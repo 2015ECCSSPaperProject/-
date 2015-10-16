@@ -7,7 +7,7 @@
 
 #include	"PaperServer.h"
 #include	"UDPServer.h"
-
+#include	"../poster/Poster_manager.h"
 
 
 //#define BYTE_TRUE 0xAA
@@ -322,6 +322,29 @@ void ServerManager::UpdateUser(char* data, int client)
 	}
 
 	m_pServer->Send(client, (char*)&send, sizeof(send));
+
+	//**************************************************
+	/// ここからポスター
+	//**************************************************
+
+	struct PosterData
+	{
+		BYTE color;
+		int anim_no;
+	}*send_poster(nullptr);
+
+	int num_poster = poster_mng->Get_numof();
+	send_poster = new PosterData[num_poster];
+
+	for (int i = 0; i < num_poster; i++)
+	{
+		send_poster[i].color = (BYTE)poster_mng->Get_color(i);
+		send_poster[i].anim_no = poster_mng->Get_animation_frame(i);
+	}
+
+	m_pServer->Send(client, (char*)send_poster, sizeof(*send_poster)*num_poster);
+
+	delete[] send_poster;
 }
 
 //---------------------------------------------------------------------

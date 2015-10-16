@@ -122,6 +122,18 @@
     <ClCompile Include="source\Net\UDPServer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\poster\poster.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\poster\Poster_frame.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\poster\Poster_manager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\score\Score.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IEX\iextreme.h">
@@ -144,7 +156,6 @@
     <ClInclude Include="IEX\ogg\vorbisenc.h" />
     <ClInclude Include="IEX\ogg\vorbisfile.h" />
     <ClInclude Include="IEX\IEX_Math2.h" />
-    <ClInclude Include="source\ShareData\EventData.h" />
     <ClInclude Include="source\Scene\SceneMainServer.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
@@ -157,6 +168,10 @@
     <ClInclude Include="source\stage\Stage.h" />
     <ClInclude Include="source\Net\PaperServer.h" />
     <ClInclude Include="source\Net\UDPServer.h" />
+    <ClInclude Include="source\poster\Poster.h" />
+    <ClInclude Include="source\poster\Poster_frame.h" />
+    <ClInclude Include="source\poster\Poster_manager.h" />
+    <ClInclude Include="source\score\Score.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DATA\Shader\2D.fx">

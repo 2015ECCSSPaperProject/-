@@ -14,6 +14,9 @@ using namespace std;
 // アラミタマ
 iex3DObj *set;
 
+#include "../poster/Poster_manager.h"
+#include "../score/Score.h"
+
 //******************************************************************
 //		初期化・解放
 //******************************************************************
@@ -43,6 +46,9 @@ SceneMainServer::SceneMainServer()
 		player[i]->Initialize(set);
 	}
 	
+	score = new Score;
+	poster_mng = new Poster_manager;
+	poster_mng->Initialize(score);
 
 	//	スレッド開始
 	m_pThread = 0;
@@ -136,6 +142,9 @@ SceneMainServer::~SceneMainServer()
 	}
 
 	delete set;
+
+	SAFE_DELETE(poster_mng);
+	SAFE_DELETE(score);
 }
 
 
