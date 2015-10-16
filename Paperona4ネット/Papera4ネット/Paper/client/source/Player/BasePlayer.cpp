@@ -35,7 +35,7 @@ void BasePlayer::Initialize(iex3DObj *obj)
 	// 基本パラメータ初期化
 	pos = Vector3(0, 0, 0);
 	angleY = 0.0f;
-	scale = .5f;
+	scale = 1.0f;
 	move = Vector3(0, 0, 0);
 	speed = 5.0f;
 	fallspeed = .0f;

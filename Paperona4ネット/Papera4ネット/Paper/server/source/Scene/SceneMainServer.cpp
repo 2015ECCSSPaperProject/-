@@ -160,14 +160,13 @@ void SceneMainServer::Update()
 	//フェード処理
 	FadeControl::Update();
 
-	stage->Render();
-
 	// サーバー
 	for (int i = 0; i < PLAYER_MAX; i++)
 	{
 		player[i]->Update();
 	}
 	
+	poster_mng->Update();
 }
 
 

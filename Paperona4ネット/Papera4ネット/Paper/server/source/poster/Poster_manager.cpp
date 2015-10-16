@@ -26,7 +26,7 @@ void Poster_manager::Initialize(Score *score)
 
 	poster_model = new iex3DObj("DATA/Poster/posuta-.IEM");
 	frame = new Poster_frame;
-	frame->Initialize(new iexMesh("DATA/Poster/frame.IMO"));
+	frame->Initialize(new iexMesh("DATA/Poster/waku.IMO"));
 
 	poster_textures[(int)TEAM_COLOR::ONE] = iexTexture::Load("DATA/Poster/red.png");
 	poster_textures[(int)TEAM_COLOR::TWO] = iexTexture::Load("DATA/Poster/blue.png");
