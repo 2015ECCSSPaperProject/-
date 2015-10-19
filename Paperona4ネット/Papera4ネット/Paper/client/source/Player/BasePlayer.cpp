@@ -496,4 +496,4 @@ void BasePlayer::Action::Gun::Render()
 
 
 //Å@é¿ë‘
-BasePlayer* player[PLAYER_MAX];
+//BasePlayer* player[PLAYER_MAX];

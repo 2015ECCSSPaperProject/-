@@ -261,4 +261,4 @@ public:
 	void Set_motion(int no);
 };
 
-extern BasePlayer* player[PLAYER_MAX];
+//extern BasePlayer* player[PLAYER_MAX];
