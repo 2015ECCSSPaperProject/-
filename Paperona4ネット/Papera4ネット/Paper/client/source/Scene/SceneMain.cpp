@@ -30,6 +30,7 @@ extern Bench_mark bench;
 
 // アラミタマ
 iex3DObj *set;
+iex3DObj *set_die;
 
 #include "../camera/Camera.h"
 #include "../stage/Stage.h"
@@ -67,6 +68,7 @@ bool SceneMain::Initialize()
 	sky->Update();
 
 	set = new iex3DObj("DATA/CHR/player/run.IEM");
+	set_die = new iex3DObj("DATA/CHR/player/die.IEM");
 
 	//■■■　相手と自分で分ける
 	for (int i = 0; i <PLAYER_MAX; ++i)
@@ -78,7 +80,7 @@ bool SceneMain::Initialize()
 		else
 			player[i] = new NetPlayer();
 
-		player[i]->Initialize(set);
+		player[i]->Initialize(set, set_die);
 	}
 
 	score = new Score;
@@ -108,6 +110,7 @@ SceneMain::~SceneMain()
 	delete m_pThread;//　なんかスレッド消さないとエラー起こる
 
 	delete set;
+	delete set_die;
 
 	for (int i = 0; i <PLAYER_MAX; ++i)
 	{

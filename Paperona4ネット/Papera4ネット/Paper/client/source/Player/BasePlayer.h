@@ -50,6 +50,7 @@ protected:
 	int				se_receive;
 
 	iex3DObj			*model;
+	iex3DObj			*die_model;
 
 	POINT	mousePos;		//	マウス座標
 
@@ -155,6 +156,7 @@ protected:
 		{
 		private:
 			int die_frame;
+			int flashing;
 
 		public:
 			Die(BasePlayer*me) :Base(me){}
@@ -207,7 +209,7 @@ public:
 	//===============================================
 	BasePlayer();
 	virtual ~BasePlayer();
-	virtual void Initialize(iex3DObj *obj);
+	virtual void Initialize(iex3DObj *obj, iex3DObj *die);
 	virtual void Release();
 
 

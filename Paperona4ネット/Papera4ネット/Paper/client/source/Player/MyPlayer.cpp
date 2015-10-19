@@ -20,9 +20,9 @@ MyPlayer::MyPlayer() :BasePlayer()
 MyPlayer::~MyPlayer()
 {}
 
-void MyPlayer::Initialize(iex3DObj *obj)
+void MyPlayer::Initialize(iex3DObj *obj, iex3DObj *die)
 {
-	BasePlayer::Initialize(obj);
+	BasePlayer::Initialize(obj, die);
 }
 
 void MyPlayer::Release()

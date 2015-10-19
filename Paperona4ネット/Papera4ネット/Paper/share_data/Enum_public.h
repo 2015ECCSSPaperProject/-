@@ -21,7 +21,8 @@ enum class PLAYER_CONTROL
 	LEFT_CLICK = 0x1,
 	RIGHT_CLICK = 0x2,
 	SPACE = 0x4,
-	TRG_C = 0x8	// Cキー押した瞬間
+	TRG_C = 0x8,	// Cキー押した瞬間
+	ATTACK_BUTTON = 0x10
 };
 
 enum class REND_FLAG

@@ -151,7 +151,8 @@ protected:
 		class Die : public Base
 		{
 		private:
-			int die_frame;
+			BYTE die_frame;
+			BYTE flashing;
 
 		public:
 			Die(BasePlayer*me) :Base(me){}
@@ -227,9 +228,16 @@ public:
 	Vector3 Get_forward(){ return Vector3(model->TransMatrix._31, model->TransMatrix._32, model->TransMatrix._33); }
 
 	// プレイヤーのモード
-	ACTION_PART Get_action(){ return action_part; }
+	ACTION_PART Get_action()
+	{
+		return action_part; 
+	}
 	void Change_action(ACTION_PART part)
 	{
+		if (action_part > ACTION_PART::MAX)
+		{
+			MessageBox(0, "サーバーのアクション取得中の値がおかしい", null, MB_OK);
+		}
 		action_part = part;
 		action[(unsigned int)part]->Initialize();
 	}
@@ -242,5 +250,12 @@ public:
 	void Set_motion(int no);
 
 };
+
+namespace PlayerManager
+{
+	int Check_attack(int me);
+}
+
+
 
 extern BasePlayer* player[PLAYER_MAX];

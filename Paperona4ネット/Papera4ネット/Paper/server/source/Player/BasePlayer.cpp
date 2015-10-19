@@ -246,6 +246,11 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 			}
 		}
 	}
+	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::ATTACK_BUTTON)
+	{
+		me->Change_action(ACTION_PART::ATTACK);
+	}
+
 	else if (!(_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::TRG_C))
 	{
 		me->Change_action(ACTION_PART::MOVE_FPS);
@@ -347,6 +352,11 @@ void BasePlayer::Action::MoveFPS::Update(const CONTROL_DESC &_ControlDesc)
 			}
 		}
 	}
+	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::ATTACK_BUTTON)
+	{
+		me->Change_action(ACTION_PART::ATTACK);
+	}
+
 	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::TRG_C)
 	{
 		me->Change_action(ACTION_PART::MOVE);
@@ -361,10 +371,31 @@ void BasePlayer::Action::MoveFPS::Update(const CONTROL_DESC &_ControlDesc)
 //*****************************************************************************
 
 void BasePlayer::Action::Attack::Initialize()
-{}
+{
+	me->move = VECTOR_ZERO;
+	me->Set_motion(4);
+}
 
 void BasePlayer::Action::Attack::Update(const CONTROL_DESC &_ControlDesc)
-{}
+{
+	// モーション終了
+	if (me->model->GetParam(0) == 2)
+	{
+		(me->camera_mode == CAMERA_MODE::TPS) ? me->Change_action(ACTION_PART::MOVE) : me->Change_action(ACTION_PART::MOVE_FPS);
+		me->Set_motion(0);
+	}
+
+	// 破くモーションのフレーム
+	else if (me->model->GetParam(0) == 1)
+	{
+		// 破く処理
+		int no = PlayerManager::Check_attack(me->m_id);
+		if (no != -1)
+		{
+			player[no]->Change_action(ACTION_PART::DIE);
+		}
+	}
+}
 
 
 //*****************************************************************************
@@ -470,10 +501,19 @@ void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
 //*****************************************************************************
 
 void BasePlayer::Action::Die::Initialize()
-{}
+{
+	die_frame = 0;
+
+	me->move = VECTOR_ZERO;
+}
 
 void BasePlayer::Action::Die::Update(const CONTROL_DESC &_ControlDesc)
-{}
+{
+	if (die_frame++ > 60)
+	{
+		(me->camera_mode == CAMERA_MODE::TPS) ? me->Change_action(ACTION_PART::MOVE) : me->Change_action(ACTION_PART::MOVE_FPS);
+	}
+}
 
 
 
@@ -566,3 +606,35 @@ void BasePlayer::Action::Gun::Update(const CONTROL_DESC &_ControlDesc)
 
 //　実態
 BasePlayer* player[PLAYER_MAX];
+
+
+
+
+
+
+
+int PlayerManager::Check_attack(int me)
+{
+	int no = -1;
+	for (int i = 0; i < PLAYER_MAX; i++)
+	{
+		if (i == me)continue;
+
+		Vector3 vec(player[i]->Get_pos() - player[me]->Get_pos());
+
+		// 距離
+		if (vec.Length() < 16)
+		{
+			vec.Normalize();
+			Vector3 front(sinf(player[me]->Get_angleY()), 0, cosf(player[me]->Get_angleY()));
+
+			// 角度
+			if (Vector3Dot(vec, front) > .707f)
+			{
+				no = i;
+				break;
+			}
+		}
+	}
+	return no;
+}
