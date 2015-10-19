@@ -14,8 +14,7 @@
 
 #define VECTOR_ZERO Vector3(0.0f,0.0f,0.0f);
 
-#define PLAYER_MAX 6
-
+#define PLAYER_MAX	6
 //********************************************
 //機能概要：点と点の距離を取得する
 //引数：Vector Vec1,Vec2 点
@@ -1219,6 +1218,8 @@ BOOL	IEX_InitInput();
 void	IEX_ReleaseInput();
 
 #define	KEY(x)	KEY_Get(x)
+
+
 
 //*****************************************************************************
 //

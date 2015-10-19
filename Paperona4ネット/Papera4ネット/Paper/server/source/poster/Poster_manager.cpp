@@ -6,6 +6,33 @@
 #include "Poster_frame.h"
 
 #include "../Player/BasePlayer.h"
+#include "../fstream/fstream_paper.h"
+#include "../../IEX/IEX_Math2.h"
+
+void Poster_manager::Load_poster_pos(char *filename)
+{
+	std::ifstream infs(filename);
+
+	Poster *p(nullptr);
+	float angle(0);
+	Vector3 pos(0, 0, 0);
+	int point(0);
+	this->number_of_posters = 0;
+	while (!infs.eof())
+	{
+		infs >> angle;
+		angle = Degree_to_radian(angle);
+		infs >> pos;
+		infs >> point;
+		p = new Poster;
+		p->Initialize(poster_model, score, point);
+		p->Set_pose(angle, pos);
+		posters.push_back(p);
+		this->number_of_posters++;
+	}
+}
+
+
 
 Poster_manager::Poster_manager() : poster_model(nullptr), frame(nullptr)
 {
@@ -34,35 +61,7 @@ void Poster_manager::Initialize(Score *score)
 	poster_textures[(int)TEAM_COLOR::TWO] = iexTexture::Load("DATA/Poster/blue.png");
 
 	// ここでポスターの配置を決める
-	number_of_posters = 5;
-
-	Poster *p;
-
-	p = new Poster;
-	p->Initialize(poster_model, score, 1);
-	p->Set_pose(PI, Vector3(0, 0, 50));
-	posters.push_back(p);
-
-	p = new Poster;
-	p->Initialize(poster_model, score, 1);
-	p->Set_pose(PI, Vector3(50, 0, 50));
-	posters.push_back(p);
-
-	p = new Poster;
-	p->Initialize(poster_model, score, 1);
-	p->Set_pose(PI, Vector3(-50, 0, 50));
-	posters.push_back(p);
-
-	p = new Poster;
-	p->Initialize(poster_model, score, 1);
-	p->Set_pose(PI, Vector3(100, 0, 50));
-	posters.push_back(p);
-
-	p = new Poster;
-	p->Initialize(poster_model, score, 1);
-	p->Set_pose(PI, Vector3(-100, 0, 50));
-	posters.push_back(p);
-
+	Load_poster_pos("DATA/MATI/poster_pos.txt");
 }
 
 void Poster_manager::Release()
@@ -145,6 +144,7 @@ int Poster_manager::Get_animation_frame(int index)
 {
 	return posters[index]->Get_animation_frame();
 }
+
 
 
 const Vector3& Poster_manager::Get_pos(int index)

@@ -26,6 +26,9 @@ private:
 	Poster_frame *frame;
 
 	Score *score;
+
+	void Load_poster_pos(char *filename);
+
 public:
 	Poster_manager();
 	~Poster_manager();

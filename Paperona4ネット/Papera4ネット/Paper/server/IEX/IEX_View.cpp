@@ -17,7 +17,7 @@ void iexView::Clear( DWORD color, bool bClearZ )
 	DWORD	flag = D3DCLEAR_TARGET;
 
 	if( bClearZ ) flag |= D3DCLEAR_ZBUFFER;
-	iexSystem::GetDevice()->Clear( 0, NULL, flag, color, 1.0f, 0 );//@‚½‚Ü‚É‚È‚º‚©ƒoƒO‚é
+	iexSystem::GetDevice()->Clear( 0, NULL, flag, color, 1.0f, 0 );
 }
 
 //------------------------------------------------------

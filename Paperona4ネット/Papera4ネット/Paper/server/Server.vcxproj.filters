@@ -134,6 +134,9 @@
     <ClCompile Include="source\score\Score.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\fstream\fstream_paper.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IEX\iextreme.h">
@@ -172,6 +175,7 @@
     <ClInclude Include="source\poster\Poster_frame.h" />
     <ClInclude Include="source\poster\Poster_manager.h" />
     <ClInclude Include="source\score\Score.h" />
+    <ClInclude Include="source\fstream\fstream_paper.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DATA\Shader\2D.fx">
