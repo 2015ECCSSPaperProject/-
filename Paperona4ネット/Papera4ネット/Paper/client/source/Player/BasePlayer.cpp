@@ -31,7 +31,7 @@ BasePlayer::~BasePlayer()
 	Release();
 }
 
-void BasePlayer::Initialize(iex3DObj *obj)
+void BasePlayer::Initialize(iex3DObj *obj ,iex3DObj *die)
 {
 	// 基本パラメータ初期化
 	pos = Vector3(0, 0, 0);
@@ -48,6 +48,7 @@ void BasePlayer::Initialize(iex3DObj *obj)
 
 	// 3D実体
 	model = obj->Clone();
+	die_model = die->Clone();
 
 	// 行動状態初期化
 	action[(int)ACTION_PART::MOVE] = new BasePlayer::Action::Move(this);
@@ -69,6 +70,7 @@ void BasePlayer::Initialize(iex3DObj *obj)
 void BasePlayer::Release()
 {
 	SAFE_DELETE(model);
+	SAFE_DELETE(die_model);
 
 	for (int i = 0; i < (int)ACTION_PART::MAX; i++)
 	{
@@ -121,6 +123,10 @@ void BasePlayer::Control_all()
 	else if (KeyBoard(MOUSE_RIGHT))
 	{
 		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::RIGHT_CLICK;
+	}
+	else if (KeyBoard(MOUSE_CENTAR))
+	{
+		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::ATTACK_BUTTON;
 	}
 
 	if (KeyBoard(KB_SPACE))
@@ -278,13 +284,29 @@ void BasePlayer::Action::MoveFPS::Render()
 //*****************************************************************************
 
 void BasePlayer::Action::Attack::Initialize()
-{}
+{
+	me->m_controlDesc.controlFlag &= 0x00000000;
+	me->m_controlDesc.moveFlag &= 0x00000000;
+	me->m_controlDesc.rendFlag &= 0x00000000;
+
+	me->Set_motion(4);
+}
 
 void BasePlayer::Action::Attack::Update()
-{}
+{
+	if (GetKeyState('C') & 0x1)	// トグル
+	{
+		me->m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::TRG_C;
+	}
+}
 
 void BasePlayer::Action::Attack::Render()
 {
+	me->model->Animation();
+	me->model->SetScale(me->scale);
+	me->model->SetAngle(me->angleY);
+	me->model->SetPos(me->pos);
+	me->model->Update();
 	me->model->Render();
 }
 
@@ -389,15 +411,42 @@ void BasePlayer::Action::Rend::Render()
 //*****************************************************************************
 
 void BasePlayer::Action::Die::Initialize()
-{}
+{
+	me->m_controlDesc.controlFlag &= 0x00000000;
+	me->m_controlDesc.moveFlag &= 0x00000000;
+	me->m_controlDesc.rendFlag &= 0x00000000;
+
+	die_frame = 0;
+	flashing = 0;
+
+	// ばぐるかも
+	me->die_model->SetFrame(0);
+}
 
 void BasePlayer::Action::Die::Update()
-{}
+{
+	if (GetKeyState('C') & 0x1)	// トグル
+	{
+		me->m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::TRG_C;
+	}
+}
 
 void BasePlayer::Action::Die::Render()
 {
-	Update_obj();
-	me->model->Render();
+	me->die_model->Animation();
+	me->die_model->SetScale(me->scale);
+	me->die_model->SetAngle(me->angleY);
+	me->die_model->SetPos(me->pos);
+	me->die_model->Update();
+
+	flashing++;
+	if (flashing < 4) {
+		me->die_model->Render();
+	}
+	else if (flashing > 8){
+		flashing = 0;
+	}
+
 }
 
 
@@ -447,4 +496,4 @@ void BasePlayer::Action::Gun::Render()
 
 
 //　実態
-BasePlayer* player[PLAYER_MAX];
+//BasePlayer* player[PLAYER_MAX];

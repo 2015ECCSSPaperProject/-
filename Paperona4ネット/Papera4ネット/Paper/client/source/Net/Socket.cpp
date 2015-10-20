@@ -9,6 +9,7 @@
 #include	"UDPclient.h"
 
 #include	"../Player/BasePlayer.h"
+#include	"../Player/PlayerManager.h"
 
 #include	"../bench/Bench_mark.h"
 #include "../poster/Poster_manager.h"
@@ -191,7 +192,8 @@ void SocketManager::UpdateUser()	/* プレイヤー更新 */
 
 	//　※ベースプレイヤーのコントロールデスクを持ってくる
 	BasePlayer::CONTROL_DESC desc;
-	desc = player[m_myID]->GetDesc();
+	//desc = player[m_myID]->GetDesc();
+	desc = player_mng->Get_player(m_myID)->GetDesc();
 
 	send.com = USER_DATA;
 	send.moveFlag = desc.moveFlag;

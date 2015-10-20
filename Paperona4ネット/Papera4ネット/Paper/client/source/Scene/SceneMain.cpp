@@ -29,7 +29,10 @@
 extern Bench_mark bench;
 
 // アラミタマ
-iex3DObj *set;
+//iex3DObj *set;
+//iex3DObj *set_die;
+#include	"../Player/PlayerManager.h"
+
 
 #include "../camera/Camera.h"
 #include "../stage/Stage.h"
@@ -66,20 +69,24 @@ bool SceneMain::Initialize()
 	sky->SetPos(0, -100, 0);
 	sky->Update();
 
-	set = new iex3DObj("DATA/CHR/player/run.IEM");
+	//set = new iex3DObj("DATA/CHR/player/run.IEM");
+	//set_die = new iex3DObj("DATA/CHR/player/die.IEM");
 
 	//■■■　相手と自分で分ける
-	for (int i = 0; i <PLAYER_MAX; ++i)
-	{
-		if (i == SOCKET_MANAGER->GetID()){
-			player[i] = new MyPlayer();
-			camera->Initialize(player[i]);	// カメラ設定
-		}
-		else
-			player[i] = new NetPlayer();
+	//for (int i = 0; i <PLAYER_MAX; ++i)
+	//{
+	//	if (i == SOCKET_MANAGER->GetID()){
+	//		player[i] = new MyPlayer();
+	//		camera->Initialize(player[i]);	// カメラ設定
+	//	}
+	//	else
+	//		player[i] = new NetPlayer();
 
-		player[i]->Initialize(set);
-	}
+	//	player[i]->Initialize(set, set_die);
+	//}
+
+	player_mng = new PlayerManager;
+	player_mng->Initialize();
 
 	score = new Score;
 	poster_mng = new Poster_manager;
@@ -107,12 +114,14 @@ SceneMain::~SceneMain()
 	delete sky;
 	delete m_pThread;//　なんかスレッド消さないとエラー起こる
 
-	delete set;
+	//delete set;
+	//delete set_die;
+	//for (int i = 0; i <PLAYER_MAX; ++i)
+	//{
+	//	SAFE_DELETE(player[i]);
+	//}
 
-	for (int i = 0; i <PLAYER_MAX; ++i)
-	{
-		SAFE_DELETE(player[i]);
-	}
+	SAFE_DELETE(player_mng);
 
 	SAFE_DELETE(poster_mng);
 	SAFE_DELETE(score);
@@ -163,18 +172,19 @@ void SceneMain::ThreadFunc(void* pData, bool*isEnd)
 void SceneMain::Update()
 {
 	//　プレイヤー
-	for (int i = 0; i < PLAYER_MAX; ++i)
-	{
-		//　ここのながれ一番重要
-		//　送られてきた情報を各プレイヤーにセット！！
-		PlayerData sendPlayer = SOCKET_MANAGER->GetPlayer(i);
-		player[i]->Set_pos(sendPlayer.pos);
-		player[i]->Set_angleY(sendPlayer.angleY);
+	//for (int i = 0; i < PLAYER_MAX; ++i)
+	//{
+	//	//　ここのながれ一番重要
+	//	//　送られてきた情報を各プレイヤーにセット！！
+	//	PlayerData sendPlayer = SOCKET_MANAGER->GetPlayer(i);
+	//	player[i]->Set_pos(sendPlayer.pos);
+	//	player[i]->Set_angleY(sendPlayer.angleY);
 
-		player[i]->Set_motion_no(sendPlayer.motion_no);	// ここで帰ってきたモーションの番号をセット
-		player[i]->Set_aciton((BasePlayer::ACTION_PART)sendPlayer.action_part);
-		player[i]->Update();
-	}
+	//	player[i]->Set_motion_no(sendPlayer.motion_no);	// ここで帰ってきたモーションの番号をセット
+	//	player[i]->Set_aciton((BasePlayer::ACTION_PART)sendPlayer.action_part);
+	//	player[i]->Update();
+	//}
+	player_mng->Update();
 
 	// カメラ
 	camera->Update();
@@ -210,21 +220,22 @@ void SceneMain::Render()
 	sky->Render();
 
 	//　プレイヤー
-	for (int i = 0; i < PLAYER_MAX; ++i)
-	{
-		player[i]->Render();
-		Text::Draw(1100, 20 + (i * 32), 0xff00ffff, "pos.x->%.2f", player[i]->Get_pos().x);
+	//for (int i = 0; i < PLAYER_MAX; ++i)
+	//{
+	//	player[i]->Render();
+	//	Text::Draw(1100, 20 + (i * 32), 0xff00ffff, "pos.x->%.2f", player[i]->Get_pos().x);
 
-		Text::Draw(950, 20 + (i * 32), 0xff00ffff, "名前：%s", SOCKET_MANAGER->GetUser(i).name);
-	}
+	//	Text::Draw(950, 20 + (i * 32), 0xff00ffff, "名前：%s", SOCKET_MANAGER->GetUser(i).name);
+	//}
+	player_mng->Render();
 
 	poster_mng->Render();
 
 	Text::Draw(100, 20, 0xff00ffff, "受信時間%.2f", bench.Get_time());
 
 	//マウスの場所
-	Text::Draw(10, 60, 0xff000000, "マウスのXの動き%.2f", player[SOCKET_MANAGER->GetID()]->m_controlDesc.mouseX);
-	Text::Draw(10, 80, 0xff000000, "マウスのYの動き%.2f", player[SOCKET_MANAGER->GetID()]->m_controlDesc.mouseY);
+	Text::Draw(10, 60, 0xff000000, "マウスのXの動き%.2f", player_mng->Get_player(SOCKET_MANAGER->GetID())->m_controlDesc.mouseX);
+	Text::Draw(10, 80, 0xff000000, "マウスのYの動き%.2f", player_mng->Get_player(SOCKET_MANAGER->GetID())->m_controlDesc.mouseY);
 
 	//ナンバーエフェクト
 	Number_Effect::Render();
