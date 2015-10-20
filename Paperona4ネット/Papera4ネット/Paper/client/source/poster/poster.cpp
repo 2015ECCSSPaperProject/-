@@ -1,4 +1,4 @@
-
+#include "../system/System.h"
 #include "Poster.h"
 //#include "../score/Score.h"
 //#include "../player/Player.h"
@@ -29,7 +29,11 @@ void Poster::Mode_waite::Render()
 	if (me->model != nullptr)
 	{
 		me->model->Update();
-		me->model->Render();
+		//自分のテクスチャーを適用したシェーダーに
+		char ShaderName[64];
+		sprintf(ShaderName, "poster_%d", me->mynumber);
+
+		me->model->Render(shader, ShaderName);
 	}
 }
 
@@ -54,7 +58,11 @@ void Poster::Mode_rend::Render()
 	if (me->model != nullptr)
 	{
 		me->model->Update();
-		me->model->Render();
+		//自分のテクスチャーを適用したシェーダーに
+		char ShaderName[64];
+		sprintf(ShaderName, "poster_%d", me->mynumber);
+	
+		me->model->Render(shader, ShaderName);
 	}
 }
 

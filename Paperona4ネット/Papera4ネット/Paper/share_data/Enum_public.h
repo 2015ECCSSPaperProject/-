@@ -25,3 +25,13 @@ enum class REND_FLAG
 	LEFT = 0x4,
 	UP = 0x8
 };
+
+
+#define LAYER_MAX	10
+#define KIND_MAX	3
+#define NO_MAX		10
+//　スタンプの種類に名前を付けると便利
+enum KIND_NAME
+{
+	OBJECT = 0, FOOD = 1, BACK = 2
+};

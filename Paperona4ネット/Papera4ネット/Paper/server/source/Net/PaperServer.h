@@ -1,5 +1,6 @@
 #pragma once
 #include<list>
+#include	"../../../share_data/Enum_public.h"
 //*****************************************************************************************************************************
 //
 //		server
@@ -8,6 +9,7 @@
 //=======================================================================
 //	前方宣言
 //=======================================================================
+
 class UDPServer;
 
 //---------------------------------------------------------------------
@@ -47,6 +49,25 @@ struct ContorlDesc
 	BYTE	controlFlag;	// ぼたん
 };
 
+//---------------------------------------------------------------------
+//  ユーザーのレイヤーのパラメータ
+//---------------------------------------------------------------------
+struct LayerData
+{
+
+	struct LAYER_DATA
+	{
+		/*種類とナンバー*/
+		int kind;
+		int num;
+		float x, y;//	場所
+		int size;//		サイズ
+		bool isHold;//	掴んでるか
+	};
+	LAYER_DATA layerdata[LAYER_MAX];
+
+};
+
 
 //=======================================================================
 //	サーバークラス
@@ -65,6 +86,7 @@ public:
 		/*	USER_INIT,*/
 		USER_DATA = 5,
 		POSTER_DATA = 6,
+		LAYER_DATA = 7
 	
 	};
 
@@ -73,6 +95,7 @@ public:
 	{
 		UserData		user[PLAYER_MAX];
 		ContorlDesc		desc[PLAYER_MAX];
+		LayerData		layer[PLAYER_MAX];// レイヤー
 	};
 
 
@@ -89,6 +112,8 @@ private:
 	//static void InitUser(char* data, int client);
 	static void UpdateUser(char* data, int client);			/*	プレイヤーの更新										*/
 	static void UpdatePoster(int client);		/*	ポスターの更新											*/
+	static void UpdateLayer(char* data, int client);		/*	レイヤーの更新									　　	*/
+
 public:
 	static void Init();			/*	ネットプログラム開始	*/
 	static void Release();		/*	ネットプログラム終り	*/
@@ -100,7 +125,9 @@ public:
 	//ルームのゲッター
 	static const ContorlDesc&	GetDesc(int i){ return m_room.desc[i]; }
 	static const UserData&		GetUser(int i){ return m_room.user[i]; }
-	
+	static const LayerData&		GetLayer(int i){ return m_room.layer[i]; }
+
+
 	//　プレイヤーの操作命令をリセット
 	static void ResetDesc(int i)
 	{

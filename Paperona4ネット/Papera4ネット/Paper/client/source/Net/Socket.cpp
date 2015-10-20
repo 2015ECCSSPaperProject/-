@@ -40,6 +40,15 @@ bool SocketManager::Init()
 
 	ZeroMemory(m_user, sizeof(UserData)* PLAYER_MAX);
 	ZeroMemory(m_player, sizeof(PlayerData)* PLAYER_MAX);
+	ZeroMemory(m_layer, sizeof(LayerData)* PLAYER_MAX);// 全員分のレイヤー初期化　10*6人
+	enum { NO_LAYER = -1 };
+	for (int p = 0; p < PLAYER_MAX; p++)
+	{
+		for (int la = 0; la < LAYER_MAX; la++)
+		{
+			m_layer[p].layerdata[la].kind = NO_LAYER;// NO_DATA 種類だけ-1に
+		}
+	}
 
 
 	BYTE com(NEW_USER);
@@ -54,6 +63,29 @@ bool SocketManager::Init()
 		return false;
 	}
 
+	// ※追加
+
+	/* セーブしたレイヤーの読み込み　*/
+	std::ifstream in("DATA/makePoster/text/Layer.txt");
+	// バッファに読み込む
+	if (in)//そのファイルがあるなら！
+	{
+		for (int i = 0; i < LAYER_MAX; i++)
+		{
+			in >> m_layer[m_myID].layerdata[i].kind;
+			in >> m_layer[m_myID].layerdata[i].num;
+			in >> m_layer[m_myID].layerdata[i].x;
+			in >> m_layer[m_myID].layerdata[i].y;
+			in >> m_layer[m_myID].layerdata[i].size;
+			in >> m_layer[m_myID].layerdata[i].isHold;
+		}
+
+		in.close();
+	}
+	else
+	{
+		assert("ポスターのテキストがない!");
+	}
 
 	return true;
 }
@@ -126,6 +158,39 @@ void SocketManager::UpdateTeam(int isReady)
 	}
 }
 
+
+//   選択中　レイヤー更新
+void SocketManager::UpdateLayer()
+{
+	if (m_pClient->m_sock == INVALID_SOCKET)
+		return;
+
+	struct DATA
+	{
+		BYTE com;
+		LayerData layers;
+
+	}data;
+
+	/*	自分のレイヤーを毎回送るよ	*/
+	data.com = LAYER_DATA;
+	data.layers = m_layer[m_myID];
+
+	m_pClient->Send(&data, sizeof(data));
+
+	/*	毎回皆のポスターを更新	*/
+	LayerData receive;
+
+	for (int i = 0; i<PLAYER_MAX; ++i)
+	{
+		if (m_pClient->Receive((char*)&receive, sizeof(LayerData)) <= 0)
+			break;
+
+		m_layer[i] = receive;
+	}
+
+
+};
 
 //===================================================================================
 //  試合前

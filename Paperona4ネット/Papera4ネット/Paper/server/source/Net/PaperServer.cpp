@@ -41,6 +41,16 @@ void ServerManager::Init()
 
 	//　操作命令のデータを全部初期化
 	ZeroMemory(m_room.desc, sizeof(ContorlDesc)*PLAYER_MAX);
+	// 全員分のレイヤー初期化　10*6人
+	ZeroMemory(m_room.layer, sizeof(LayerData)* PLAYER_MAX);
+	enum { NO_LAYER = -1 };
+	for (int p = 0; p < PLAYER_MAX; p++)
+	{
+		for (int la = 0; la < LAYER_MAX; la++)
+		{
+			m_room.layer[p].layerdata[la].kind = NO_LAYER;// NO_DATA 種類だけ-1に
+		}
+	}
 
 
 }
@@ -85,6 +95,9 @@ void ServerManager::Update()
 		break;
 	case POSTER_DATA:
 		UpdatePoster(client);
+		break;
+	case LAYER_DATA:
+		UpdateLayer(data, client);
 		break;
 	}
 }
@@ -351,6 +364,35 @@ void ServerManager::UpdatePoster(int client)
 
 	delete[] send_poster;
 }
+
+
+//---------------------------------------------------------------------
+//   ★レイヤーの更新
+//---------------------------------------------------------------------
+void ServerManager::UpdateLayer(char* data, int client)
+{
+	struct RECEIVE_LAYER
+	{
+		BYTE com;
+		LayerData layers;
+	};
+	RECEIVE_LAYER* receive = (RECEIVE_LAYER*)data;
+
+	//	送られてきたレイヤーを受信
+	m_room.layer[client] = receive->layers;
+
+
+	/*クライアントにみんなのレイヤー情報を送信*/
+	for (int i = 0; i<PLAYER_MAX; ++i)
+	{
+		LayerData data;
+		data = m_room.layer[i];
+
+		m_pServer->Send(client, (char*)&data, sizeof(LayerData));// サイズオフの形には気を付けよう(悔い改め)
+	}
+}
+
+
 
 //---------------------------------------------------------------------
 //   exit

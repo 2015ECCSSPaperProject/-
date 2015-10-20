@@ -1,6 +1,7 @@
 #pragma once
 
 #include	"../system/Scene.h"
+#include	"../../../share_data/Enum_public.h"
 
 class PaperClient;
 class Thread;
@@ -34,4 +35,17 @@ private:
 	//   thread
 	//---------------------------------------------------------------------
 	static void ThreadFunc(void* pData, bool*);
+
+	//---------------------------------------------------------------------
+	//   Shader&Poster
+	//---------------------------------------------------------------------
+	iex2DObj* posterScreen[PLAYER_MAX];
+	iex2DObj* posterFrame[PLAYER_MAX];
+	Surface* backbuffer;// サーフェイス　
+	void PosterInit();
+	void PosterRender(int i);
+
+	//　スタンプの画像の2次元配列
+	iex2DObj* StampPicture[KIND_MAX][NO_MAX];
+
 };

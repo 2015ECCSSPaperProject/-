@@ -3,6 +3,7 @@
 #include	"../IEX/OKB.h"
 #include	"../Scene/SceneMain.h"
 #include	"../Scene/SceneTitle.h"
+#include	"../Scene/SceneMakePoster.h"
 
 #include<crtdbg.h>
 
@@ -51,7 +52,7 @@ BOOL	InitApp( HWND hWnd )
 	//	メインフレームワーク生成
 	MainFrame = new Framework();
 	//	初期シーン登録
-	MainFrame->ChangeScene(new SceneTitle());
+	MainFrame->ChangeScene(new SceneMakePoster());
 
 	return TRUE;
 }

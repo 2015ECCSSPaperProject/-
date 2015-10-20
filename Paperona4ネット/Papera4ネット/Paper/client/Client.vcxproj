@@ -140,6 +140,7 @@
     <ClCompile Include="source\poster\Poster_frame.cpp" />
     <ClCompile Include="source\poster\Poster_manager.cpp" />
     <ClCompile Include="source\Scene\SceneMain.cpp" />
+    <ClCompile Include="source\Scene\SceneMakePoster.cpp" />
     <ClCompile Include="source\Scene\SceneSelect.cpp" />
     <ClCompile Include="source\Scene\SceneTitle.cpp" />
     <ClCompile Include="source\score\Score.cpp" />
@@ -185,6 +186,7 @@
     <ClInclude Include="source\poster\Poster_frame.h" />
     <ClInclude Include="source\poster\Poster_manager.h" />
     <ClInclude Include="source\Scene\SceneMain.h" />
+    <ClInclude Include="source\Scene\SceneMakePoster.h" />
     <ClInclude Include="source\Scene\SceneSelect.h" />
     <ClInclude Include="source\Scene\SceneTitle.h" />
     <ClInclude Include="source\score\Score.h" />

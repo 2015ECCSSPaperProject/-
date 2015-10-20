@@ -61,6 +61,270 @@ sampler HeightSamp = sampler_state
 	AddressU = Wrap;
 	AddressV = Wrap;
 };
+
+
+
+/*PosterShader*/
+
+//------------------------------------------------------
+//		ポスター用サンプラー	
+//------------------------------------------------------
+texture PosterMap_0;		//	ポスターテクスチャ0
+sampler PosterSamp_0 = sampler_state
+{
+	Texture = <PosterMap_0>;
+	MinFilter = LINEAR;
+	MagFilter = LINEAR;
+	MipFilter = NONE;
+
+	AddressU = Wrap;
+	AddressV = Wrap;
+};
+texture PosterMap_1;		//	ポスターテクスチャ1
+sampler PosterSamp_1 = sampler_state
+{
+	Texture = <PosterMap_1>;
+	MinFilter = LINEAR;
+	MagFilter = LINEAR;
+	MipFilter = NONE;
+
+	AddressU = Wrap;
+	AddressV = Wrap;
+};
+texture PosterMap_2;		//	ポスターテクスチャ2
+sampler PosterSamp_2 = sampler_state
+{
+	Texture = <PosterMap_2>;
+	MinFilter = LINEAR;
+	MagFilter = LINEAR;
+	MipFilter = NONE;
+
+	AddressU = Wrap;
+	AddressV = Wrap;
+};
+texture PosterMap_3;		//	ポスターテクスチャ3
+sampler PosterSamp_3 = sampler_state
+{
+	Texture = <PosterMap_3>;
+	MinFilter = LINEAR;
+	MagFilter = LINEAR;
+	MipFilter = NONE;
+
+	AddressU = Wrap;
+	AddressV = Wrap;
+
+};
+texture PosterMap_4;		//	ポスターテクスチャ4
+sampler PosterSamp_4 = sampler_state
+{
+	Texture = <PosterMap_4>;
+	MinFilter = LINEAR;
+	MagFilter = LINEAR;
+	MipFilter = NONE;
+
+	AddressU = Wrap;
+	AddressV = Wrap;
+};
+texture PosterMap_5;		//	ポスターテクスチャ5
+sampler PosterSamp_5 = sampler_state
+{
+	Texture = <PosterMap_5>;
+	MinFilter = LINEAR;
+	MagFilter = LINEAR;
+	MipFilter = NONE;
+
+	AddressU = Wrap;
+	AddressV = Wrap;
+
+};
+//------------------------------------------------------
+//		頂点フォーマット
+//------------------------------------------------------
+struct VS_OUTPUT_POSTER
+{
+	float4 Pos		: POSITION;
+	float4 Color	: COLOR0;
+	float2 Tex		: TEXCOORD0;
+
+	float4 wPos			: TEXCOORD1;//　ピクセルに送る情報にワールドからのポジション追加
+	float4 ProjectionPos: TEXCOORD2;//　ピクセルに送る情報にゲーム画面ラストのポジション追加
+};
+
+struct VS_INPUT_POSTER
+{
+	float4 Pos    : POSITION;
+	float3 Normal : NORMAL;
+	float4 Color  : COLOR0;
+	float2 Tex	  : TEXCOORD0;
+};
+
+//------------------------------------------------------
+//		頂点シェーダー	
+//------------------------------------------------------
+VS_OUTPUT_POSTER VS_Poster(VS_INPUT_POSTER In)
+{
+	VS_OUTPUT_POSTER Out = (VS_OUTPUT_POSTER)0;
+	//TransMatrixとPosを合成してwPosの情報生成
+	Out.wPos = mul(In.Pos, TransMatrix);
+
+	Out.Pos = mul(In.Pos, Projection);
+	Out.Tex = In.Tex;
+	Out.Color = 1.0f;
+
+	Out.ProjectionPos = Out.Pos;
+
+	return Out;
+}
+//------------------------------------------------------
+//		ポスター毎ピクセルシェーダーのみ変更	
+//------------------------------------------------------
+float4 PS_Poster_0(VS_INPUT_POSTER In) : COLOR
+{
+	float4	OUT;
+	//	ピクセル色決定
+	OUT = In.Color * tex2D(PosterSamp_0, In.Tex);
+
+	return OUT;
+}
+float4 PS_Poster_1(VS_INPUT_POSTER In) : COLOR
+{
+	float4	OUT;
+	//	ピクセル色決定
+	OUT = In.Color * tex2D(PosterSamp_1, In.Tex);
+
+	return OUT;
+}
+float4 PS_Poster_2(VS_INPUT_POSTER In) : COLOR
+{
+	float4	OUT;
+	//	ピクセル色決定
+	OUT = In.Color * tex2D(PosterSamp_2, In.Tex);
+
+	return OUT;
+}
+float4 PS_Poster_3(VS_INPUT_POSTER In) : COLOR
+{
+	float4	OUT;
+	//	ピクセル色決定
+	OUT = In.Color * tex2D(PosterSamp_3, In.Tex);
+
+	return OUT;
+}
+float4 PS_Poster_4(VS_INPUT_POSTER In) : COLOR
+{
+	float4	OUT;
+	//	ピクセル色決定
+	OUT = In.Color * tex2D(PosterSamp_4, In.Tex);
+
+	return OUT;
+}
+float4 PS_Poster_5(VS_INPUT_POSTER In) : COLOR
+{
+	float4	OUT;
+	//	ピクセル色決定
+	OUT = In.Color * tex2D(PosterSamp_5, In.Tex);
+
+	return OUT;
+}
+//------------------------------------------------------
+//		ポスター描画テクニック
+//------------------------------------------------------
+technique poster_0
+{
+	pass P0
+	{
+		AlphaBlendEnable = true;
+		BlendOp = Add;
+		SrcBlend = SrcAlpha;
+		DestBlend = InvSrcAlpha;
+		CullMode = CCW;
+		ZEnable = true;
+
+		VertexShader = compile vs_2_0 VS_Poster();
+		PixelShader = compile ps_2_0 PS_Poster_0();
+	}
+}
+
+technique poster_1
+{
+	pass P0
+	{
+		AlphaBlendEnable = true;
+		BlendOp = Add;
+		SrcBlend = SrcAlpha;
+		DestBlend = InvSrcAlpha;
+		CullMode = CCW;
+		ZEnable = true;
+
+		VertexShader = compile vs_2_0 VS_Poster();
+		PixelShader = compile ps_2_0 PS_Poster_1();
+	}
+}
+
+technique poster_2
+{
+	pass P0
+	{
+		AlphaBlendEnable = true;
+		BlendOp = Add;
+		SrcBlend = SrcAlpha;
+		DestBlend = InvSrcAlpha;
+		CullMode = CCW;
+		ZEnable = true;
+
+		VertexShader = compile vs_2_0 VS_Poster();
+		PixelShader = compile ps_2_0 PS_Poster_2();
+	}
+}
+
+technique poster_3
+{
+	pass P0
+	{
+		AlphaBlendEnable = true;
+		BlendOp = Add;
+		SrcBlend = SrcAlpha;
+		DestBlend = InvSrcAlpha;
+		CullMode = CCW;
+		ZEnable = true;
+
+		VertexShader = compile vs_2_0 VS_Poster();
+		PixelShader = compile ps_2_0 PS_Poster_3();
+	}
+}
+
+technique poster_4
+{
+	pass P0
+	{
+		AlphaBlendEnable = true;
+		BlendOp = Add;
+		SrcBlend = SrcAlpha;
+		DestBlend = InvSrcAlpha;
+		CullMode = CCW;
+		ZEnable = true;
+
+		VertexShader = compile vs_2_0 VS_Poster();
+		PixelShader = compile ps_2_0 PS_Poster_4();
+	}
+}
+
+technique poster_5
+{
+	pass P0
+	{
+		AlphaBlendEnable = true;
+		BlendOp = Add;
+		SrcBlend = SrcAlpha;
+		DestBlend = InvSrcAlpha;
+		CullMode = CCW;
+		ZEnable = true;
+
+		VertexShader = compile vs_2_0 VS_Poster();
+		PixelShader = compile ps_2_0 PS_Poster_5();
+	}
+}
+
 //**************************************************************************************************
 //
 //		ライティング 　
@@ -247,6 +511,7 @@ inline float4 Environment(float3 normal)
 float	EnvParam = 0.3f;	//	映りこみの割合
 
 #include	"DATA\\Shader\\ShadowMap.inc"
+
 
 //********************************************************************
 //
