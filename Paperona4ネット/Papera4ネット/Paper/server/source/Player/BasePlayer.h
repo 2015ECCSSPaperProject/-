@@ -61,7 +61,7 @@ protected:
 	enum class CAMERA_MODE{ TPS, FPS };
 	CAMERA_MODE		camera_mode;
 
-	TEAM_COLOR team_col;
+	int mynumber;
 
 
 	//===============================================

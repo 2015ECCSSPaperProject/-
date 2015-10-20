@@ -1,13 +1,6 @@
 
 #pragma once
 
-enum class TEAM_COLOR
-{
-	ONE,
-	TWO,
-	NONE,
-};
-
 enum class PLAYER_IMPUT
 {
 	UP = 0x1,

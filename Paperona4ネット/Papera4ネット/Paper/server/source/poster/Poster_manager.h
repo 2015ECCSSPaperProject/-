@@ -2,7 +2,7 @@
 #pragma once
 
 #include <vector>
-#include "../../../share_data/Enum_public.h"
+#include "../../IEX/iextreme.h"
 
 struct Vector3;
 
@@ -13,13 +13,11 @@ class iex3DObj;
 class Poster;
 class Poster_frame;
 class Score;
-enum class TEAM_COLOR;
 class BasePlayer;
 
 class Poster_manager
 {
 private:
-	Texture2D *poster_textures[(int)TEAM_COLOR::NONE]; // ポスターの絵
 	iex3DObj *poster_model; // クローン関数使う用
 	int number_of_posters;
 	std::vector<Poster*> posters; // ポスター
@@ -43,21 +41,21 @@ public:
 	//**************************************************
 
 	// 破れる、貼れるポスターの番号
-	int Can_do(BasePlayer *player, TEAM_COLOR color);
+	int Can_do(BasePlayer *player, int number);
 	
 	// Can_doの後で呼ぶ
-	bool Can_rend(TEAM_COLOR color, int poster_num);          bool Can_paste(TEAM_COLOR color, int poster_num);
+	bool Can_rend(int number, int poster_num);          bool Can_paste(int number, int poster_num);
 
 	// 破る貼る
-	void Rend_poster(TEAM_COLOR color, int poster_num);
-	void Paste_poster(TEAM_COLOR color, int poster_num);
+	void Rend_poster(int number, int poster_num);
+	void Paste_poster(int number, int poster_num);
 
 	//**************************************************
 	/// Get Set
 	//**************************************************
 
 	int Get_numof(){ return number_of_posters; }
-	TEAM_COLOR Get_color(int index);
+	int Get_number(int index);
 	int Get_animation_frame(int index);
 
 	// 追加しました1016

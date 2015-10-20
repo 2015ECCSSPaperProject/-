@@ -173,7 +173,6 @@
     <ClInclude Include="IEX\OKB.h" />
     <ClInclude Include="source\bench\Bench_mark.h" />
     <ClInclude Include="source\camera\Camera.h" />
-    <ClInclude Include="source\Enum_public.h" />
     <ClInclude Include="source\fstream\fstream_paper.h" />
     <ClInclude Include="source\Net\Socket.h" />
     <ClInclude Include="source\Net\UDPClient.h" />

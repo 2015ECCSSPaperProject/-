@@ -20,7 +20,7 @@ void Poster::Mode_waite::Update()
 	if (me->timer <= 0)
 	{
 		me->timer = me->POINT_TIME;
-		// –ß‚· me->score->Add(me->ADD_POINT, me->force);
+		// –ß‚· me->score->Add(me->ADD_POINT, me->mynumber);
 	}
 
 }
@@ -45,7 +45,7 @@ void Poster::Mode_rend::Update()
 
 	if (me->model->GetFrame() >= 47)
 	{
-		me->force = TEAM_COLOR::NONE;
+		me->mynumber = PLAYER_MAX;
 		me->Change_mode(MODE::WAITE);
 	}
 }
@@ -66,7 +66,7 @@ void Poster::Change_mode(MODE m)
 
 
 
-Poster::Poster() : score(nullptr), force(TEAM_COLOR::NONE), POINT_TIME(0), ADD_POINT(0), timer(0), model(nullptr), position(0, 0, 0), forward(0, 0, 1), angle(0), mode(MODE::WAITE)
+Poster::Poster() : score(nullptr), mynumber(PLAYER_MAX), POINT_TIME(0), ADD_POINT(0), timer(0), model(nullptr), position(0, 0, 0), forward(0, 0, 1), angle(0), mode(MODE::WAITE)
 {
 	mode_list[(int)MODE::WAITE] = new Mode_waite(this);
 	mode_list[(int)MODE::REND] = new Mode_rend(this);
@@ -100,7 +100,7 @@ void Poster::Initialize(iex3DObj *model, Score *score, int point)
 
 void Poster::Release()
 {
-	force = TEAM_COLOR::NONE;
+	mynumber = PLAYER_MAX;
 	delete model;
 	model = nullptr;
 	position = Vector3(0, 0, 0);
@@ -110,14 +110,14 @@ void Poster::Release()
 
 void Poster::Update()
 {
-	if (force == TEAM_COLOR::NONE) return;
+	if (mynumber == PLAYER_MAX) return;
 
 	mode_list[(int)mode]->Update();
 }
 
 void Poster::Render()
 {
-	if (force == TEAM_COLOR::NONE) return;
+	if (mynumber == PLAYER_MAX) return;
 
 	mode_list[(int)mode]->Render();
 }
@@ -153,46 +153,42 @@ void Poster::Set_pose(float angle, const Vector3& pos)
 
 
 
-void Poster::Do_playeraction(BasePlayer *player, TEAM_COLOR color, Texture2D *tex)
+void Poster::Do_playeraction(BasePlayer *player, int number)
 {
 	assert(player != nullptr);
 
-	if (!Can_do(player, color)) return;
+	if (!Can_do(player, number)) return;
 
 	// “\‚é
-	if (force == TEAM_COLOR::NONE)
+	if (mynumber == PLAYER_MAX)
 	{
-		force = color;
+		mynumber = number;
 		Change_mode(MODE::WAITE);
-		model->SetTexture(tex, 0);
-		// –ß‚· player->Set_do_flag(Player::DO_FLAG::PASTE);
 	}
 	// ”j‚é
 	else
 	{
 		Change_mode(MODE::REND);
-		// –ß‚· player->Set_do_flag(Player::DO_FLAG::REND);
 	}
 }
 
-void Poster::Rend(TEAM_COLOR color)
+void Poster::Rend(int number)
 {
 	Change_mode(MODE::REND);
 }
 
-void Poster::Paste(TEAM_COLOR color, Texture2D *tex)
+void Poster::Paste(int number)
 {
-	force = color;
+	mynumber = number;
 	Change_mode(MODE::WAITE);
-	model->SetTexture(tex, 0);
 }
 
-bool Poster::Can_do(BasePlayer *player, TEAM_COLOR color)
+bool Poster::Can_do(BasePlayer *player, int number)
 {
 	if (mode == MODE::REND) // ”j‚ê‚Ä‚é“r’†
 		return false;
 
-	if (force == color) // “¯‚¶F
+	if (mynumber == number) // “¯‚¶F
 		return false;
 
 	/* –ß‚·
@@ -219,22 +215,21 @@ bool Poster::Can_do(BasePlayer *player, TEAM_COLOR color)
 	return true;
 }
 
-bool Poster::Can_rend(TEAM_COLOR color)
+bool Poster::Can_rend(int number)
 {
-	return (force != TEAM_COLOR::NONE && force != color);
+	return (mynumber != PLAYER_MAX && mynumber != number);
 }
 
-bool Poster::Can_paste(TEAM_COLOR color)
+bool Poster::Can_paste(int number)
 {
-	return (force == TEAM_COLOR::NONE);
+	return (mynumber == PLAYER_MAX);
 }
 
 
 
-void Poster::Change_color(TEAM_COLOR color, Texture2D *tex)
+void Poster::Change_user(int number)
 {
-	if (force == color) return;
-	force = color;
+	if (mynumber == number) return;
+	mynumber = number;
 	Change_mode(MODE::WAITE);
-	model->SetTexture(tex, 0);
 }

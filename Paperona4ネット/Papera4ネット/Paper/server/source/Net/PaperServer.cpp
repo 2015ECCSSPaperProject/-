@@ -334,7 +334,7 @@ void ServerManager::UpdatePoster(int client)
 {
 	struct PosterData
 	{
-		BYTE color;
+		BYTE number;
 		int anim_no;
 	}*send_poster(nullptr);
 
@@ -343,7 +343,7 @@ void ServerManager::UpdatePoster(int client)
 
 	for (int i = 0; i < num_poster; i++)
 	{
-		send_poster[i].color = (BYTE)poster_mng->Get_color(i);
+		send_poster[i].number = (BYTE)poster_mng->Get_number(i);
 		send_poster[i].anim_no = poster_mng->Get_animation_frame(i);
 	}
 

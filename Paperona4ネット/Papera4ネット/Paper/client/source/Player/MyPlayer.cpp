@@ -63,8 +63,8 @@ void MyPlayer::Mouse_Update()
 	//if (mousePos.x >  127) mousePos.x = 127;
 	//if (mousePos.y < -128) mousePos.y = -128;
 	//if (mousePos.y >  127) mousePos.y = 127;
-	mousePos.x = (float)mousePos.x * MOUSE_SENS;
-	mousePos.y = (float)mousePos.y * MOUSE_SENS;
+	mousePos.x = (LONG)((float)mousePos.x * MOUSE_SENS);
+	mousePos.y = (LONG)((float)mousePos.y * MOUSE_SENS);
 	if (GetActiveWindow() == IEX_GetWindow())
 	{
 		ShowCursor(FALSE);
@@ -72,8 +72,8 @@ void MyPlayer::Mouse_Update()
 	}				 
 
 	//　マウスの動きをデスクに渡す
-	m_controlDesc.mouseX = mousePos.x * 1000;
-	m_controlDesc.mouseY = mousePos.y * 1000;
+	m_controlDesc.mouseX = (float)mousePos.x * 1000;
+	m_controlDesc.mouseY = (float)mousePos.y * 1000;
 
 }
 

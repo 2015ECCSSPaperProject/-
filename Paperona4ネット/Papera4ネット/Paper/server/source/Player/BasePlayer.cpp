@@ -37,7 +37,9 @@ void BasePlayer::Initialize(iex3DObj *obj)
 	// 3D実体
 	model = obj->Clone();
 
-	team_col = TEAM_COLOR::ONE;
+	mynumber = m_id;
+
+
 
 	// 行動状態初期化
 	action[(int)ACTION_PART::MOVE] = new BasePlayer::Action::Move(this);
@@ -220,12 +222,12 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 
 	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
 	{
-		me->poster_num = poster_mng->Can_do(me, me->team_col);
+		me->poster_num = poster_mng->Can_do(me, me->mynumber);
 
 		// ポスターがあった
 		if (me->poster_num != -1)
 		{
-			if (poster_mng->Can_rend(me->team_col, me->poster_num))
+			if (poster_mng->Can_rend(me->mynumber, me->poster_num))
 			{
 				me->Change_action(ACTION_PART::REND);
 				return;
@@ -234,12 +236,12 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	}
 	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::RIGHT_CLICK)
 	{
-		me->poster_num = poster_mng->Can_do(me, me->team_col);
+		me->poster_num = poster_mng->Can_do(me, me->mynumber);
 
 		// ポスターがあった
 		if (me->poster_num != -1)
 		{
-			if (poster_mng->Can_paste(me->team_col, me->poster_num))
+			if (poster_mng->Can_paste(me->mynumber, me->poster_num))
 			{
 				me->Change_action(ACTION_PART::PASTE);
 				return;
@@ -321,12 +323,12 @@ void BasePlayer::Action::MoveFPS::Update(const CONTROL_DESC &_ControlDesc)
 
 	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
 	{
-		me->poster_num = poster_mng->Can_do(me, me->team_col);
+		me->poster_num = poster_mng->Can_do(me, me->mynumber);
 
 		// ポスターがあった
 		if (me->poster_num != -1)
 		{
-			if (poster_mng->Can_rend(me->team_col, me->poster_num))
+			if (poster_mng->Can_rend(me->mynumber, me->poster_num))
 			{
 				me->Change_action(ACTION_PART::REND);
 				return;
@@ -335,12 +337,12 @@ void BasePlayer::Action::MoveFPS::Update(const CONTROL_DESC &_ControlDesc)
 	}
 	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::RIGHT_CLICK)
 	{
-		me->poster_num = poster_mng->Can_do(me, me->team_col);
+		me->poster_num = poster_mng->Can_do(me, me->mynumber);
 
 		// ポスターがあった
 		if (me->poster_num != -1)
 		{
-			if (poster_mng->Can_paste(me->team_col, me->poster_num))
+			if (poster_mng->Can_paste(me->mynumber, me->poster_num))
 			{
 				me->Change_action(ACTION_PART::PASTE);
 				return;
@@ -398,7 +400,7 @@ void BasePlayer::Action::Paste::Update(const CONTROL_DESC &_ControlDesc)
 	if (timer == 45)
 	{
 		// 貼り付ける処理
-		poster_mng->Paste_poster(me->team_col, me->poster_num);
+		poster_mng->Paste_poster(me->mynumber, me->poster_num);
 	}
 }
 
@@ -457,7 +459,7 @@ void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
 		else if (me->model->GetParam(0) == 1)
 		{
 			// 破く処理
-			poster_mng->Rend_poster(me->team_col, me->poster_num);
+			poster_mng->Rend_poster(me->mynumber, me->poster_num);
 		}
 	}
 }

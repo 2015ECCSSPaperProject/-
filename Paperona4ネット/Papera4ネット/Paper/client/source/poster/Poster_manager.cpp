@@ -2,7 +2,7 @@
 #include "Poster_manager.h"
 #include "Poster.h"
 #include "iextreme.h"
-#include "../Enum_public.h"
+#include "../../../share_data/Enum_public.h"
 #include "Poster_frame.h"
 
 #include "../fstream/fstream_paper.h"
@@ -36,11 +36,6 @@ void Poster_manager::Load_poster_pos(char *filename)
 Poster_manager::Poster_manager() : poster_model(nullptr), frame(nullptr)
 {
 	posters.resize(0);
-	// ポスターの種類
-	for (unsigned int i = 0; i < (int)TEAM_COLOR::NONE; i++)
-	{
-		poster_textures[i] = nullptr;
-	}
 }
 
 Poster_manager::~Poster_manager()
@@ -55,9 +50,6 @@ void Poster_manager::Initialize(Score *score)
 	poster_model = new iex3DObj("DATA/Poster/posuta-.IEM");
 	frame = new Poster_frame;
 	frame->Initialize(new iexMesh("DATA/Poster/waku.IMO"));
-
-	poster_textures[(int)TEAM_COLOR::ONE] = iexTexture::Load("DATA/Poster/red.png");
-	poster_textures[(int)TEAM_COLOR::TWO] = iexTexture::Load("DATA/Poster/blue.png");
 
 	// ここでポスターの配置を決める
 	Load_poster_pos("DATA/MATI/poster_pos.txt");
@@ -78,11 +70,12 @@ void Poster_manager::Update()
 	}
 
 	// テスト
-	static int color_change_timer(0);
-	if (300 < color_change_timer++)
+	static int user_change_timer(0);
+	if (300 < user_change_timer++)
 	{
-		color_change_timer = 0;
-		posters[rand() % 4]->Change_color(TEAM_COLOR::TWO, poster_textures[(int)TEAM_COLOR::TWO]);
+		user_change_timer = 0;
+		int user_number = rand() % 4;
+		posters[user_number]->Change_user(user_number);
 	}
 }
 
@@ -97,13 +90,13 @@ void Poster_manager::Render()
 
 
 
-int Poster_manager::Can_do(BasePlayer *player, TEAM_COLOR color)
+int Poster_manager::Can_do(BasePlayer *player, int user_number)
 {
 	int num = -1;
 
 	for (unsigned int i = 0; i < posters.size(); i++)
 	{
-		if (posters[i]->Can_do(player, color))
+		if (posters[i]->Can_do(player, user_number))
 		{
 			num = i;
 		}
@@ -112,31 +105,31 @@ int Poster_manager::Can_do(BasePlayer *player, TEAM_COLOR color)
 	return num;
 }
 
-bool Poster_manager::Can_rend(TEAM_COLOR color, int poster_num)
+bool Poster_manager::Can_rend(int user_number, int poster_num)
 {
-	return posters[poster_num]->Can_rend(color);
+	return posters[poster_num]->Can_rend(user_number);
 }
 
-bool Poster_manager::Can_paste(TEAM_COLOR color, int poster_num)
+bool Poster_manager::Can_paste(int user_number, int poster_num)
 {
-	return posters[poster_num]->Can_paste(color);
+	return posters[poster_num]->Can_paste(user_number);
 }
 
-void Poster_manager::Rend_poster(TEAM_COLOR color, int poster_num)
+void Poster_manager::Rend_poster(int user_number, int poster_num)
 {
-	posters[poster_num]->Rend(color);
+	posters[poster_num]->Rend(user_number);
 }
 
-void Poster_manager::Paste_poster(TEAM_COLOR color, int poster_num)
+void Poster_manager::Paste_poster(int user_number, int poster_num)
 {
-	posters[poster_num]->Paste(color, poster_textures[(int)color]);
+	posters[poster_num]->Paste(user_number);
 }
 
 
 
-void Poster_manager::Set_color(int index, TEAM_COLOR color)
+void Poster_manager::Set_user(int index, int user_number)
 {
-	posters[index]->Change_color(color, poster_textures[(int)color]);
+	posters[index]->Change_user(user_number);
 }
 void Poster_manager::Set_animframe(int index, int frame)
 {

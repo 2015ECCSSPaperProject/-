@@ -70,7 +70,7 @@ void SocketManager::SendName()
 	std::ifstream in("名前.txt");
 	// バッファにyomi込む
 	in >> m_myName;
-	std::fclose;
+	//std::fclose;
 
 	struct
 	{
@@ -263,7 +263,7 @@ void SocketManager::UpdatePoster()
 
 	for (int i = 0; i < num_poster; i++)
 	{
-		poster_mng->Set_color(i, (TEAM_COLOR)poster_data[i].color);
+		poster_mng->Set_user(i, (int)poster_data[i].user_number);
 		poster_mng->Set_animframe(i, poster_data[i].anim_no);
 	}
 

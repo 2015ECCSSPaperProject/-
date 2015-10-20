@@ -18,7 +18,7 @@ private:
 		REND = 1
 	};
 
-	TEAM_COLOR force; // 勢力<チーム>
+	int mynumber;
 	int POINT_TIME; // ポイントが加算される時間
 	int ADD_POINT; // 一度に加算されるポイント
 	int timer;
@@ -92,16 +92,16 @@ public:
 	void Set_pose(const float angle, const Vector3& pos); // 姿勢を計算する
 
 	// プレイヤーからのアクション
-	void Do_playeraction(BasePlayer *player, TEAM_COLOR color, Texture2D *tex); // 破る貼る
-	void Rend(TEAM_COLOR color); // 破る
-	void Paste(TEAM_COLOR color, Texture2D *tex); // 貼る
+	void Do_playeraction(BasePlayer *player, int number); // 破る貼る
+	void Rend(int number); // 破る
+	void Paste(int number); // 貼る
 
-	bool Can_do(BasePlayer *player, TEAM_COLOR color); // playerがポスターに何かできる状態
-	bool Can_rend(TEAM_COLOR color); // 破ける
-	bool Can_paste(TEAM_COLOR color); // 貼れる
+	bool Can_do(BasePlayer *player, int number); // playerがポスターに何かできる状態
+	bool Can_rend(int number); // 破ける
+	bool Can_paste(int number); // 貼れる
 
 	// テスト
-	void Change_color(TEAM_COLOR color, Texture2D *tex);
+	void Change_user(int number);
 
 
 
@@ -109,6 +109,6 @@ public:
 	/// Get Set
 	//**************************************************
 
-	TEAM_COLOR Get_color(){ return force; }
+	int Get_number(){ return mynumber; }
 	int Get_animation_frame(){ return model->GetFrame(); }
 };

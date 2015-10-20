@@ -1,16 +1,16 @@
 
 #pragma once
 
-#include "../../../share_data/Enum_public.h"
+#include "iextreme.h"
 
 class Score
 {
 private:
-	int score[(int)TEAM_COLOR::NONE];
+	int score[PLAYER_MAX];
 public:
-	Score(){ score[(int)TEAM_COLOR::ONE] = 0; score[(int)TEAM_COLOR::TWO] = 0; }
+	Score(){ for (int i = 0; i < PLAYER_MAX; i++)score[i] = 0; }
 
-	void Add(int in, TEAM_COLOR color);
+	void Add(int in, int number);
 
 	void Render();
 };
