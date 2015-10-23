@@ -12,7 +12,7 @@
 
 //****************************************************************************************************************
 //
-//  
+//				 初	期	化	と	解	放	
 //
 //****************************************************************************************************************
 BasePlayer::BasePlayer(int id) :m_id(id)
@@ -33,6 +33,7 @@ void BasePlayer::Initialize(iex3DObj *obj)
 	se_receive = 0;
 	isJump = isLand = false;
 	jump_pow = 0;
+	invincible = false;
 
 	// 3D実体
 	model = obj->Clone();
@@ -48,6 +49,9 @@ void BasePlayer::Initialize(iex3DObj *obj)
 	action[(int)ACTION_PART::PASTE] = new BasePlayer::Action::Paste(this);
 	action[(int)ACTION_PART::REND] = new BasePlayer::Action::Rend(this);
 	action[(int)ACTION_PART::DIE] = new BasePlayer::Action::Die(this);
+	action[(int)ACTION_PART::RESPAWN] = new BasePlayer::Action::Respawn(this);
+	action[(int)ACTION_PART::PLANE] = new BasePlayer::Action::Hikouki(this);
+	action[(int)ACTION_PART::GUN] = new BasePlayer::Action::Gun(this);
 
 	Change_action(ACTION_PART::MOVE);	// 最初は移動状態
 	camera_mode = CAMERA_MODE::TPS;
@@ -513,10 +517,64 @@ void BasePlayer::Action::Die::Update(const CONTROL_DESC &_ControlDesc)
 {
 	if (die_frame++ > 60)
 	{
-		(me->camera_mode == CAMERA_MODE::TPS) ? me->Change_action(ACTION_PART::MOVE) : me->Change_action(ACTION_PART::MOVE_FPS);
+		me->Change_action(ACTION_PART::RESPAWN);
 	}
 }
 
+
+//*****************************************************************************
+//
+//		「リスポーン」状態処理
+//
+//*****************************************************************************
+
+void BasePlayer::Action::Respawn::Initialize()
+{
+	me->move = VECTOR_ZERO;
+	me->invincible = true;
+
+	invincible_time = 0;
+
+	me->pos.y += 80.0f;
+
+	me->Set_motion(0);
+	me->motion_no = 0;
+}
+
+void BasePlayer::Action::Respawn::Update(const CONTROL_DESC &_ControlDesc)
+{
+	float AxisX = .0f, AxisY = .0f;
+
+	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT) AxisX += -1;
+	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT) AxisX += 1;
+	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY += 1;
+	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY += -1;
+
+	//	移動ベクトル設定
+	Vector3 front(sinf(me->angleY), 0, cosf(me->angleY));
+	Vector3 right(sinf(me->angleY + PI * .5f), 0, cosf(me->angleY + PI * .5f));
+	front.Normalize();
+	right.Normalize();
+
+	//	移動量決定
+	me->move.x = (front.x*AxisY + right.x*AxisX) * (me->speed);
+	me->move.z = (front.z*AxisY + right.z*AxisX) * (me->speed);
+
+	// 重力による落下
+	me->move.y = -(me->fallspeed);
+
+	//if (invincible_time++ > 30)
+	//{
+	//	me->invincible = false;
+	//}
+
+	// 着地
+	if (me->isLand)
+	{
+		me->invincible = false;
+		(me->camera_mode == CAMERA_MODE::TPS) ? me->Change_action(ACTION_PART::MOVE) : me->Change_action(ACTION_PART::MOVE_FPS);
+	}
+}
 
 
 //*****************************************************************************
@@ -621,6 +679,7 @@ int PlayerManager::Check_attack(int me)
 	for (int i = 0; i < PLAYER_MAX; i++)
 	{
 		if (i == me)continue;
+		else if (player[i]->isInvincible())continue;
 
 		Vector3 vec(player[i]->Get_pos() - player[me]->Get_pos());
 

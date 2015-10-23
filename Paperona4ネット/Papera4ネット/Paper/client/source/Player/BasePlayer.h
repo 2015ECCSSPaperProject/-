@@ -33,7 +33,7 @@ public:
 	//===============================================
 	//	定数
 	//===============================================
-	enum class ACTION_PART{ MOVE, MOVE_FPS, ATTACK, PASTE, REND, DIE, MAX };
+	enum class ACTION_PART{ MOVE, MOVE_FPS, ATTACK, PASTE, REND, DIE, RESPAWN, PLANE, GUN, MAX };
 	enum class DO_FLAG{ NONE, ATTACK, PASTE, REND, MAX };
 
 protected:
@@ -167,6 +167,21 @@ protected:
 		};
 
 		//===========================================
+		//	リスポーン状態
+		class Respawn : public Base
+		{
+		private:
+			BYTE flashing;
+
+		public:
+			Respawn(BasePlayer*me) :Base(me){}
+
+			void Initialize();
+			void Update();
+			void Render();
+		};
+
+		//===========================================
 		//	紙ひこーき状態
 		class Hikouki : public Base
 		{
@@ -259,6 +274,12 @@ public:
 		motion_no = no; 
 	}
 	void Set_motion(int no);
+
+
+	void Set_texture(Texture2D *tex)
+	{
+		model->SetTexture(tex, 0);
+	}
 };
 
 //extern BasePlayer* player[PLAYER_MAX];

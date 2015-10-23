@@ -57,6 +57,9 @@ void BasePlayer::Initialize(iex3DObj *obj ,iex3DObj *die)
 	action[(int)ACTION_PART::PASTE] = new BasePlayer::Action::Paste(this);
 	action[(int)ACTION_PART::REND] = new BasePlayer::Action::Rend(this);
 	action[(int)ACTION_PART::DIE] = new BasePlayer::Action::Die(this);
+	action[(int)ACTION_PART::RESPAWN] = new BasePlayer::Action::Respawn(this);
+	action[(int)ACTION_PART::PLANE] = new BasePlayer::Action::Hikouki(this);
+	action[(int)ACTION_PART::GUN] = new BasePlayer::Action::Gun(this);
 
 	Change_action(ACTION_PART::MOVE);	// 最初は移動状態
 
@@ -450,7 +453,65 @@ void BasePlayer::Action::Die::Render()
 }
 
 
+//*****************************************************************************
+//
+//		「リスポーン」状態処理
+//
+//*****************************************************************************
 
+void BasePlayer::Action::Respawn::Initialize()
+{
+	me->m_controlDesc.controlFlag &= 0x00000000;
+	me->m_controlDesc.moveFlag &= 0x00000000;
+	me->m_controlDesc.rendFlag &= 0x00000000;
+
+	flashing = 0;
+}
+
+void BasePlayer::Action::Respawn::Update()
+{
+	me->m_controlDesc.moveFlag &= 0x00000000;
+	me->m_controlDesc.controlFlag &= 0x00000000;
+
+	if (KEY_Get(KEY_UP) == 1)
+	{
+		me->m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::UP;
+	}
+	else if (KEY_Get(KEY_DOWN) == 1)
+	{
+		me->m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::DOWN;
+	}
+	if (KEY_Get(KEY_RIGHT) == 1)
+	{
+		me->m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::RIGHT;
+	}
+	else if (KEY_Get(KEY_LEFT) == 1)
+	{
+		me->m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::LEFT;
+	}
+
+	if (GetKeyState('C') & 0x1)	// トグル
+	{
+		me->m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::TRG_C;
+	}
+}
+
+void BasePlayer::Action::Respawn::Render()
+{
+	me->model->Animation();
+	me->model->SetScale(me->scale);
+	me->model->SetAngle(me->angleY);
+	me->model->SetPos(me->pos);
+	me->model->Update();
+
+	flashing++;
+	if (flashing < 4) {
+		me->model->Render();
+	}
+	else if (flashing > 8){
+		flashing = 0;
+	}
+}
 
 
 
