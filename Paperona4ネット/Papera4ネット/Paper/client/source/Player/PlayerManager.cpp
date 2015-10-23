@@ -35,6 +35,18 @@ void PlayerManager::Initialize()
 	clone_model[(int)CLONE_TYPE::NORMAL] = new iex3DObj("DATA/CHR/player/run.IEM");
 	clone_model[(int)CLONE_TYPE::DIE] = new iex3DObj("DATA/CHR/player/die.IEM");
 
+
+	// セットするテクスチャ
+	Texture2D *textures[6] =
+	{
+		iexTexture::Load("DATA/CHR/player/player_red.png"),
+		iexTexture::Load("DATA/CHR/player/player_blue.png"),
+		iexTexture::Load("DATA/CHR/player/player_yellow.png"),
+		iexTexture::Load("DATA/CHR/player/player_green.png"),
+		iexTexture::Load("DATA/CHR/player/player_purple.png"),
+		iexTexture::Load("DATA/CHR/player/player_pink.png")
+	};
+
 	//■■■　相手と自分で分ける
 	for (int i = 0; i <PLAYER_MAX; ++i)
 	{
@@ -46,6 +58,11 @@ void PlayerManager::Initialize()
 			players[i] = new NetPlayer();
 
 		players[i]->Initialize(clone_model[(int)CLONE_TYPE::NORMAL], clone_model[(int)CLONE_TYPE::DIE]);
+
+		if (i < 6)
+		{
+			players[i]->Set_texture(textures[i]);
+		}
 	}
 
 

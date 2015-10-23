@@ -274,6 +274,12 @@ public:
 		motion_no = no; 
 	}
 	void Set_motion(int no);
+
+
+	void Set_texture(Texture2D *tex)
+	{
+		model->SetTexture(tex, 0);
+	}
 };
 
 //extern BasePlayer* player[PLAYER_MAX];
