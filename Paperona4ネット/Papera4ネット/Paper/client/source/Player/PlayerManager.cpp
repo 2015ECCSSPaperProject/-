@@ -85,7 +85,7 @@ void PlayerManager::Render()
 	for (int i = 0; i < PLAYER_MAX; i++)
 	{
 		players[i]->Render();
-		Text::Draw(1100, 20 + (i * 32), 0xff00ffff, "pos.x->%.2f", players[i]->Get_pos().x);
+		Text::Draw(1100, 20 + (i * 32), 0xff00ffff, "pos.x->%.2f", players[i]->Get_pos().y);
 
 		Text::Draw(950, 20 + (i * 32), 0xff00ffff, "–¼‘OF%s", SOCKET_MANAGER->GetUser(i).name);
 	}

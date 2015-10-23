@@ -33,7 +33,7 @@ public:
 	//===============================================
 	//	íËêî
 	//===============================================
-	enum class ACTION_PART{ MOVE, MOVE_FPS, ATTACK, PASTE, REND, DIE, MAX };
+	enum class ACTION_PART{ MOVE, MOVE_FPS, ATTACK, PASTE, REND, DIE, RESPAWN, PLANE, GUN, MAX };
 	enum class DO_FLAG{ NONE, ATTACK, PASTE, REND, MAX };
 
 protected:
@@ -160,6 +160,21 @@ protected:
 
 		public:
 			Die(BasePlayer*me) :Base(me){}
+
+			void Initialize();
+			void Update();
+			void Render();
+		};
+
+		//===========================================
+		//	ÉäÉXÉ|Å[ÉìèÛë‘
+		class Respawn : public Base
+		{
+		private:
+			BYTE flashing;
+
+		public:
+			Respawn(BasePlayer*me) :Base(me){}
 
 			void Initialize();
 			void Update();
