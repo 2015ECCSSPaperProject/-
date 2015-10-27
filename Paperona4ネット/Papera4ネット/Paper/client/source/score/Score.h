@@ -3,12 +3,16 @@
 
 #include "iextreme.h"
 
+class Pie_graph;
+
 class Score
 {
 private:
 	int score[PLAYER_MAX];
+	Pie_graph *graph;
 public:
-	Score(){ for (int i = 0; i < PLAYER_MAX; i++)score[i] = 0; }
+	Score();
+	~Score();
 
 	void Add(int point, int number);
 

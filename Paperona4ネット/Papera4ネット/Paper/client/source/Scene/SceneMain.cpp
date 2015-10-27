@@ -231,6 +231,8 @@ void SceneMain::Render()
 
 	poster_mng->Render();
 
+	score->Render();
+
 	Text::Draw(100, 20, 0xff00ffff, "受信時間%.2f", bench.Get_time());
 
 	//マウスの場所

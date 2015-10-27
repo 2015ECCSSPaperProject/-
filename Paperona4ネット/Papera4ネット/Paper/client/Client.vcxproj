@@ -132,6 +132,7 @@
     <ClCompile Include="source\fstream\fstream_paper.cpp" />
     <ClCompile Include="source\Net\Socket.cpp" />
     <ClCompile Include="source\Net\UDPClient.cpp" />
+    <ClCompile Include="source\pie_graph\pie_graph.cpp" />
     <ClCompile Include="source\Player\BasePlayer.cpp" />
     <ClCompile Include="source\Player\MyPlayer.cpp" />
     <ClCompile Include="source\Player\NetPlayer.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="source\fstream\fstream_paper.h" />
     <ClInclude Include="source\Net\Socket.h" />
     <ClInclude Include="source\Net\UDPClient.h" />
+    <ClInclude Include="source\pie_graph\pie_graph.h" />
     <ClInclude Include="source\Player\BasePlayer.h" />
     <ClInclude Include="source\Player\MyPlayer.h" />
     <ClInclude Include="source\Player\NetPlayer.h" />

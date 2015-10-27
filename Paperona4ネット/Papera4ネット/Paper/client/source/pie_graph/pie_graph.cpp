@@ -1,13 +1,52 @@
 
 #include "pie_graph.h"
 
-Pie_graph::Pie_graph(char *filename) : iex2DObj(filename), percent(0.0f)
-{}
+Pie_graph::Pie_graph(){}
 
 Pie_graph::~Pie_graph()
-{}
+{
+	for (auto it : contents) delete it;
+}
 
 void Pie_graph::Render(s32 DstX, s32 DstY, s32 DstW, s32 DstH, s32 SrcX, s32 SrcY, s32 width, s32 height, u32 dwFlags, COLOR color, float z)
+{
+	float sumsize(0);
+	for (auto it : contents)sumsize += it->size;
+	if (sumsize <= 0) return;
+
+	float startsize(1);
+	float size(0);
+	for (int it = contents.size() - 1; it >= 0; it--)
+	{
+		size = contents[it]->size / sumsize;
+		startsize -= size;
+		contents[it]->Render(startsize + size, DstX, DstY, DstW, DstH, SrcX, SrcY, width, height, dwFlags, color, z);
+	}
+}
+
+
+void Pie_graph::Set_percent(int num, float size)
+{
+	int noc(contents.size());
+	assert(0 <= num && num < noc);
+	assert(size >= 0);
+
+	contents[num]->size = size;
+}
+
+void Pie_graph::Add_content(char*filename)
+{
+	contents.push_back(new Content(filename));
+}
+
+
+
+Pie_graph::Content::Content(char*filename) :iex2DObj(filename), size(0)
+{}
+
+Pie_graph::Content::~Content(){}
+
+void Pie_graph::Content::Render(float percent, s32 DstX, s32 DstY, s32 DstW, s32 DstH, s32 SrcX, s32 SrcY, s32 width, s32 height, u32 dwFlags, COLOR color, float z)
 {
 	if (percent <= 0.0f)
 	{
