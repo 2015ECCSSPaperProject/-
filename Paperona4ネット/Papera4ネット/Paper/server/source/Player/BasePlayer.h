@@ -68,19 +68,15 @@ protected:
 	//===============================================
 	//	プレイヤー行動委譲クラス(インナークラス)
 	//===============================================
-	class Action
-	{
-	public:
-
 		//===========================================
 		//	状態基底クラス
-		class Base
+	class ActionBase
 		{
 		protected:
 			BasePlayer *me;
 
 		public:
-			Base(BasePlayer* me) :me(me){}
+			ActionBase(BasePlayer* me) :me(me){}
 			virtual void Initialize(){}
 			virtual void Update(const CONTROL_DESC &_ControlDesc){}
 			virtual void Render(){}
@@ -88,123 +84,122 @@ protected:
 			void Set_motion(int no);
 		};
 
-		//===========================================
+	//===========================================
 		//	移動状態(TPS)
-		class Move : public Base
+	class ActionMove : public ActionBase
 		{
 		public:
-			Move(BasePlayer*me) :Base(me){}
+			ActionMove(BasePlayer*me) :ActionBase(me){}
 
 			void Initialize();
 			void Update(const CONTROL_DESC &_ControlDesc);
 		};
 
-		//===========================================
+	//===========================================
 		//	移動状態(FPS)
-		class MoveFPS : public Base
+	class ActionMoveFPS : public ActionBase
 		{
 		public:
-			MoveFPS(BasePlayer*me) :Base(me){}
+			ActionMoveFPS(BasePlayer*me) :ActionBase(me){}
 
 			void Initialize();
 			void Update(const CONTROL_DESC &_ControlDesc);
 		};
 
-		//===========================================
+	//===========================================
 		//	攻撃状態
-		class Attack : public Base
+	class ActionAttack : public ActionBase
 		{
 		public:
-			Attack(BasePlayer*me) :Base(me){}
+			ActionAttack(BasePlayer*me) :ActionBase(me){}
 
 			void Initialize();
 			void Update(const CONTROL_DESC &_ControlDesc);
 		};
 
-		//===========================================
+	//===========================================
 		//	ポスター貼り付け状態
-		class Paste : public Base
+	class ActionPaste : public ActionBase
 		{
 		private:
 			int timer;
 		public:
-			Paste(BasePlayer*me) :Base(me){}
+			ActionPaste(BasePlayer*me) :ActionBase(me){}
 
 			void Initialize();
 			void Update(const CONTROL_DESC &_ControlDesc);
 		};
 
-		//===========================================
+	//===========================================
 		//	ポスター破り状態
-		class Rend : public Base
+	class ActionRend : public ActionBase
 		{
 		private:
 			bool rended;
 		public:
-			Rend(BasePlayer*me) :Base(me){}
+			ActionRend(BasePlayer*me) :ActionBase(me){}
 
 			void Initialize();
 			void Update(const CONTROL_DESC &_ControlDesc);
 		};
 
-		//===========================================
+	//===========================================
 		//	死んでる状態
-		class Die : public Base
+	class ActionDie : public ActionBase
 		{
 		private:
 			BYTE die_frame;
 			BYTE flashing;
 
 		public:
-			Die(BasePlayer*me) :Base(me){}
+			ActionDie(BasePlayer*me) :ActionBase(me){}
 
 			void Initialize();
 			void Update(const CONTROL_DESC &_ControlDesc);
 		};
 
-		//===========================================
+	//===========================================
 		//	リスポーン状態
-		class Respawn : public Base
+	class ActionRespawn : public ActionBase
 		{
 		private:
 			BYTE invincible_time;
 			BYTE flashing;
 
 		public:
-			Respawn(BasePlayer*me) :Base(me){}
+			ActionRespawn(BasePlayer*me) :ActionBase(me){}
 
 			void Initialize();
 			void Update(const CONTROL_DESC &_ControlDesc);
 		};
 
-		//===========================================
+	//===========================================
 		//	紙ひこーき状態
-		class Hikouki : public Base
+	class ActionHikouki : public ActionBase
 		{
 		public:
-			Hikouki(BasePlayer*me) :Base(me){}
+			ActionHikouki(BasePlayer*me) :ActionBase(me){}
 
 			void Initialize();
 			void Update(const CONTROL_DESC &_ControlDesc);
 		};
 
-		//===========================================
+	//===========================================
 		//	紙鉄砲状態
-		class Gun : public Base
+	class ActionGun : public ActionBase
 		{
 		public:
-			Gun(BasePlayer*me) :Base(me){}
+			ActionGun(BasePlayer*me) :ActionBase(me){}
 
 			void Initialize();
 			void Update(const CONTROL_DESC &_ControlDesc);
 		};
-	};
 
 
 	//===============================================
 	//	委譲クラスへのポインタ
 	//===============================================
-	Action::Base *action[(unsigned int)ACTION_PART::MAX];
+	ActionBase *action[(unsigned int)ACTION_PART::MAX];
 	ACTION_PART action_part;	// 現在のプレイヤーのモード
 
 	DO_FLAG do_flag;			// Zキー押したら何をするか

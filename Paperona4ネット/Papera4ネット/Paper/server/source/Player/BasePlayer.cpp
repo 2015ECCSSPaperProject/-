@@ -43,15 +43,15 @@ void BasePlayer::Initialize(iex3DObj *obj)
 
 
 	// 行動状態初期化
-	action[(int)ACTION_PART::MOVE] = new BasePlayer::Action::Move(this);
-	action[(int)ACTION_PART::MOVE_FPS] = new BasePlayer::Action::MoveFPS(this);
-	action[(int)ACTION_PART::ATTACK] = new BasePlayer::Action::Attack(this);
-	action[(int)ACTION_PART::PASTE] = new BasePlayer::Action::Paste(this);
-	action[(int)ACTION_PART::REND] = new BasePlayer::Action::Rend(this);
-	action[(int)ACTION_PART::DIE] = new BasePlayer::Action::Die(this);
-	action[(int)ACTION_PART::RESPAWN] = new BasePlayer::Action::Respawn(this);
-	action[(int)ACTION_PART::PLANE] = new BasePlayer::Action::Hikouki(this);
-	action[(int)ACTION_PART::GUN] = new BasePlayer::Action::Gun(this);
+	action[(int)ACTION_PART::MOVE] = new BasePlayer::ActionMove(this);
+	action[(int)ACTION_PART::MOVE_FPS] = new BasePlayer::ActionMoveFPS(this);
+	action[(int)ACTION_PART::ATTACK] = new BasePlayer::ActionAttack(this);
+	action[(int)ACTION_PART::PASTE] = new BasePlayer::ActionPaste(this);
+	action[(int)ACTION_PART::REND] = new BasePlayer::ActionRend(this);
+	action[(int)ACTION_PART::DIE] = new BasePlayer::ActionDie(this);
+	action[(int)ACTION_PART::RESPAWN] = new BasePlayer::ActionRespawn(this);
+	action[(int)ACTION_PART::PLANE] = new BasePlayer::ActionHikouki(this);
+	action[(int)ACTION_PART::GUN] = new BasePlayer::ActionGun(this);
 
 	Change_action(ACTION_PART::MOVE);	// 最初は移動状態
 	camera_mode = CAMERA_MODE::TPS;
@@ -153,12 +153,12 @@ void BasePlayer::Set_motion(int no)
 //
 //*****************************************************************************
 
-void BasePlayer::Action::Move::Initialize()
+void BasePlayer::ActionMove::Initialize()
 {
 	me->camera_mode = CAMERA_MODE::TPS;
 }
 
-void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
+void BasePlayer::ActionMove::Update(const CONTROL_DESC &_ControlDesc)
 {
 	float AxisX = 0, AxisY = 0;
 
@@ -270,12 +270,12 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 //
 //*****************************************************************************
 
-void BasePlayer::Action::MoveFPS::Initialize()
+void BasePlayer::ActionMoveFPS::Initialize()
 {
 	me->camera_mode = CAMERA_MODE::FPS;
 }
 
-void BasePlayer::Action::MoveFPS::Update(const CONTROL_DESC &_ControlDesc)
+void BasePlayer::ActionMoveFPS::Update(const CONTROL_DESC &_ControlDesc)
 {
 
 	float AxisX = 0, AxisY = 0;
@@ -376,13 +376,13 @@ void BasePlayer::Action::MoveFPS::Update(const CONTROL_DESC &_ControlDesc)
 //
 //*****************************************************************************
 
-void BasePlayer::Action::Attack::Initialize()
+void BasePlayer::ActionAttack::Initialize()
 {
 	me->move = VECTOR_ZERO;
 	me->Set_motion(4);
 }
 
-void BasePlayer::Action::Attack::Update(const CONTROL_DESC &_ControlDesc)
+void BasePlayer::ActionAttack::Update(const CONTROL_DESC &_ControlDesc)
 {
 	// モーション終了
 	if (me->model->GetParam(0) == 2)
@@ -410,7 +410,7 @@ void BasePlayer::Action::Attack::Update(const CONTROL_DESC &_ControlDesc)
 //
 //*****************************************************************************
 
-void BasePlayer::Action::Paste::Initialize()
+void BasePlayer::ActionPaste::Initialize()
 {
 	timer = 0;
 	me->move = VECTOR_ZERO;
@@ -423,7 +423,7 @@ void BasePlayer::Action::Paste::Initialize()
 	me->pos += (Vector3(-sinf(me->angleY), 0, -cosf(me->angleY)) * dist);
 }
 
-void BasePlayer::Action::Paste::Update(const CONTROL_DESC &_ControlDesc)
+void BasePlayer::ActionPaste::Update(const CONTROL_DESC &_ControlDesc)
 {
 	me->motion_no = 3;
 	if (timer++ > 60)
@@ -446,7 +446,7 @@ void BasePlayer::Action::Paste::Update(const CONTROL_DESC &_ControlDesc)
 //
 //*****************************************************************************
 
-void BasePlayer::Action::Rend::Initialize()
+void BasePlayer::ActionRend::Initialize()
 {
 	rended = false;
 	me->move = VECTOR_ZERO;
@@ -459,7 +459,7 @@ void BasePlayer::Action::Rend::Initialize()
 	me->pos += (Vector3(-sinf(me->angleY), 0, -cosf(me->angleY)) * dist);
 }
 
-void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
+void BasePlayer::ActionRend::Update(const CONTROL_DESC &_ControlDesc)
 {
 	// まだ破いていない
 	if (!rended)
@@ -506,14 +506,14 @@ void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
 //
 //*****************************************************************************
 
-void BasePlayer::Action::Die::Initialize()
+void BasePlayer::ActionDie::Initialize()
 {
 	die_frame = 0;
 
 	me->move = VECTOR_ZERO;
 }
 
-void BasePlayer::Action::Die::Update(const CONTROL_DESC &_ControlDesc)
+void BasePlayer::ActionDie::Update(const CONTROL_DESC &_ControlDesc)
 {
 	if (die_frame++ > 60)
 	{
@@ -528,7 +528,7 @@ void BasePlayer::Action::Die::Update(const CONTROL_DESC &_ControlDesc)
 //
 //*****************************************************************************
 
-void BasePlayer::Action::Respawn::Initialize()
+void BasePlayer::ActionRespawn::Initialize()
 {
 	me->move = VECTOR_ZERO;
 	me->invincible = true;
@@ -541,7 +541,7 @@ void BasePlayer::Action::Respawn::Initialize()
 	me->motion_no = 0;
 }
 
-void BasePlayer::Action::Respawn::Update(const CONTROL_DESC &_ControlDesc)
+void BasePlayer::ActionRespawn::Update(const CONTROL_DESC &_ControlDesc)
 {
 	float AxisX = .0f, AxisY = .0f;
 
@@ -583,10 +583,10 @@ void BasePlayer::Action::Respawn::Update(const CONTROL_DESC &_ControlDesc)
 //
 //*****************************************************************************
 
-void BasePlayer::Action::Hikouki::Initialize()
+void BasePlayer::ActionHikouki::Initialize()
 {}
 
-void BasePlayer::Action::Hikouki::Update(const CONTROL_DESC &_ControlDesc)
+void BasePlayer::ActionHikouki::Update(const CONTROL_DESC &_ControlDesc)
 {
 	float AxisX = 0, AxisY = 0;
 
@@ -658,10 +658,10 @@ void BasePlayer::Action::Hikouki::Update(const CONTROL_DESC &_ControlDesc)
 //
 //*****************************************************************************
 
-void BasePlayer::Action::Gun::Initialize()
+void BasePlayer::ActionGun::Initialize()
 {}
 
-void BasePlayer::Action::Gun::Update(const CONTROL_DESC &_ControlDesc)
+void BasePlayer::ActionGun::Update(const CONTROL_DESC &_ControlDesc)
 {}
 
 //　実態

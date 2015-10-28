@@ -137,6 +137,9 @@
     <ClCompile Include="source\fstream\fstream_paper.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\Player\Kohai.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IEX\iextreme.h">
@@ -176,6 +179,7 @@
     <ClInclude Include="source\poster\Poster_manager.h" />
     <ClInclude Include="source\score\Score.h" />
     <ClInclude Include="source\fstream\fstream_paper.h" />
+    <ClInclude Include="source\Player\Kohai.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DATA\Shader\2D.fx">
