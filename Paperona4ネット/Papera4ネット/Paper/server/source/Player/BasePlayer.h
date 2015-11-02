@@ -66,7 +66,7 @@ protected:
 	public:
 		ActionBase(ME* me) :me(me){}
 		virtual void Initialize(){}
-		virtual void Update(const CONTROL_DESC &_ControlDesc){}
+		virtual void Update(){}
 		virtual void Render(){}
 
 		void Set_motion(int no);
@@ -124,3 +124,4 @@ namespace PlayerManager
 
 
 extern BasePlayer* player[PLAYER_MAX];
+extern BasePlayer* kohai[PLAYER_MAX];

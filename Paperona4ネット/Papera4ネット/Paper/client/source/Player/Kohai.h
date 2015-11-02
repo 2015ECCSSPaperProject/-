@@ -7,5 +7,6 @@ public:
 	Kohai();
 	~Kohai();
 
+	void Update() override { int i = 0; };
 private:
 };

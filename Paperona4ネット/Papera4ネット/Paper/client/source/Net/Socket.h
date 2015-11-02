@@ -44,6 +44,16 @@ struct PlayerData
 	BYTE action_part;
 };
 //---------------------------------------------------------------------
+//  後輩の返ってくるパラメータ
+//---------------------------------------------------------------------
+struct KohaiData
+{
+	Vector3 pos;
+	float angleY;
+	BYTE motion_no;
+	BYTE action_part;
+};
+//---------------------------------------------------------------------
 //  プレイヤーの返ってくるパラメータ
 //---------------------------------------------------------------------
 struct PosterData
@@ -85,6 +95,7 @@ private:
 
 	UserData				m_user[PLAYER_MAX];
 	PlayerData				m_player[PLAYER_MAX];
+	KohaiData				m_kohai[PLAYER_MAX];
 	LayerData				m_layer[PLAYER_MAX];
 
 	static SocketManager*	m_pInst;
@@ -101,7 +112,8 @@ private:
 		/*INIT_GAME,*/
 		USER_DATA = 5 ,
 		POSTER_DATA = 6,
-		LAYER_DATA = 7
+		LAYER_DATA = 7,
+		KOHAI_DATA = 8
 	};
 
 private:
@@ -121,6 +133,7 @@ public:
 	void InitGame();				/* 試合前 */
 
 	void UpdateUser();				/* プレイヤー更新 */
+	void UpdateKohai();
 	void UpdatePoster();			/* ポスター更新 */
 
 	/*	ゲッター・セッター	*/
@@ -128,6 +141,7 @@ public:
 	const char*			GetName()				const{ return m_myName.c_str(); }
 	const UserData&		GetUser(s32 client)	const{ return m_user[client]; }
 	const PlayerData    GetPlayer(int idx)		const{ return m_player[idx]; }
+	const KohaiData&	GetKohai(int idx)		const{ return m_kohai[idx]; }
 	const LayerData    GetLayer(int idx)		const{ return m_layer[idx]; }
 	void				SendName();
 	void				SetName(int idx, const char* name){ strcpy_s(m_user[idx].name, name); }

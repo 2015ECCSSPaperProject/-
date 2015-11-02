@@ -99,6 +99,9 @@ void ServerManager::Update()
 	case LAYER_DATA:
 		UpdateLayer(data, client);
 		break;
+	case KOHAI_DATA:
+		UpdateKohai(client);
+		break;
 	}
 }
 
@@ -335,6 +338,29 @@ void ServerManager::UpdateUser(char* data, int client)
 		send[i].angleY = player[i]->Get_angleY();
 		send[i].motion_no = player[i]->Get_motion_no();
 		send[i].action_part = (BYTE)player[i]->Get_action();
+	}
+
+	m_pServer->Send(client, (char*)&send, sizeof(send));
+}
+
+void ServerManager::UpdateKohai(int client)
+{
+	//	‘Sˆõ•ª‚Ìî•ñ‚ğ‘—M
+	struct
+	{
+		Vector3 pos;
+		float angleY;
+		BYTE motion_no;
+		BYTE action_part;
+	}send[PLAYER_MAX];
+
+
+	for (int i = 0; i<PLAYER_MAX; ++i)
+	{
+		kohai[i]->Get_pos(send[i].pos);
+		send[i].angleY = kohai[i]->Get_angleY();
+		send[i].motion_no = kohai[i]->Get_motion_no();
+		send[i].action_part = (BYTE)kohai[i]->Get_action();
 	}
 
 	m_pServer->Send(client, (char*)&send, sizeof(send));

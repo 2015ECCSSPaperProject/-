@@ -6,6 +6,7 @@
 #include	"../system/Thread.h"
 #include	"../Player/BasePlayer.h"
 #include	"../Player/NetPlayer.h"
+#include	"../Player/Kohai.h"
 
 #include	"../stage/Stage.h"
 
@@ -44,6 +45,8 @@ SceneMainServer::SceneMainServer()
 	{
 		player[i] = new NetPlayer(i);
 		player[i]->Initialize(set);
+		kohai[i] = new Kohai(i);
+		kohai[i]->Initialize(set);
 	}
 	
 	score = new Score;
@@ -190,6 +193,7 @@ SceneMainServer::~SceneMainServer()
 	for (int i = 0; i < PLAYER_MAX; i++)
 	{
 		SAFE_DELETE(player[i]);
+		SAFE_DELETE(kohai[i]);
 	}
 
 	delete set;
@@ -233,6 +237,7 @@ void SceneMainServer::Update()
 	for (int i = 0; i < PLAYER_MAX; i++)
 	{
 		player[i]->Update();
+		kohai[i]->Update();
 	}
 	
 	poster_mng->Update();
@@ -263,7 +268,7 @@ void SceneMainServer::Render()
 	{
 		player[i]->Render();
 		Text::Draw(1000, 50 + (i * 40), 0xffff00ff, "pos.x->%.2f", player[i]->Get_pos().x);
-
+		kohai[i]->Render();
 	}
 
 	poster_mng->Render();

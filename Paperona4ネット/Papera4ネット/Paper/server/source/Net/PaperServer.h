@@ -86,7 +86,8 @@ public:
 		/*	USER_INIT,*/
 		USER_DATA = 5,
 		POSTER_DATA = 6,
-		LAYER_DATA = 7
+		LAYER_DATA = 7,
+		KOHAI_DATA = 8
 	
 	};
 
@@ -111,6 +112,9 @@ private:
 	static void GameInitData(char* data, int client);		/*	全員がisReady==trueだとゲーム開始！						*/
 	//static void InitUser(char* data, int client);
 	static void UpdateUser(char* data, int client);			/*	プレイヤーの更新										*/
+
+	static void UpdateKohai(int client);		/*　後輩の更新　*/
+
 	static void UpdatePoster(int client);		/*	ポスターの更新											*/
 	static void UpdateLayer(char* data, int client);		/*	レイヤーの更新									　　	*/
 

@@ -98,8 +98,7 @@ void BasePlayer::Set_motion(int no)
 
 //Å@é¿ë‘
 BasePlayer* player[PLAYER_MAX];
-
-
+BasePlayer* kohai[PLAYER_MAX];
 
 
 

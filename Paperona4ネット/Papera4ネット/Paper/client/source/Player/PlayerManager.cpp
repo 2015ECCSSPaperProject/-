@@ -102,6 +102,15 @@ void PlayerManager::Update()
 		players[i]->Set_motion_no(sendPlayer.motion_no);	// ここで帰ってきたモーションの番号をセット
 		players[i]->Set_aciton((BasePlayer::ACTION_PART)sendPlayer.action_part);
 		players[i]->Update();
+
+		KohaiData sendKohai = SOCKET_MANAGER->GetKohai(i);
+		kohai[i]->Set_pos(sendKohai.pos);
+
+		kohai[i]->Set_angleY(sendKohai.angleY);
+
+		kohai[i]->Set_motion_no(sendKohai.motion_no);	// ここで帰ってきたモーションの番号をセット
+		kohai[i]->Set_aciton((BasePlayer::ACTION_PART)sendKohai.action_part);
+		kohai[i]->Update();
 	}
 }
 

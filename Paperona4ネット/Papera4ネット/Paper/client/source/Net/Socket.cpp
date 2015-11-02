@@ -318,6 +318,43 @@ void SocketManager::UpdateUser()	/* プレイヤー更新 */
 	}
 };
 
+void SocketManager::UpdateKohai()	/* プレイヤー更新 */
+{
+	if (m_pClient->m_sock == INVALID_SOCKET)
+		return;
+
+	//　※ベースプレイヤーのコントロールデスクを持ってくる
+	BasePlayer::CONTROL_DESC desc;
+	//desc = player[m_myID]->GetDesc();
+	desc = player_mng->Get_player(m_myID)->GetDesc();
+
+	BYTE com = KOHAI_DATA;
+
+	m_pClient->Send(&com, sizeof(com)); //後輩のデータくださいフラグ
+
+
+	/*受信*/
+	struct
+	{
+		Vector3	pos;
+		float angleY;
+		BYTE motion_no;
+		BYTE action_part;
+	}receive[PLAYER_MAX];
+
+	m_pClient->Receive((char*)&receive, sizeof(receive));
+
+
+
+	for (int i = 0; i<PLAYER_MAX; ++i)
+	{
+		m_kohai[i].pos = receive[i].pos;
+		m_kohai[i].angleY = receive[i].angleY;
+		m_kohai[i].motion_no = receive[i].motion_no;
+		m_kohai[i].action_part = receive[i].action_part;
+	}
+};
+
 void SocketManager::UpdatePoster()
 {
 	BYTE comcom = POSTER_DATA;
