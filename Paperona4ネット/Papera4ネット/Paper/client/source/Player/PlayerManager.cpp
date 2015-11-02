@@ -9,6 +9,7 @@
 #include	"BasePlayer.h"
 #include	"MyPlayer.h"
 #include	"NetPlayer.h"
+#include	"Kohai.h"
 #include	"PlayerManager.h"
 
 PlayerManager::PlayerManager()
@@ -63,9 +64,15 @@ void PlayerManager::Initialize()
 		{
 			players[i]->Set_texture(textures[i]);
 		}
+
+		// Œã”yì¬
+		kohai[i] = new Kohai;
+		kohai[i]->Initialize(clone_model[(int)CLONE_TYPE::NORMAL], clone_model[(int)CLONE_TYPE::DIE]);
+		if (i < 6)
+		{
+			kohai[i]->Set_texture(textures[i]);
+		}
 	}
-
-
 }
 
 void PlayerManager::Release()
@@ -73,6 +80,7 @@ void PlayerManager::Release()
 	for (int i = 0; i < PLAYER_MAX; i++)
 	{
 		SAFE_DELETE(players[i]);
+		SAFE_DELETE(kohai[i]);
 	}
 
 	for (int i = 0; i < (int)CLONE_TYPE::MAX; i++)
@@ -105,6 +113,8 @@ void PlayerManager::Render()
 		Text::Draw(1100, 20 + (i * 32), 0xff00ffff, "pos.x->%.2f", players[i]->Get_pos().y);
 
 		Text::Draw(950, 20 + (i * 32), 0xff00ffff, "–¼‘OF%s", SOCKET_MANAGER->GetUser(i).name);
+
+		kohai[i]->Render();
 	}
 }
 

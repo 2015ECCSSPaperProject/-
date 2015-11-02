@@ -134,6 +134,7 @@
     <ClCompile Include="source\Net\UDPClient.cpp" />
     <ClCompile Include="source\pie_graph\pie_graph.cpp" />
     <ClCompile Include="source\Player\BasePlayer.cpp" />
+    <ClCompile Include="source\Player\Kohai.cpp" />
     <ClCompile Include="source\Player\MyPlayer.cpp" />
     <ClCompile Include="source\Player\NetPlayer.cpp" />
     <ClCompile Include="source\Player\PlayerManager.cpp" />
@@ -145,6 +146,7 @@
     <ClCompile Include="source\Scene\SceneSelect.cpp" />
     <ClCompile Include="source\Scene\SceneTitle.cpp" />
     <ClCompile Include="source\score\Score.cpp" />
+    <ClCompile Include="source\skill_gauge\skill_gauge.cpp" />
     <ClCompile Include="source\stage\Stage.cpp" />
     <ClCompile Include="source\system\Framework.cpp" />
     <ClCompile Include="source\system\System.cpp" />
@@ -181,6 +183,7 @@
     <ClInclude Include="source\Net\UDPClient.h" />
     <ClInclude Include="source\pie_graph\pie_graph.h" />
     <ClInclude Include="source\Player\BasePlayer.h" />
+    <ClInclude Include="source\Player\Kohai.h" />
     <ClInclude Include="source\Player\MyPlayer.h" />
     <ClInclude Include="source\Player\NetPlayer.h" />
     <ClInclude Include="source\Player\PlayerManager.h" />
@@ -193,6 +196,7 @@
     <ClInclude Include="source\Scene\SceneTitle.h" />
     <ClInclude Include="source\score\Score.h" />
     <ClInclude Include="source\ShareData\EventData.h" />
+    <ClInclude Include="source\skill_gauge\skill_gauge.h" />
     <ClInclude Include="source\stage\Stage.h" />
     <ClInclude Include="source\system\DebugDrawManager.h" />
     <ClInclude Include="source\system\Framework.h" />

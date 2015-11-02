@@ -10,6 +10,7 @@
 //										 //
 ///////////////////////////////////////////
 #define SAFE_DELETE(p) if(p){ delete p;p=nullptr;}
+#define SAFE_DELETE_ARRAY(p) if(p){ delete[] p;p=nullptr;}
 #define SAFE_RELEASE(p) { if(p){ (p)->Release(); (p)=NULL; } }
 
 #define VECTOR_ZERO Vector3(0.0f,0.0f,0.0f);

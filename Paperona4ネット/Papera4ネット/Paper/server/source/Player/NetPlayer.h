@@ -38,7 +38,7 @@ public:
 	NetPlayer(int id);
 	~NetPlayer();
 	void Initialize(iex3DObj *obj);
-	void Release();
+	void Release() override;
 
 	void Update();
 	void Render();

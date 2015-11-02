@@ -80,7 +80,7 @@ public:
 	//===============================================
 	BasePlayer(){}
 	BasePlayer(int id);
-	~BasePlayer();
+	virtual ~BasePlayer();
 	virtual void Initialize(iex3DObj *obj);
 	virtual void Release();
 

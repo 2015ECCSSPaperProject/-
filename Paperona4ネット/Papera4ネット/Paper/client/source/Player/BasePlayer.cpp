@@ -17,6 +17,8 @@
 BasePlayer::BasePlayer()
 {
 	model = nullptr;
+	die_model = nullptr;
+	for (int i = 0; i < (int)ACTION_PART::MAX; i++) action[i] = nullptr;
 
 	m_controlDesc.moveFlag &= 0x00000000;
 	m_controlDesc.motion_no = 0;

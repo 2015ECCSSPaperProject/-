@@ -17,7 +17,8 @@ public:
 
 private:
 
-	BasePlayer *players[PLAYER_MAX];						// プレイヤー実体
+	BasePlayer *players[PLAYER_MAX],						// プレイヤー実体
+		*kohai[PLAYER_MAX];									// 後輩実体
 	iex3DObj *clone_model[(int)CLONE_TYPE::MAX];			// clone元
 
 public:

@@ -38,7 +38,9 @@ void NetPlayer::Initialize(iex3DObj *obj)
 }
 
 NetPlayer::~NetPlayer()
-{}
+{
+	Release();
+}
 
 void NetPlayer::Release()
 {
@@ -46,6 +48,7 @@ void NetPlayer::Release()
 	{
 		SAFE_DELETE(action[i]);
 	}
+	SAFE_DELETE_ARRAY(action);
 	BasePlayer::Release();
 }
 
