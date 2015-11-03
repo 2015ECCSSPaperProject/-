@@ -59,8 +59,6 @@ void NetPlayer::Release()
 //*************************************************************************************************************************
 void NetPlayer::Update()
 {
-	CONTROL_DESC controlDesc;
-
 	// ここにサーバーマネージャーからデスクを取ってくる
 	controlDesc.moveFlag = ServerManager::GetDesc(m_id).moveFlag;
 
@@ -79,7 +77,7 @@ void NetPlayer::Update()
 
 	//	コントローラーに操作パラメータをパス
 	//Control_Update(controlDesc);//←デスクセット
-	action[(int)action_part]->Update(controlDesc);
+	action[(int)action_part]->Update();
 
 
 
@@ -112,7 +110,7 @@ void NetPlayer::ActionMove::Initialize()
 	me->camera_mode = CAMERA_MODE::TPS;
 }
 
-void NetPlayer::ActionMove::Update(const CONTROL_DESC &_ControlDesc)
+void NetPlayer::ActionMove::Update()
 {
 	float AxisX = 0, AxisY = 0;
 
@@ -122,15 +120,15 @@ void NetPlayer::ActionMove::Update(const CONTROL_DESC &_ControlDesc)
 	//if (KEY(KEY_UP) == 1) AxisY = 1;
 	//else if (KEY(KEY_DOWN) == 1) AxisY = -1;
 
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT) AxisX += -1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT) AxisX += 1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY += 1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY += -1;
+	if (me->controlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT) AxisX += -1;
+	if (me->controlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT) AxisX += 1;
+	if (me->controlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY += 1;
+	if (me->controlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY += -1;
 
 	// ジャンプ
 	if (!me->isJump && me->isLand)
 	{
-		if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::SPACE)
+		if (me->controlDesc.controlFlag & (BYTE)PLAYER_CONTROL::SPACE)
 		{
 			me->jump_pow = 2.0f;
 			me->isJump = true;
@@ -144,7 +142,7 @@ void NetPlayer::ActionMove::Update(const CONTROL_DESC &_ControlDesc)
 
 	//アングル処理	角度補正
 	float	work;
-	work = _ControlDesc.mouseX *0.000001f;
+	work = me->controlDesc.mouseX *0.000001f;
 	if (work > 0.1f) work = 0.1f;
 	me->angleY += work;// Angleに加算
 
@@ -178,7 +176,7 @@ void NetPlayer::ActionMove::Update(const CONTROL_DESC &_ControlDesc)
 
 	me->move += Vector3(0, me->move.y - me->fallspeed, 0);
 
-	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
+	if (me->controlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
 	{
 		me->poster_num = poster_mng->Can_do(me, me->mynumber);
 
@@ -192,7 +190,7 @@ void NetPlayer::ActionMove::Update(const CONTROL_DESC &_ControlDesc)
 			}
 		}
 	}
-	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::RIGHT_CLICK)
+	else if (me->controlDesc.controlFlag & (BYTE)PLAYER_CONTROL::RIGHT_CLICK)
 	{
 		me->poster_num = poster_mng->Can_do(me, me->mynumber);
 
@@ -206,12 +204,12 @@ void NetPlayer::ActionMove::Update(const CONTROL_DESC &_ControlDesc)
 			}
 		}
 	}
-	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::ATTACK_BUTTON)
+	else if (me->controlDesc.controlFlag & (BYTE)PLAYER_CONTROL::ATTACK_BUTTON)
 	{
 		me->Change_action(ACTION_PART::ATTACK);
 	}
 
-	else if (!(_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::TRG_C))
+	else if (!(me->controlDesc.controlFlag & (BYTE)PLAYER_CONTROL::TRG_C))
 	{
 		me->Change_action(ACTION_PART::MOVE_FPS);
 	}
@@ -229,19 +227,19 @@ void NetPlayer::ActionMoveFPS::Initialize()
 	me->camera_mode = CAMERA_MODE::FPS;
 }
 
-void NetPlayer::ActionMoveFPS::Update(const CONTROL_DESC &_ControlDesc)
+void NetPlayer::ActionMoveFPS::Update()
 {
 
 	float AxisX = 0, AxisY = 0;
 
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT) AxisX += -1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT) AxisX += 1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY += 1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY += -1;
+	if (me->controlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT) AxisX += -1;
+	if (me->controlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT) AxisX += 1;
+	if (me->controlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY += 1;
+	if (me->controlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY += -1;
 
 	if (!me->isJump && me->isLand)
 	{
-		if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::SPACE)
+		if (me->controlDesc.controlFlag & (BYTE)PLAYER_CONTROL::SPACE)
 		{
 			me->jump_pow = 2.0f;
 			me->isJump = true;
@@ -255,7 +253,7 @@ void NetPlayer::ActionMoveFPS::Update(const CONTROL_DESC &_ControlDesc)
 
 	//アングル処理	角度補正
 	float	work;
-	work = _ControlDesc.mouseX *0.000001f;
+	work = me->controlDesc.mouseX *0.000001f;
 	if (work > 0.1f) work = 0.1f;
 	me->angleY += work;// Angleに加算
 
@@ -284,7 +282,7 @@ void NetPlayer::ActionMoveFPS::Update(const CONTROL_DESC &_ControlDesc)
 
 	me->move += Vector3(0, me->move.y - me->fallspeed, 0);
 
-	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
+	if (me->controlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
 	{
 		me->poster_num = poster_mng->Can_do(me, me->mynumber);
 
@@ -298,7 +296,7 @@ void NetPlayer::ActionMoveFPS::Update(const CONTROL_DESC &_ControlDesc)
 			}
 		}
 	}
-	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::RIGHT_CLICK)
+	else if (me->controlDesc.controlFlag & (BYTE)PLAYER_CONTROL::RIGHT_CLICK)
 	{
 		me->poster_num = poster_mng->Can_do(me, me->mynumber);
 
@@ -312,12 +310,12 @@ void NetPlayer::ActionMoveFPS::Update(const CONTROL_DESC &_ControlDesc)
 			}
 		}
 	}
-	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::ATTACK_BUTTON)
+	else if (me->controlDesc.controlFlag & (BYTE)PLAYER_CONTROL::ATTACK_BUTTON)
 	{
 		me->Change_action(ACTION_PART::ATTACK);
 	}
 
-	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::TRG_C)
+	else if (me->controlDesc.controlFlag & (BYTE)PLAYER_CONTROL::TRG_C)
 	{
 		me->Change_action(ACTION_PART::MOVE);
 	}
@@ -336,7 +334,7 @@ void NetPlayer::ActionAttack::Initialize()
 	me->Set_motion(4);
 }
 
-void NetPlayer::ActionAttack::Update(const CONTROL_DESC &_ControlDesc)
+void NetPlayer::ActionAttack::Update()
 {
 	// モーション終了
 	if (me->model->GetParam(0) == 2)
@@ -377,7 +375,7 @@ void NetPlayer::ActionPaste::Initialize()
 	me->pos += (Vector3(-sinf(me->angleY), 0, -cosf(me->angleY)) * dist);
 }
 
-void NetPlayer::ActionPaste::Update(const CONTROL_DESC &_ControlDesc)
+void NetPlayer::ActionPaste::Update()
 {
 	me->motion_no = 3;
 	if (timer++ > 60)
@@ -413,20 +411,20 @@ void NetPlayer::ActionRend::Initialize()
 	me->pos += (Vector3(-sinf(me->angleY), 0, -cosf(me->angleY)) * dist);
 }
 
-void NetPlayer::ActionRend::Update(const CONTROL_DESC &_ControlDesc)
+void NetPlayer::ActionRend::Update()
 {
 	// まだ破いていない
 	if (!rended)
 	{
 		// 破けコマンドがONなら
-		if (_ControlDesc.rendFlag & (BYTE)REND_FLAG::RIGHT)
+		if (me->controlDesc.rendFlag & (BYTE)REND_FLAG::RIGHT)
 		{
 			me->motion_no = 2;
 			me->Set_motion(2);
 			rended = true;
 		}
 		// マウス離したらモード戻す
-		else if ((_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK) == 0)
+		else if ((me->controlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK) == 0)
 		{
 			(me->camera_mode == CAMERA_MODE::TPS) ? me->Change_action(ACTION_PART::MOVE) : me->Change_action(ACTION_PART::MOVE_FPS);
 			me->Set_motion(0);
@@ -467,7 +465,7 @@ void NetPlayer::ActionDie::Initialize()
 	me->move = VECTOR_ZERO;
 }
 
-void NetPlayer::ActionDie::Update(const CONTROL_DESC &_ControlDesc)
+void NetPlayer::ActionDie::Update()
 {
 	if (die_frame++ > 60)
 	{
@@ -495,14 +493,14 @@ void NetPlayer::ActionRespawn::Initialize()
 	me->motion_no = 0;
 }
 
-void NetPlayer::ActionRespawn::Update(const CONTROL_DESC &_ControlDesc)
+void NetPlayer::ActionRespawn::Update()
 {
 	float AxisX = .0f, AxisY = .0f;
 
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT) AxisX += -1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT) AxisX += 1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY += 1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY += -1;
+	if (me->controlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT) AxisX += -1;
+	if (me->controlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT) AxisX += 1;
+	if (me->controlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY += 1;
+	if (me->controlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY += -1;
 
 	//	移動ベクトル設定
 	Vector3 front(sinf(me->angleY), 0, cosf(me->angleY));
@@ -540,19 +538,19 @@ void NetPlayer::ActionRespawn::Update(const CONTROL_DESC &_ControlDesc)
 void NetPlayer::ActionHikouki::Initialize()
 {}
 
-void NetPlayer::ActionHikouki::Update(const CONTROL_DESC &_ControlDesc)
+void NetPlayer::ActionHikouki::Update()
 {
 	float AxisX = 0, AxisY = 0;
 
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT) AxisX = -1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT) AxisX = 1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY = 1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY = -1;
+	if (me->controlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT) AxisX = -1;
+	if (me->controlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT) AxisX = 1;
+	if (me->controlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY = 1;
+	if (me->controlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY = -1;
 
 	// ジャンプ
 	if (!me->isJump && me->isLand)
 	{
-		if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::SPACE)
+		if (me->controlDesc.controlFlag & (BYTE)PLAYER_CONTROL::SPACE)
 		{
 			me->jump_pow = 2.0f;
 			me->isJump = true;
@@ -566,7 +564,7 @@ void NetPlayer::ActionHikouki::Update(const CONTROL_DESC &_ControlDesc)
 
 	//アングル処理	角度補正
 	float	work;
-	work = _ControlDesc.mouseX *0.000001f;
+	work = me->controlDesc.mouseX *0.000001f;
 	if (work > 0.1f) work = 0.1f;
 	me->angleY += work;// Angleに加算
 
@@ -615,5 +613,5 @@ void NetPlayer::ActionHikouki::Update(const CONTROL_DESC &_ControlDesc)
 void NetPlayer::ActionGun::Initialize()
 {}
 
-void NetPlayer::ActionGun::Update(const CONTROL_DESC &_ControlDesc)
+void NetPlayer::ActionGun::Update()
 {}

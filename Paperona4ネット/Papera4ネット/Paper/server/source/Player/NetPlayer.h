@@ -19,6 +19,8 @@ public:
 	enum class DO_FLAG{ NONE, ATTACK, PASTE, REND, MAX };
 
 protected:
+	CONTROL_DESC controlDesc;
+
 	//===============================================
 	//	委譲クラスへのポインタ
 	//===============================================
@@ -53,7 +55,7 @@ public:
 		ActionMove(NetPlayer*me) :ActionBase(me){}
 
 		void Initialize();
-		void Update(const CONTROL_DESC &_ControlDesc);
+		void Update();
 	};
 
 	//===========================================
@@ -64,7 +66,7 @@ public:
 		ActionMoveFPS(NetPlayer*me) :ActionBase(me){}
 
 		void Initialize();
-		void Update(const CONTROL_DESC &_ControlDesc);
+		void Update();
 	};
 
 	//===========================================
@@ -75,7 +77,7 @@ public:
 		ActionAttack(NetPlayer*me) :ActionBase(me){}
 
 		void Initialize();
-		void Update(const CONTROL_DESC &_ControlDesc);
+		void Update();
 	};
 
 	//===========================================
@@ -88,7 +90,7 @@ public:
 		ActionPaste(NetPlayer*me) :ActionBase(me){}
 
 		void Initialize();
-		void Update(const CONTROL_DESC &_ControlDesc);
+		void Update();
 	};
 
 	//===========================================
@@ -101,7 +103,7 @@ public:
 		ActionRend(NetPlayer*me) :ActionBase(me){}
 
 		void Initialize();
-		void Update(const CONTROL_DESC &_ControlDesc);
+		void Update();
 	};
 
 	//===========================================
@@ -116,7 +118,7 @@ public:
 		ActionDie(NetPlayer*me) :ActionBase(me){}
 
 		void Initialize();
-		void Update(const CONTROL_DESC &_ControlDesc);
+		void Update();
 	};
 
 	//===========================================
@@ -131,7 +133,7 @@ public:
 		ActionRespawn(NetPlayer*me) :ActionBase(me){}
 
 		void Initialize();
-		void Update(const CONTROL_DESC &_ControlDesc);
+		void Update();
 	};
 
 	//===========================================
@@ -142,7 +144,7 @@ public:
 		ActionHikouki(NetPlayer*me) :ActionBase(me){}
 
 		void Initialize();
-		void Update(const CONTROL_DESC &_ControlDesc);
+		void Update();
 	};
 
 	//===========================================
@@ -153,7 +155,7 @@ public:
 		ActionGun(NetPlayer*me) :ActionBase(me){}
 
 		void Initialize();
-		void Update(const CONTROL_DESC &_ControlDesc);
+		void Update();
 	};
 
 	ActionBase<NetPlayer> **action;

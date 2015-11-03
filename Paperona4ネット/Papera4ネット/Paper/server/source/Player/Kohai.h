@@ -28,23 +28,36 @@ private:
 	class ActionChase : public ActionBase<Kohai>
 	{
 	public:
-		ActionChase(Kohai*me) :ActionBase(me){}
+		ActionChase(Kohai*me);
 
 		void Initialize() override;
 		void Update() override;
-	};
+	}action_chase;
 	class ActionPaste : public ActionBase<Kohai>
 	{
 	public:
-		ActionPaste(Kohai*me) :ActionPaste(me){}
+		ActionPaste(Kohai*me);
 
 		void Initialize() override;
 		void Update() override;
+
 		// -1 : dist範囲内にポスターが無い
 		int Nearest_poster(float dist);
 
 	private:
+		enum class PROCESS : unsigned char
+		{
+			WALK,
+			PASTE
+		}process;
+		int timer;
 		int target_poster;
-	};
+	}action_paste;
 
+	// Aに向かって移動
+	void GotoA(const Vector3 &A);
+	// distより離れてる時移動
+	bool GotoA_far(const Vector3 &A, float dist);
+	// distより近い時移動
+	bool GotoA_near(const Vector3 &A, float dist);
 };
