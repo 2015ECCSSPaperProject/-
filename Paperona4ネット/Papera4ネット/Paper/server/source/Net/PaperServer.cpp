@@ -8,7 +8,7 @@
 #include	"PaperServer.h"
 #include	"UDPServer.h"
 #include	"../poster/Poster_manager.h"
-
+#include "../timer/Timer.h"
 
 //#define BYTE_TRUE 0xAA
 //#define BYTE_FALSE 0xF0
@@ -222,6 +222,9 @@ void ServerManager::TeamData(char* data, int client)
 //---------------------------------------------------------------------
 void ServerManager::GameInitData(char* data, int client)
 {
+	// 制限時間
+	const int m = 2, s = 0, ms = 0;
+
 	/*同期*/
 	m_room.user[client].isReady = UserData::READY_MUTCH_SYNC;// SYNCはメインのここに行ったときに変える
 
@@ -259,6 +262,8 @@ void ServerManager::GameInitData(char* data, int client)
 	//	同期完了
 	send.com = active == count ? 0xFF : 0;// みんなデータを読み込んだら255を送る
 	m_pServer->Send(client, (char*)&send, sizeof(send));
+
+	timer->Start(m, s, ms);
 }
 
 //---------------------------------------------------------------------

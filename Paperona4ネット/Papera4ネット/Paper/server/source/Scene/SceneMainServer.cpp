@@ -17,6 +17,7 @@ iex3DObj *set;
 
 #include "../poster/Poster_manager.h"
 #include "../score/Score.h"
+#include "../timer/Timer.h"
 
 //******************************************************************
 //		初期化・解放
@@ -63,6 +64,7 @@ SceneMainServer::SceneMainServer()
 	m_pThread = new Thread(ThreadFunc, this);
 	m_pThread->Run();
 
+	timer = new Timer;
 }
 
 void SceneMainServer::PosterInit()
@@ -181,7 +183,8 @@ void SceneMainServer::ThreadFunc(void* pData, bool*isEnd)
 
 SceneMainServer::~SceneMainServer()
 {
-	
+	SAFE_DELETE(timer);
+
 	delete view;
 	delete stage;
 	
@@ -226,6 +229,8 @@ SceneMainServer::~SceneMainServer()
 //******************************************************************
 void SceneMainServer::Update()
 {
+	// タイマー更新
+	timer->Check();
 
 	//ナンバーエフェクト
 	Number_Effect::Update();
@@ -288,6 +293,9 @@ void SceneMainServer::Render()
 	//フェード処理
 	FadeControl::Render();
 
+	int m, s, ms;
+	timer->Get_second_limit(&m, &s, &ms);
+	Text::Draw(500, 50, 0xffff00ff, "TIME : %d : %02d : %03d", m, s, ms);
 }
 
 
