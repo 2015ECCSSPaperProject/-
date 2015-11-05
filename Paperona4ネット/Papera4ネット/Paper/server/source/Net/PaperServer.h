@@ -87,8 +87,8 @@ public:
 		USER_DATA = 5,
 		POSTER_DATA = 6,
 		LAYER_DATA = 7,
-		KOHAI_DATA = 8
-	
+		KOHAI_DATA = 8,
+		END_GAME = 9
 	};
 
 	/* ユーザーのデータ */
@@ -117,7 +117,6 @@ private:
 
 	static void UpdatePoster(int client);		/*	ポスターの更新											*/
 	static void UpdateLayer(char* data, int client);		/*	レイヤーの更新									　　	*/
-
 public:
 	static void Init();			/*	ネットプログラム開始	*/
 	static void Release();		/*	ネットプログラム終り	*/

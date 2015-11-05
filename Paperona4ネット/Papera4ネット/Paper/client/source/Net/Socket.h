@@ -113,7 +113,8 @@ private:
 		USER_DATA = 5 ,
 		POSTER_DATA = 6,
 		LAYER_DATA = 7,
-		KOHAI_DATA = 8
+		KOHAI_DATA = 8,
+		END_GAME = 9,
 	};
 
 private:
@@ -135,6 +136,7 @@ public:
 	void UpdateUser();				/* プレイヤー更新 */
 	void UpdateKohai();
 	void UpdatePoster();			/* ポスター更新 */
+	bool EndGame();					/* 制限時間終わった？ */
 
 	/*	ゲッター・セッター	*/
 	int					GetID()				const{ return m_myID; }

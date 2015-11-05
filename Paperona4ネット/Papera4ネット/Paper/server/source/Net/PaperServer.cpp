@@ -440,3 +440,5 @@ void ServerManager::ExitUser(char* data, int client)
 	m_pServer->CloseClient(client);
 
 }
+
+
