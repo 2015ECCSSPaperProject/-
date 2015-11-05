@@ -126,25 +126,25 @@ void SceneMakePoster::StampInit()
 
 	//ANIKI
 	//イラストはここで入れていきます。
-	StampPicture[KIND_NAME::FOOD][0] = new iex2DObj("DATA/makePoster/stamp/aniki.png");
+	StampPicture[KIND_NAME::FOOD][0] = new iex2DObj("DATA/makePoster/stamp/yen.png");
 	StampData[KIND_NAME::FOOD][0].x = 1050;
 	StampData[KIND_NAME::FOOD][0].y = 450;
 	StampData[KIND_NAME::FOOD][0].size = 110;
 
 	//イラストはここで入れていきます。
-	StampPicture[KIND_NAME::FOOD][1] = new iex2DObj("DATA/makePoster/stamp/歪みねぇな.png");
+	StampPicture[KIND_NAME::FOOD][1] = new iex2DObj("DATA/makePoster/stamp/coffee.png");
 	StampData[KIND_NAME::FOOD][1].x = 1000;
 	StampData[KIND_NAME::FOOD][1].y = 90;
 	StampData[KIND_NAME::FOOD][1].size = 50;
 
 	//イラストはここで入れていきます。
-	StampPicture[KIND_NAME::FOOD][2] = new iex2DObj("DATA/makePoster/stamp/蟹.png");
+	StampPicture[KIND_NAME::FOOD][2] = new iex2DObj("DATA/makePoster/stamp/gentei.png");
 	StampData[KIND_NAME::FOOD][2].x = 1000;
 	StampData[KIND_NAME::FOOD][2].y = 170;
 	StampData[KIND_NAME::FOOD][2].size = 50;
 
 	//イラストはここで入れていきます。
-	StampPicture[KIND_NAME::FOOD][3] = new iex2DObj("DATA/makePoster/stamp/だらしねぇな.png");
+	StampPicture[KIND_NAME::FOOD][3] = new iex2DObj("DATA/makePoster/stamp/hamburger.png");
 	StampData[KIND_NAME::FOOD][3].x = 1000;
 	StampData[KIND_NAME::FOOD][3].y = 240;
 	StampData[KIND_NAME::FOOD][3].size = 50;
