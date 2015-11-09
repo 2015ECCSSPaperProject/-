@@ -11,6 +11,8 @@
 #include	"../Player/BasePlayer.h"
 #include	"../Player/MyPlayer.h"
 #include	"../Player/NetPlayer.h"
+#include	"../sound/SoundManager.h"
+
 //net
 //#include "Network/TCPServerSocket.h"
 //#include "Network/net_config_loader.h"
@@ -100,6 +102,8 @@ bool SceneMain::Initialize()
 
 	//	ネットワークを開始する
 	m_pThread->Run();
+
+	//bgm->Fade_in("バトル系", 5);
 
 	return true;
 
@@ -237,11 +241,14 @@ void SceneMain::Render()
 	Text::Draw(100, 20, 0xff00ffff, "受信時間%.2f", bench.Get_time());
 
 	//マウスの場所
-	Text::Draw(10, 60, 0xff000000, "マウスのXの動き%.2f", player_mng->Get_player(SOCKET_MANAGER->GetID())->m_controlDesc.mouseX);
-	Text::Draw(10, 80, 0xff000000, "マウスのYの動き%.2f", player_mng->Get_player(SOCKET_MANAGER->GetID())->m_controlDesc.mouseY);
+	//Text::Draw(10, 60, 0xff000000, "マウスのXの動き%.2f", player_mng->Get_player(SOCKET_MANAGER->GetID())->m_controlDesc.mouseX);
+	//Text::Draw(10, 80, 0xff000000, "マウスのYの動き%.2f", player_mng->Get_player(SOCKET_MANAGER->GetID())->m_controlDesc.mouseY);
 
 	//ナンバーエフェクト
 	Number_Effect::Render();
+
+	// スコア
+	score->Render();
 
 	//フェード処理
 	FadeControl::Render();

@@ -62,7 +62,7 @@ bool SceneMakePoster::Initialize()
 		FilePic[i] = new iex2DObj(fileName);
 
 		// ファイルチェンジの目印
-		FileSelectPos[i] = Vector3(750, 120 + (i * 196) , 0);
+		FileSelectPos[i] = Vector3(750, 120 + ((float)i * 196), 0);
 	}
 	
 
@@ -578,7 +578,7 @@ void SceneMakePoster::SaveLayer()
 		out << layer_data[i].isHold << "\n";
 
 	}
-	std::fclose;
+//	std::fclose();
 
 }
 
@@ -615,7 +615,7 @@ void SceneMakePoster::Render()
 	backPic->Render(0, 0, 1280, 720, 0, 0, 1280, 720);
 
 	// ポスターの場所
-	posterSizePic->Render(posterScreen_W, posterScreen_H, 512, 512, 0, 0, 512, 512);
+	posterSizePic->Render((int)posterScreen_W, (int)posterScreen_H, 512, 512, 0, 0, 512, 512);
 
 	//　ファイル
 	for (int i = 0; i < KIND_MAX; i++)
@@ -633,13 +633,13 @@ void SceneMakePoster::Render()
 		{
 			if (SelectKind==KIND_NAME::BACK)//背景は小さく描画
 			{
-				StampPicture[SelectKind][no]->Render(StampData[SelectKind][no].x - 256/4,
-					StampData[SelectKind][no].y - 256/4, 512/4, 512/4, 0, 0, 512, 512);
+				StampPicture[SelectKind][no]->Render((int)(StampData[SelectKind][no].x - 256 / 4),
+					(int)(StampData[SelectKind][no].y - 256 / 4), 512 / 4, 512 / 4, 0, 0, 512, 512);
 			}
 			else
 			{
-				StampPicture[SelectKind][no]->Render(StampData[SelectKind][no].x - 256,
-					StampData[SelectKind][no].y - 256, 512, 512, 0, 0, 512, 512);
+				StampPicture[SelectKind][no]->Render((int)StampData[SelectKind][no].x - 256,
+					(int)StampData[SelectKind][no].y - 256, 512, 512, 0, 0, 512, 512);
 			}
 
 		}
@@ -655,7 +655,7 @@ void SceneMakePoster::Render()
 			{
 			//　絵を表示
 			StampPicture[layer_data[i].kind][layer_data[i].num]
-				->Render(layer_data[i].x - 256, layer_data[i].y - 256, 512, 512, 0, 0, 512, 512,RS_COPY,0x66ffffff);
+				->Render((int)layer_data[i].x - 256, (int)layer_data[i].y - 256, 512, 512, 0, 0, 512, 512, RS_COPY, 0x66ffffff);
 			}
 
 		}
@@ -663,13 +663,13 @@ void SceneMakePoster::Render()
 	}
 
 	// ポスターのフレーム
-	posterFramePic->Render(posterScreen_W, posterScreen_H, 512, 512, 0, 0, 512, 512);
+	posterFramePic->Render((int)posterScreen_W, (int)posterScreen_H, 512, 512, 0, 0, 512, 512);
 
 	//カーソルアイコン
-	cursorPic->Render(GetMousePos().x - (32), GetMousePos().y - (32), 64, 64, isPush * 64, isTap * 64 , 64, 64);
+	cursorPic->Render((int)GetMousePos().x - (32), (int)GetMousePos().y - (32), 64, 64, isPush * 64, isTap * 64, 64, 64);
 
 
-	posterScreen->Render(posterScreen_W, posterScreen_H, 512, 512, 0, 0, 512, 512);
+	posterScreen->Render((int)posterScreen_W, (int)posterScreen_H, 512, 512, 0, 0, 512, 512);
 
 	//	デバッグ文字
 #ifdef _DEBUG
@@ -682,7 +682,7 @@ void SceneMakePoster::Render()
 
 	for (int i = 0; i < KIND_MAX; i++)
 	{
-		cursorPic->Render(FileSelectPos[i].x-32, FileSelectPos[i].y-32, 64, 64, 0, 0, 64, 64);
+		cursorPic->Render((int)FileSelectPos[i].x - 32, (int)FileSelectPos[i].y - 32, 64, 64, 0, 0, 64, 64);
 	}
 	
 #endif
@@ -703,7 +703,7 @@ void SceneMakePoster::PosterRender()
 		{
 			//　絵を表示　※ポスターの表示場所分ずらしている
 			StampPicture[layer_data[i].kind][layer_data[i].num]
-				->Render(layer_data[i].x - 256 - (posterScreen_W), layer_data[i].y - 256 - (posterScreen_H), 512, 512, 0, 0, 512, 512);
+				->Render((int)(layer_data[i].x - 256 - (posterScreen_W)), (int)(layer_data[i].y - 256 - (posterScreen_H)), 512, 512, 0, 0, 512, 512);
 		
 		}
 	}
@@ -712,7 +712,7 @@ void SceneMakePoster::PosterRender()
 	posterFramePic->Render(0, 0, 512, 512, 0, 0, 512, 512);
 
 	//カーソルアイコン ※ポスターの表示場所分手もずらしている
-	cursorPic->Render(GetMousePos().x - (32) - (posterScreen_W), GetMousePos().y - (32) - (posterScreen_H), 64, 64, isPush * 64, 0, 64, 64);
+	cursorPic->Render((int)(GetMousePos().x - (32) - (posterScreen_W)), (int)(GetMousePos().y - (32) - (posterScreen_H)), 64, 64, isPush * 64, 0, 64, 64);
 
 
 }

@@ -120,6 +120,7 @@
     <ClCompile Include="IEX\Billboard.cpp" />
     <ClCompile Include="IEX\Debug.cpp" />
     <ClCompile Include="IEX\Fade.cpp" />
+    <ClCompile Include="IEX\IEX_AudioIIDX.cpp" />
     <ClCompile Include="IEX\IEX_Math2.cpp" />
     <ClCompile Include="IEX\Number.cpp" />
     <ClCompile Include="IEX\OKB.cpp" />
@@ -147,6 +148,7 @@
     <ClCompile Include="source\Scene\SceneTitle.cpp" />
     <ClCompile Include="source\score\Score.cpp" />
     <ClCompile Include="source\skill_gauge\skill_gauge.cpp" />
+    <ClCompile Include="source\sound\SoundManager.cpp" />
     <ClCompile Include="source\stage\Stage.cpp" />
     <ClCompile Include="source\system\Framework.cpp" />
     <ClCompile Include="source\system\System.cpp" />
@@ -171,6 +173,7 @@
     <ClCompile Include="source\timer\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="IEX\IEX_AudioIIDX.h" />
     <ClInclude Include="IEX\IEX_Math2.h" />
     <ClInclude Include="IEX\ogg\ogg.h" />
     <ClInclude Include="IEX\ogg\os_types.h" />
@@ -198,6 +201,7 @@
     <ClInclude Include="source\score\Score.h" />
     <ClInclude Include="source\ShareData\EventData.h" />
     <ClInclude Include="source\skill_gauge\skill_gauge.h" />
+    <ClInclude Include="source\sound\SoundManager.h" />
     <ClInclude Include="source\stage\Stage.h" />
     <ClInclude Include="source\system\DebugDrawManager.h" />
     <ClInclude Include="source\system\Framework.h" />

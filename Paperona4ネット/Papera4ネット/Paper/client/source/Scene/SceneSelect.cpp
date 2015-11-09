@@ -343,7 +343,7 @@ void SceneSelect::PosterRender(int i)
 		{
 			//　絵を表示　※ポスターの表示場所分ずらしている
 			StampPicture[SOCKET_MANAGER->GetLayer(i).layerdata[num].kind][SOCKET_MANAGER->GetLayer(i).layerdata[num].num]
-				->Render(SOCKET_MANAGER->GetLayer(i).layerdata[num].x - 256 - (64), SOCKET_MANAGER->GetLayer(i).layerdata[num].y - 256 - (128), 512, 512, 0, 0, 512, 512);
+				->Render((int)SOCKET_MANAGER->GetLayer(i).layerdata[num].x - 256 - (64), (int)SOCKET_MANAGER->GetLayer(i).layerdata[num].y - 256 - (128), 512, 512, 0, 0, 512, 512);
 		}
 	}
 
