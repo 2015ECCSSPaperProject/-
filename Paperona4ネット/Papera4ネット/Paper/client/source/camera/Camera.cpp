@@ -5,12 +5,28 @@
 #include	"../Player/BasePlayer.h"
 #include	"../Player/MyPlayer.h"
 
+#include	"../stage/Stage.h"
+
 //#include	"../Mouse/Mouse.h"
 
 // カメラ⇒プレイヤーの基本距離
-const float Camera::Mode::Base::DIST = 50.0f;
+const float Camera::Mode::Base::DIST = 70.0f;
 
-Camera::Camera() : iexView()
+Camera::Camera() : iexView(), collision_stage(nullptr)
+{
+	
+}
+
+Camera::~Camera()
+{
+	for (int i = 0; i < MODE_PART::M_MAX; i++)
+	{
+		delete mode[i];
+	}
+	delete collision_stage;
+}
+
+void Camera::Initialize(BasePlayer *my)
 {
 	// 基本パラメータ初期化
 	pos = Vector3(0, 10.0f, -20.0f);
@@ -28,19 +44,9 @@ Camera::Camera() : iexView()
 
 	Change_mode(MODE_PART::M_TPS);	// 最初は三人称
 	//Change_mode(MODE_PART::M_DEBUG);	// デバッグカメラ
-}
-
-Camera::~Camera()
-{
-	for (int i = 0; i < MODE_PART::M_MAX; i++)
-	{
-		delete mode[i];
-	}
-}
-
-void Camera::Initialize(BasePlayer *my)
-{
 	my_player = my;
+
+	collision_stage = new iexMesh("DATA/MATI/stage_atari.IMO");
 }
 
 void Camera::Update()
@@ -57,25 +63,23 @@ void Camera::Update()
 //*****************************************************************************
 void Camera::Mode::Base::Collision()
 {
-	//extern iexMesh* hitStage;
+	Vector3 Out, ray_Pos, Vec;
 
-	//Vector3 Out, ray_Pos, Vec;
+	//レイを飛ばす原点は注視点
+	ray_Pos = me->target;
 
-	////レイを飛ばす原点は注視点
-	//ray_Pos = target;
+	//ベクトルはその注視点からカメラ自身の座標
+	Vec = me->pos - me->target;
+	Vec.Normalize();
 
-	////ベクトルはその注視点からカメラ自身の座標
-	//Vec = pos - target;
-	//Vec.Normalize();
+	float Dist = 500.0f;
 
-	//float Dist = 500.0f;
+	ray_Pos -= Vec;
+	if (me->collision_stage->RayPick(&Out, &ray_Pos, &Vec, &Dist) != -1){
 
-	//ray_Pos -= Vec;
-	//if (hitStage->RayPick(&Out, &ray_Pos, &Vec, &Dist) != -1){
-
-	//	//もし注視点から壁の距離がradiusより小さい場合
-	//	if ((Out - target).Length() < (pos - target).Length()) pos = Out;
-	//}
+		//もし注視点から壁の距離がradiusより小さい場合
+		if ((Out - me->target).Length() < (me->pos - me->target).Length()) me->pos = Out;
+	}
 }
 
 
@@ -155,6 +159,7 @@ void Camera::Mode::TPS::Update()
 	// 角度
 	float p_angle=me->my_player->Get_angleY();
 	me->angle.y = p_angle;
+	//me->angle.x;
 
 	//カメラの上下移動に制限
 	if (me->angle.x < -0.2f)me->angle.x = -0.2f;
@@ -193,24 +198,19 @@ void Camera::Mode::TPS::Update()
 	me->ipos.y = p_pos.y - vec.y;
 	me->ipos.z = p_pos.z - vec.z;
 
-	me->ipos.y += 8.0f;	// 少し上に
-
 
 	// 注視点はプレイヤー
 	me->target = p_pos;
 
-
-	//壁判定
-	//Collision();
-
-	me->ipos += Vector3(0, 5, 0);
-	me->target += Vector3(0, 6, 0);
+	me->ipos += Vector3(0, 15, 0);
+	me->target += Vector3(0, 14, 0);
 
 	// 目標座標までゆっくり動かす
 	me->pos = me->pos * .0f + me->ipos * 1.0f;
 
-	me->Set(me->pos, me->target);
+	Collision();
 
+	me->Set(me->pos, me->target);
 
 	// プレイヤーモードでカメラ切り替え
 	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::MOVE_FPS) me->Change_mode(MODE_PART::M_FPS);
@@ -269,6 +269,8 @@ void Camera::Mode::FPS::Update()
 	me->target.x = me->pos.x + (sinf(me->angle.y));
 	me->target.y = me->pos.y + (tanf(me->angle.x));
 	me->target.z = me->pos.z + (cosf(me->angle.y));
+
+	Collision();
 
 	me->Set(me->pos, me->target);
 
@@ -362,19 +364,19 @@ void Camera::Mode::Zoom::Update()
 	me->ipos.y = p_pos.y - vec.y;
 	me->ipos.z = p_pos.z - vec.z;
 
-	me->ipos.y += 4.0f;	// 少し上に
-
 	// 注視点はプレイヤー
 	me->target = p_pos;
 
-
-	//壁判定
-	//Collision();
+	me->ipos += Vector3(0, 13, 0);
+	me->target += Vector3(0, 6, 0);
 
 	// 目標座標までゆっくり動かす
 	me->pos = me->pos * .85f + me->ipos * .15f;
 
-	me->Set(me->pos + Vector3(0, 1, 0), me->target + Vector3(0, 3, 0));
+	//壁判定
+	Collision();
+
+	me->Set(me->pos, me->target);
 
 	if (me->my_player->Get_action() != BasePlayer::ACTION_PART::REND && me->my_player->Get_action() != BasePlayer::ACTION_PART::PASTE)
 	{
