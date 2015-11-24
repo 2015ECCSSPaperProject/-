@@ -20,7 +20,8 @@ void Stage::Initialize()
 	area.push_back(new Area("./DATA/MATI/area/test area 1.IMO"));
 	area.push_back(new Area("./DATA/MATI/area/test area 2.IMO"));
 
-	event_list = new Event_open_area(20 * 1000, area[0]);
+	event_list->push(new Event_open_area(20 * 1000, area[0]));
+	event_list->push(new Event_open_area(40 * 1000, area[1]));
 }
 
 void Stage::Release()

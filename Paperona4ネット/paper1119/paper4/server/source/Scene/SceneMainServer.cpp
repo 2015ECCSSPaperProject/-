@@ -33,6 +33,9 @@ SceneMainServer::SceneMainServer()
 	view->Set(Vector3(0, 600, -60), Vector3(0, 0, 0));
 	view->Activate();
 
+	// ƒCƒxƒ“ƒg
+	event_list = new Event_list;
+
 	//stage = new iexMesh2("DATA/BG/stage_puroto.imo");
 	stage = new Stage;
 	stage->Initialize();

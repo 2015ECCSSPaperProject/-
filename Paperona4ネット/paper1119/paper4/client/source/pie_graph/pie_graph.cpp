@@ -5,7 +5,7 @@ Pie_graph::Pie_graph(){}
 
 Pie_graph::~Pie_graph()
 {
-	for (auto it : contents) delete it;
+	for (int i = 0; i < contents.size(); i++) delete contents[i];
 }
 
 void Pie_graph::Render(s32 DstX, s32 DstY, s32 DstW, s32 DstH, s32 SrcX, s32 SrcY, s32 width, s32 height, u32 dwFlags, COLOR color, float z)
