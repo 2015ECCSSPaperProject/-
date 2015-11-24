@@ -1,6 +1,9 @@
 
 #pragma once
 
+class iexMesh;
+struct Vector3;
+
 class Area
 {
 public:
@@ -11,6 +14,8 @@ public:
 	void Set_mesh(char *filename);
 
 	int RayPick(Vector3* out, Vector3* pos, Vector3* vec, float *Dist);
+
+	void Open();
 
 	void Render();
 

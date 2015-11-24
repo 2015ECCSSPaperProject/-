@@ -1,12 +1,13 @@
 
 #pragma once
 
-class Timer;
+#include <vector>
 
 class Event
 {
 public:
-	Event(Timer *timer);
+	Event();
+	Event(int time);
 	virtual ~Event(){};
 
 	virtual void Start() = 0;
@@ -16,6 +17,26 @@ public:
 	virtual void Update();
 
 protected:
-	Timer *timer;
+	;
 	unsigned int start_time;
 };
+
+
+
+class Area;
+
+class Event_open_area : public Event
+{
+public:
+	Event_open_area(Area *area);
+	Event_open_area(int time, Area *area);
+
+	void Start();
+
+private:
+	Area *area;
+};
+
+
+
+extern Event *event_list;

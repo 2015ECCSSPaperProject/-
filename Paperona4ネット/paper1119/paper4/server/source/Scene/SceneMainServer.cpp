@@ -15,6 +15,7 @@ using namespace std;
 #include "../poster/Poster_manager.h"
 #include "../score/Score.h"
 #include	"../timer/Timer.h"
+#include "../event/Event.h"
 
 //******************************************************************
 //		初期化・解放
@@ -189,6 +190,7 @@ SceneMainServer::~SceneMainServer()
 
 	SAFE_DELETE(poster_mng);
 	SAFE_DELETE(score);
+	SAFE_DELETE(event_list);
 	SAFE_DELETE(timer);
 
 	// スタンプ
@@ -226,7 +228,11 @@ void SceneMainServer::Update()
 	
 	poster_mng->Update();
 
-	if (timer)timer->Check();
+	if (timer)
+	{
+		event_list->Update();
+		timer->Check();
+	}
 }
 
 

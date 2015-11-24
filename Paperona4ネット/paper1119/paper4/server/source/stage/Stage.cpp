@@ -1,6 +1,7 @@
 
 #include "Stage.h"
 #include "Area.h"
+#include "../event/Event.h"
 //#include "../player/Player.h"
 
 Stage::Stage() : show_model(nullptr), collision_model(nullptr)
@@ -18,6 +19,8 @@ void Stage::Initialize()
 
 	area.push_back(new Area("./DATA/MATI/area/test area 1.IMO"));
 	area.push_back(new Area("./DATA/MATI/area/test area 2.IMO"));
+
+	event_list = new Event_open_area(20 * 1000, area[0]);
 }
 
 void Stage::Release()
