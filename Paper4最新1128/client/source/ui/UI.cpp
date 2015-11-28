@@ -1,0 +1,108 @@
+#include "iextreme.h"
+#include "../Player/BasePlayer.h"
+
+#include "../pie_graph/pie_graph.h"
+#include "UI.h"
+
+#include "../timer/Timer.h"
+#include "../score/Score.h"
+#include "../skill_gauge/skill_gauge.h"
+#include <assert.h>
+
+UI::UI() :my_player(nullptr), graph(nullptr), gauge(nullptr)
+{
+	for (int i = 0; i < IMAGE::MAX; i++)image[i] = nullptr;
+}
+
+void UI::Initialize(BasePlayer *my)
+{
+	// 自分のプレイヤーを指し示す
+	my_player = my;
+
+	// スキルゲージさん
+	gauge = new Skill_gauge;
+	gauge->Initialize();
+
+	// 円グラフさん
+	graph = new Pie_graph;
+	graph->Add_content("DATA/UI/graph/red.png");
+	graph->Add_content("DATA/UI/graph/blue.png");
+	graph->Add_content("DATA/UI/graph/green.png");
+	graph->Add_content("DATA/UI/graph/yellow.png");
+	graph->Add_content("DATA/UI/graph/purple.png");
+	graph->Add_content("DATA/UI/graph/pink.png");
+
+	// その他2D初期化
+	//image[IMAGE::TEROP] = new iex2DObj("")
+	image[IMAGE::ACTION] = new iex2DObj("DATA/UI/action/anim.png");
+	image[IMAGE::NUMBER] = new iex2DObj("DATA/UI/Num.png");
+	image[IMAGE::TAPE] = new iex2DObj("DATA/UI/tape/tape.png");
+	image[IMAGE::TAPE_BAR] = new iex2DObj("DATA/tape/tape2.png");
+	image[IMAGE::SKILL_GUN] = new iex2DObj("DATA/UI/skill/skill1.png");
+	image[IMAGE::SKILL_SYURIKEN] = new iex2DObj("DATA/UI/skill/skill2.png");
+	image[IMAGE::SKILL_KABUTO] = new iex2DObj("DATA/UI/skill/skill3.png");
+	image[IMAGE::SKILL_ZENRYOKU] = new iex2DObj("DATA/UI/skill/skill4.png");
+}
+
+UI::~UI()
+{
+	for (int i = 0; i < IMAGE::MAX; i++)SAFE_DELETE(image[i]);
+	delete graph;
+	delete gauge;
+}
+
+void UI::Update()
+{
+
+}
+
+void UI::Render()
+{
+	Graph();
+	SkillGauge();
+	Action();
+	TimeLimit();
+}
+
+void UI::Graph()
+{
+	for (int i = 0; i < PLAYER_MAX; i++)
+	{
+		graph->Set_percent(i, (float)score_mng->Get(i));
+	}
+	graph->Render(16, 16, 256, 256, 0, 0, 256, 256);
+}
+
+void UI::SkillGauge()
+{
+	// スキルUI
+	image[IMAGE::SKILL_GUN]->Render(28, 560, 32, 32, 0, 0, 32, 32);
+	image[IMAGE::SKILL_SYURIKEN]->Render(76, 560, 32, 32, 0, 0, 32, 32);
+	image[IMAGE::SKILL_KABUTO]->Render(124, 560, 32, 32, 0, 0, 32, 32);
+	image[IMAGE::SKILL_KABUTO]->Render(172, 560, 32, 32, 0, 0, 32, 32);
+
+	int gage_val = my_player->Get_god_gage() / 10;	// スキルゲージ取得
+	gauge->Render(gage_val, 10);
+}
+
+void UI::Action()
+{
+	Vector2 src;	// 取ってくる画像の位置
+	src.x = 0;
+	src.y = 0;
+
+	image[IMAGE::ACTION]->Render(1032, 482, 256, 256, src.x, src.y, 256, 256);
+}
+
+void UI::TimeLimit()
+{
+	const int second = timer->Get_limit_time() % 60, minutes = timer->Get_limit_time() / 60;
+	const int kijun = 1092;
+	// 64x64
+	image[IMAGE::NUMBER]->Render(kijun, 32, 64, 64, minutes * 64, 0, 64, 64);		// 分
+	image[IMAGE::NUMBER]->Render(kijun+36, 32, 64, 64, 13 * 64, 0, 64, 64);			// :
+	image[IMAGE::NUMBER]->Render(kijun+72, 32, 64, 64, second/10 * 64, 0, 64, 64);	// 秒(10の位)
+	image[IMAGE::NUMBER]->Render(kijun+108, 32, 64, 64, second%10 * 64, 0, 64, 64);	// 秒(1の位)
+}
+
+UI *ui;
