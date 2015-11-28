@@ -1,0 +1,2 @@
+stage_atari.IMO 当たり判定用　約2000ポリゴン
+stage_machi.IMO 見せる用　約6000ポリゴン

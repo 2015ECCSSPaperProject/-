@@ -1,0 +1,210 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="IEX">
+      <UniqueIdentifier>{9e8d67d2-7ac9-43ab-8c7a-53c6805e2932}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\SYSTEM">
+      <UniqueIdentifier>{0601c5ed-7826-4163-be63-69396eb2ed8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="シェーダー">
+      <UniqueIdentifier>{2e229673-6c68-4a9c-9103-b17b0264930d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\system\Framework.cpp">
+      <Filter>ソース ファイル\SYSTEM</Filter>
+    </ClCompile>
+    <ClCompile Include="source\system\System.cpp">
+      <Filter>ソース ファイル\SYSTEM</Filter>
+    </ClCompile>
+    <ClCompile Include="source\system\WinMain.cpp">
+      <Filter>ソース ファイル\SYSTEM</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\IEX_2DObject.cpp">
+      <Filter>IEX</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\IEX_3DObject.cpp">
+      <Filter>IEX</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\IEX_Audio.cpp">
+      <Filter>IEX</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\IEX_Direct3D.cpp">
+      <Filter>IEX</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\IEX_Input.cpp">
+      <Filter>IEX</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\IEX_Light.cpp">
+      <Filter>IEX</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\IEX_Math.cpp">
+      <Filter>IEX</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\IEX_Mesh.cpp">
+      <Filter>IEX</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\IEX_Particle.cpp">
+      <Filter>IEX</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\IEX_Polygon.cpp">
+      <Filter>IEX</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\IEX_RenderState.cpp">
+      <Filter>IEX</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\IEX_Shader.cpp">
+      <Filter>IEX</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\IEX_SkinMesh.cpp">
+      <Filter>IEX</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\IEX_System.cpp">
+      <Filter>IEX</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\IEX_Texture.cpp">
+      <Filter>IEX</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\IEX_View.cpp">
+      <Filter>IEX</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\TEXT.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\OKB.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\IEX_Math2.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\Debug.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\ParticlePlus.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\Fade.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\Billboard.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="IEX\Number.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Scene\SceneMainServer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\system\Thread.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Player\BasePlayer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Player\NetPlayer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\stage\Stage.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Net\PaperServer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Net\UDPServer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\poster\poster.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\poster\Poster_frame.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\poster\Poster_manager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\score\Score.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\fstream\fstream_paper.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Player\Kohai.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Player\PlayerManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\timer\Timer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\stage\Area.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\event\Event.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="IEX\iextreme.h">
+      <Filter>IEX</Filter>
+    </ClInclude>
+    <ClInclude Include="source\system\Framework.h">
+      <Filter>ソース ファイル\SYSTEM</Filter>
+    </ClInclude>
+    <ClInclude Include="source\system\Scene.h">
+      <Filter>ソース ファイル\SYSTEM</Filter>
+    </ClInclude>
+    <ClInclude Include="source\system\System.h">
+      <Filter>ソース ファイル\SYSTEM</Filter>
+    </ClInclude>
+    <ClInclude Include="source\system\DebugDrawManager.h" />
+    <ClInclude Include="source\system\ItDebug.h" />
+    <ClInclude Include="IEX\OKB.h" />
+    <ClInclude Include="IEX\ogg\ogg.h" />
+    <ClInclude Include="IEX\ogg\os_types.h" />
+    <ClInclude Include="IEX\ogg\vorbisenc.h" />
+    <ClInclude Include="IEX\ogg\vorbisfile.h" />
+    <ClInclude Include="IEX\IEX_Math2.h" />
+    <ClInclude Include="source\Scene\SceneMainServer.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\system\Thread.h" />
+    <ClInclude Include="source\Player\BasePlayer.h" />
+    <ClInclude Include="source\Player\NetPlayer.h" />
+    <ClInclude Include="source\Enum_public.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\stage\Stage.h" />
+    <ClInclude Include="source\Net\PaperServer.h" />
+    <ClInclude Include="source\Net\UDPServer.h" />
+    <ClInclude Include="source\poster\Poster.h" />
+    <ClInclude Include="source\poster\Poster_frame.h" />
+    <ClInclude Include="source\poster\Poster_manager.h" />
+    <ClInclude Include="source\score\Score.h" />
+    <ClInclude Include="source\fstream\fstream_paper.h" />
+    <ClInclude Include="source\Player\Kohai.h" />
+    <ClInclude Include="source\Player\PlayerManager.h" />
+    <ClInclude Include="source\timer\Timer.h" />
+    <ClInclude Include="source\stage\Area.h" />
+    <ClInclude Include="source\event\Event.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DATA\Shader\2D.fx">
+      <Filter>シェーダー</Filter>
+    </None>
+    <None Include="DATA\Shader\3D.fx">
+      <Filter>シェーダー</Filter>
+    </None>
+    <None Include="DATA\Shader\ShadowMap.inc" />
+    <None Include="DATA\Shader\F_PointLight.inc" />
+  </ItemGroup>
+</Project>

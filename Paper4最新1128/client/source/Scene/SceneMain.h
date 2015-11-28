@@ -1,0 +1,46 @@
+#ifndef _SCENEMAIN_H_
+#define _SCENEMAIN_H_
+
+#include	"../system/Scene.h"
+
+class PaperClient;
+class Thread;
+
+class Stage;
+
+class SceneMain : public Scene
+{
+public:
+	//初期化・解放
+	bool Initialize();
+	~SceneMain();
+	//処理
+	void Update();
+	//描画
+	void Render();
+
+private:
+	iexView* view;
+	Stage* stage;
+	iexMesh* sky;
+
+	PaperClient* net;
+
+	// モード関係
+	enum MODE{ START, MAIN, END };
+	MODE mode;
+	void Start();						// ゲーム始まって3秒待機
+	void Main();						// 基本的なゲーム処理
+	void End();							// ゲーム終了してちょっと待機してからリザルト行く処理
+	void(SceneMain::*Mode_funk[3])();	// 関数ポインタ
+
+
+	Thread* m_pThread;// スレッド
+	//---------------------------------------------------------------------
+	//   thread
+	//---------------------------------------------------------------------
+	static void ThreadFunc(void* pData, bool*);
+
+};
+
+#endif // !_SCENEMAIN_H_
