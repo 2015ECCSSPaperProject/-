@@ -270,12 +270,12 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	//	左クリック処理
 	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
 	{
-		me->poster_num = paper_obj_mng->poster->Can_do(me);
+		me->poster_num = paper_obj_mng->Can_do(me);
 
 		// ポスターがあった
 		if (me->poster_num != -1)
 		{
-			if (paper_obj_mng->poster->Can_rend(me->poster_num))
+			if (paper_obj_mng->Can_rend(me->poster_num))
 			{
 				me->Change_action(ACTION_PART::REND);
 				return;
@@ -412,12 +412,12 @@ void BasePlayer::Action::MoveFPS::Update(const CONTROL_DESC &_ControlDesc)
 	//	左クリック処理
 	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
 	{
-		me->poster_num = paper_obj_mng->poster->Can_do(me);
+		me->poster_num = paper_obj_mng->Can_do(me);
 
 		// ポスターがあった
 		if (me->poster_num != -1)
 		{
-			if (paper_obj_mng->poster->Can_rend(me->poster_num))
+			if (paper_obj_mng->Can_rend(me->poster_num))
 			{
 				me->Change_action(ACTION_PART::REND);
 				return;
@@ -532,24 +532,24 @@ void BasePlayer::Action::Paste::Initialize()
 
 	// ポスターに応じて座標と向きを変更
 	const static float dist = 5.0f;
-	me->pos = paper_obj_mng->poster->Get_pos(me->poster_num);
-	me->angleY = paper_obj_mng->poster->Get_angle(me->poster_num) + PI;
+	me->pos = paper_obj_mng->Get_pos(me->poster_num);
+	me->angleY = paper_obj_mng->Get_angle(me->poster_num) + PI;
 	me->pos += (Vector3(-sinf(me->angleY), 0, -cosf(me->angleY)) * dist);
 }
 
 void BasePlayer::Action::Paste::Update(const CONTROL_DESC &_ControlDesc)
 {
-	me->motion_no = 3;
-	if (timer++ > 60)
-	{
-		(me->camera_mode == CAMERA_MODE::TPS) ? me->Change_action(ACTION_PART::MOVE) : me->Change_action(ACTION_PART::MOVE_FPS);
-	}
+	//me->motion_no = 3;
+	//if (timer++ > 60)
+	//{
+	//	(me->camera_mode == CAMERA_MODE::TPS) ? me->Change_action(ACTION_PART::MOVE) : me->Change_action(ACTION_PART::MOVE_FPS);
+	//}
 
-	if (timer == 45)
-	{
-		// 貼り付ける処理
-		paper_obj_mng->poster->Paste_poster(me->mynumber, me->poster_num);
-	}
+	//if (timer == 45)
+	//{
+	//	// 貼り付ける処理
+	//	paper_obj_mng->poster->Paste_poster(me->mynumber, me->poster_num);
+	//}
 }
 
 
@@ -568,8 +568,8 @@ void BasePlayer::Action::Rend::Initialize()
 
 	// ポスターに応じて座標と向きを変更
 	const static float dist = 5.0f;
-	me->pos = paper_obj_mng->poster->Get_pos(me->poster_num);
-	me->angleY = paper_obj_mng->poster->Get_angle(me->poster_num) + PI;
+	me->pos = paper_obj_mng->Get_pos(me->poster_num);
+	me->angleY = paper_obj_mng->Get_angle(me->poster_num) + PI;
 	me->pos += (Vector3(-sinf(me->angleY), 0, -cosf(me->angleY)) * dist);
 }
 
@@ -606,7 +606,7 @@ void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
 		else if (me->models[(int)me->model_part]->GetParam(0) == 1)
 		{
 			// 破く処理
-			paper_obj_mng->poster->Rend_poster(me->mynumber, me->poster_num);
+			paper_obj_mng->Rend_poster(me->mynumber, me->poster_num);
 			score->Add(1, me->mynumber);	// 仮で1点
 			if ((me->god_gage += 5) > 100)me->god_gage = 100;	// 神ゲージUP
 		}
@@ -817,11 +817,11 @@ void BasePlayer::Action::Gun::Update(const CONTROL_DESC &_ControlDesc)
 	{
 		// Vs Poster
 		int poster_numbers[128];
-		paper_obj_mng->poster->Can_dist(me->pos, 60.0f, me->mynumber, poster_numbers);	// 範囲内のポスター番号取得
+		paper_obj_mng->Can_dist(me->pos, 60.0f, me->mynumber, poster_numbers);	// 範囲内のポスター番号取得
 
 		for (int i = 0; poster_numbers[i] != -1; i++)	// -1(終端)
 		{
-			paper_obj_mng->poster->Rend_poster(me->mynumber, poster_numbers[i]);
+			paper_obj_mng->Rend_poster(me->mynumber, poster_numbers[i]);
 			score->Add(1, me->mynumber);	// 仮で1点
 		}
 
