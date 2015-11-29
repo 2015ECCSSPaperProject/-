@@ -125,7 +125,12 @@ int Area_mng::RayPick(Vector3* out, Vector3* pos, Vector3* vec, float *Dist)
 	return ret;
 }
 
-int Area_mng::Get_num()
+int Area_mng::Get_numof()
 {
 	return area_array.size();
+}
+
+bool Area_mng::Is_work(unsigned int index)
+{
+	return area_array[index]->Is_work();
 }

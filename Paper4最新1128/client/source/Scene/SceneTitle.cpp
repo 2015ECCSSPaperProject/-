@@ -50,7 +50,7 @@ SceneTitle::~SceneTitle()
 	{
 		delete images[i];
 	}
-
+	delete start_button.obj;
 }
 
 

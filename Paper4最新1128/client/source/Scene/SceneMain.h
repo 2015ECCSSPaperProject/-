@@ -21,7 +21,6 @@ public:
 
 private:
 	iexView* view;
-	Stage* stage;
 	iexMesh* sky;
 
 	PaperClient* net;

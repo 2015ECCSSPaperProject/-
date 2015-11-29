@@ -139,4 +139,15 @@ void Stage::Collision(const Vector3 &pos, Vector3 *move, float radius, int recur
 }
 
 
+
+unsigned int Stage::Area_Get_numof()
+{
+	return area->Get_numof();
+}
+
+bool Stage::Area_Is_work(unsigned int index)
+{
+	return area->Is_work(index);
+}
+
 Stage *stage;

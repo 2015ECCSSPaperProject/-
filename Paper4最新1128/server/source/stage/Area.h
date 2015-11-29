@@ -19,7 +19,9 @@ public:
 
 	int RayPick(Vector3* out, Vector3* pos, Vector3* vec, float *Dist);
 
-	int Get_num();
-//protected:
+	int Get_numof();
+
+	bool Is_work(unsigned int index);
+private:
 	std::vector<Area*> area_array;
 };

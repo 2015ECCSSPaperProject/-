@@ -21,6 +21,8 @@ public:
 
 	int Get_num();
 
-protected:
+	void Set_Is_work(unsigned int index, bool in);
+
+private:
 	std::vector<Area*> area_array;
 };
