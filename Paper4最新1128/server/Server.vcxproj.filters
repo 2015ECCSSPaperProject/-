@@ -122,15 +122,6 @@
     <ClCompile Include="source\Net\UDPServer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\poster\poster.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\poster\Poster_frame.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\poster\Poster_manager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\score\Score.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -150,6 +141,18 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\event\Event.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\paper object\poster\poster.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\paper object\poster\Poster_frame.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\paper object\poster\Poster_manager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\paper object\paper object manager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -186,9 +189,6 @@
     <ClInclude Include="source\stage\Stage.h" />
     <ClInclude Include="source\Net\PaperServer.h" />
     <ClInclude Include="source\Net\UDPServer.h" />
-    <ClInclude Include="source\poster\Poster.h" />
-    <ClInclude Include="source\poster\Poster_frame.h" />
-    <ClInclude Include="source\poster\Poster_manager.h" />
     <ClInclude Include="source\score\Score.h" />
     <ClInclude Include="source\fstream\fstream_paper.h" />
     <ClInclude Include="source\Player\Kohai.h" />
@@ -196,6 +196,10 @@
     <ClInclude Include="source\timer\Timer.h" />
     <ClInclude Include="source\stage\Area.h" />
     <ClInclude Include="source\event\Event.h" />
+    <ClInclude Include="source\paper object\poster\Poster.h" />
+    <ClInclude Include="source\paper object\poster\Poster_frame.h" />
+    <ClInclude Include="source\paper object\poster\Poster_manager.h" />
+    <ClInclude Include="source\paper object\paper object manager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DATA\Shader\2D.fx">
