@@ -72,7 +72,7 @@ bool SceneMain::Initialize()
 	stage->Initialize();
 
 	sky = new iexMesh("DATA/Skydome/Skydome.IMO");
-	sky->SetScale(2.0f);
+	sky->SetScale(4.0f);
 	sky->SetPos(0, -100, 0);
 	sky->Update();
 

@@ -630,6 +630,7 @@ void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
 		if (me->models[(int)me->model_part]->GetParam(0) == 2)
 		{
 			me->Change_action(ACTION_PART::MOVE);
+			me->poster_num = -1;
 		}
 
 		// 破くモーションのフレーム
