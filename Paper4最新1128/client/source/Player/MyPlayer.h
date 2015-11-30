@@ -25,8 +25,9 @@ public:
 	void Update();
 	void Render();
 
-	void Mouse_Update();//	マウスのポジション
-	void Control_all();//　自分だけ操作追加
+	void Mouse_Update();	//	マウスのポジション
+	void Control_all();		//　自分だけ操作追加
+	void Update_listener();	// リスナー情報更新
 
 	//===============================================
 	//	ゲッター,セッター

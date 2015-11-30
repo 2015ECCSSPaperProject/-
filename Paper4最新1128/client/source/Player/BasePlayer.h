@@ -31,7 +31,7 @@ public:
 	//===============================================
 	//	定数
 	//===============================================
-	enum class ACTION_PART{ MOVE, MOVE_FPS, ATTACK, PASTE, REND, FREEZE, DIE, RESPAWN, PLANE, GUN, MANHOLE, THROUGH, MAX };
+	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, PASTE, REND, FREEZE, DIE, RESPAWN, PLANE, GUN, MANHOLE, THROUGH, MAX };
 	enum class DO_FLAG{ NONE, ATTACK, PASTE, REND, MAX };
 	enum class MODEL{ NORMAL, DIE, PLANE, GUN, MAX };
 
@@ -44,6 +44,7 @@ protected:
 	float			scale;
 
 	Vector3			move;
+	Vector3			prev_pos;
 	float			speed;
 	float			fallspeed;
 	int				se_receive;
@@ -59,8 +60,6 @@ protected:
 	//	その他
 	//===============================================
 	int				poster_num;
-	enum class CAMERA_MODE{ TPS, FPS };
-	CAMERA_MODE		camera_mode;
 	MODEL			model_part;
 	bool			toggle_c;
 
@@ -102,11 +101,11 @@ protected:
 		};
 
 		//===========================================
-		//	移動状態(FPS)
-		class MoveFPS : public Base
+		//	移動状態(ターゲッティング時)
+		class MoveTarget : public Base
 		{
 		public:
-			MoveFPS(BasePlayer*me) :Base(me){}
+			MoveTarget(BasePlayer*me) :Base(me){}
 
 			void Initialize();
 			void Update();
@@ -324,6 +323,9 @@ public:
 	void Set_god_gage(int val){ god_gage = val; }
 
 	CONTROL_DESC Get_controlDesc(){ return m_controlDesc; }
+
+	int Get_poster_num(){ return poster_num; }
+	void Set_poster_num(int no){ poster_num = no; }
 
 };
 

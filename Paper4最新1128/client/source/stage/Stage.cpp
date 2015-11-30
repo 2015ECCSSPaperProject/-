@@ -101,17 +101,3 @@ void Stage::Collision(const Vector3 &pos, Vector3 *move, float radius, int recur
 	sink_nl += radius;
 	*move += vec * sink_nl;
 }
-
-
-
-unsigned int Stage::Area_Get_numof()
-{
-	return area->Get_num();
-}
-
-void Stage::Area_Is_work(unsigned int index, bool in)
-{
-	area->Set_Is_work(index, in);
-}
-
-Stage *stage = nullptr;

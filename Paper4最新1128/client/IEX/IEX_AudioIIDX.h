@@ -147,8 +147,8 @@ public:
 	iexSoundIIDX();
 	virtual ~iexSoundIIDX();
 
-	virtual void Set(int no, char* filename, bool b3D = false);
-	virtual void Set_copy(char* filename, int dst, int count, bool b3D = false);			// CloneÇ›ÇΩÇ¢Ç…ï°êª
+	virtual void Set(int no, char* filename, bool b3D);
+	virtual void Set_copy(char* filename, int dst, int count, bool b3D);			// CloneÇ›ÇΩÇ¢Ç…ï°êª
 	virtual void Play(int no, BOOL loop = FALSE);
 	void Stop(int no);
 	void Pause(int no);
@@ -184,12 +184,10 @@ public:
 	iex3DSoundIIDX();
 	~iex3DSoundIIDX();
 
-	void Set(int no, char* filename, bool b3D = false){ iexSoundIIDX::Set(no, filename, true); }
-	void Set_copy(char* filename, int dst, int count, bool b3D = false){ iexSoundIIDX::Set_copy(filename, dst, count, true); }
-
 	void Set_listener_pos(const Vector3 &pos);
 	void Set_listener_orientation(const Vector3 &fornt, const Vector3 &up);
 	void Set_listener_move(const Vector3 &move);
+	void Set_roll_off_factor(float pow);
 	void Set_listener_all(const Vector3 &pos, const Vector3 &fornt, const Vector3 &up, const Vector3 &velocity);
 	void Update();	// ñàâÒÇ±ÇÍÇåƒÇ—èoÇµÇƒÇ≠ÇæÇ≥Ç¢
 

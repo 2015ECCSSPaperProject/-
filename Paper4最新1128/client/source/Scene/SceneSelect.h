@@ -25,7 +25,16 @@ public:
 
 private:
 	iexView* view;
-	iex2DObj* Select;
+
+	enum IMAGE{ BACK, P1, P2, P3, P4, P5, P6, WAIT, OK, LIST, ACTION, MAX };
+	iex2DObj* image[IMAGE::MAX];
+	struct
+	{
+		Vector3 pos;
+		float angle;
+		iex3DObj* obj;
+	}chara;
+
 
 	PaperClient* net;
 

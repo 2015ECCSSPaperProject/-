@@ -76,15 +76,10 @@ bool Framework::Update()
 	dwGameFrame++;	//	ゲームフレーム数更新
 
 	KEY_SetInfo();
-	
-
-//#ifdef _DEBUG
 
 	// キーボード入力更新(このゲームはキーボードを使わないのでデバッグ用)
 	OKB_Update();
 	SoundManager::Update();
-
-//#endif
 
 	if( scene != NULL ) scene->Update();
 

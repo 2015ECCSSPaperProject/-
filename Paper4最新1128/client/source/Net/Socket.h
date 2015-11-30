@@ -44,6 +44,7 @@ struct PlayerData
 	BYTE action_part;
 	BYTE god_gage;
 	WORD timer;
+	int target_no;
 };
 //---------------------------------------------------------------------
 //  ポスターの返ってくるパラメータ

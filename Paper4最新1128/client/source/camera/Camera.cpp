@@ -1,15 +1,13 @@
 
 #include	"Camera.h"
 #include	"../system/system.h"
-//#include	"../scene/sceneMain.h"
 #include	"../Player/BasePlayer.h"
 #include	"../Player/MyPlayer.h"
+#include	"../poster/Poster_manager.h"
 
 #include	"../stage/Stage.h"
 
 #include	"../../../share_data/Enum_public.h"
-
-//#include	"../Mouse/Mouse.h"
 
 // カメラ⇒プレイヤーの基本距離
 const float Camera::Mode::Base::DIST = 50.0f;
@@ -50,6 +48,7 @@ void Camera::Initialize(BasePlayer *my)
 	mode[MODE_PART::M_FPS] = new Camera::Mode::FPS(this);
 	mode[MODE_PART::M_RESPAWN] = new Camera::Mode::Respawn(this);
 	mode[MODE_PART::M_ZOOM] = new Camera::Mode::Zoom(this);
+	mode[MODE_PART::M_TARGET] = new Camera::Mode::Target(this);
 
 	Change_mode(MODE_PART::M_TPS);	// 最初は三人称
 	//Change_mode(MODE_PART::M_DEBUG);	// デバッグカメラ
@@ -174,9 +173,9 @@ void Camera::Mode::TPS::Initialize()
 
 void Camera::Mode::TPS::Update()
 {
-	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::REND || me->my_player->Get_action() == BasePlayer::ACTION_PART::PASTE)
+	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::REND||me->my_player->Get_action() == BasePlayer::ACTION_PART::MOVE_TARGET)
 	{
-		me->Change_mode(MODE_PART::M_ZOOM);
+		me->Change_mode(MODE_PART::M_TARGET);
 		return;
 	}
 
@@ -189,6 +188,7 @@ void Camera::Mode::TPS::Update()
 	//else if (iangle <= -PI * 2)iangle += PI * 2;
 
 	me->angle.y = me->angle.y * .7f + iangle * .3f;
+	//me->angle.y = iangle;
 
 	//アングル処理	角度補正
 	if (!(me->my_player->Get_controlDesc().controlFlag & ((BYTE)PLAYER_CONTROL::LEFT_CLICK | (BYTE)PLAYER_CONTROL::RIGHT_CLICK))){
@@ -244,9 +244,6 @@ void Camera::Mode::TPS::Update()
 	Collision();
 
 	me->Set(me->pos, me->target);
-
-	// プレイヤーモードでカメラ切り替え
-	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::MOVE_FPS) me->Change_mode(MODE_PART::M_FPS);
 }
 
 
@@ -306,7 +303,6 @@ void Camera::Mode::FPS::Update()
 
 	// プレイヤーモードでカメラ切り替え
 	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::MOVE) me->Change_mode(MODE_PART::M_TPS);
-	else if (me->my_player->Get_action() == BasePlayer::ACTION_PART::REND || me->my_player->Get_action() == BasePlayer::ACTION_PART::PASTE) me->Change_mode(MODE_PART::M_ZOOM);
 
 }
 
@@ -391,12 +387,107 @@ void Camera::Mode::Zoom::Update()
 		{
 			me->Change_mode(MODE_PART::M_TPS);
 		}
-		else if (me->my_player->Get_action() == BasePlayer::ACTION_PART::MOVE_FPS)
-		{
-			me->Change_mode(MODE_PART::M_FPS);
-		}
 	}
 }
 
+
+//*****************************************************************************
+//
+//		「ターゲット」状態処理
+//
+//*****************************************************************************
+
+void Camera::Mode::Target::Initialize()
+{
+
+}
+
+void Camera::Mode::Target::Update()
+{
+	// プレイヤーモードでカメラ切り替え
+	if (me->my_player->Get_action() != BasePlayer::ACTION_PART::MOVE_TARGET
+		&& me->my_player->Get_action() != BasePlayer::ACTION_PART::REND)
+	{
+		me->Change_mode(MODE_PART::M_TPS);
+		return;
+	}
+
+	static bool hosei = false;
+
+	Vector3 p_pos;
+	me->my_player->Get_pos(p_pos);
+	Vector3 target_pos;
+	target_pos = poster_mng->Get_pos(me->my_player->Get_poster_num());
+	p_pos.y = .0f;
+
+	Vector3 back = p_pos - target_pos;
+	//Back = p_pos - e_pos;
+	float ang = atan2(back.x, back.z);
+
+	back.y = .0f;
+
+	Vector3 to_target_vec(poster_mng->Get_pos(me->my_player->Get_poster_num()) - me->pos);	// 時と場合でiposに切り替え
+
+	const static float add_angle = 4.0f;	// この値でプレイヤーと敵の線上にカメラを置かないように補正する
+	if (back.Length() > 80){
+		back.Normalize();
+		me->ipos.x = (p_pos.x + back.x * 50.0f) + sinf(ang + add_angle)*15.0f;
+		me->ipos.z = (p_pos.z + back.z * 50.0f) + cosf(ang + add_angle)*15.0f;
+		me->ipos.y = p_pos.y + 20.0f;
+	}
+	else {
+		back.Normalize();
+		me->ipos.x = (p_pos.x + back.x * 30.0f) + sinf(ang + add_angle)*10.0f;
+		me->ipos.z = (p_pos.z + back.z * 30.0f) + cosf(ang + add_angle)*10.0f;
+		me->ipos.y = p_pos.y + 15.0f;
+	}
+
+	//注視点
+	if (target_pos.y - me->pos.y > 30.0f) target_pos.y -= 20.0f;
+	else  target_pos.y += 15.0f;
+	me->itarget = target_pos;
+
+	me->angle.y = me->my_player->Get_angleY();
+
+	Vector3 camera_front(me->matView._13, me->matView._23, me->matView._33);
+	to_target_vec.Normalize();
+	float siita;// degree.
+	float r = Vector3Dot(camera_front, to_target_vec);
+
+	// とっても大事
+	siita = acosf(r / (camera_front.Length() * to_target_vec.Length())) / 0.01745f;
+
+	if (hosei)
+	{
+		const float percentage = siita / 360;
+		me->target.x = me->target.x * (1 - percentage) + me->itarget.x * percentage;
+		me->target.z = me->target.z * (1 - percentage) + me->itarget.z * percentage;
+		if (siita < 5)
+		{
+			hosei = false;	// 5度以内なら補正終了
+		}
+	}
+
+
+	// θ度に入っていないなら追跡
+	else
+	{
+		if (siita > 10)
+		{
+			hosei = true;	// θ度越えたら補正かける(60は敵ごとに設定推奨)
+		}
+		else
+		{
+			me->target.x = me->target.x * .99f + me->itarget.x * .01f;	// 超ゆっくり
+			me->target.z = me->target.z * .99f + me->itarget.z * .01f;
+		}
+	}
+
+	me->target.y = me->target.y * .995f + me->itarget.y * .005f;
+	me->pos = me->pos * 0.9f + me->ipos * 0.1f;
+
+	//	視点設定
+	me->Set(me->pos, me->target);
+}
 
 Camera *camera;

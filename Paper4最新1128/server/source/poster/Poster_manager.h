@@ -44,9 +44,11 @@ public:
 	int Can_do(BasePlayer *player, int number);
 	int Can_do(BasePlayer *player);
 
-	int Can_dist(const Vector3 &pos, float dist, int number);
+	int Can_dist(const Vector3 &pos, float dist);
 	void Can_dist(const Vector3 &pos, float dist, int number, int out[]);	// 範囲内ポスター全部返すver
 	void Can_dist(const Vector3 &pos, float dist, int out[]);
+
+	int Can_targeting(BasePlayer *player, float range_dist, int range_degree);
 
 	// Can_doの後で呼ぶ
 	bool Can_rend(int number, int poster_num);          bool Can_paste(int number, int poster_num);

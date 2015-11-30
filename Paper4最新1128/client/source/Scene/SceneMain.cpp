@@ -105,6 +105,9 @@ bool SceneMain::Initialize()
 	ui = new UI;
 	ui->Initialize(player_mng->Get_player(SOCKET_MANAGER->GetID()));
 
+	event_bgm->Initialize("フライハイ");
+	event_bgm->Set_mode(EventBGM::MODE::START);
+
 	// 開始フラグを送る
 	m_pThread = new Thread(ThreadFunc, this);
 
@@ -185,6 +188,10 @@ void SceneMain::ThreadFunc(void* pData, bool*isEnd)
 //******************************************************************
 void SceneMain::Update()
 {
+	//フェード処理
+	FadeControl::Update();
+	event_bgm->Update();
+	ui->Update();
 	(this->*Mode_funk[mode])();
 }
 
@@ -203,9 +210,6 @@ void SceneMain::Main()
 	//ナンバーエフェクト
 	Number_Effect::Update();
 
-	//フェード処理
-	FadeControl::Update();
-
 	//　仮の処理
 	static float angle = 0;
 	angle += 0.0007f;
@@ -214,13 +218,16 @@ void SceneMain::Main()
 
 	if (timer->Get_limit_time() == 0)
 	{
+		event_bgm->Set_mode(EventBGM::MODE::END);
+		ui->Change_mode(SceneMain::MODE::END);
 		mode = MODE::END;
 	}
 }
 void SceneMain::End()
 {
-	if (1)
+	if (event_bgm->Get_mode() == EventBGM::MODE::NONE && FadeControl::isFadeOut_W)
 	{
+		se->Stop_all();
 		// シーン登録
 		MainFrame->ChangeScene(new SceneResult());
 	}

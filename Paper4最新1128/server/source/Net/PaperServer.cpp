@@ -12,7 +12,6 @@
 
 #include	"../score/Score.h"
 #include	"../timer/Timer.h"
-#include	"../stage/Stage.h"
 
 //#define BYTE_TRUE 0xAA
 //#define BYTE_FALSE 0xF0
@@ -97,8 +96,8 @@ void ServerManager::Update()
 	case USER_DATA:
 		UpdateUser(data, client);
 		break;
-	case STAGE_DATA:
-		UpdateStage(client);
+	case POSTER_DATA:
+		UpdatePoster(client);
 		break;
 	case LAYER_DATA:
 		UpdateLayer(data, client);
@@ -339,6 +338,7 @@ void ServerManager::UpdateUser(char* data, int client)
 		BYTE action_part;
 		BYTE god_gage;
 		WORD timer;
+		int target_no;
 	}send[PLAYER_MAX];
 
 
@@ -349,6 +349,7 @@ void ServerManager::UpdateUser(char* data, int client)
 		send[i].motion_no = player_mng->Get_player(i)->Get_motion_no();
 		send[i].action_part = (BYTE)player_mng->Get_player(i)->Get_action();
 		send[i].god_gage = player_mng->Get_player(i)->Get_god_gage();
+		send[i].target_no = player_mng->Get_player(i)->Get_target_no();
 
 		int rcv, dammy;
 		(timer) ? timer->Get_second_limit(&rcv, &dammy) : rcv = -999;
@@ -359,94 +360,28 @@ void ServerManager::UpdateUser(char* data, int client)
 }
 
 //---------------------------------------------------------------------
-//   ★ギミック等の更新
+//   ★ポスターの更新
 //---------------------------------------------------------------------
-
-void ServerManager::UpdateStage(int client)
+void ServerManager::UpdatePoster(int client)
 {
-	// ポスター
-	class Poster_sender
+	struct PosterData
 	{
-	public:
 		BYTE number;
 		int anim_no;
+	}*send_poster(nullptr);
 
-		static int Create_data(Poster_sender **out)
-		{
-			unsigned int num = poster_mng->Get_numof();
-			*out = new Poster_sender[num];
+	int num_poster = poster_mng->Get_numof();
+	send_poster = new PosterData[num_poster];
 
-			for (unsigned i = 0; i < num; i++)
-			{
-				(*out)[i].number = (char)poster_mng->Get_number(i);
-				(*out)[i].anim_no = poster_mng->Get_animation_frame(i);
-			}
-
-			return num;
-		}
-	};
-	Poster_sender *poster_data(nullptr);
-	unsigned int num_poster = Poster_sender::Create_data(&poster_data);
-	unsigned int poster_size = sizeof(Poster_sender) * num_poster;
-
-	// エリア
-	class Area_sender
+	for (int i = 0; i < num_poster; i++)
 	{
-	public:
-		union
-		{
-			unsigned char is_work;
-			struct
-			{
-				bool is_work_1 : 1;
-				bool is_work_2 : 1;
-				bool is_work_3 : 1;
-				bool is_work_4 : 1;
-				bool is_work_5 : 1;
-				bool is_work_6 : 1;
-				bool is_work_7 : 1;
-				bool is_work_8 : 1;
-			};
-		};
+		send_poster[i].number = (BYTE)poster_mng->Get_number(i);
+		send_poster[i].anim_no = poster_mng->Get_animation_frame(i);
+	}
 
-		static unsigned int Create_data(Area_sender **out)
-		{
-			unsigned int num = stage->Area_Get_numof();
-			unsigned int retnum = (unsigned int)ceil(num * 0.125f);
+	m_pServer->Send(client, (char*)send_poster, sizeof(*send_poster)*num_poster);
 
-			*out = new Area_sender[retnum];
-			for (unsigned int i = 0; i < retnum; i++)
-			{
-				(*out)[i].is_work = 0;
-				for (unsigned int eight = 0; eight < 8; eight++)
-				{
-					unsigned int true_num = i * 8 + eight;
-					if (true_num >= num)
-						break;
-
-					(*out)[i].is_work |= stage->Area_Is_work(true_num) << eight;
-				}
-			}
-
-			return retnum;
-		}
-	};
-	Area_sender *area_data(nullptr);
-	unsigned int num_area = Area_sender::Create_data(&area_data);
-	unsigned int area_size = sizeof(Area_sender) * num_area;
-
-	// まとめて送信
-	unsigned int size = poster_size + area_size;
-	char *send_data(nullptr);
-	send_data = new  char[size];
-	memcpy_s(send_data, poster_size, poster_data, poster_size);
-	memcpy_s(send_data + poster_size, area_size, area_data, area_size);
-
-	m_pServer->Send(client, send_data, size);
-
-	delete[] send_data;
-	delete[] poster_data;
-	delete[] area_data;
+	delete[] send_poster;
 }
 
 

@@ -85,7 +85,7 @@ public:
 		INIT_GAME_DATA = 4,
 		/*	USER_INIT,*/
 		USER_DATA = 5,
-		STAGE_DATA = 6,
+		POSTER_DATA = 6,
 		LAYER_DATA = 7,
 		SCORE_DATA = 8
 	};
@@ -111,7 +111,7 @@ private:
 	static void GameInitData(char* data, int client);		/*	全員がisReady==trueだとゲーム開始！						*/
 	//static void InitUser(char* data, int client);
 	static void UpdateUser(char* data, int client);			/*	プレイヤーの更新										*/
-	static void UpdateStage(int client);		/*	ポスターの更新											*/
+	static void UpdatePoster(int client);		/*	ポスターの更新											*/
 	static void UpdateLayer(char* data, int client);		/*	レイヤーの更新									　　	*/
 	static void UpdateScore(int client);		/*	スコアの更新	*/
 

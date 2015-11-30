@@ -12,6 +12,7 @@ class Poster;
 //class Poster_frame;
 class Score;
 class BasePlayer;
+struct Vector3;
 
 class Poster_manager
 {
@@ -55,6 +56,11 @@ public:
 	int Get_numof(){ return number_of_posters; }
 	void Set_user(int index, int user_number);
 	void Set_animframe(int index, int frame);
+
+	// ’Ç‰Á‚µ‚Ü‚µ‚½
+	const Vector3& Get_pos(int index);
+	float Get_angle(int index);
+
 };
 
 extern Poster_manager *poster_mng;

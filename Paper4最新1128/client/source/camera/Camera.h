@@ -12,7 +12,7 @@ public:
 	//===============================================
 	//	定数
 	//===============================================
-	enum MODE_PART{ M_DEBUG, M_TPS, M_FPS, M_RESPAWN, M_ZOOM, M_MAX };
+	enum MODE_PART{ M_DEBUG, M_TPS, M_FPS, M_RESPAWN, M_ZOOM, M_TARGET, M_MAX };
 	enum class FOV_TYPE{ DEFAULT, HARD };
 
 private:
@@ -111,6 +111,17 @@ private:
 		{
 		public:
 			Zoom(Camera *me) :Base(me){}
+
+			void Initialize();
+			void Update();
+		};
+
+		//===========================================
+		//	ターゲットモード
+		class Target : public Base
+		{
+		public:
+			Target(Camera *me) :Base(me){}
 
 			void Initialize();
 			void Update();

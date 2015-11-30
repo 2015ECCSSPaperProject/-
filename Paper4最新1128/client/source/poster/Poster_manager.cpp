@@ -136,4 +136,15 @@ void Poster_manager::Set_animframe(int index, int frame)
 	posters[index]->Set_anim_frame(frame);
 }
 
+const Vector3& Poster_manager::Get_pos(int index)
+{
+	return posters[index]->Get_pos();
+}
+
+float Poster_manager::Get_angle(int index)
+{
+	return posters[index]->Get_angle();
+}
+
+
 Poster_manager *poster_mng;

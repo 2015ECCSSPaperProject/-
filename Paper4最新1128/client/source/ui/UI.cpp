@@ -1,6 +1,7 @@
 #include "iextreme.h"
 #include "../Player/BasePlayer.h"
 
+#include "../Scene/SceneMain.h"
 #include "../pie_graph/pie_graph.h"
 #include "UI.h"
 
@@ -9,7 +10,7 @@
 #include "../skill_gauge/skill_gauge.h"
 #include <assert.h>
 
-UI::UI() :my_player(nullptr), graph(nullptr), gauge(nullptr)
+UI::UI() :my_player(nullptr), graph(nullptr), gauge(nullptr), mode(nullptr)
 {
 	for (int i = 0; i < IMAGE::MAX; i++)image[i] = nullptr;
 }
@@ -42,6 +43,8 @@ void UI::Initialize(BasePlayer *my)
 	image[IMAGE::SKILL_SYURIKEN] = new iex2DObj("DATA/UI/skill/skill2.png");
 	image[IMAGE::SKILL_KABUTO] = new iex2DObj("DATA/UI/skill/skill3.png");
 	image[IMAGE::SKILL_ZENRYOKU] = new iex2DObj("DATA/UI/skill/skill4.png");
+
+	Change_mode(SceneMain::MODE::START);
 }
 
 UI::~UI()
@@ -49,19 +52,36 @@ UI::~UI()
 	for (int i = 0; i < IMAGE::MAX; i++)SAFE_DELETE(image[i]);
 	delete graph;
 	delete gauge;
+	SAFE_DELETE(mode);
 }
 
 void UI::Update()
 {
-
+	mode->Update();
 }
 
 void UI::Render()
 {
-	Graph();
-	SkillGauge();
-	Action();
-	TimeLimit();
+	mode->Render();
+}
+
+
+
+//*****************************************************************************************************************************
+//
+//		基本、処理はここで
+
+void UI::Mode::Main::Update()
+{
+
+}
+
+void UI::Mode::Main::Render()
+{
+	me->Graph();
+	me->SkillGauge();
+	me->Action();
+	me->TimeLimit();
 }
 
 void UI::Graph()
@@ -79,7 +99,7 @@ void UI::SkillGauge()
 	image[IMAGE::SKILL_GUN]->Render(28, 560, 32, 32, 0, 0, 32, 32);
 	image[IMAGE::SKILL_SYURIKEN]->Render(76, 560, 32, 32, 0, 0, 32, 32);
 	image[IMAGE::SKILL_KABUTO]->Render(124, 560, 32, 32, 0, 0, 32, 32);
-	image[IMAGE::SKILL_KABUTO]->Render(172, 560, 32, 32, 0, 0, 32, 32);
+	image[IMAGE::SKILL_ZENRYOKU]->Render(172, 560, 32, 32, 0, 0, 32, 32);
 
 	int gage_val = my_player->Get_god_gage() / 10;	// スキルゲージ取得
 	gauge->Render(gage_val, 10);
@@ -104,5 +124,84 @@ void UI::TimeLimit()
 	image[IMAGE::NUMBER]->Render(kijun+72, 32, 64, 64, second/10 * 64, 0, 64, 64);	// 秒(10の位)
 	image[IMAGE::NUMBER]->Render(kijun+108, 32, 64, 64, second%10 * 64, 0, 64, 64);	// 秒(1の位)
 }
+
+//
+//=============================================================================================
+
+
+
+
+
+//*****************************************************************************************************************************
+//
+//		よーい…とかの雑用はここで処理
+
+void UI::Mode::Start::Initialize()
+{
+	step = 0;
+	frame = 0;
+	yooi = new iex2DObj("DATA/UI/call/yo-i.png");
+	don = new iex2DObj("DATA/UI/call/don.png");
+}
+UI::Mode::Start::~Start()
+{
+	delete yooi;
+	delete don;
+}
+void UI::Mode::Start::Update()
+{
+	if (++frame >= 150)
+	{
+		step++;
+		frame = 0;
+
+		if (step >= 2) me->Change_mode(SceneMain::MODE::MAIN);
+	}
+}
+void UI::Mode::Start::Render()
+{
+	me->TimeLimit();
+	me->Graph();
+	me->SkillGauge();
+	me->Action();
+	YooiDon();
+}
+void UI::Mode::Start::YooiDon()
+{
+	BYTE alpha = (int)(((float)(180-frame) / 150) * 256);
+	switch (step)
+	{
+	case 0:
+		yooi->Render(128, 182, 1024, 256, 0, 0, 1024, 256, RS_COPY, (0x00ffffff | (alpha << 24)));
+		break;
+
+	case 1:
+		don->Render(128, 182, 1024, 256, 0, 0, 1024, 256);
+		break;
+	}
+}
+
+void UI::Mode::End::Initialize()
+{
+	sokomade = new iex2DObj("DATA/UI/call/sokomade.png");
+}
+UI::Mode::End::~End()
+{
+	delete sokomade;
+}
+void UI::Mode::End::Update()
+{
+
+}
+void UI::Mode::End::Render()
+{
+	me->Graph();
+	me->SkillGauge();
+	me->Action();
+	sokomade->Render(128, 182, 1024, 256, 0, 0, 1024, 256);
+}
+//
+//=============================================================================================
+
 
 UI *ui;

@@ -3,6 +3,7 @@
 class BasePlayer;
 class Pie_graph;
 class Skill_gauge;
+class SceneMain;
 
 class UI
 {
@@ -34,6 +35,62 @@ private:
 	Skill_gauge *gauge;
 
 	//===============================================
+	//	委譲
+	//===============================================
+	class Mode
+	{
+	public:
+		class Base
+		{
+		protected:
+			UI *me;
+		public:
+			Base(UI *me) :me(me){}
+			virtual ~Base(){}
+			virtual void Initialize(){}
+			virtual void Update(){}
+			virtual void Render(){}
+		};
+
+		class Start: public Base
+		{
+		private:
+			int frame;
+			int step;
+			iex2DObj *yooi, *don;
+		public:
+			Start(UI *me) :Base(me){}
+			~Start();
+			void Initialize();
+			void Update();
+			void Render();
+			void YooiDon();
+		};
+
+		class Main : public Base
+		{
+		public:
+			Main(UI *me) :Base(me){}
+			//void Initialize();
+			void Update();
+			void Render();
+		};
+
+		class End :public Base
+		{
+		private:
+			iex2DObj *sokomade;
+		public:
+			End(UI *me) :Base(me){}
+			~End();
+			void Initialize();
+			void Update();
+			void Render();
+		};
+	};
+	Mode::Base *mode;
+
+	//===============================================
 	//	それぞれ描画の関数
 	//===============================================
 	// 関数たち
@@ -41,6 +98,10 @@ private:
 	void SkillGauge();	// 左下のスキルゲージ
 	void Action();		// 右下のアクションUI
 	void TimeLimit();	// タイムリミット
+
+
+	// く
+	bool isYooiDon;
 
 public:
 	//===============================================
@@ -55,6 +116,36 @@ public:
 	//===============================================
 	void Update();
 	void Render();
+
+
+	//===============================================
+	//　GetSet
+	//===============================================
+
+
+	//===============================================
+	//	モード変更
+	//===============================================
+	void Change_mode(SceneMain::MODE m)
+	{
+		SAFE_DELETE(mode);
+		switch (m)
+		{
+		case SceneMain::MODE::START:
+			mode = new Mode::Start(this);
+			break;
+
+		case SceneMain::MODE::MAIN:
+			mode = new Mode::Main(this);
+			break;
+
+		case SceneMain::MODE::END:
+			mode = new Mode::End(this);
+			break;
+		}
+		mode->Initialize();
+	}
 };
+
 
 extern UI *ui;

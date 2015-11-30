@@ -15,6 +15,8 @@
 
 /*	ベースプレイヤー	*/
 
+const float CAN_TARGET_DIST = 90.0f;
+
 //****************************************************************************************************************
 //
 //				 初	期	化	と	解	放	
@@ -52,7 +54,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 
 	// 行動状態初期化
 	action[(int)ACTION_PART::MOVE] = new BasePlayer::Action::Move(this);
-	action[(int)ACTION_PART::MOVE_FPS] = new BasePlayer::Action::MoveFPS(this);
+	action[(int)ACTION_PART::MOVE_TARGET] = new BasePlayer::Action::MoveTarget(this);
 	action[(int)ACTION_PART::ATTACK] = new BasePlayer::Action::Attack(this);
 	action[(int)ACTION_PART::PASTE] = new BasePlayer::Action::Paste(this);
 	action[(int)ACTION_PART::REND] = new BasePlayer::Action::Rend(this);
@@ -66,7 +68,6 @@ void BasePlayer::Initialize(iex3DObj **objs)
 
 
 	Change_action(ACTION_PART::MOVE);	// 最初は移動状態
-	camera_mode = CAMERA_MODE::TPS;
 
 	// モーション番号
 	motion_no = 0;
@@ -174,12 +175,11 @@ void BasePlayer::Set_motion(int no)
 
 void BasePlayer::Action::Move::Initialize()
 {
-	me->camera_mode = CAMERA_MODE::TPS;
-
 	me->model_part = MODEL::NORMAL;
 
 	me->motion_no = 1;
 	me->Set_motion(1);
+	trg_target = true;
 }
 
 void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
@@ -269,21 +269,21 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	//	左クリック処理
 	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
 	{
-		me->poster_num = poster_mng->Can_do(me);
+		//me->poster_num = poster_mng->Can_do(me);
+		me->poster_num = poster_mng->Can_targeting(me, CAN_TARGET_DIST, 45);
 
-		// ポスターがあった
 		if (me->poster_num != -1)
 		{
-			if (poster_mng->Can_rend(me->poster_num))
-			{
-				me->Change_action(ACTION_PART::REND);
-				return;
-			}
+			if(!trg_target)me->Change_action(ACTION_PART::MOVE_TARGET);
+			return;
 		}
+		trg_target = true;
 	}
+	else trg_target = false;
+
 	//===========================================================================
 	//	右クリック処理
-	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::RIGHT_CLICK)
+	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::RIGHT_CLICK)
 	{
 		//me->poster_num = poster_mng->Can_do(me, me->mynumber);
 
@@ -323,58 +323,85 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 
 //*****************************************************************************
 //
-//		「FPS移動」状態処理
+//		「ターゲット移動」状態処理
 //
 //*****************************************************************************
 
-void BasePlayer::Action::MoveFPS::Initialize()
+void BasePlayer::Action::MoveTarget::Initialize()
 {
-	me->camera_mode = CAMERA_MODE::FPS;
-
 	me->model_part = MODEL::NORMAL;
 
 	me->motion_no = 1;
 	me->Set_motion(1);
 }
 
-void BasePlayer::Action::MoveFPS::Update(const CONTROL_DESC &_ControlDesc)
+void BasePlayer::Action::MoveTarget::Update(const CONTROL_DESC &_ControlDesc)
 {
+	// 距離範囲外または左クリック解除
+	if ((poster_mng->Get_pos(me->poster_num)-me->pos).Length() >CAN_TARGET_DIST * 1.5f
+	|| !(_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK))
+	{
+		me->Change_action(ACTION_PART::MOVE);
+		return;
+	}
+
 	float AxisX = 0, AxisY = 0;
 
+	// ADWS
 	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT) AxisX += -1;
 	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT) AxisX += 1;
 	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY += 1;
 	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY += -1;
 
-	if (!me->isJump && me->isLand)
+	float pow = sqrtf(AxisX*AxisX + AxisY*AxisY);
+	if (pow)
 	{
-		if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::SPACE)
-		{
-			me->jump_pow = 2.0f;
-			me->isJump = true;
-		}
-	}
-	if (me->isJump)
-	{
-		me->move.y = me->jump_pow;
-		me->jump_pow -= me->fallspeed;
+		AxisX *= 1 / pow;
+		AxisY *= 1 / pow;
 	}
 
-	//アングル処理	角度補正
-	if (!(_ControlDesc.controlFlag & ((BYTE)PLAYER_CONTROL::LEFT_CLICK | (BYTE)PLAYER_CONTROL::RIGHT_CLICK))){
-		float	work;
-		work = _ControlDesc.mouseX *0.000001f;
-		if (work > 0.1f) work = 0.1f;
-		me->angleY += work;// Angleに加算
+	//// ジャンプ
+	//if (!me->isJump && me->isLand)
+	//{
+	//	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::SPACE)
+	//	{
+	//		me->jump_pow = 2.0f;
+	//		me->isJump = true;
+	//	}
+	//}
+	//if (me->isJump)
+	//{
+	//	me->move.y = me->jump_pow;
+	//	me->jump_pow -= me->fallspeed;
+	//}
+
+	//	角度補正
+	float	x1 = poster_mng->Get_pos(me->poster_num).x - me->pos.x;
+	float	z1 = poster_mng->Get_pos(me->poster_num).z - me->pos.z;
+	float	x2 = sinf(me->angleY);
+	float	z2 = cosf(me->angleY);
+	//	内積による補正量調整
+	float	d = sqrtf(x1*x1 + z1*z1);
+	if (d == 0){ d = 0.1f; z1 = 0.1f; }
+
+	if (d > 0)
+	{
+		//	内積
+		float n = (x1*x2 + z1*z2) / d;
+		//	角度補正量
+		float adjust = (1 - n) * 2.0f;
+		if (adjust > 0.3f) adjust = 0.3f;
+		//	外積による左右回転
+		float	g = x1*z2 - x2*z1;
+		me->angleY += (g < 0) ? -adjust : adjust;
 	}
 
-	//	移動ベクトル設定
 	Vector3 front(sinf(me->angleY), 0, cosf(me->angleY));
 	Vector3 right(sinf(me->angleY + PI * .5f), 0, cosf(me->angleY + PI * .5f));
+
 	front.Normalize();
 	right.Normalize();
-
-	//	移動量決定
+	// 移動量決定
 	me->move.x = (front.x*AxisY + right.x*AxisX) * (me->speed);
 	me->move.z = (front.z*AxisY + right.z*AxisX) * (me->speed);
 
@@ -382,7 +409,7 @@ void BasePlayer::Action::MoveFPS::Update(const CONTROL_DESC &_ControlDesc)
 	if (me->move.Length() == 0)
 	{
 		// 待機モーション
-		me->motion_no = 1;
+		if (me->motion_no != 5 && me->motion_no != 6) me->motion_no = 1;
 	}
 	// 何かしら動いてる状態
 	else
@@ -403,24 +430,25 @@ void BasePlayer::Action::MoveFPS::Update(const CONTROL_DESC &_ControlDesc)
 		me->motion_no = 5;
 	}
 
+	else if (me->models[(int)me->model_part]->GetParam(0) == 9)
+	{
+		me->motion_no = 1;
+		me->models[(int)me->model_part]->SetParam(0, 0);
+	}
+
 	me->move += Vector3(0, me->move.y - me->fallspeed, 0);
 
-	//===========================================================================
-	//	左クリック処理
+
 	//===========================================================================
 	//	左クリック処理
 	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
 	{
-		me->poster_num = poster_mng->Can_do(me);
+		const int no = poster_mng->Can_do(me);
 
 		// ポスターがあった
-		if (me->poster_num != -1)
+		if (no != -1 && me->poster_num == no)
 		{
-			if (poster_mng->Can_rend(me->poster_num))
-			{
-				me->Change_action(ACTION_PART::REND);
-				return;
-			}
+			me->Change_action(ACTION_PART::REND);
 		}
 	}
 	//===========================================================================
@@ -498,7 +526,7 @@ void BasePlayer::Action::Attack::Update(const CONTROL_DESC &_ControlDesc)
 	// モーション終了
 	if (me->models[(int)me->model_part]->GetParam(0) == 2)
 	{
-		(me->camera_mode == CAMERA_MODE::TPS) ? me->Change_action(ACTION_PART::MOVE) : me->Change_action(ACTION_PART::MOVE_FPS);
+		me->Change_action(ACTION_PART::MOVE);
 	}
 
 	// 破くモーションのフレーム
@@ -541,7 +569,7 @@ void BasePlayer::Action::Paste::Update(const CONTROL_DESC &_ControlDesc)
 	me->motion_no = 3;
 	if (timer++ > 60)
 	{
-		(me->camera_mode == CAMERA_MODE::TPS) ? me->Change_action(ACTION_PART::MOVE) : me->Change_action(ACTION_PART::MOVE_FPS);
+		me->Change_action(ACTION_PART::MOVE);
 	}
 
 	if (timer == 45)
@@ -570,6 +598,9 @@ void BasePlayer::Action::Rend::Initialize()
 	me->pos = poster_mng->Get_pos(me->poster_num);
 	me->angleY = poster_mng->Get_angle(me->poster_num) + PI;
 	me->pos += (Vector3(-sinf(me->angleY), 0, -cosf(me->angleY)) * dist);
+
+	me->motion_no = 1;
+	me->Set_motion(1);
 }
 
 void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
@@ -587,7 +618,7 @@ void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
 		// マウス離したらモード戻す
 		else if ((_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK) == 0)
 		{
-			(me->camera_mode == CAMERA_MODE::TPS) ? me->Change_action(ACTION_PART::MOVE) : me->Change_action(ACTION_PART::MOVE_FPS);
+			me->Change_action(ACTION_PART::MOVE);
 		}
 	}
 	else // 破き中
@@ -598,7 +629,7 @@ void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
 		// モーション終了
 		if (me->models[(int)me->model_part]->GetParam(0) == 2)
 		{
-			(me->camera_mode == CAMERA_MODE::TPS) ? me->Change_action(ACTION_PART::MOVE) : me->Change_action(ACTION_PART::MOVE_FPS);
+			me->Change_action(ACTION_PART::MOVE);
 		}
 
 		// 破くモーションのフレーム
@@ -703,7 +734,7 @@ void BasePlayer::Action::Respawn::Update(const CONTROL_DESC &_ControlDesc)
 	if (me->isLand || _ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK || _ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::RIGHT_CLICK)
 	{
 		me->invincible = false;
-		(me->camera_mode == CAMERA_MODE::TPS) ? me->Change_action(ACTION_PART::MOVE) : me->Change_action(ACTION_PART::MOVE_FPS);
+		me->Change_action(ACTION_PART::MOVE);
 	}
 }
 
@@ -809,7 +840,7 @@ void BasePlayer::Action::Gun::Update(const CONTROL_DESC &_ControlDesc)
 	if (me->models[(int)me->model_part]->GetParam(0) == 2)	// モーション終了
 	{
 		me->invincible = false;
-		(me->camera_mode == CAMERA_MODE::TPS) ? me->Change_action(ACTION_PART::MOVE) : me->Change_action(ACTION_PART::MOVE_FPS);
+		me->Change_action(ACTION_PART::MOVE);
 	}
 
 	else if (me->models[(int)me->model_part]->GetParam(0) == 1)	// 判定フレーム

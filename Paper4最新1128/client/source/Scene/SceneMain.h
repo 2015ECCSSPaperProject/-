@@ -19,19 +19,21 @@ public:
 	//描画
 	void Render();
 
+	// モード関係
+	enum MODE{ START, MAIN, END, MAX };
+
 private:
 	iexView* view;
+	Stage* stage;
 	iexMesh* sky;
 
 	PaperClient* net;
 
-	// モード関係
-	enum MODE{ START, MAIN, END };
 	MODE mode;
 	void Start();						// ゲーム始まって3秒待機
 	void Main();						// 基本的なゲーム処理
 	void End();							// ゲーム終了してちょっと待機してからリザルト行く処理
-	void(SceneMain::*Mode_funk[3])();	// 関数ポインタ
+	void(SceneMain::*Mode_funk[MODE::MAX])();	// 関数ポインタ
 
 
 	Thread* m_pThread;// スレッド

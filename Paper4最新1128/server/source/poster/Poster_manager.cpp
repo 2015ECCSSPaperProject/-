@@ -123,16 +123,23 @@ int Poster_manager::Can_do(BasePlayer *player)
 	return num;
 }
 
-int Poster_manager::Can_dist(const Vector3 &pos, float dist, int number)
+int Poster_manager::Can_dist(const Vector3 &pos, float dist)
 {
+	float min_dist = 114514;
+	int ret_num = -1;
 	for (unsigned int i = 0; i < posters.size(); i++)
 	{
-		if (posters[i]->Can_dist(pos, dist, number))
+		if (posters[i]->Can_dist(pos, dist))
 		{
-			return i;
+			const float dist = (posters[i]->Get_pos() - pos).Length();
+			if (dist < min_dist)	// 最も近い位置
+			{
+				min_dist = dist;
+				ret_num = i;
+			}
 		}
 	}
-	return -1;
+	return ret_num;
 }
 
 void Poster_manager::Can_dist(const Vector3 &pos, float dist, int number, int out[])
@@ -159,6 +166,32 @@ void Poster_manager::Can_dist(const Vector3 &pos, float dist, int out[])
 		}
 	}
 	out[count] = -1;	// 終端は-1
+}
+
+int Poster_manager::Can_targeting(BasePlayer *player, float range_dist, int range_degree)
+{
+	float min_dist = range_dist;
+	int ret_num = -1;
+
+	for(unsigned int i = 0; i < posters.size(); i++)
+	{
+		//④v1とv2のなす角（度）を計算し、変数angleに代入する
+		Vector3 player_front(sinf(player->Get_angleY()), 0, cosf(player->Get_angleY()));
+		Vector3 to_target_vec(posters[i]->Get_pos() - player->Get_pos());
+
+		const float to_target_len = to_target_vec.Length();
+		const int theta = (int)(acosf(Vector3Dot(player_front, to_target_vec) / (player_front.Length() * to_target_len)) / 0.01745f);
+
+		if (theta < range_degree && to_target_len < range_dist)	// 距離と角度
+		{
+			if (to_target_len < min_dist)
+			{
+				ret_num = i;
+				min_dist = to_target_len;
+			}
+		}
+	}
+	return ret_num;
 }
 
 bool Poster_manager::Can_rend(int number, int poster_num)

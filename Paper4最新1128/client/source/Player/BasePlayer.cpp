@@ -17,7 +17,7 @@
 //  初期化
 //
 //****************************************************************************************************************
-BasePlayer::BasePlayer()
+BasePlayer::BasePlayer():prev_pos(pos)
 {
 	//ZeroMemory(models, sizeof(iex3DObj));
 	for (int i = 0; i < (int)MODEL::MAX; i++) models[i] = nullptr;
@@ -48,7 +48,6 @@ void BasePlayer::Initialize(iex3DObj **objs)
 
 	// その他初期化
 	poster_num = 0;
-	camera_mode = CAMERA_MODE::TPS;
 	toggle_c = true;
 
 	// 3D実体
@@ -60,7 +59,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 
 	// 行動状態初期化
 	action[(int)ACTION_PART::MOVE]		 = new BasePlayer::Action::Move(this);
-	action[(int)ACTION_PART::MOVE_FPS]	 = new BasePlayer::Action::MoveFPS(this);
+	action[(int)ACTION_PART::MOVE_TARGET]= new BasePlayer::Action::MoveTarget(this);
 	action[(int)ACTION_PART::ATTACK]	 = new BasePlayer::Action::Attack(this);
 	action[(int)ACTION_PART::PASTE]		 = new BasePlayer::Action::Paste(this);
 	action[(int)ACTION_PART::REND]		 = new BasePlayer::Action::Rend(this);
@@ -101,6 +100,10 @@ void BasePlayer::Release()
 void BasePlayer::Update()
 {
 	action[(int)action_part]->Update();
+
+	// move値算出
+	move = Vector3(pos - prev_pos);
+	prev_pos = pos;
 }
 
 
@@ -163,6 +166,23 @@ void BasePlayer::Action::Move::Update()
 {
 	// 扱いに注意
 	me->Set_motion(me->motion_no);
+
+	// 無理やり
+	if (me->m_controlDesc.moveFlag & (int)PLAYER_IMPUT::DOWN ||
+		me->m_controlDesc.moveFlag & (int)PLAYER_IMPUT::UP ||
+		me->m_controlDesc.moveFlag & (int)PLAYER_IMPUT::LEFT ||
+		me->m_controlDesc.moveFlag & (int)PLAYER_IMPUT::RIGHT)
+	{
+		if (me->se_receive == -1) me->se_receive = se->Play("歩行", me->pos, Vector3(me->models[(int)me->model_part]->TransMatrix._31, 0, me->models[(int)me->model_part]->TransMatrix._32), true);
+		else se->Set_data(me->se_receive, me->pos, Vector3(me->models[(int)me->model_part]->TransMatrix._31, 0, me->models[(int)me->model_part]->TransMatrix._32), me->move);
+	}
+	else if (me->se_receive != -1)
+	{
+		se->Stop(me->se_receive);
+		me->se_receive = -1;
+	}
+
+	if (me->models[(int)MODEL::NORMAL]->GetFrame() == 265) se->Play("ジャンプ", me->pos);
 }
 
 void BasePlayer::Action::Move::Render()
@@ -176,11 +196,11 @@ void BasePlayer::Action::Move::Render()
 
 //*****************************************************************************
 //
-//		「FPS移動」状態処理
+//		「ターゲット移動移動」状態処理
 //
 //*****************************************************************************
 
-void BasePlayer::Action::MoveFPS::Initialize()
+void BasePlayer::Action::MoveTarget::Initialize()
 {
 	me->m_controlDesc.mouseX = .0f;
 	me->m_controlDesc.mouseY = .0f;
@@ -191,13 +211,13 @@ void BasePlayer::Action::MoveFPS::Initialize()
 	me->model_part = MODEL::NORMAL;
 }
 
-void BasePlayer::Action::MoveFPS::Update()
+void BasePlayer::Action::MoveTarget::Update()
 {
 	// 扱いに注意
 	me->Set_motion(me->motion_no);
 }
 
-void BasePlayer::Action::MoveFPS::Render()
+void BasePlayer::Action::MoveTarget::Render()
 {
 	Update_obj();
 	me->models[(int)me->model_part]->Render();
@@ -281,6 +301,8 @@ void BasePlayer::Action::Rend::Initialize()
 
 
 	me->model_part = MODEL::NORMAL;
+
+	se->Play("破る構え");
 }
 
 void BasePlayer::Action::Rend::Update()
@@ -295,6 +317,13 @@ void BasePlayer::Action::Rend::Update()
 	if (mouse_move > 80000)
 	{
 		me->m_controlDesc.rendFlag |= (BYTE)REND_FLAG::RIGHT;
+	}
+
+	// 破くモーションのフレーム
+	if (me->models[(int)me->model_part]->GetParam(0) == 1)
+	{
+		// 破く処理
+		se->Play("破る", me->pos);
 	}
 }
 

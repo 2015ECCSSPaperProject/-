@@ -911,7 +911,7 @@ void iexSoundIIDX::Set_copy(char *filename, int dst, int count, bool b3D)
 {
 	if (count == 1)
 	{
-		Set(dst, filename);	// 1個しかないならコピーする意味ないじゃない！
+		Set(dst, filename, b3D);	// 1個しかないならコピーする意味ないじゃない！
 		return;
 	}
 
@@ -1192,6 +1192,10 @@ void iex3DSoundIIDX::Set_listener_orientation(const Vector3 &front, const Vector
 void iex3DSoundIIDX::Set_listener_move(const Vector3 &move)
 {
 	lp3DListener->SetVelocity(move.x, move.y, move.z, DS3D_DEFERRED);
+}
+void iex3DSoundIIDX::Set_roll_off_factor(float pow)
+{
+	lp3DListener->SetRolloffFactor(pow, DS3D_DEFERRED);
 }
 void iex3DSoundIIDX::Set_listener_all(const Vector3 &pos, const Vector3 &front, const Vector3 &up, const Vector3 &velocity)
 {

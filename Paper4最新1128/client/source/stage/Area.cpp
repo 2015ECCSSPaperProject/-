@@ -129,11 +129,3 @@ int Area_mng::Get_num()
 {
 	return area_array.size();
 }
-
-void Area_mng::Set_Is_work(unsigned int index, bool in)
-{
-	if (area_array[index]->Is_work() && !in)
-	{
-		area_array[index]->Open();
-	}
-}

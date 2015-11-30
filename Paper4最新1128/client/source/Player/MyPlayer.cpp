@@ -6,7 +6,7 @@
 
 #include	"../../IEX/OKB.h"
 #include	"../../../share_data/Enum_public.h"
-//#include	"../Mouse/Mouse.h"
+#include	"../Sound/SoundManager.h"
 
 
 
@@ -52,6 +52,9 @@ void MyPlayer::Update()
 	Mouse_Update();
 
 	BasePlayer::Update();
+
+	// ƒŠƒXƒi[î•ñ
+	Update_listener();
 }
 
 
@@ -131,6 +134,14 @@ void MyPlayer::Mouse_Update()
 	m_controlDesc.mouseX = (float)mousePos.x * 1000;
 	m_controlDesc.mouseY = (float)mousePos.y * 1000;
 
+}
+
+void MyPlayer::Update_listener()
+{
+	const Vector3 front(models[(int)model_part]->TransMatrix._31, models[(int)model_part]->TransMatrix._32, models[(int)model_part]->TransMatrix._33);
+	const Vector3 up(models[(int)model_part]->TransMatrix._21, models[(int)model_part]->TransMatrix._22, models[(int)model_part]->TransMatrix._23);
+
+	SoundManager::Set_listener(pos, front, up, move);
 }
 
 //*************************************************************************************************************************
