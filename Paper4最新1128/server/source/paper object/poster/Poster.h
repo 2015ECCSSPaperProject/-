@@ -1,9 +1,6 @@
 
 #pragma once
 
-#include "iextreme.h"
-#include "../../../../share_data/Enum_public.h"
-
 class BasePlayer;
 
 class Poster

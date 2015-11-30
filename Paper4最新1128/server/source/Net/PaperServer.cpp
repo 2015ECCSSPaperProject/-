@@ -374,13 +374,13 @@ void ServerManager::UpdateStage(int client)
 
 		static int Create_data(Poster_sender **out)
 		{
-			unsigned int num = paper_obj_mng->poster->Get_numof();
+			unsigned int num = paper_obj_mng->Get_numof();
 			*out = new Poster_sender[num];
 
 			for (unsigned i = 0; i < num; i++)
 			{
-				(*out)[i].number = (char)paper_obj_mng->poster->Get_number(i);
-				(*out)[i].anim_no = paper_obj_mng->poster->Get_animation_frame(i);
+				(*out)[i].number = paper_obj_mng->Get_number(i);
+				(*out)[i].anim_no = paper_obj_mng->Get_animation_frame(i);
 			}
 
 			return num;

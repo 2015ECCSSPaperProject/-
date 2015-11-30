@@ -606,7 +606,7 @@ void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
 		else if (me->models[(int)me->model_part]->GetParam(0) == 1)
 		{
 			// 破く処理
-			paper_obj_mng->Rend_poster(me->mynumber, me->poster_num);
+			paper_obj_mng->Rend_poster(me->poster_num);
 			score->Add(1, me->mynumber);	// 仮で1点
 			if ((me->god_gage += 5) > 100)me->god_gage = 100;	// 神ゲージUP
 		}
@@ -817,11 +817,11 @@ void BasePlayer::Action::Gun::Update(const CONTROL_DESC &_ControlDesc)
 	{
 		// Vs Poster
 		int poster_numbers[128];
-		paper_obj_mng->Can_dist(me->pos, 60.0f, me->mynumber, poster_numbers);	// 範囲内のポスター番号取得
+		paper_obj_mng->Can_dist(me->pos, 60.0f, poster_numbers);	// 範囲内のポスター番号取得
 
 		for (int i = 0; poster_numbers[i] != -1; i++)	// -1(終端)
 		{
-			paper_obj_mng->Rend_poster(me->mynumber, poster_numbers[i]);
+			paper_obj_mng->Rend_poster(poster_numbers[i]);
 			score->Add(1, me->mynumber);	// 仮で1点
 		}
 

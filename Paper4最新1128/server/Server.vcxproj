@@ -131,6 +131,7 @@
     <ClCompile Include="source\Net\PaperServer.cpp" />
     <ClCompile Include="source\Net\UDPServer.cpp" />
     <ClCompile Include="source\paper object\paper object manager.cpp" />
+    <ClCompile Include="source\paper object\paper object.cpp" />
     <ClCompile Include="source\Player\BasePlayer.cpp" />
     <ClCompile Include="source\Player\Kohai.cpp" />
     <ClCompile Include="source\Player\NetPlayer.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="source\Net\PaperServer.h" />
     <ClInclude Include="source\Net\UDPServer.h" />
     <ClInclude Include="source\paper object\paper object manager.h" />
+    <ClInclude Include="source\paper object\paper object.h" />
     <ClInclude Include="source\Player\BasePlayer.h" />
     <ClInclude Include="source\Player\NetPlayer.h" />
     <ClInclude Include="source\Player\Kohai.h" />

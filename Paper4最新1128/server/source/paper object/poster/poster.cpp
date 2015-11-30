@@ -1,4 +1,7 @@
 
+#include "iextreme.h"
+#include "../../../../share_data/Enum_public.h"
+
 #include "Poster.h"
 //#include "../score/Score.h"
 #include "../../player/BasePlayer.h"

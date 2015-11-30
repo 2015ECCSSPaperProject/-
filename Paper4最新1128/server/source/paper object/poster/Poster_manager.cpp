@@ -1,8 +1,9 @@
 
 #include "Poster_manager.h"
-#include "Poster.h"
+
 #include "iextreme.h"
 #include "../../../../share_data/Enum_public.h"
+#include "Poster.h"
 //#include "Poster_frame.h"
 
 #include "../../Player/BasePlayer.h"

@@ -1,4 +1,6 @@
 
+#include <vector>
+
 #include "paper object manager.h"
 #include "poster/Poster_manager.h"
 
@@ -33,9 +35,36 @@ int Paper_obj_mng::Can_do(BasePlayer *player)
 	return poster->Can_do(player);
 }
 
+void Paper_obj_mng::Can_dist(const Vector3 &pos, float dist, int out[])
+{
+	poster->Can_dist(pos, dist, out);
+}
+
 bool Paper_obj_mng::Can_rend(int index)
 {
 	return poster->Can_rend(index);
+}
+
+void Paper_obj_mng::Rend_poster(int index)
+{
+	poster->Rend_poster(index);
+}
+
+
+
+int Paper_obj_mng::Get_numof()
+{
+	return poster->Get_numof();
+}
+
+int Paper_obj_mng::Get_number(int index)
+{
+	return poster->Get_number(index);
+}
+
+int Paper_obj_mng::Get_animation_frame(int index)
+{
+	return poster->Get_animation_frame(index);
 }
 
 const Vector3& Paper_obj_mng::Get_pos(int index)
@@ -48,14 +77,14 @@ float Paper_obj_mng::Get_angle(int index)
 	return poster->Get_angle(index);
 }
 
-void Paper_obj_mng::Rend_poster(int number, int index)
-{
-	poster->Rend_poster(number, index);
-}
+//void Paper_obj_mng::Rend_poster(int number, int index)
+//{
+//	poster->Rend_poster(number, index);
+//}
 
-void Paper_obj_mng::Can_dist(const Vector3 &pos, float dist, int number, int out[])
-{
-	poster->Can_dist(pos, dist, number, out);
-}
+//void Paper_obj_mng::Can_dist(const Vector3 &pos, float dist, int number, int out[])
+//{
+//	poster->Can_dist(pos, dist, number, out);
+//}
 
 Paper_obj_mng *paper_obj_mng = nullptr;
