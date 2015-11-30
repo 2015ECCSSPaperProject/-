@@ -193,7 +193,6 @@ SceneMainServer::~SceneMainServer()
 
 	SAFE_DELETE(poster_mng);
 	SAFE_DELETE(score);
-	SAFE_DELETE(event_list);
 	SAFE_DELETE(timer);
 
 	// ƒXƒ^ƒ“ƒv
@@ -212,6 +211,7 @@ SceneMainServer::~SceneMainServer()
 		SAFE_DELETE(posterFrame[i]);
 	}
 
+	delete event_list;
 }
 
 
@@ -231,7 +231,11 @@ void SceneMainServer::Update()
 	
 	poster_mng->Update();
 
-	if (timer)timer->Check();
+	if (timer)
+	{
+		event_list->Update();
+		timer->Check();
+	}
 }
 
 

@@ -44,7 +44,7 @@ public:
 	int Can_do(BasePlayer *player, int number);
 	int Can_do(BasePlayer *player);
 
-	int Can_dist(const Vector3 &pos, float dist);
+	int Can_dist(const Vector3 &pos, float dist, int number);
 	void Can_dist(const Vector3 &pos, float dist, int number, int out[]);	// 範囲内ポスター全部返すver
 	void Can_dist(const Vector3 &pos, float dist, int out[]);
 

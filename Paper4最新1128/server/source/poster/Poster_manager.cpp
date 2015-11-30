@@ -123,13 +123,13 @@ int Poster_manager::Can_do(BasePlayer *player)
 	return num;
 }
 
-int Poster_manager::Can_dist(const Vector3 &pos, float dist)
+int Poster_manager::Can_dist(const Vector3 &pos, float dist, int number)
 {
 	float min_dist = 114514;
 	int ret_num = -1;
 	for (unsigned int i = 0; i < posters.size(); i++)
 	{
-		if (posters[i]->Can_dist(pos, dist))
+		if (posters[i]->Can_dist(pos, dist, number))
 		{
 			const float dist = (posters[i]->Get_pos() - pos).Length();
 			if (dist < min_dist)	// Å‚à‹ß‚¢ˆÊ’u

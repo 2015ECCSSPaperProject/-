@@ -15,6 +15,8 @@
 #include "../poster/Poster_manager.h"
 #include	"../score/Score.h"
 #include	"../timer/Timer.h"
+#include "../stage/Stage.h"
+
 Bench_mark bench;
 
 //*****************************************************************************************
@@ -331,25 +333,76 @@ void SocketManager::UpdateStage()
 	BYTE comcom = STAGE_DATA;
 	m_pClient->Send(&comcom, sizeof(comcom)); //Ž©•ª‚Ì‘€ì‚µ‚½î•ñ‚ð“n‚·
 
-	int num_poster = poster_mng->Get_numof();
-	PosterData *poster_data = new PosterData[num_poster];
-
-	m_pClient->Receive((char*)poster_data, sizeof(*poster_data)*num_poster);
-
-	for (int i = 0; i < num_poster; i++)
+	class Poster_receiver
 	{
-		poster_mng->Set_user(i, (int)poster_data[i].user_number);
-		poster_mng->Set_animframe(i, poster_data[i].anim_no);
-	}
+	public:
+		BYTE user_number;
+		int anim_no;
 
-	delete[] poster_data;
+		static void Fetch_data(Poster_receiver *in)
+		{
+			unsigned int num_poster = poster_mng->Get_numof();
+			for (int i = 0; i < num_poster; i++)
+			{
+				poster_mng->Set_user(i, in[i].user_number);
+				poster_mng->Set_animframe(i, in[i].anim_no);
+			}
+		}
+	};
 
-	int num_area = 0;
-	AreaDate *area_data = new AreaDate[num_area];
+	class Area_receiver
+	{
+	public:
+		union
+		{
+			unsigned char is_work;
+			struct
+			{
+				bool is_work_1 : 1;
+				bool is_work_2 : 1;
+				bool is_work_3 : 1;
+				bool is_work_4 : 1;
+				bool is_work_5 : 1;
+				bool is_work_6 : 1;
+				bool is_work_7 : 1;
+				bool is_work_8 : 1;
+			};
+		};
 
+		static void Fetch_data(Area_receiver *in)
+		{
+			unsigned int num = stage->Area_Get_numof();
+			unsigned int num_in = (unsigned int)ceil(num * 0.125f);
+			for (int i = 0; i < num_in; i++)
+			{
+				for (unsigned int eight = 0; eight < 8; eight++)
+				{
+					unsigned int true_num = i * 8 + eight;
+					if (true_num >= num)
+						break;
 
+					stage->Area_Is_work(true_num, (0x01) & (in[i].is_work >> eight));
+				}
+			}
+		}
+	};
 
-	delete[] area_data;
+	// ƒTƒCƒYŒvŽZ
+	unsigned int num_poster = poster_mng->Get_numof();
+	unsigned int poster_size = sizeof(Poster_receiver) * num_poster;
+
+	unsigned int num_area_data = (unsigned int)ceil(stage->Area_Get_numof() * 0.125f);
+	unsigned int area_size = sizeof(Area_receiver) * num_area_data;
+
+	unsigned int size = poster_size + area_size;
+	char *receive_data = new char[size];
+
+	m_pClient->Receive(receive_data, size);
+
+	Poster_receiver::Fetch_data((Poster_receiver*)receive_data);
+	Area_receiver::Fetch_data((Area_receiver*)(receive_data + poster_size));
+
+	delete[] receive_data;
 
 	bench.End();
 }

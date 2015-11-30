@@ -27,6 +27,9 @@ public:
 
 	void Collision(const Vector3 &pos, Vector3 *move, float radius, // ”¼Œa
 		int recursive_counter); // Ä‹A”
+
+	unsigned int Area_Get_numof();
+	bool Area_Is_work(unsigned int index);
 };
 
 extern Stage *stage;
