@@ -376,8 +376,8 @@ void BasePlayer::Action::MoveTarget::Update(const CONTROL_DESC &_ControlDesc)
 	//}
 
 	//	角度補正
-	float	x1 = poster_mng->Get_pos(me->poster_num).x - me->pos.x;
-	float	z1 = poster_mng->Get_pos(me->poster_num).z - me->pos.z;
+	float	x1 = paper_obj_mng->Get_pos(me->poster_num).x - me->pos.x;
+	float	z1 = paper_obj_mng->Get_pos(me->poster_num).z - me->pos.z;
 	float	x2 = sinf(me->angleY);
 	float	z2 = cosf(me->angleY);
 	//	内積による補正量調整
@@ -443,7 +443,7 @@ void BasePlayer::Action::MoveTarget::Update(const CONTROL_DESC &_ControlDesc)
 	//	左クリック処理
 	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
 	{
-		const int no = poster_mng->Can_do(me);
+		const int no = paper_obj_mng->Can_do(me);
 
 		// ポスターがあった
 		if (no != -1 && me->poster_num == no)
