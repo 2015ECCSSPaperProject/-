@@ -49,6 +49,8 @@ extern Bench_mark bench;
 
 using namespace std;
 
+static int FLAME = 0;
+
 //******************************************************************
 //		初期化・解放
 //******************************************************************
@@ -123,6 +125,8 @@ bool SceneMain::Initialize()
 	Mode_funk[1] = &SceneMain::Main;
 	Mode_funk[2] = &SceneMain::End;
 
+	FLAME = 0;
+
 	return true;
 
 
@@ -170,11 +174,12 @@ void SceneMain::ThreadFunc(void* pData, bool*isEnd)
 		dwFrameTime += 167;
 
 		/*ネットワーク更新*/
-		static int FLAME = 0;
 		FLAME++;
-		//if (FLAME > 6)
+		//if (FLAME < 60*5)
 		{
-			FLAME = 0;
+			SOCKET_MANAGER->UpdateUser();
+			SOCKET_MANAGER->UpdateStage();
+			SOCKET_MANAGER->UpdateScore();
 		}
 
 	}
@@ -186,9 +191,9 @@ void SceneMain::ThreadFunc(void* pData, bool*isEnd)
 void SceneMain::Update()
 {
 	// スレッド→ここに移動することによってscene跨ぎのバグが治る
-	SOCKET_MANAGER->UpdateUser();
-	SOCKET_MANAGER->UpdateStage();
-	SOCKET_MANAGER->UpdateScore();
+	if (KEY(KEY_ENTER) == 3)
+	{
+	}
 
 	//フェード処理
 	FadeControl::Update();
@@ -223,6 +228,7 @@ void SceneMain::Main()
 		event_bgm->Set_mode(EventBGM::MODE::END);
 		ui->Change_mode(SceneMain::MODE::END);
 		mode = MODE::END;
+		m_pThread->End();
 	}
 }
 void SceneMain::End()
@@ -231,7 +237,6 @@ void SceneMain::End()
 	{
 		se->Stop_all();
 		// シーン登録
-		m_pThread->End();
 		MainFrame->ChangeScene(new SceneResult());
 	}
 }
