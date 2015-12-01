@@ -1,4 +1,7 @@
 
+// #include "iextreme.h"
+// #include "../paper object.h"
+
 #pragma once
 
 // Paper_objのテストで使ったクラス
@@ -27,15 +30,5 @@ public:
 
 	void Rend();
 
-	//**************************************************
-
-	int Get_number();
-
 	int Get_animation_frame();
-
-	float Get_angle();
-
-	const Vector3& Get_pos();
-
-	void Set_pose(const float angle, const Vector3& pos);
 };

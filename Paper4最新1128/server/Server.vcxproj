@@ -127,6 +127,9 @@
       <DeploymentContent>true</DeploymentContent>
     </ClCompile>
     <ClCompile Include="source\event\Event.cpp" />
+    <ClCompile Include="source\event\Event open area.cpp" />
+    <ClCompile Include="source\event\Event list.cpp" />
+    <ClCompile Include="source\event\Event advent paper obj.cpp" />
     <ClCompile Include="source\fstream\fstream_paper.cpp" />
     <ClCompile Include="source\Net\PaperServer.cpp" />
     <ClCompile Include="source\Net\UDPServer.cpp" />
@@ -172,7 +175,10 @@
     <ClInclude Include="IEX\ogg\vorbisfile.h" />
     <ClInclude Include="IEX\OKB.h" />
     <ClInclude Include="source\Enum_public.h" />
+    <ClInclude Include="source\event\Event list.h" />
+    <ClInclude Include="source\event\Event open area.h" />
     <ClInclude Include="source\event\Event.h" />
+    <ClInclude Include="source\event\Event advent paper obj.h" />
     <ClInclude Include="source\fstream\fstream_paper.h" />
     <ClInclude Include="source\Net\PaperServer.h" />
     <ClInclude Include="source\Net\UDPServer.h" />

@@ -15,7 +15,7 @@ using namespace std;
 #include "../paper object/paper object manager.h"
 #include "../score/Score.h"
 #include "../timer/Timer.h"
-#include "../event/Event.h"
+#include "../event/Event list.h"
 
 //******************************************************************
 //		‰Šú‰»E‰ğ•ú

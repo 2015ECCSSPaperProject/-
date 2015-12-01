@@ -5,6 +5,11 @@
 Paper_obj::Paper_obj() : model_type(0), model(nullptr), position(0, 0, 0), forward(0, 0, 1), angle(0), point(0)
 {}
 
+Paper_obj::~Paper_obj()
+{
+	delete model;
+}
+
 void Paper_obj::Initialize(int model_type, iex3DObj *model, int point)
 {
 	this->model_type = model_type;
@@ -22,6 +27,16 @@ int Paper_obj::Get_point()
 int Paper_obj::Get_type()
 {
 	return model_type;
+}
+
+int Paper_obj::Get_number()
+{
+	return number;
+}
+
+void Paper_obj::Set_number(int in)
+{
+	number = in;
 }
 
 float Paper_obj::Get_angle()

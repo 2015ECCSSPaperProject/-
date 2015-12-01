@@ -1,4 +1,6 @@
 
+// #include "iextreme.h"
+
 #pragma once
 
 struct Vector3;
@@ -10,7 +12,7 @@ class Paper_obj
 {
 public:
 	Paper_obj();
-	virtual ~Paper_obj(){};
+	virtual ~Paper_obj();
 
 	virtual void Initialize(int model_type, iex3DObj *model, int point);
 
@@ -33,7 +35,9 @@ public:
 
 	int Get_type();
 
-	virtual int Get_number() = 0;
+	int Get_number();
+
+	void Set_number(int in);
 
 	virtual int Get_animation_frame() = 0;
 
@@ -44,6 +48,8 @@ public:
 	void Set_pose(const float angle, const Vector3& pos);
 
 protected:
+	int number;
+
 	int model_type;
 	iex3DObj *model; // 3Dƒ‚ƒfƒ‹
 

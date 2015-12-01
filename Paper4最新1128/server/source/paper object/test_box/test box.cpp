@@ -8,6 +8,7 @@ void Test_box::Initialize(int model_type, iex3DObj *model, int point)
 {
 	Paper_obj::Initialize(model_type, model, point);
 	mode = MODE::WAITE;
+	number = 0;
 }
 
 void Test_box::Update()
@@ -16,6 +17,9 @@ void Test_box::Update()
 void Test_box::Render()
 {
 	if (mode == MODE::MAX)
+		return;
+
+	if (number == PLAYER_MAX)
 		return;
 
 	if (model == nullptr)
@@ -29,6 +33,9 @@ void Test_box::Render()
 bool Test_box::Can_do(BasePlayer *player)
 {
 	if (mode == MODE::REND) // ”j‚ê‚Ä‚é“r’†
+		return false;
+
+	if (number == PLAYER_MAX)
 		return false;
 
 	// ˆÊ’u‚ÆŒü‚«”»’è
@@ -49,12 +56,15 @@ bool Test_box::Can_do(BasePlayer *player)
 
 bool Test_box::Can_rend()
 {
-	return mode == MODE::WAITE;
+	return (mode == MODE::WAITE && number != PLAYER_MAX);
 }
 
 bool Test_box::Can_dist(const Vector3 &pos, float dist)
 {
 	if (mode == MODE::REND) // ”j‚ê‚Ä‚é“r’†
+		return false;
+
+	if (number == PLAYER_MAX)
 		return false;
 
 	if ((pos - position).LengthSq() > dist * dist)	// ‹——£”»’è
@@ -66,44 +76,10 @@ bool Test_box::Can_dist(const Vector3 &pos, float dist)
 void Test_box::Rend()
 {
 	mode = MODE::MAX;
-}
-
-//**************************************************
-
-int Test_box::Get_number()
-{
-	if (mode == MODE::MAX)
-		return PLAYER_MAX;
-
-	return 0;
+	number = PLAYER_MAX;
 }
 
 int Test_box::Get_animation_frame()
 {
 	return 0;
-}
-
-float Test_box::Get_angle()
-{
-	return angle;
-}
-
-const Vector3 &Test_box::Get_pos()
-{
-	return position;
-}
-
-void Test_box::Set_pose(const float angle, const Vector3& pos)
-{
-	forward.x = sinf(angle);
-	forward.y = 0;
-	forward.z = cosf(angle);
-
-	this->angle = angle;
-	model->SetAngle(angle);
-
-	this->position = pos;
-	model->SetPos(position);
-
-	model->SetScale(1);
 }

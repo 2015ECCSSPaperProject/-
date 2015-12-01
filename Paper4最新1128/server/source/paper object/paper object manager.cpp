@@ -6,6 +6,10 @@
 
 #include "paper object.h"
 
+#include "../event/Event list.h"
+#include "../event/Event.h"
+#include "../event/Event advent paper obj.h"
+
 Paper_obj_mng::Paper_obj_mng() : original_model(nullptr), number_of_objects(0)
 {
 	obj_array.clear();
@@ -154,7 +158,7 @@ void Paper_obj_mng::Load()
 	//**************************************************
 	/// 3DObjのファイルをロード
 	//**************************************************
-	char work[256];
+	//char work[256];
 
 	unsigned int num_models = 2;							// モデルの種類
 	original_model = new iex3DObj[num_models];
@@ -184,13 +188,20 @@ void Paper_obj_mng::Load()
 		this->number_of_objects++;
 	}
 
-	for (int i = 0; i < 10; i++)
 	{
-		p = new Test_box;
-		p->Initialize(1, &original_model[1], 5);
-		p->Set_pose(0, Vector3(i * 20 - 100, 0, 50));
-		obj_array.push_back(p);
-		this->number_of_objects++;
+		Event_advent_paper_obj *ev;
+		for (int i = 0; i < 10; i++)
+		{
+			p = new Test_box;
+			p->Initialize(1, &original_model[1], 5);
+			p->Set_pose(.0f, Vector3(i * 20.0f - 100, 0, 50));
+			obj_array.push_back(p);
+			this->number_of_objects++;
+
+			ev = new Event_advent_paper_obj(p);
+			ev->Set_time(0, 40, 0);
+			event_list->push(ev);
+		}
 	}
 }
 

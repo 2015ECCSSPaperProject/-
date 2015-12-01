@@ -155,6 +155,15 @@
     <ClCompile Include="source\paper object\test_box\test box.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\event\Event open area.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\event\Event list.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\event\Event advent paper obj.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IEX\iextreme.h">
@@ -200,6 +209,9 @@
     <ClInclude Include="source\paper object\paper object manager.h" />
     <ClInclude Include="source\paper object\paper object.h" />
     <ClInclude Include="source\paper object\test_box\test box.h" />
+    <ClInclude Include="source\event\Event open area.h" />
+    <ClInclude Include="source\event\Event list.h" />
+    <ClInclude Include="source\event\Event advent paper obj.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DATA\Shader\2D.fx">
