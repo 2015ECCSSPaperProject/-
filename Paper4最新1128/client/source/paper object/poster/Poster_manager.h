@@ -1,9 +1,6 @@
 
 #pragma once
 
-#include <vector>
-#include "../../../share_data/Enum_public.h"
-
 struct IDirect3DTexture9;
 typedef IDirect3DTexture9 Texture2D;
 

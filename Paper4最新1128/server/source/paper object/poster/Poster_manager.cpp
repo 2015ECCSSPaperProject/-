@@ -3,6 +3,7 @@
 
 #include "iextreme.h"
 #include "../../../../share_data/Enum_public.h"
+#include "../paper object.h"
 #include "Poster.h"
 //#include "Poster_frame.h"
 

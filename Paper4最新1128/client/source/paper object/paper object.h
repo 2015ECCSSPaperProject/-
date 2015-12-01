@@ -1,0 +1,33 @@
+
+#pragma once
+
+struct Vector3;
+class iex3DObj;
+
+class BasePlayer;
+
+class Paper_obj
+{
+public:
+	Paper_obj();
+	virtual ~Paper_obj();
+
+	virtual void Initialize(iex3DObj *model);
+
+	virtual void Update() = 0;
+
+	virtual void Render() = 0;
+
+	void Set_pose(const float angle, const Vector3& pos);
+
+	void Set_user(int number);
+
+	void Set_animframe(int frame);
+
+protected:
+	iex3DObj *model; // 3Dƒ‚ƒfƒ‹
+
+	int number;
+	Vector3 position; // ˆÊ’u
+	float angle; // Œü‚«‚ð model ‚É“n‚·‚æ‚¤
+};

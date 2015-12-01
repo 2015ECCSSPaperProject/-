@@ -3,7 +3,7 @@
 
 class BasePlayer;
 
-class Poster
+class Poster : public Paper_obj
 {
 private:
 	enum class MOTION_NUMBER
@@ -13,16 +13,6 @@ private:
 	};
 
 	int mynumber;
-	int POINT_TIME; // ポイントが加算される時間
-	int ADD_POINT; // 一度に加算されるポイント
-	int timer;
-	int reserve_number;	// 破れるモーションが終わったとき張られる番号
-
-
-	iex3DObj *model; // 3Dモデル
-	Vector3 position; // 位置
-	Vector3 forward; // ポスターの向き<表>
-	float angle; // 向きを model に渡すよう
 
 	struct 
 	{
@@ -70,17 +60,18 @@ private:
 	};
 
 	void Change_mode(MODE mode);
+
 public:
 	Poster();
 	~Poster();
 
-	void Initialize(iex3DObj *model, int point);
+	void Initialize(int model_type, iex3DObj *model, int point);
 	void Release();
 	void Update();
 	void Render();
 
 	// ゲッター、セッター
-	Vector3& Get_pos(){ return position; }
+	const Vector3& Get_pos(){ return position; }
 
 	float Get_angle(){ return angle; }
 

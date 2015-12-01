@@ -1,6 +1,7 @@
 
 #include "iextreme.h"
 #include "../../../../share_data/Enum_public.h"
+#include "../paper object.h"
 
 #include "Poster.h"
 //#include "../score/Score.h"
@@ -13,20 +14,10 @@
 // ‘Ò‹@
 void Poster::Mode_waite::Initialize()
 {
-	me->timer = me->POINT_TIME;
 	me->model->SetMotion((int)MOTION_NUMBER::WAITE);
 }
 void Poster::Mode_waite::Update()
-{
-	me->timer--;
-
-	if (me->timer <= 0)
-	{
-		me->timer = me->POINT_TIME;
-		// –ß‚· me->score->Add(me->ADD_POINT, me->force);
-	}
-
-}
+{}
 void Poster::Mode_waite::Render()
 {
 	if (me->model != nullptr)
@@ -48,8 +39,7 @@ void Poster::Mode_rend::Update()
 
 	if (me->model->GetFrame() >= 47)
 	{
-		//me->mynumber = PLAYER_MAX;
-		me->mynumber = me->reserve_number;
+		me->mynumber = PLAYER_MAX;
 		me->Change_mode(MODE::WAITE);
 	}
 }
@@ -70,7 +60,7 @@ void Poster::Change_mode(MODE m)
 
 
 
-Poster::Poster() : mynumber(PLAYER_MAX), POINT_TIME(0), ADD_POINT(0), timer(0), model(nullptr), position(0, 0, 0), forward(0, 0, 1), angle(0), mode(MODE::WAITE)
+Poster::Poster() : Paper_obj(), mynumber(PLAYER_MAX), mode(MODE::WAITE)
 {
 	mode_list[(int)MODE::WAITE] = new Mode_waite(this);
 	mode_list[(int)MODE::REND] = new Mode_rend(this);
@@ -84,21 +74,16 @@ Poster::~Poster()
 	Release();
 }
 
-void Poster::Initialize(iex3DObj *model, int point)
+void Poster::Initialize(int model_type, iex3DObj *model, int point)
 {
-	ADD_POINT = point;
-	POINT_TIME = 60;
-
-	this->model = model->Clone();
-	this->model->SetScale(1.0f);
-	this->model->SetAngle(PI);
-	this->model->SetPos(0, 0, 0);
-	this->model->Update();
+	Paper_obj::Initialize(model_type, model, point);
 
 	range.forward = 10.0f;
 	range.wide = 5.0f;
 	range.min_y = -2.0f;
 	range.max_y = 2.0f;
+
+	mynumber = 0;
 }
 
 void Poster::Release()
@@ -177,14 +162,11 @@ void Poster::Do_playeraction(BasePlayer *player, int number)
 
 void Poster::Rend(int number)
 {
-	reserve_number = number;	// ”j‚ê‚½Œã‚ÌF—\–ñ(“\‚éˆ—Š®¬‚µ‚½‚çÁ‚·)
-	//reserve_number = PLAYER_MAX;
 	Change_mode(MODE::REND);
 }
 
 void Poster::Rend()
 {
-	reserve_number = PLAYER_MAX;
 	Change_mode(MODE::REND);
 }
 

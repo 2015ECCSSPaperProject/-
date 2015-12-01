@@ -38,19 +38,11 @@ public:
 	//**************************************************
 	
 	int Get_numof();
-	
-	int Get_number(int index);
+		
+	void Set_user(int index, int number);
 
-	int Get_point(int index);
+	void Set_animframe(int index, int frame);
 
-	int Get_type(int index);
-
-	int Get_animation_frame(int index);
-
-	float Get_angle(int index);
-
-	const Vector3& Get_pos(int index);
-	
 protected:
 	iex3DObj *original_model; // クローン関数使う用
 	int number_of_objects;

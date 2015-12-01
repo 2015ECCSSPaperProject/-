@@ -1,12 +1,14 @@
 
+#include <vector>
+#include "../../../../share_data/Enum_public.h"
 #include "Poster_manager.h"
+
 #include "Poster.h"
 #include "iextreme.h"
-#include "../../../share_data/Enum_public.h"
 //#include "Poster_frame.h"
 
-#include "../fstream/fstream_paper.h"
-#include "../../IEX/IEX_Math2.h"
+#include "../../fstream/fstream_paper.h"
+#include "IEX_Math2.h"
 
 void Poster_manager::Load_poster_pos(char *filename)
 {

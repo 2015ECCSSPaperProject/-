@@ -1,6 +1,6 @@
 
 #include <vector>
-
+#include "iextreme.h"
 #include "paper object manager.h"
 #include "poster/Poster_manager.h"
 
@@ -47,90 +47,20 @@ void Paper_obj_mng::Render()
 
 //**************************************************
 
-int Paper_obj_mng::Can_do(BasePlayer *player)
-{
-	int index = -1;
-
-	for (unsigned int i = 0; i < obj_array.size(); i++)
-	{
-		if (obj_array[i]->Can_do(player))
-		{
-			index = i;
-		}
-	}
-
-	return index;
-}
-
-void Paper_obj_mng::Can_dist(const Vector3 &pos, float dist, int out[])
-{
-	int count = 0;
-	for (unsigned int i = 0; i < obj_array.size(); i++)
-	{
-		if (obj_array[i]->Can_dist(pos, dist))
-		{
-			out[count++] = i;
-		}
-	}
-	out[count] = -1;	// I’[‚Í-1
-}
-
-bool Paper_obj_mng::Can_rend(int index)
-{
-	return obj_array[index]->Can_rend();
-}
-
-void Paper_obj_mng::Rend_poster(int index)
-{
-	obj_array[index]->Rend();
-}
-
-
-
 int Paper_obj_mng::Get_numof()
 {
 	return number_of_objects;
 }
 
-int Paper_obj_mng::Get_number(int index)
+void Paper_obj_mng::Set_user(int index, int number)
 {
-	return obj_array[index]->Get_number();
+	obj_array[index]->Set_user(number);
 }
 
-int Paper_obj_mng::Get_point(int index)
+void Paper_obj_mng::Set_animframe(int index, int frame)
 {
-	return obj_array[index]->Get_point();
+	obj_array[index]->Set_animframe(frame);
 }
-
-int Paper_obj_mng::Get_type(int index)
-{
-	return obj_array[index]->Get_type();
-}
-
-int Paper_obj_mng::Get_animation_frame(int index)
-{
-	return obj_array[index]->Get_animation_frame();
-}
-
-const Vector3& Paper_obj_mng::Get_pos(int index)
-{
-	return obj_array[index]->Get_pos();
-}
-
-float Paper_obj_mng::Get_angle(int index)
-{
-	return obj_array[index]->Get_angle();
-}
-
-//void Paper_obj_mng::Rend_poster(int number, int index)
-//{
-//	poster->Rend_poster(number, index);
-//}
-
-//void Paper_obj_mng::Can_dist(const Vector3 &pos, float dist, int number, int out[])
-//{
-//	poster->Can_dist(pos, dist, number, out);
-//}
 
 //**************************************************
 
@@ -178,7 +108,7 @@ void Paper_obj_mng::Load()
 		infs >> pos;
 		infs >> point;
 		p = new Poster;
-		p->Initialize(0, &original_model[0], point);
+		p->Initialize(&original_model[0]);
 		p->Set_pose(angle, pos);
 		obj_array.push_back(p);
 		this->number_of_objects++;
@@ -187,7 +117,7 @@ void Paper_obj_mng::Load()
 	for (int i = 0; i < 10; i++)
 	{
 		p = new Test_box;
-		p->Initialize(1, &original_model[1], 5);
+		p->Initialize(&original_model[1]);
 		p->Set_pose(0, Vector3(i * 20 - 100, 0, 50));
 		obj_array.push_back(p);
 		this->number_of_objects++;

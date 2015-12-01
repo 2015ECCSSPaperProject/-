@@ -146,16 +146,13 @@
     <ClCompile Include="source\paper object\poster\poster.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\paper object\poster\Poster_frame.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\paper object\poster\Poster_manager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\paper object\paper object manager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\paper object\paper object.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\paper object\test_box\test box.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -200,10 +197,9 @@
     <ClInclude Include="source\stage\Area.h" />
     <ClInclude Include="source\event\Event.h" />
     <ClInclude Include="source\paper object\poster\Poster.h" />
-    <ClInclude Include="source\paper object\poster\Poster_frame.h" />
-    <ClInclude Include="source\paper object\poster\Poster_manager.h" />
     <ClInclude Include="source\paper object\paper object manager.h" />
     <ClInclude Include="source\paper object\paper object.h" />
+    <ClInclude Include="source\paper object\test_box\test box.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DATA\Shader\2D.fx">
