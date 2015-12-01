@@ -279,6 +279,7 @@ public:
 	// À•W
 	Vector3 Get_pos(){ return pos; }
 	void Get_pos(Vector3 &out){ out = pos; }
+	Vector3 Get_center_pos(){ return Vector3(pos.x, pos.y + 5.0f, pos.z); }
 	void Set_pos(const Vector3 &p){ pos = p; }
 
 	// ƒAƒ“ƒOƒ‹

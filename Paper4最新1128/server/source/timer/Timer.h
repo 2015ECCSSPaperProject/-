@@ -42,5 +42,5 @@ private:
 	int limit; // §ŒÀŠÔ
 };
 
-#define LIMIT_TIME 60
+#define LIMIT_TIME 60 + 6	// +6‚ÍA‚æ[‚¢ƒhƒ“‚Ì•âŠÔ
 extern Timer *timer;

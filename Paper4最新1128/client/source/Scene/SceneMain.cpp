@@ -193,11 +193,6 @@ void SceneMain::ThreadFunc(void* pData, bool*isEnd)
 //******************************************************************
 void SceneMain::Update()
 {
-	// スレッド→ここに移動することによってscene跨ぎのバグが治る
-	if (KEY(KEY_ENTER) == 3)
-	{
-	}
-
 	//フェード処理
 	FadeControl::Update();
 	event_bgm->Update();
@@ -207,7 +202,10 @@ void SceneMain::Update()
 
 void SceneMain::Start()
 {
-	if (1)mode = MODE::MAIN;
+	// カメラ
+	camera->Update();
+
+	if (ui->isStart())mode = MODE::MAIN;
 }
 void SceneMain::Main()
 {
@@ -233,7 +231,7 @@ void SceneMain::Main()
 		event_bgm->Set_mode(EventBGM::MODE::END);
 		ui->Change_mode(SceneMain::MODE::END);
 		mode = MODE::END;
-		m_pThread->End();
+		m_pThread->End();	// ここでEndすることによってフェードの間にスレッド終了の余裕を持たせる
 	}
 }
 void SceneMain::End()
@@ -254,8 +252,7 @@ void SceneMain::End()
 
 void SceneMain::Render()
 {
-	camera->Activate();
-	camera->Clear();
+	camera->Render();
 
 	stage->Render();
 	sky->Render();

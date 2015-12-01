@@ -10,7 +10,7 @@
 #include "../skill_gauge/skill_gauge.h"
 #include <assert.h>
 
-UI::UI() :my_player(nullptr), graph(nullptr), gauge(nullptr), mode(nullptr)
+UI::UI() :my_player(nullptr), graph(nullptr), gauge(nullptr), mode(nullptr), isYooiDon(false)
 {
 	for (int i = 0; i < IMAGE::MAX; i++)image[i] = nullptr;
 }
@@ -155,12 +155,19 @@ void UI::Mode::Start::Update()
 		step++;
 		frame = 0;
 
-		if (step >= 2) me->Change_mode(SceneMain::MODE::MAIN);
+		if (step == 1)
+		{
+			me->isYooiDon = true;
+		}
+		if (step >= 2)
+		{
+			me->Change_mode(SceneMain::MODE::MAIN);
+		}
 	}
 }
 void UI::Mode::Start::Render()
 {
-	me->TimeLimit();
+	//me->TimeLimit();
 	me->Graph();
 	me->SkillGauge();
 	me->Action();
