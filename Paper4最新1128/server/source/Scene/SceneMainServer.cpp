@@ -12,10 +12,10 @@
 
 using namespace std;
 
-#include "../poster/Poster_manager.h"
+#include "../paper object/paper object manager.h"
 #include "../score/Score.h"
 #include "../timer/Timer.h"
-#include "../event/Event.h"
+#include "../event/Event list.h"
 
 //******************************************************************
 //		初期化・解放
@@ -45,8 +45,8 @@ SceneMainServer::SceneMainServer()
 	player_mng->Initialize();
 	
 	score = new Score;
-	poster_mng = new Poster_manager;
-	poster_mng->Initialize(score);
+	paper_obj_mng = new Paper_obj_mng;
+	paper_obj_mng->Initialize();
 
 	// タイマー
 	//timer = new Timer;
@@ -191,7 +191,7 @@ SceneMainServer::~SceneMainServer()
 
 	SAFE_DELETE(player_mng);
 
-	SAFE_DELETE(poster_mng);
+	SAFE_DELETE(paper_obj_mng);
 	SAFE_DELETE(score);
 	SAFE_DELETE(timer);
 
@@ -229,7 +229,7 @@ void SceneMainServer::Update()
 
 	player_mng->Update();
 	
-	poster_mng->Update();
+	paper_obj_mng->Update();
 
 	if (timer)
 	{
@@ -261,7 +261,7 @@ void SceneMainServer::Render()
 
 	player_mng->Render();
 
-	poster_mng->Render();
+	paper_obj_mng->Render();
 
 	// 皆のポスター
 	for (int i = 0; i < PLAYER_MAX; i++)

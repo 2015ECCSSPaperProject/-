@@ -12,7 +12,7 @@
 #include	"../Player/PlayerManager.h"
 
 #include	"../bench/Bench_mark.h"
-#include "../poster/Poster_manager.h"
+#include "../paper object/paper object manager.h"
 #include	"../score/Score.h"
 #include	"../timer/Timer.h"
 #include "../stage/Stage.h"
@@ -333,19 +333,19 @@ void SocketManager::UpdateStage()
 	BYTE comcom = STAGE_DATA;
 	m_pClient->Send(&comcom, sizeof(comcom)); //Ž©•ª‚Ì‘€ì‚µ‚½î•ñ‚ð“n‚·
 
-	class Poster_receiver
+	class Paper_obj_receiver
 	{
 	public:
 		BYTE user_number;
 		int anim_no;
 
-		static void Fetch_data(Poster_receiver *in)
+		static void Fetch_data(Paper_obj_receiver *in)
 		{
-			unsigned int num_poster = poster_mng->Get_numof();
-			for (int i = 0; i < num_poster; i++)
+			unsigned int num_Paper_obj = paper_obj_mng->Get_numof();
+			for (int i = 0; i < num_Paper_obj; i++)
 			{
-				poster_mng->Set_user(i, in[i].user_number);
-				poster_mng->Set_animframe(i, in[i].anim_no);
+				paper_obj_mng->Set_user(i, in[i].user_number);
+				paper_obj_mng->Set_animframe(i, in[i].anim_no);
 			}
 		}
 	};
@@ -388,19 +388,19 @@ void SocketManager::UpdateStage()
 	};
 
 	// ƒTƒCƒYŒvŽZ
-	unsigned int num_poster = poster_mng->Get_numof();
-	unsigned int poster_size = sizeof(Poster_receiver) * num_poster;
+	unsigned int num_Paper_obj = paper_obj_mng->Get_numof();
+	unsigned int Paper_obj_size = sizeof(Paper_obj_receiver) * num_Paper_obj;
 
 	unsigned int num_area_data = (unsigned int)ceil(stage->Area_Get_numof() * 0.125f);
 	unsigned int area_size = sizeof(Area_receiver) * num_area_data;
 
-	unsigned int size = poster_size + area_size;
+	unsigned int size = Paper_obj_size + area_size;
 	char *receive_data = new char[size];
 
 	m_pClient->Receive(receive_data, size);
 
-	Poster_receiver::Fetch_data((Poster_receiver*)receive_data);
-	Area_receiver::Fetch_data((Area_receiver*)(receive_data + poster_size));
+	Paper_obj_receiver::Fetch_data((Paper_obj_receiver*)receive_data);
+	Area_receiver::Fetch_data((Area_receiver*)(receive_data + Paper_obj_size));
 
 	delete[] receive_data;
 

@@ -7,7 +7,7 @@
 
 #include	"PaperServer.h"
 #include	"UDPServer.h"
-#include	"../poster/Poster_manager.h"
+#include	"../paper object/paper object manager.h"
 #include	"../Player/PlayerManager.h"
 
 #include	"../score/Score.h"
@@ -366,30 +366,30 @@ void ServerManager::UpdateUser(char* data, int client)
 
 void ServerManager::UpdateStage(int client)
 {
-	// ポスター
-	class Poster_sender
+	// 紙
+	class Paper_obj_sender
 	{
 	public:
 		BYTE number;
 		int anim_no;
 
-		static int Create_data(Poster_sender **out)
+		static int Create_data(Paper_obj_sender **out)
 		{
-			unsigned int num = poster_mng->Get_numof();
-			*out = new Poster_sender[num];
+			unsigned int num = paper_obj_mng->Get_numof();
+			*out = new Paper_obj_sender[num];
 
 			for (unsigned i = 0; i < num; i++)
 			{
-				(*out)[i].number = (char)poster_mng->Get_number(i);
-				(*out)[i].anim_no = poster_mng->Get_animation_frame(i);
+				(*out)[i].number = paper_obj_mng->Get_number(i);
+				(*out)[i].anim_no = paper_obj_mng->Get_animation_frame(i);
 			}
 
 			return num;
 		}
 	};
-	Poster_sender *poster_data(nullptr);
-	unsigned int num_poster = Poster_sender::Create_data(&poster_data);
-	unsigned int poster_size = sizeof(Poster_sender) * num_poster;
+	Paper_obj_sender *paper_obj_data(nullptr);
+	unsigned int num_paper_obj = Paper_obj_sender::Create_data(&paper_obj_data);
+	unsigned int paper_obj_size = sizeof(Paper_obj_sender) * num_paper_obj;
 
 	// エリア
 	class Area_sender
@@ -438,16 +438,16 @@ void ServerManager::UpdateStage(int client)
 	unsigned int area_size = sizeof(Area_sender) * num_area;
 
 	// まとめて送信
-	unsigned int size = poster_size + area_size;
+	unsigned int size = paper_obj_size + area_size;
 	char *send_data(nullptr);
 	send_data = new  char[size];
-	memcpy_s(send_data, poster_size, poster_data, poster_size);
-	memcpy_s(send_data + poster_size, area_size, area_data, area_size);
+	memcpy_s(send_data, paper_obj_size, paper_obj_data, paper_obj_size);
+	memcpy_s(send_data + paper_obj_size, area_size, area_data, area_size);
 
 	m_pServer->Send(client, send_data, size);
 
 	delete[] send_data;
-	delete[] poster_data;
+	delete[] paper_obj_data;
 	delete[] area_data;
 }
 

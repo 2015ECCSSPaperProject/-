@@ -6,7 +6,8 @@
 #include	"../../../share_data/Enum_public.h"
 #include	"../stage/Stage.h"
 
-#include	"../poster/Poster_manager.h"
+#include	"../paper object/poster/Poster_manager.h"
+#include	"../paper object/paper object manager.h"
 
 #include	"../Net/PaperServer.h"
 #include	"../Player/PlayerManager.h"
@@ -269,9 +270,10 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	//	左クリック処理
 	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
 	{
-		//me->poster_num = poster_mng->Can_do(me);
+		me->poster_num = paper_obj_mng->Can_do(me);
 		me->poster_num = poster_mng->Can_targeting(me, CAN_TARGET_DIST, 45);
 
+		// ポスターがあった
 		if (me->poster_num != -1)
 		{
 			if(!trg_target)me->Change_action(ACTION_PART::MOVE_TARGET);
@@ -283,14 +285,14 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 
 	//===========================================================================
 	//	右クリック処理
-	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::RIGHT_CLICK)
+	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::RIGHT_CLICK)
 	{
-		//me->poster_num = poster_mng->Can_do(me, me->mynumber);
+		//me->poster_num = paper_obj_mng->poster->Can_do(me, me->mynumber);
 
 		//// ポスターがあった
 		//if (me->poster_num != -1)
 		//{
-		//	if (poster_mng->Can_paste(me->mynumber, me->poster_num))
+		//	if (paper_obj_mng->poster->Can_paste(me->mynumber, me->poster_num))
 		//	{
 		//		me->Change_action(ACTION_PART::PASTE);
 		//		return;
@@ -359,49 +361,27 @@ void BasePlayer::Action::MoveTarget::Update(const CONTROL_DESC &_ControlDesc)
 		AxisX *= 1 / pow;
 		AxisY *= 1 / pow;
 	}
-
-	//// ジャンプ
-	//if (!me->isJump && me->isLand)
-	//{
-	//	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::SPACE)
-	//	{
-	//		me->jump_pow = 2.0f;
-	//		me->isJump = true;
-	//	}
-	//}
-	//if (me->isJump)
-	//{
-	//	me->move.y = me->jump_pow;
-	//	me->jump_pow -= me->fallspeed;
-	//}
-
-	//	角度補正
-	float	x1 = poster_mng->Get_pos(me->poster_num).x - me->pos.x;
-	float	z1 = poster_mng->Get_pos(me->poster_num).z - me->pos.z;
-	float	x2 = sinf(me->angleY);
-	float	z2 = cosf(me->angleY);
-	//	内積による補正量調整
-	float	d = sqrtf(x1*x1 + z1*z1);
-	if (d == 0){ d = 0.1f; z1 = 0.1f; }
-
-	if (d > 0)
+	if (me->isJump)
 	{
-		//	内積
-		float n = (x1*x2 + z1*z2) / d;
-		//	角度補正量
-		float adjust = (1 - n) * 2.0f;
-		if (adjust > 0.3f) adjust = 0.3f;
-		//	外積による左右回転
-		float	g = x1*z2 - x2*z1;
-		me->angleY += (g < 0) ? -adjust : adjust;
+		me->move.y = me->jump_pow;
+		me->jump_pow -= me->fallspeed;
 	}
 
+	//アングル処理	角度補正
+	if (!(_ControlDesc.controlFlag & ((BYTE)PLAYER_CONTROL::LEFT_CLICK | (BYTE)PLAYER_CONTROL::RIGHT_CLICK))){
+		float	work;
+		work = _ControlDesc.mouseX *0.000001f;
+		if (work > 0.1f) work = 0.1f;
+		me->angleY += work;// Angleに加算
+	}
+
+	//	移動ベクトル設定
 	Vector3 front(sinf(me->angleY), 0, cosf(me->angleY));
 	Vector3 right(sinf(me->angleY + PI * .5f), 0, cosf(me->angleY + PI * .5f));
-
 	front.Normalize();
 	right.Normalize();
-	// 移動量決定
+
+	//	移動量決定
 	me->move.x = (front.x*AxisY + right.x*AxisX) * (me->speed);
 	me->move.z = (front.z*AxisY + right.z*AxisX) * (me->speed);
 
@@ -443,7 +423,7 @@ void BasePlayer::Action::MoveTarget::Update(const CONTROL_DESC &_ControlDesc)
 	//	左クリック処理
 	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
 	{
-		const int no = poster_mng->Can_do(me);
+		me->poster_num = paper_obj_mng->Can_do(me);
 
 		// ポスターがあった
 		if (no != -1 && me->poster_num == no)
@@ -455,12 +435,12 @@ void BasePlayer::Action::MoveTarget::Update(const CONTROL_DESC &_ControlDesc)
 	//	右クリック処理
 	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::RIGHT_CLICK)
 	{
-		//me->poster_num = poster_mng->Can_do(me, me->mynumber);
+		//me->poster_num = paper_obj_mng->poster->Can_do(me, me->mynumber);
 
 		//// ポスターがあった
 		//if (me->poster_num != -1)
 		//{
-		//	if (poster_mng->Can_paste(me->mynumber, me->poster_num))
+		//	if (paper_obj_mng->poster->Can_paste(me->mynumber, me->poster_num))
 		//	{
 		//		me->Change_action(ACTION_PART::PASTE);
 		//		return;
@@ -526,7 +506,7 @@ void BasePlayer::Action::Attack::Update(const CONTROL_DESC &_ControlDesc)
 	// モーション終了
 	if (me->models[(int)me->model_part]->GetParam(0) == 2)
 	{
-		me->Change_action(ACTION_PART::MOVE);
+		(me->camera_mode == CAMERA_MODE::TPS) ? me->Change_action(ACTION_PART::MOVE) : me->Change_action(ACTION_PART::MOVE_FPS);
 	}
 
 	// 破くモーションのフレーム
@@ -559,8 +539,8 @@ void BasePlayer::Action::Paste::Initialize()
 
 	// ポスターに応じて座標と向きを変更
 	const static float dist = 5.0f;
-	me->pos = poster_mng->Get_pos(me->poster_num);
-	me->angleY = poster_mng->Get_angle(me->poster_num) + PI;
+	me->pos = paper_obj_mng->Get_pos(me->poster_num);
+	me->angleY = paper_obj_mng->Get_angle(me->poster_num) + PI;
 	me->pos += (Vector3(-sinf(me->angleY), 0, -cosf(me->angleY)) * dist);
 }
 
@@ -595,8 +575,8 @@ void BasePlayer::Action::Rend::Initialize()
 
 	// ポスターに応じて座標と向きを変更
 	const static float dist = 5.0f;
-	me->pos = poster_mng->Get_pos(me->poster_num);
-	me->angleY = poster_mng->Get_angle(me->poster_num) + PI;
+	me->pos = paper_obj_mng->Get_pos(me->poster_num);
+	me->angleY = paper_obj_mng->Get_angle(me->poster_num) + PI;
 	me->pos += (Vector3(-sinf(me->angleY), 0, -cosf(me->angleY)) * dist);
 
 	me->motion_no = 1;

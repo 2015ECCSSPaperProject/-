@@ -43,7 +43,10 @@ extern Bench_mark bench;
 #include "../camera/Camera.h"
 #include "../stage/Stage.h"
 
-#include "../poster/Poster_manager.h"
+#include <vector>
+#include "../../../share_data/Enum_public.h"
+#include "../paper object/paper object manager.h"
+
 #include "../score/Score.h"
 #include "../timer/Timer.h"
 
@@ -97,8 +100,8 @@ bool SceneMain::Initialize()
 	player_mng = new PlayerManager;
 	player_mng->Initialize();
 
-	poster_mng = new Poster_manager;
-	poster_mng->Initialize(score_mng);
+	paper_obj_mng = new Paper_obj_mng;
+	paper_obj_mng->Initialize();
 
 	// タイマー
 	timer = new Timer;
@@ -142,7 +145,7 @@ SceneMain::~SceneMain()
 
 	SAFE_DELETE(player_mng);
 
-	SAFE_DELETE(poster_mng);
+	SAFE_DELETE(paper_obj_mng);
 	SAFE_DELETE(ui);
 	SAFE_DELETE(timer);
 }
@@ -211,6 +214,8 @@ void SceneMain::Main()
 	//　プレイヤー
 	player_mng->Update();
 
+	paper_obj_mng->Update();
+
 	// カメラ
 	camera->Update();
 
@@ -265,7 +270,7 @@ void SceneMain::Render()
 	//}
 	player_mng->Render();
 
-	poster_mng->Render();
+	paper_obj_mng->Render();
 
 	Text::Draw(32, 320, 0xff00ffff, "受信時間%.2f", bench.Get_time());
 
