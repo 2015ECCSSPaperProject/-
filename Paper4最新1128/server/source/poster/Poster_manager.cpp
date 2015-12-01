@@ -175,6 +175,8 @@ int Poster_manager::Can_targeting(BasePlayer *player, float range_dist, int rang
 
 	for(unsigned int i = 0; i < posters.size(); i++)
 	{
+		if (posters[i]->Get_number() == PLAYER_MAX) continue;
+
 		//‡Cv1‚Æv2‚Ì‚È‚·Špi“xj‚ğŒvZ‚µA•Ï”angle‚É‘ã“ü‚·‚é
 		Vector3 player_front(sinf(player->Get_angleY()), 0, cosf(player->Get_angleY()));
 		Vector3 to_target_vec(posters[i]->Get_pos() - player->Get_pos());

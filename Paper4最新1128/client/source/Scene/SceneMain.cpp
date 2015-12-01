@@ -175,9 +175,6 @@ void SceneMain::ThreadFunc(void* pData, bool*isEnd)
 		//if (FLAME > 6)
 		{
 			FLAME = 0;
-			SOCKET_MANAGER->UpdateUser();
-			SOCKET_MANAGER->UpdateStage();
-			SOCKET_MANAGER->UpdateScore();
 		}
 
 	}
@@ -188,6 +185,11 @@ void SceneMain::ThreadFunc(void* pData, bool*isEnd)
 //******************************************************************
 void SceneMain::Update()
 {
+	// スレッド→ここに移動することによってscene跨ぎのバグが治る
+	SOCKET_MANAGER->UpdateUser();
+	SOCKET_MANAGER->UpdateStage();
+	SOCKET_MANAGER->UpdateScore();
+
 	//フェード処理
 	FadeControl::Update();
 	event_bgm->Update();
@@ -229,6 +231,7 @@ void SceneMain::End()
 	{
 		se->Stop_all();
 		// シーン登録
+		m_pThread->End();
 		MainFrame->ChangeScene(new SceneResult());
 	}
 }

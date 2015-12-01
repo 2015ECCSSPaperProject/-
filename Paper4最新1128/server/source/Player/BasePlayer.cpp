@@ -637,7 +637,7 @@ void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
 		else if (me->models[(int)me->model_part]->GetParam(0) == 1)
 		{
 			// 破く処理
-			poster_mng->Rend_poster(me->mynumber, me->poster_num);
+			poster_mng->Rend_poster(me->poster_num);
 			score->Add(1, me->mynumber);	// 仮で1点
 			if ((me->god_gage += 5) > 100)me->god_gage = 100;	// 神ゲージUP
 		}
