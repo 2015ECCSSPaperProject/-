@@ -12,8 +12,6 @@ private:
 		REND = 1
 	};
 
-	int mynumber;
-
 	struct 
 	{
 		float min_y, // ‰º•ûŒü
@@ -99,13 +97,5 @@ public:
 	// ƒeƒXƒg
 	void Change_user(int number);
 
-
-
-	//**************************************************
-	/// Get Set
-	//**************************************************
-
-	int Get_number(){ return mynumber; }
-	void Set_number(int num){ mynumber = num; }
 	int Get_animation_frame(){ return model->GetFrame(); }
 };

@@ -43,6 +43,8 @@ public:
 
 	void Set_animframe(int index, int frame);
 
+	const Vector3& Get_pos(int index);
+
 protected:
 	iex3DObj *original_model; // クローン関数使う用
 	int number_of_objects;

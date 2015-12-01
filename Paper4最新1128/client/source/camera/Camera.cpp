@@ -3,7 +3,7 @@
 #include	"../system/system.h"
 #include	"../Player/BasePlayer.h"
 #include	"../Player/MyPlayer.h"
-#include	"../poster/Poster_manager.h"
+#include	"../paper object/paper object manager.h"
 
 #include	"../stage/Stage.h"
 
@@ -417,7 +417,7 @@ void Camera::Mode::Target::Update()
 	Vector3 p_pos;
 	me->my_player->Get_pos(p_pos);
 	Vector3 target_pos;
-	target_pos = poster_mng->Get_pos(me->my_player->Get_poster_num());
+	target_pos = paper_obj_mng->Get_pos(me->my_player->Get_poster_num());
 	p_pos.y = .0f;
 
 	Vector3 back = p_pos - target_pos;
@@ -426,7 +426,7 @@ void Camera::Mode::Target::Update()
 
 	back.y = .0f;
 
-	Vector3 to_target_vec(poster_mng->Get_pos(me->my_player->Get_poster_num()) - me->pos);	// 時と場合でiposに切り替え
+	Vector3 to_target_vec(paper_obj_mng->Get_pos(me->my_player->Get_poster_num()) - me->pos);	// 時と場合でiposに切り替え
 
 	const static float add_angle = 4.0f;	// この値でプレイヤーと敵の線上にカメラを置かないように補正する
 	if (back.Length() > 80){

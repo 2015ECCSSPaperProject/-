@@ -75,7 +75,7 @@ bool Area::Is_work()
 
 Area_mng::~Area_mng()
 {
-	for (int i = 0; i < area_array.size(); i++)
+	for (unsigned int i = 0; i < area_array.size(); i++)
 		delete area_array[i];
 }
 
@@ -91,7 +91,7 @@ void Area_mng::Open(int index)
 
 void Area_mng::Render()
 {
-	for (int i = 0; i < area_array.size(); i++)
+	for (unsigned int i = 0; i < area_array.size(); i++)
 	{
 		area_array[i]->Render();
 	}
@@ -106,7 +106,7 @@ int Area_mng::RayPick(Vector3* out, Vector3* pos, Vector3* vec, float *Dist)
 	float length(FLT_MAX);
 	int work_ret;
 
-	for (int i = 0; i < area_array.size(); i++)
+	for (unsigned int i = 0; i < area_array.size(); i++)
 	{
 		v = *vec;
 		length = *Dist;

@@ -13,9 +13,7 @@ Paper_obj::~Paper_obj()
 void Paper_obj::Initialize(int model_type, iex3DObj *model, int point)
 {
 	this->model_type = model_type;
-
 	this->model = model->Clone();
-
 	this->point = point;
 }
 

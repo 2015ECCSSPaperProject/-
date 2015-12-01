@@ -2,13 +2,16 @@
 #include <vector>
 
 #include "paper object manager.h"
-#include "poster/Poster_manager.h"
 
+#include "iextreme.h"
 #include "paper object.h"
 
 #include "../event/Event list.h"
 #include "../event/Event.h"
 #include "../event/Event advent paper obj.h"
+
+#include "../../../share_data/Enum_public.h"
+#include "../Player/BasePlayer.h"
 
 Paper_obj_mng::Paper_obj_mng() : original_model(nullptr), number_of_objects(0)
 {
@@ -84,9 +87,37 @@ bool Paper_obj_mng::Can_rend(int index)
 	return obj_array[index]->Can_rend();
 }
 
-void Paper_obj_mng::Rend_poster(int index)
+void Paper_obj_mng::Rend(int index)
 {
 	obj_array[index]->Rend();
+}
+
+int Paper_obj_mng::Can_targeting(BasePlayer *player, float range_dist, int range_degree)
+{
+	float min_dist = range_dist;
+	int ret_num = -1;
+
+	for (unsigned int i = 0; i < obj_array.size(); i++)
+	{
+		if (obj_array[i]->Get_number() == PLAYER_MAX) continue;
+
+		//‡Cv1‚Æv2‚Ì‚È‚·Špi“xj‚ðŒvŽZ‚µA•Ï”angle‚É‘ã“ü‚·‚é
+		Vector3 player_front(sinf(player->Get_angleY()), 0, cosf(player->Get_angleY()));
+		Vector3 to_target_vec(obj_array[i]->Get_pos() - player->Get_pos());
+
+		const float to_target_len = to_target_vec.Length();
+		const int theta = (int)(acosf(Vector3Dot(player_front, to_target_vec) / (player_front.Length() * to_target_len)) / 0.01745f);
+
+		if (theta < range_degree && to_target_len < range_dist)	// ‹——£‚ÆŠp“x
+		{
+			if (to_target_len < min_dist)
+			{
+				ret_num = i;
+				min_dist = to_target_len;
+			}
+		}
+	}
+	return ret_num;
 }
 
 

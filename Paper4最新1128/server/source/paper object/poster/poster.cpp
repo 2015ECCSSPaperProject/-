@@ -39,7 +39,7 @@ void Poster::Mode_rend::Update()
 
 	if (me->model->GetFrame() >= 47)
 	{
-		me->mynumber = PLAYER_MAX;
+		me->number = PLAYER_MAX;
 		me->Change_mode(MODE::WAITE);
 	}
 }
@@ -60,7 +60,7 @@ void Poster::Change_mode(MODE m)
 
 
 
-Poster::Poster() : Paper_obj(), mynumber(PLAYER_MAX), mode(MODE::WAITE)
+Poster::Poster() : Paper_obj(), mode(MODE::WAITE)
 {
 	mode_list[(int)MODE::WAITE] = new Mode_waite(this);
 	mode_list[(int)MODE::REND] = new Mode_rend(this);
@@ -82,13 +82,11 @@ void Poster::Initialize(int model_type, iex3DObj *model, int point)
 	range.wide = 5.0f;
 	range.min_y = -2.0f;
 	range.max_y = 2.0f;
-
-	mynumber = 0;
 }
 
 void Poster::Release()
 {
-	mynumber = PLAYER_MAX;
+	number = PLAYER_MAX;
 	delete model;
 	model = nullptr;
 	position = Vector3(0, 0, 0);
@@ -98,14 +96,14 @@ void Poster::Release()
 
 void Poster::Update()
 {
-	if (mynumber == PLAYER_MAX) return;
+	if (number == PLAYER_MAX) return;
 
 	mode_list[(int)mode]->Update();
 }
 
 void Poster::Render()
 {
-	if (mynumber == PLAYER_MAX) return;
+	if (number == PLAYER_MAX) return;
 
 	mode_list[(int)mode]->Render();
 }
@@ -148,9 +146,9 @@ void Poster::Do_playeraction(BasePlayer *player, int number)
 	if (!Can_do(player, number)) return;
 
 	// “\‚é
-	if (mynumber == PLAYER_MAX)
+	if (this->number == PLAYER_MAX)
 	{
-		mynumber = number;
+		this->number = number;
 		Change_mode(MODE::WAITE);
 	}
 	// ”j‚ê‚é
@@ -172,7 +170,7 @@ void Poster::Rend()
 
 void Poster::Paste(int number)
 {
-	mynumber = number;
+	this->number = number;
 	Change_mode(MODE::WAITE);
 }
 
@@ -181,7 +179,7 @@ bool Poster::Can_do(BasePlayer *player, int number)
 	if (mode == MODE::REND) // ”j‚ê‚Ä‚é“r’†
 		return false;
 
-	if (mynumber == number) // “¯‚¶F
+	if (this->number == number) // “¯‚¶F
 		return false;
 
 	// ˆÊ’u‚ÆŒü‚«”»’è
@@ -239,7 +237,7 @@ bool Poster::Can_dist(const Vector3 &pos, float dist, int number)
 	if (mode == MODE::REND) // ”j‚ê‚Ä‚é“r’†
 		return false;
 
-	if (mynumber == number) // “¯‚¶F
+	if (this->number == number) // “¯‚¶F
 		return false;
 
 	if (!Check_dist(pos, dist))	// ‹——£”»’è
@@ -261,17 +259,17 @@ bool Poster::Can_dist(const Vector3 &pos, float dist)
 
 bool Poster::Can_rend(int number)
 {
-	return (mynumber != PLAYER_MAX && mynumber != number);
+	return (this->number != PLAYER_MAX && this->number != number);
 }
 
 bool Poster::Can_rend()
 {
-	return mynumber != PLAYER_MAX;
+	return this->number != PLAYER_MAX;
 }
 
 bool Poster::Can_paste(int number)
 {
-	return (mynumber == PLAYER_MAX);
+	return (this->number == PLAYER_MAX);
 }
 
 bool Poster::Check_dist(const Vector3 &pos, float dist)
@@ -281,6 +279,6 @@ bool Poster::Check_dist(const Vector3 &pos, float dist)
 
 void Poster::Change_user(int number)
 {
-	mynumber = number;
+	this->number = number;
 	Change_mode(MODE::WAITE);
 }

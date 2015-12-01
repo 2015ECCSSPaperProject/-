@@ -33,3 +33,8 @@ void Paper_obj::Set_animframe(int frame)
 {
 	this->model->SetFrame(frame);
 }
+
+const Vector3 &Paper_obj::Get_pos()
+{
+	return position;
+}

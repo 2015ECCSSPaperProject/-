@@ -24,6 +24,8 @@ public:
 
 	void Set_animframe(int frame);
 
+	const Vector3& Get_pos();
+
 protected:
 	iex3DObj *model; // 3Dƒ‚ƒfƒ‹
 

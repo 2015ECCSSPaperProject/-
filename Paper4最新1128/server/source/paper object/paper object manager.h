@@ -31,7 +31,9 @@ public:
 	bool Can_rend(int index);
 
 	// ”j‚é
-	void Rend_poster(int index);
+	void Rend(int index);
+
+	int Paper_obj_mng::Can_targeting(BasePlayer *player, float range_dist, int range_degree);
 
 	//**************************************************
 	/// Get Set

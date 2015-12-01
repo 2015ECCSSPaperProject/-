@@ -2,7 +2,6 @@
 #include <vector>
 #include "iextreme.h"
 #include "paper object manager.h"
-#include "poster/Poster_manager.h"
 
 #include "paper object.h"
 
@@ -62,6 +61,11 @@ void Paper_obj_mng::Set_animframe(int index, int frame)
 	obj_array[index]->Set_animframe(frame);
 }
 
+const Vector3& Paper_obj_mng::Get_pos(int index)
+{
+	return obj_array[index]->Get_pos();
+}
+
 //**************************************************
 
 #include "poster/Poster.h"
@@ -84,7 +88,7 @@ void Paper_obj_mng::Load()
 	//**************************************************
 	/// 3DObjのファイルをロード
 	//**************************************************
-	char work[256];
+	//char work[256];
 
 	unsigned int num_models = 2;							// モデルの種類
 	original_model = new iex3DObj[num_models];
@@ -118,7 +122,7 @@ void Paper_obj_mng::Load()
 	{
 		p = new Test_box;
 		p->Initialize(&original_model[1]);
-		p->Set_pose(0, Vector3(i * 20 - 100, 0, 50));
+		p->Set_pose(0, Vector3(i * 20.0f - 100.0f, 0.0f, 50.0f));
 		obj_array.push_back(p);
 		this->number_of_objects++;
 	}
