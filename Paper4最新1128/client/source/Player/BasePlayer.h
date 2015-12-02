@@ -281,6 +281,16 @@ public:
 	void Get_pos(Vector3 &out){ out = pos; }
 	Vector3 Get_center_pos(){ return Vector3(pos.x, pos.y + 5.0f, pos.z); }
 	void Set_pos(const Vector3 &p){ pos = p; }
+	
+	// ‘Oæ“¾
+	Vector3 Get_Flont(){
+		Vector3 Out;
+		Out.x = models[(int)model_part]->TransMatrix._31;
+		Out.y = models[(int)model_part]->TransMatrix._32;
+		Out.z = models[(int)model_part]->TransMatrix._33;
+		Out.Normalize();
+		return Out;
+	}
 
 	// ƒAƒ“ƒOƒ‹
 	float Get_angleY(){ return angleY; }

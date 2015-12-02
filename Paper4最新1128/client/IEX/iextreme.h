@@ -12,7 +12,7 @@
 #define SAFE_DELETE(p) if(p){ delete p;p=nullptr;}
 #define SAFE_RELEASE(p) { if(p){ (p)->Release(); (p)=NULL; } }
 
-#define VECTOR_ZERO Vector3(0.0f,0.0f,0.0f);
+#define VECTOR_ZERO Vector3(0.0f,0.0f,0.0f)
 
 #define PLAYER_MAX	6
 //********************************************
@@ -39,6 +39,7 @@ float Length(float x, float y, float x2, float y2);
 //へろさん追加
 #include "../source/system/ItDebug.h"
 #include "../source/system/DebugDrawManager.h"
+
 
 //タイム
 #include <time.h>
@@ -1840,6 +1841,11 @@ public:
 	};
 
 };
+
+
+// ここにシェーダを扱っているヘッダーを追加
+#include "../source/system/System.h"
+#include "../source/Deferred/Deferred.h"
 
 #endif
 

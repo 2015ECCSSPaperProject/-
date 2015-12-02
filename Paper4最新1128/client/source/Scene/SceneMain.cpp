@@ -54,6 +54,7 @@ using namespace std;
 
 static int FLAME = 0;
 
+
 //******************************************************************
 //		初期化・解放
 //******************************************************************
@@ -130,6 +131,17 @@ bool SceneMain::Initialize()
 
 	FLAME = 0;
 
+
+	// deferred　初期化
+	DeferredManager;
+	DeferredManager.CreateShadowMap(1024);
+	DeferredManager.CreateShadowMapL(512);
+
+	deferredFlag = true;// flag
+	DebugTex = nullptr;
+	LightVec = Vector3(1.0f, -1.0f, 1.0f);
+	exposure = -9.0f;
+
 	return true;
 
 
@@ -148,6 +160,11 @@ SceneMain::~SceneMain()
 	SAFE_DELETE(paper_obj_mng);
 	SAFE_DELETE(ui);
 	SAFE_DELETE(timer);
+
+	// deferred　リリース
+	DeferredManager.Release();
+
+
 }
 
 //===================================================================================
@@ -209,6 +226,9 @@ void SceneMain::Start()
 }
 void SceneMain::Main()
 {
+	// シェーダーのデバッグ
+	DebugShaderCtrl();
+
 	//　プレイヤー
 	player_mng->Update();
 
@@ -244,7 +264,24 @@ void SceneMain::End()
 	}
 }
 
+// シェーダーのデバッグに色々
+void SceneMain::DebugShaderCtrl()
+{
 
+	static float ANGLE = 2.25f;
+	if ((GetKeyState('U') & 0x80))ANGLE += 0.05f;
+	if ((GetKeyState('I') & 0x80))ANGLE -= 0.05f;
+	LightVec = Vector3(sinf(ANGLE), -0.90f, cosf(ANGLE));
+	LightVec.Normalize();
+
+
+	if ((GetKeyState('O') & 0x80))exposure += 0.01f;
+	if ((GetKeyState('P') & 0x80))exposure -= 0.01f;
+	if ((GetKeyState('K') & 0x80))exposure += 1.0f;
+	if ((GetKeyState('L') & 0x80))exposure -= 1.0f;
+	shaderD->SetValue("exposure", exposure);
+
+}
 
 //******************************************************************
 //		描画
@@ -253,38 +290,164 @@ void SceneMain::End()
 void SceneMain::Render()
 {
 	camera->Render();
+	if (deferredFlag)
+	{
+		DeferredManager.Update(camera->Get_pos());
 
-	stage->Render(shaderD, "copy");
-	sky->Render();
+		// 影描画
+		RenderShadow();
 
-	//　プレイヤー
-	//for (int i = 0; i < PLAYER_MAX; ++i)
-	//{
-	//	player[i]->Render();
-	//	Text::Draw(1100, 20 + (i * 32), 0xff00ffff, "pos.x->%.2f", player[i]->Get_pos().x);
+		//　クリア
+		DeferredManager.ClearGlow();
+		DeferredManager.ClearBloom();
+		DeferredManager.Bigin();
+		stage->Render(shaderD, "G_Buffer");
+		sky->Render(shaderD, "G_Buffer");
 
-	//	Text::Draw(950, 20 + (i * 32), 0xff00ffff, "名前：%s", SOCKET_MANAGER->GetUser(i).name);
-	//}
-	player_mng->Render(shaderD, "copy");
+		player_mng->Render(shaderD, "G_Buffer");	
+		paper_obj_mng->Render(shaderD, "G_Buffer");
 
-	paper_obj_mng->Render(shaderD, "copy");
+		DeferredManager.End();
 
-	Text::Draw(32, 320, 0xff00ffff, "受信時間%.2f", bench.Get_time());
+		DeferredManager.DirLight(LightVec, Vector3(256, 256, 256));
+		DeferredManager.HemiLight(Vector3(128, 128, 128), Vector3(128, 128, 128));
 
-	//マウスの場所
-	//Text::Draw(10, 60, 0xff000000, "マウスのXの動き%.2f", player_mng->Get_player(SOCKET_MANAGER->GetID())->m_controlDesc.mouseX);
-	//Text::Draw(10, 80, 0xff000000, "マウスのYの動き%.2f", player_mng->Get_player(SOCKET_MANAGER->GetID())->m_controlDesc.mouseY);
+		// ブルーム
+		DeferredManager.BeginDrawBloom();
+		DeferredManager.GetTex(SURFACE_NAME::SCREEN)->Render(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, shaderD, "ToneMap");
+		DeferredManager.EndDrawBloom();
 
-	//ナンバーエフェクト
-	Number_Effect::Render();
+		DeferredManager.Render();
+		DeferredManager.BloomRender();
 
-	// UI
-	ui->Render();
+		// サーフェイス描画
+		SurfaceRender();
+	}
+	else
+	{
 
-	// 退魔ー(UIで描画)
-	//timer->Render();
 
-	//フェード処理
-	FadeControl::Render();
+		stage->Render();
+		sky->Render();
+
+		//　プレイヤー
+		//for (int i = 0; i < PLAYER_MAX; ++i)
+		//{
+		//	player[i]->Render();
+		//	Text::Draw(1100, 20 + (i * 32), 0xff00ffff, "pos.x->%.2f", player[i]->Get_pos().x);
+
+		//	Text::Draw(950, 20 + (i * 32), 0xff00ffff, "名前：%s", SOCKET_MANAGER->GetUser(i).name);
+		//}
+		player_mng->Render();
+
+		paper_obj_mng->Render(shaderD, "copy");
+
+
+
+	}
+
+		Text::Draw(32, 320, 0xff00ffff, "受信時間%.2f", bench.Get_time());
+
+		//マウスの場所
+		//Text::Draw(10, 60, 0xff000000, "マウスのXの動き%.2f", player_mng->Get_player(SOCKET_MANAGER->GetID())->m_controlDesc.mouseX);
+		//Text::Draw(10, 80, 0xff000000, "マウスのYの動き%.2f", player_mng->Get_player(SOCKET_MANAGER->GetID())->m_controlDesc.mouseY);
+
+		//ナンバーエフェクト
+		Number_Effect::Render();
+
+		// UI
+		ui->Render();
+
+		// 退魔ー(UIで描画)
+		//timer->Render();
+
+		//フェード処理
+		FadeControl::Render();
+
+}
+
+void SceneMain::RenderShadow()
+{
+	// 影用プロジェクションの更新
+	DeferredManager.CreateShadowMatrix(LightVec, player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_pos(), player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_Flont() * 1, 200);
+	// near
+	DeferredManager.ShadowBegin();
+	
+		stage->Render(shaderD, "ShadowBuf");
+		//player_mng->Render(shaderD, "G_Buffer");
+
+	DeferredManager.ShadowEnd();// end
+
+	// far
+	DeferredManager.ShadowBeginL();
+	
+		stage->Render(shaderD, "ShadowBufL");
+		//player_mng->Render(shaderD, "G_Buffer");
+
+	DeferredManager.ShadowEndL();// end
+
+}
+
+void SceneMain::SurfaceRender()
+{
+
+	enum {
+		X = 320 / 2, Y = 180 / 2
+	};
+
+	int texX = 0;
+	int texY = 0;
+
+	DeferredManager.GetTex(SURFACE_NAME::DIFFUSE)->Render(X*texX, Y*texY, X, Y, 0, 0, 1280, 720);
+
+	texX++;
+	DeferredManager.GetTex(SURFACE_NAME::NORMAL)->Render(X*texX, Y*texY, X, Y, 0, 0, 1280, 720);
+
+	texX++;
+	DeferredManager.GetTex(SURFACE_NAME::SPECULAR)->Render(X*texX, Y*texY, X, Y, 0, 0, 1280, 720);
+
+	texX++;
+	DeferredManager.GetTex(SURFACE_NAME::DEPTH)->Render(X*texX, Y*texY, X, Y, 0, 0, 1280, 720);
+
+	texX++;
+	DeferredManager.GetTex(SURFACE_NAME::LIGHT)->Render(X*texX, Y*texY, X, Y, 0, 0, 1280, 720);
+
+	texX++; texY;
+	DeferredManager.GetTex(SURFACE_NAME::SPEC)->Render(X*texX, Y*texY, X, Y, 0, 0, 1280, 720);
+
+	texX++; texY;
+	DeferredManager.GetTex(SURFACE_NAME::DOF)->Render(X*texX, Y*texY, X, Y, 0, 0, 1280, 720);
+
+	texX++; texY;
+	DeferredManager.GetTex(SURFACE_NAME::SHADOW)->Render(X*texX, Y*texY, X, Y, 0, 0, 1280, 720);
+
+	texX = 0; texY++;
+	if (DeferredManager.GetShadowFlag())
+	{
+		DeferredManager.GetTex(SURFACE_NAME::SHADOWMAP)->Render(X*texX, Y*texY, X, Y, 0, 0, 2048, 2048);
+	}
+	texX++; texY;
+	if (DeferredManager.GetCascadeFlag())
+	{
+		DeferredManager.GetTex(SURFACE_NAME::SHADOWMAPL)->Render(X*texX, Y*texY, X, Y, 0, 0, 2048, 2048);
+	}
+
+	texX++; texY;
+	DeferredManager.GetTex(SURFACE_NAME::BLOOMSCREEN)->Render(X*texX, Y*texY, X, Y, 0, 0, 1280, 720);
+
+	texX++; texY;
+	DeferredManager.GetTex(SURFACE_NAME::BLOOM)->Render(X*texX, Y*texY, X, Y, 0, 0, 1280 / 8, 720 / 8);
+
+	texX++; texY;
+	DeferredManager.GetTex(SURFACE_NAME::GLOWSCREEN)->Render(X*texX, Y*texY, X, Y, 0, 0, 1280, 720);
+
+	texX++; texY;
+	DeferredManager.GetTex(SURFACE_NAME::GLOW)->Render(X*texX, Y*texY, X, Y, 0, 0, 1280 / 8, 720 / 8);
+
+	texX++; texY;
+	DeferredManager.GetTex(SURFACE_NAME::FORWARD)->Render(X*texX, Y*texY, X, Y, 0, 0, 1280, 720);
+
+
+
 
 }

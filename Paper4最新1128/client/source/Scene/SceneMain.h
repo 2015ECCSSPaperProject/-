@@ -41,6 +41,21 @@ private:
 	//---------------------------------------------------------------------
 	static void ThreadFunc(void* pData, bool*);
 
+	//---------------------------------------------------------------------
+	//   DeferredShader
+	//---------------------------------------------------------------------
+	//Deferred* deferred;
+	bool deferredFlag;
+	iex2DObj* DebugTex;
+	// Light 
+	Vector3 LightVec;
+	// òIèoÉåÉxÉã
+	float exposure;
+
+	void DebugShaderCtrl();
+	void RenderShadow();
+
+	void SurfaceRender();
 };
 
 #endif // !_SCENEMAIN_H_

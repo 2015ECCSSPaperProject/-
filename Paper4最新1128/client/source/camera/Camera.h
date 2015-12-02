@@ -249,7 +249,7 @@ public:
 
 };
 
-#include	"textLoader\textLoader.h"
+#include	"../textLoader\textLoader.h"
 
 class EffectCamera : public textLoader
 {

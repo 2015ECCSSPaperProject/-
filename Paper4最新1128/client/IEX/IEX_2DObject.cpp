@@ -55,7 +55,9 @@ iex2DObj::iex2DObj( u32 width, u32 height, u8 flag )
 					break;
 
 	case IEX2D_USEALPHA:		//	“§–¾“x•t
+					usage = D3DUSAGE_RENDERTARGET;
 					fmt = D3DFMT_A8R8G8B8;
+					pool = D3DPOOL_DEFAULT;
 					break;
 	case IEX2D_SYSTEMMEM:
 					fmt = iexSystem::ScreenFormat;

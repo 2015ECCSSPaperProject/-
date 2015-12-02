@@ -128,8 +128,16 @@
     <ClCompile Include="IEX\TEXT.cpp">
       <DeploymentContent>true</DeploymentContent>
     </ClCompile>
+    <ClCompile Include="source\Animation\Animation3D.cpp" />
+    <ClCompile Include="source\Animation\AnimationUV.cpp" />
+    <ClCompile Include="source\Animation\LOCUS.cpp" />
+    <ClCompile Include="source\Animation\Spread2D.cpp" />
     <ClCompile Include="source\bench\bench_mark.cpp" />
     <ClCompile Include="source\camera\Camera.cpp" />
+    <ClCompile Include="source\Deferred\Deferred.cpp" />
+    <ClCompile Include="source\Effect\Effect.cpp" />
+    <ClCompile Include="source\Effekseer\Effector.cpp" />
+    <ClCompile Include="source\Explosion\Explosion.cpp" />
     <ClCompile Include="source\fstream\fstream_paper.cpp" />
     <ClCompile Include="source\Net\Socket.cpp" />
     <ClCompile Include="source\Net\UDPClient.cpp" />
@@ -142,6 +150,7 @@
     <ClCompile Include="source\Player\MyPlayer.cpp" />
     <ClCompile Include="source\Player\NetPlayer.cpp" />
     <ClCompile Include="source\Player\PlayerManager.cpp" />
+    <ClCompile Include="source\Random\Random_mt.cpp" />
     <ClCompile Include="source\Scene\SceneMain.cpp" />
     <ClCompile Include="source\Scene\SceneMakePoster.cpp" />
     <ClCompile Include="source\Scene\SceneResult.cpp" />
@@ -184,8 +193,18 @@
     <ClInclude Include="IEX\ogg\vorbisenc.h" />
     <ClInclude Include="IEX\ogg\vorbisfile.h" />
     <ClInclude Include="IEX\OKB.h" />
+    <ClInclude Include="source\Animation\Animation3D.h" />
+    <ClInclude Include="source\Animation\AnimationUV.h" />
+    <ClInclude Include="source\Animation\LOCUS.h" />
+    <ClInclude Include="source\Animation\Spread2D.h" />
     <ClInclude Include="source\bench\Bench_mark.h" />
     <ClInclude Include="source\camera\Camera.h" />
+    <ClInclude Include="source\Deferred\Deferred.h" />
+    <ClInclude Include="source\Effect\Effect.h" />
+    <ClInclude Include="source\Effekseer\Effector.h" />
+    <ClInclude Include="source\Effekseer\Effekseer.h" />
+    <ClInclude Include="source\Effekseer\EffekseerRendererDX9.h" />
+    <ClInclude Include="source\Explosion\Explosion.h" />
     <ClInclude Include="source\fstream\fstream_paper.h" />
     <ClInclude Include="source\Net\Socket.h" />
     <ClInclude Include="source\Net\UDPClient.h" />
@@ -201,6 +220,7 @@
     <ClInclude Include="source\poster\Poster.h" />
     <ClInclude Include="source\poster\Poster_frame.h" />
     <ClInclude Include="source\poster\Poster_manager.h" />
+    <ClInclude Include="source\Random\Random_mt.h" />
     <ClInclude Include="source\Scene\SceneMain.h" />
     <ClInclude Include="source\Scene\SceneMakePoster.h" />
     <ClInclude Include="source\Scene\SceneResult.h" />

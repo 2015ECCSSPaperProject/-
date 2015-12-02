@@ -130,8 +130,7 @@ void PlayerManager::Render(iexShader *shader, char *name)
 		{
 			players[i]->Render(shader, name);
 		}
-	}
-	else
+	}else
 	{
 		for (int i = 0; i < PLAYER_MAX; i++)
 		{
