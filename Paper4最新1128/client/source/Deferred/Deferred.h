@@ -67,7 +67,8 @@ public:
 	//****************************
 	void CreateShadowMap(const int size = SHADOWSIZE);
 	void CreateShadowMapL(const int size = SHADOWSIZE);
-	void CreateShadowMatrix(Vector3 dir, Vector3 target,Vector3 playerVec, const float dist = 10.0f);
+	void CreateShadowMatrix(Vector3 dir, Vector3 target,Vector3 playerVec, const float dist = 100.0f);
+	void CreateShadowMatrixL(Vector3 dir, Vector3 target, Vector3 playerVec, const float dist = 100.0f);
 	void ShadowBegin();
 	void ShadowEnd();
 	void ShadowBeginL();

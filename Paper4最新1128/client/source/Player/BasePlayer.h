@@ -1,4 +1,8 @@
 #pragma once
+#include "../Animation/AnimationUV.h" 
+#include "../Explosion/Explosion.h"
+class AnimationUV;
+class Explosion;
 
 /*	ベースプレイヤー(クライアント)	*/
 
@@ -63,6 +67,10 @@ protected:
 	MODEL			model_part;
 	bool			toggle_c;
 
+	//===============================================
+	//	エフェクト
+	//===============================================
+	Explosion* explosion;
 
 	//===============================================
 	//	プレイヤー行動委譲クラス(インナークラス)
@@ -84,6 +92,8 @@ protected:
 			virtual void Update(){}
 			virtual void Render(iexShader *shader = nullptr, char *name = '\0'){}
 
+
+
 			// 3DObj更新
 			void Update_obj();
 		};
@@ -98,6 +108,7 @@ protected:
 			void Initialize();
 			void Update();
 			void Render(iexShader *shader = nullptr, char *name = '\0');
+			
 		};
 
 		//===========================================
@@ -270,6 +281,16 @@ public:
 	//===============================================
 	virtual void Update();
 	virtual void Render(iexShader *shader = nullptr, char *name = '\0');
+	
+	//===============================================
+	//	エフェクトの更新と描画
+	//===============================================
+	void EffectInit();
+	void EffectUpdate();
+	void EffectRender();
+	void EffectRelease();
+
+	void ExplosionAction();
 
 	//===============================================
 	//	ゲッター,セッター

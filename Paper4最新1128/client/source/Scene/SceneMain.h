@@ -54,8 +54,10 @@ private:
 
 	void DebugShaderCtrl();
 	void RenderShadow();
-
 	void SurfaceRender();
+	// ‰e‚Ì•`‰æƒtƒ‰ƒO
+	int FarShadowFlag;
+
 };
 
 #endif // !_SCENEMAIN_H_

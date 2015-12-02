@@ -823,7 +823,7 @@ float4x4 ShadowProjectionL;
 float4x4 InvViewProj;			//　プロジェクション->ワールド変換行列
 
 float AdjustValue = -0.002f;	//　何処までを影と判断するのか　下げると綺麗に影が付くがジャギーが目立つ　上げるとその逆
-float Shadow = .2f;				//　影の濃さ
+float Shadow = .6f;				//　影の濃さ
 float DistAlpha = .2f;			//　距離に応じて影のαを下げる
 
 float ShadowRange = 0.0f;
@@ -1316,7 +1316,7 @@ float4 PS_ShadowMapCascade(float2 Tex	:	TEXCOORD0) : COLOR
 
 	// ★ごり押しで遠くに行くと薄くなる
 	float n_shadow = GetShadow(vShadow);
-	n_shadow = 1 + n_shadow*-1;
+	n_shadow = 1 + n_shadow * -1;
 	n_shadow *= 1.0 - (dist / ShadowRange) * DistAlpha;
 
 	float f_shadow = 1 + shadow*-1;
@@ -1379,8 +1379,9 @@ PS_SHADOW PS_DualShadow(float2 Tex	:	TEXCOORD0) : COLOR
 	// ★ごり押しで遠くに行くと薄くなる
 	float n_shadow = GetShadow(vShadow);
 	float f_shadow = GetVarianceShadow(vShadowL, ShadowSampL);
+	//f_shadow *= 100;
 	n_shadow = 1 + n_shadow*-1;
-	n_shadow *= 1.0 - (dist / ShadowRange) * DistAlpha;
+	//n_shadow *= 1.0 - (dist / ShadowRange) * DistAlpha;
 	f_shadow = 1 + f_shadow*-1;
 	n_shadow += f_shadow;
 	n_shadow = 1 + n_shadow*-1;
@@ -2096,7 +2097,7 @@ float4 PS_hdrBloom(float2 Tex:TEXCOORD0) : COLOR
 {
 	float4 OUT;
 	OUT = tex2D(GaussianSamp, Tex);
-	OUT.rgb += OUT.rgb* 1.5f;//←ブルームの色の強さを調整
+	OUT.rgb += OUT.rgb* 2.5f;//←ブルームの色の強さを調整
 	return OUT;
 }
 

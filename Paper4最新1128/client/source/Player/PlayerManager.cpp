@@ -142,4 +142,14 @@ void PlayerManager::Render(iexShader *shader, char *name)
 	}
 }
 
+void PlayerManager::EffectRender()
+{
+	for (int i = 0; i < PLAYER_MAX; i++)
+	{
+		players[i]->EffectRender();
+	}
+}
+
+
+
 PlayerManager *player_mng;

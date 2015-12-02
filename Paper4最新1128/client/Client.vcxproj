@@ -133,6 +133,7 @@
     <ClCompile Include="source\Animation\LOCUS.cpp" />
     <ClCompile Include="source\Animation\Spread2D.cpp" />
     <ClCompile Include="source\bench\bench_mark.cpp" />
+    <ClCompile Include="source\blur\blur.cpp" />
     <ClCompile Include="source\camera\Camera.cpp" />
     <ClCompile Include="source\Deferred\Deferred.cpp" />
     <ClCompile Include="source\Effect\Effect.cpp" />
@@ -198,6 +199,7 @@
     <ClInclude Include="source\Animation\LOCUS.h" />
     <ClInclude Include="source\Animation\Spread2D.h" />
     <ClInclude Include="source\bench\Bench_mark.h" />
+    <ClInclude Include="source\blur\blur.h" />
     <ClInclude Include="source\camera\Camera.h" />
     <ClInclude Include="source\Deferred\Deferred.h" />
     <ClInclude Include="source\Effect\Effect.h" />
@@ -252,6 +254,11 @@
     <None Include="DATA\Shader\3D.fx">
       <FileType>Document</FileType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="DATA\Shader\Deferred.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

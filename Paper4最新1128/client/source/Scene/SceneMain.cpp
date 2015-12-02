@@ -16,6 +16,7 @@
 #include	"../Scene/SceneResult.h"
 //#include	"../data/LimitedData.h"
 #include	"../ui/UI.h"
+#include	"../blur/blur.h"
 
 //net
 //#include "Network/TCPServerSocket.h"
@@ -60,6 +61,7 @@ static int FLAME = 0;
 //******************************************************************
 bool SceneMain::Initialize()
 {
+	BlurFilter::Init();
 
 	//	環境設定
 	iexLight::SetAmbient(0x808080);
@@ -135,12 +137,13 @@ bool SceneMain::Initialize()
 	// deferred　初期化
 	DeferredManager;
 	DeferredManager.CreateShadowMap(1024);
-	DeferredManager.CreateShadowMapL(512);
+	//DeferredManager.CreateShadowMapL(512);
 
 	deferredFlag = true;// flag
 	DebugTex = nullptr;
 	LightVec = Vector3(1.0f, -1.0f, 1.0f);
 	exposure = -9.0f;
+	FarShadowFlag = 0;
 
 	return true;
 
@@ -164,7 +167,7 @@ SceneMain::~SceneMain()
 	// deferred　リリース
 	DeferredManager.Release();
 
-
+	BlurFilter::CleanUp();
 }
 
 //===================================================================================
@@ -210,10 +213,16 @@ void SceneMain::ThreadFunc(void* pData, bool*isEnd)
 //******************************************************************
 void SceneMain::Update()
 {
+	// ブラ―
+	BlurFilter::Update();
+
 	//フェード処理
 	FadeControl::Update();
 	event_bgm->Update();
 	ui->Update();
+	// シェーダーのデバッグ
+	DebugShaderCtrl();
+
 	(this->*Mode_funk[mode])();
 }
 
@@ -226,8 +235,7 @@ void SceneMain::Start()
 }
 void SceneMain::Main()
 {
-	// シェーダーのデバッグ
-	DebugShaderCtrl();
+
 
 	//　プレイヤー
 	player_mng->Update();
@@ -300,6 +308,8 @@ void SceneMain::Render()
 		//　クリア
 		DeferredManager.ClearGlow();
 		DeferredManager.ClearBloom();
+		DeferredManager.ClearForward();
+
 		DeferredManager.Bigin();
 		stage->Render(shaderD, "G_Buffer");
 		sky->Render(shaderD, "G_Buffer");
@@ -309,16 +319,36 @@ void SceneMain::Render()
 
 		DeferredManager.End();
 
-		DeferredManager.DirLight(LightVec, Vector3(256, 256, 256));
-		DeferredManager.HemiLight(Vector3(128, 128, 128), Vector3(128, 128, 128));
+
+		DeferredManager.DirLight(LightVec, Vector3(342.5f, 340.0f, 340.0f));
+		DeferredManager.HemiLight(Vector3(310.5f, 300.0f, 300.0f), Vector3(320.5f, 300.0f, 300.0f));
+
+		// フォアード
+		DeferredManager.ForwardBigin();
+		DeferredManager.GetTex(SURFACE_NAME::SCREEN)->Render(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, shaderD, "ToneMap");
+		player_mng->EffectRender();
+		DeferredManager.ForwardEnd();
+
+		// グロウ
+		DeferredManager.BeginDrawGlow();
+		player_mng->EffectRender();
+		DeferredManager.EndDrawGlow();
 
 		// ブルーム
 		DeferredManager.BeginDrawBloom();
 		DeferredManager.GetTex(SURFACE_NAME::SCREEN)->Render(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, shaderD, "ToneMap");
 		DeferredManager.EndDrawBloom();
 
+
+		BlurFilter::Start_Copy();
 		DeferredManager.Render();
+		DeferredManager.ForwardRender();
+		DeferredManager.GlowRender();
 		DeferredManager.BloomRender();
+		BlurFilter::End_Copy();
+
+		// ブラ―
+		BlurFilter::Render();
 
 		// サーフェイス描画
 		SurfaceRender();
@@ -369,23 +399,34 @@ void SceneMain::Render()
 void SceneMain::RenderShadow()
 {
 	// 影用プロジェクションの更新
-	DeferredManager.CreateShadowMatrix(LightVec, player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_pos(), player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_Flont() * 1, 200);
+	DeferredManager.CreateShadowMatrix(LightVec, player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_pos(), player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_Flont() * 90, 200);
 	// near
 	DeferredManager.ShadowBegin();
 	
 		stage->Render(shaderD, "ShadowBuf");
-		//player_mng->Render(shaderD, "G_Buffer");
+		//player_mng->Render(shaderD, "ShadowBuf");
 
 	DeferredManager.ShadowEnd();// end
-
-	// far
-	DeferredManager.ShadowBeginL();
 	
-		stage->Render(shaderD, "ShadowBufL");
-		//player_mng->Render(shaderD, "G_Buffer");
+	if (DeferredManager.GetCascadeFlag())
+	{
+		if (FarShadowFlag <= 2)
+		{
+			// 遠距離プロジェクションの更新
+			DeferredManager.CreateShadowMatrixL(LightVec, player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_pos(), player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_Flont() * 180, 400);
 
-	DeferredManager.ShadowEndL();// end
+			// far
+			DeferredManager.ShadowBeginL();
 
+			stage->Render(shaderD, "ShadowBufL");
+			//player_mng->Render(shaderD, "G_Buffer");
+
+			DeferredManager.ShadowEndL();// end
+
+			FarShadowFlag++;
+		}
+	}
+	
 }
 
 void SceneMain::SurfaceRender()

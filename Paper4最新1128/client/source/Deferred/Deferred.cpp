@@ -616,7 +616,6 @@ void Deferred::CreateShadowMapL(const int size)
 	shadowSizeL = size;
 	//ブラー処理シャドウマップの生成
 	softShadowMap = new iex2DObj(size, size, IEX2D_FLOAT2);
-
 	shadowMapL = new iex2DObj(size, size, IEX2D_FLOAT2);
 
 	cascadeFlag = true;	// 二重シャドウマップ採用
@@ -649,7 +648,7 @@ void Deferred::CreateShadowMatrix(Vector3 dir, Vector3 target, Vector3 playerVec
 	//	視点とライト位置へ
 	Matrix	ShadowMat, work;
 	// ビュー行列の設定
-	LookAtLH(ShadowMat, pos + (playerVec * 90), target + (playerVec * 90), up);
+	LookAtLH(ShadowMat, pos + (playerVec), target + (playerVec), up);
 	// 平行投影行列作成 ビューボリューム
 	OlthoLH(work, width, width, 0.02f, width * 2.5f);	//平行投影行列
 	ShadowMat *= work;
@@ -659,15 +658,45 @@ void Deferred::CreateShadowMatrix(Vector3 dir, Vector3 target, Vector3 playerVec
 	// アルファ調整
 	shadowRange = width * .25f;
 
-	//cascadeするならそっちの行列も作成する
-	if (!cascadeFlag) return;
-	pos = target  - dir * dist * 3.0f;			//近距離シャドウに比べ3倍ほど離す
-	up = Vector3(.0f, 1.0f, .0f);
+	////cascadeするならそっちの行列も作成する
+	//if (!cascadeFlag) return;
+	//pos = target  - dir * dist * 3.0f;			//近距離シャドウに比べ3倍ほど離す
+	//up = Vector3(.0f, 1.0f, .0f);
 
+	//D3DXMatrixIdentity(&ShadowMat);
+	//D3DXMatrixIdentity(&work);
+	//LookAtLH(ShadowMat, pos + (playerVec * 210), target + (playerVec * 210), up);
+	//OlthoLH(work, width * 3.0f, width * 3.0f, 0.02f, width * 7.5f);
+	//ShadowMat *= work;
+
+	//shaderD->SetValue("ShadowProjectionL", ShadowMat);
+}
+
+
+//　シャドウの更新
+void Deferred::CreateShadowMatrixL(Vector3 dir, Vector3 target, Vector3 playerVec, const float dist)
+{
+
+	if (!cascadeFlag) return;
+
+	//	シャドウ作成
+	dir.Normalize();
+	Vector3 pos = target - dir * dist;
+	Vector3 up(.0f, 1.0f, .0f);
+
+	//幅の指定
+	float width = dist;
+
+	//	視点とライト位置へ
+	Matrix	ShadowMat, work;
+
+	//cascadeするならそっちの行列も作成する	
+	pos = target - dir * dist;			//近距離シャドウに比べ3倍ほど離す
+	up = Vector3(.0f, 1.0f, .0f);
 	D3DXMatrixIdentity(&ShadowMat);
 	D3DXMatrixIdentity(&work);
-	LookAtLH(ShadowMat, pos + (playerVec * 210), target + (playerVec * 210), up);
-	OlthoLH(work, width * 3.0f, width * 3.0f, 0.02f, width * 7.5f);
+	LookAtLH(ShadowMat, pos + (playerVec ), target + (playerVec ), up);
+	OlthoLH(work, width, width, 0.02f, width * 2.5f);
 	ShadowMat *= work;
 
 	shaderD->SetValue("ShadowProjectionL", ShadowMat);

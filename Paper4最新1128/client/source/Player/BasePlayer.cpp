@@ -9,6 +9,7 @@
 
 #include	"../sound/SoundManager.h"
 
+#include	"../blur/blur.h"
 
 /*	ベースプレイヤー	*/
 
@@ -28,11 +29,15 @@ BasePlayer::BasePlayer():prev_pos(pos)
 	m_controlDesc.mouseY = .0f;
 	m_controlDesc.rendFlag &= 0x00000000;
 	m_controlDesc.controlFlag &= 0x00000000;
+
+	// エフェクト初期化
+	EffectInit();
 }
 
 BasePlayer::~BasePlayer()
 {
 	Release();
+	EffectRelease();
 }
 
 void BasePlayer::Initialize(iex3DObj **objs)
@@ -104,6 +109,14 @@ void BasePlayer::Update()
 	// move値算出
 	move = Vector3(pos - prev_pos);
 	prev_pos = pos;
+
+	// エフェクト更新
+	EffectUpdate();
+
+	if (KEY_Get(KEY_B)==3)
+	{
+		ExplosionAction();
+	}
 }
 
 
@@ -123,6 +136,39 @@ void BasePlayer::Render(iexShader *shader, char *name)
 	}
 }
 
+//*************************************************************************************************************************
+//		エフェクト色々
+//*************************************************************************************************************************
+void   BasePlayer::EffectInit()
+{
+	explosion = new Explosion();
+
+}
+
+void   BasePlayer::EffectRelease()
+{
+	SAFE_DELETE(explosion);
+
+}
+
+void   BasePlayer::EffectUpdate()
+{
+	explosion->Update(pos, Get_Flont(), 30);
+
+}
+
+void  BasePlayer::EffectRender()
+{
+	explosion->Render();
+
+}
+
+/* トリガー */
+void BasePlayer::ExplosionAction()
+{
+	explosion->Action();
+	BlurFilter::Set(18, 0, 0);
+}
 
 //*****************************************************************************
 //
@@ -271,6 +317,7 @@ void BasePlayer::Action::Attack::Update()
 
 void BasePlayer::Action::Attack::Render(iexShader *shader, char *name)
 {
+
 	Update_obj();
 	if (shader)
 	{
