@@ -20,7 +20,7 @@ void Test_box::Update()
 	model->iexMesh::Update();
 }
 
-void Test_box::Render()
+void Test_box::Render(iexShader *shader, char *name)
 {
 	if (number == PLAYER_MAX)
 		return;
@@ -28,5 +28,12 @@ void Test_box::Render()
 	if (model == nullptr)
 		return;
 
-	model->iexMesh::Render();
+	if (shader)
+	{
+		model->iexMesh::Render(shader, name);
+	}
+	else
+	{
+		model->iexMesh::Render();
+	}
 }

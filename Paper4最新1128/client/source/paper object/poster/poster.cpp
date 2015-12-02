@@ -25,10 +25,18 @@ void Poster::Update()
 	model->Update();
 }
 
-void Poster::Render()
+void Poster::Render(iexShader *shader, char *name)
 {
 	if (number == PLAYER_MAX) return;
 
 	model->Update();
-	model->Render();
+
+	if (shader)
+	{
+		model->Render(shader, name);
+	}
+	else
+	{
+		model->Render();
+	}
 }

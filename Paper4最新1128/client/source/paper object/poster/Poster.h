@@ -12,5 +12,5 @@ public:
 
 	void Initialize(iex3DObj *model) override;
 	void Update() override;
-	void Render() override;
+	void Render(iexShader *shader = nullptr, char *name = '\0') override;
 };

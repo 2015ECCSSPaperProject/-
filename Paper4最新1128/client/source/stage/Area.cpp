@@ -16,7 +16,7 @@ public:
 	void Close(); // •ÇÝ’u
 	void Open(); // •Ç‰ð•ú
 
-	void Render();
+	void Render(iexShader *shader = nullptr, char *name = '\0');
 
 	bool Is_work();
 
@@ -60,10 +60,18 @@ void Area::Open()
 	is_work = false;
 }
 
-void Area::Render()
+void Area::Render(iexShader *shader, char *name)
 {
-	if (is_work && wall)
-		wall->Render();
+	if (shader)
+	{
+		if (is_work && wall)
+			wall->Render(shader, name);
+	}
+	else
+	{
+		if (is_work && wall)
+			wall->Render();
+	}
 }
 
 bool Area::Is_work()
@@ -75,7 +83,7 @@ bool Area::Is_work()
 
 Area_mng::~Area_mng()
 {
-	for (int i = 0; i < area_array.size(); i++)
+	for (unsigned int i = 0; i < area_array.size(); i++)
 		delete area_array[i];
 }
 
@@ -89,11 +97,21 @@ void Area_mng::Open(int index)
 	area_array[index]->Open();
 }
 
-void Area_mng::Render()
+void Area_mng::Render(iexShader *shader, char *name)
 {
-	for (int i = 0; i < area_array.size(); i++)
+	if (shader)
 	{
-		area_array[i]->Render();
+		for (unsigned int i = 0; i < area_array.size(); i++)
+		{
+			area_array[i]->Render(shader, name);
+		}
+	}
+	else
+	{
+		for (unsigned int i = 0; i < area_array.size(); i++)
+		{
+			area_array[i]->Render();
+		}
 	}
 }
 
@@ -106,7 +124,7 @@ int Area_mng::RayPick(Vector3* out, Vector3* pos, Vector3* vec, float *Dist)
 	float length(FLT_MAX);
 	int work_ret;
 
-	for (int i = 0; i < area_array.size(); i++)
+	for (unsigned int i = 0; i < area_array.size(); i++)
 	{
 		v = *vec;
 		length = *Dist;

@@ -111,9 +111,16 @@ void BasePlayer::Update()
 //*************************************************************************************************************************
 //		描画
 //*************************************************************************************************************************
-void BasePlayer::Render()
+void BasePlayer::Render(iexShader *shader, char *name)
 {
-	action[(unsigned int)action_part]->Render();
+	if (shader)
+	{
+		action[(unsigned int)action_part]->Render(shader, name);
+	}
+	else
+	{
+		action[(unsigned int)action_part]->Render();
+	}
 }
 
 
@@ -185,11 +192,18 @@ void BasePlayer::Action::Move::Update()
 	if (me->models[(int)MODEL::NORMAL]->GetFrame() == 265) se->Play("ジャンプ", me->pos);
 }
 
-void BasePlayer::Action::Move::Render()
+void BasePlayer::Action::Move::Render(iexShader *shader, char *name)
 {
 	Update_obj();
 	//me->model->Render(shader,"toon");
-	me->models[(int)me->model_part]->Render();
+	if (shader)
+	{
+		me->models[(int)me->model_part]->Render(shader, name);
+	}
+	else
+	{
+		me->models[(int)me->model_part]->Render();
+	}
 }
 
 
@@ -217,10 +231,17 @@ void BasePlayer::Action::MoveTarget::Update()
 	me->Set_motion(me->motion_no);
 }
 
-void BasePlayer::Action::MoveTarget::Render()
+void BasePlayer::Action::MoveTarget::Render(iexShader *shader, char *name)
 {
 	Update_obj();
-	me->models[(int)me->model_part]->Render();
+	if (shader)
+	{
+		me->models[(int)me->model_part]->Render(shader, name);
+	}
+	else
+	{
+		me->models[(int)me->model_part]->Render();
+	}
 }
 
 
@@ -248,10 +269,17 @@ void BasePlayer::Action::Attack::Update()
 
 }
 
-void BasePlayer::Action::Attack::Render()
+void BasePlayer::Action::Attack::Render(iexShader *shader, char *name)
 {
 	Update_obj();
-	me->models[(int)me->model_part]->Render();
+	if (shader)
+	{
+		me->models[(int)me->model_part]->Render(shader, name);
+	}
+	else
+	{
+		me->models[(int)me->model_part]->Render();
+	}
 }
 
 
@@ -279,10 +307,17 @@ void BasePlayer::Action::Paste::Update()
 {
 }
 
-void BasePlayer::Action::Paste::Render()
+void BasePlayer::Action::Paste::Render(iexShader *shader, char *name)
 {
 	Update_obj();
-	me->models[(int)me->model_part]->Render();
+	if (shader)
+	{
+		me->models[(int)me->model_part]->Render(shader, name);
+	}
+	else
+	{
+		me->models[(int)me->model_part]->Render();
+	}
 }
 
 
@@ -327,10 +362,17 @@ void BasePlayer::Action::Rend::Update()
 	}
 }
 
-void BasePlayer::Action::Rend::Render()
+void BasePlayer::Action::Rend::Render(iexShader *shader, char *name)
 {
 	Update_obj();
-	me->models[(int)me->model_part]->Render();
+	if (shader)
+	{
+		me->models[(int)me->model_part]->Render(shader, name);
+	}
+	else
+	{
+		me->models[(int)me->model_part]->Render();
+	}
 }
 
 //*****************************************************************************
@@ -351,14 +393,22 @@ void BasePlayer::Action::Freeze::Update()
 {
 }
 
-void BasePlayer::Action::Freeze::Render()
+void BasePlayer::Action::Freeze::Render(iexShader *shader, char *name)
 {
 	//me->models[(int)me->model_part]->Animation();	// アニメーションしない
 	me->models[(int)me->model_part]->SetScale(me->scale);
 	me->models[(int)me->model_part]->SetAngle(me->angleY);
 	me->models[(int)me->model_part]->SetPos(me->pos);
 	me->models[(int)me->model_part]->Update();
-	me->models[(int)me->model_part]->Render();
+
+	if (shader)
+	{
+		me->models[(int)me->model_part]->Render(shader, name);
+	}
+	else
+	{
+		me->models[(int)me->model_part]->Render();
+	}
 }
 
 //*****************************************************************************
@@ -386,13 +436,20 @@ void BasePlayer::Action::Die::Update()
 {
 }
 
-void BasePlayer::Action::Die::Render()
+void BasePlayer::Action::Die::Render(iexShader *shader, char *name)
 {
 	Update_obj();
 
 	flashing++;
 	if (flashing < 4) {
-		me->models[(int)me->model_part]->Render();
+		if (shader)
+		{
+			me->models[(int)me->model_part]->Render(shader, name);
+		}
+		else
+		{
+			me->models[(int)me->model_part]->Render();
+		}
 	}
 	else if (flashing > 8){
 		flashing = 0;
@@ -424,12 +481,19 @@ void BasePlayer::Action::Respawn::Update()
 {
 }
 
-void BasePlayer::Action::Respawn::Render()
+void BasePlayer::Action::Respawn::Render(iexShader *shader, char *name)
 {
 	Update_obj();
 	flashing++;
 	if (flashing < 4) {
-		me->models[(int)me->model_part]->Render();
+		if (shader)
+		{
+			me->models[(int)me->model_part]->Render(shader, name);
+		}
+		else
+		{
+			me->models[(int)me->model_part]->Render();
+		}
 	}
 	else if (flashing > 8){
 		flashing = 0;
@@ -452,10 +516,17 @@ void BasePlayer::Action::Hikouki::Initialize()
 void BasePlayer::Action::Hikouki::Update()
 {}
 
-void BasePlayer::Action::Hikouki::Render()
+void BasePlayer::Action::Hikouki::Render(iexShader *shader, char *name)
 {
 	Update_obj();
-	me->models[(int)me->model_part]->Render();
+	if (shader)
+	{
+		me->models[(int)me->model_part]->Render(shader, name);
+	}
+	else
+	{
+		me->models[(int)me->model_part]->Render();
+	}
 }
 
 
@@ -490,10 +561,17 @@ void BasePlayer::Action::Gun::Update()
 	}
 }
 
-void BasePlayer::Action::Gun::Render()
+void BasePlayer::Action::Gun::Render(iexShader *shader, char *name)
 {
 	Update_obj();
-	me->models[(int)me->model_part]->Render();
+	if (shader)
+	{
+		me->models[(int)me->model_part]->Render(shader, name);
+	}
+	else
+	{
+		me->models[(int)me->model_part]->Render();
+	}
 }
 
 
@@ -523,10 +601,17 @@ void BasePlayer::Action::Manhole::Update()
 	//}
 }
 
-void BasePlayer::Action::Manhole::Render()
+void BasePlayer::Action::Manhole::Render(iexShader *shader, char *name)
 {
 	Update_obj();
-	me->models[(int)me->model_part]->Render();
+	if (shader)
+	{
+		me->models[(int)me->model_part]->Render(shader, name);
+	}
+	else
+	{
+		me->models[(int)me->model_part]->Render();
+	}
 }
 
 
@@ -556,10 +641,16 @@ void BasePlayer::Action::Through::Update()
 	//}
 }
 
-void BasePlayer::Action::Through::Render()
+void BasePlayer::Action::Through::Render(iexShader *shader, char *name)
 {
 	Update_obj();
-	me->models[(int)me->model_part]->Render();
+	if (shader)
+	{
+		me->models[(int)me->model_part]->Render(shader, name);
+	}
+	{
+		me->models[(int)me->model_part]->Render();
+	}
 }
 
 

@@ -342,7 +342,7 @@ void SocketManager::UpdateStage()
 		static void Fetch_data(Paper_obj_receiver *in)
 		{
 			unsigned int num_Paper_obj = paper_obj_mng->Get_numof();
-			for (int i = 0; i < num_Paper_obj; i++)
+			for (unsigned int i = 0; i < num_Paper_obj; i++)
 			{
 				paper_obj_mng->Set_user(i, in[i].user_number);
 				paper_obj_mng->Set_animframe(i, in[i].anim_no);
@@ -373,7 +373,7 @@ void SocketManager::UpdateStage()
 		{
 			unsigned int num = stage->Area_Get_numof();
 			unsigned int num_in = (unsigned int)ceil(num * 0.125f);
-			for (int i = 0; i < num_in; i++)
+			for (unsigned int i = 0; i < num_in; i++)
 			{
 				for (unsigned int eight = 0; eight < 8; eight++)
 				{

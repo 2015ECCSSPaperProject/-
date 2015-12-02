@@ -172,6 +172,7 @@
     <ClCompile Include="IEX\IEX_System.cpp" />
     <ClCompile Include="IEX\IEX_Texture.cpp" />
     <ClCompile Include="IEX\IEX_View.cpp" />
+    <ClCompile Include="source\textLoader\textLoader.cpp" />
     <ClCompile Include="source\timer\Timer.cpp" />
     <ClCompile Include="source\ui\UI.cpp" />
   </ItemGroup>
@@ -218,6 +219,7 @@
     <ClInclude Include="source\system\System.h" />
     <ClInclude Include="IEX\iextreme.h" />
     <ClInclude Include="source\system\Thread.h" />
+    <ClInclude Include="source\textLoader\textLoader.h" />
     <ClInclude Include="source\timer\Timer.h" />
     <ClInclude Include="source\ui\UI.h" />
   </ItemGroup>

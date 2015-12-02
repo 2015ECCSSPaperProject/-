@@ -35,12 +35,22 @@ void Stage::Update()
 
 }
 
-void Stage::Render()
+void Stage::Render(iexShader *shader, char *name)
 {
-	if (show_model)
-		show_model->Render();
+	if (shader)
+	{
+		if (show_model)
+			show_model->Render(shader, name);
 
-	area->Render();
+		area->Render(shader, name);
+	}
+	else
+	{
+		if (show_model)
+			show_model->Render();
+
+		area->Render();
+	}
 }
 
 // “–‚½‚è”»’è

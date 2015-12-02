@@ -3,6 +3,7 @@
 
 struct Vector3;
 class Area;
+class iexShader;
 
 #include <vector>
 
@@ -15,7 +16,7 @@ public:
 
 	void Open(int index);
 
-	void Render();
+	void Render(iexShader *shader = nullptr, char *name = '\0');
 
 	int RayPick(Vector3* out, Vector3* pos, Vector3* vec, float *Dist);
 

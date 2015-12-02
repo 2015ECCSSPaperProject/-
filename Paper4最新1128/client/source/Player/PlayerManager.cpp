@@ -122,14 +122,24 @@ void PlayerManager::Update()
 	}
 }
 
-void PlayerManager::Render()
+void PlayerManager::Render(iexShader *shader, char *name)
 {
-	for (int i = 0; i < PLAYER_MAX; i++)
+	if (shader)
 	{
-		players[i]->Render();
-		//Text::Draw(1100, 20 + (i * 32), 0xff00ffff, "pos.x->%.2f", players[i]->Get_pos().x);
+		for (int i = 0; i < PLAYER_MAX; i++)
+		{
+			players[i]->Render(shader, name);
+		}
+	}
+	else
+	{
+		for (int i = 0; i < PLAYER_MAX; i++)
+		{
+			players[i]->Render();
+			//Text::Draw(1100, 20 + (i * 32), 0xff00ffff, "pos.x->%.2f", players[i]->Get_pos().x);
 
-		//Text::Draw(950, 20 + (i * 32), 0xff00ffff, "名前：%s", SOCKET_MANAGER->GetUser(i).name);
+			//Text::Draw(950, 20 + (i * 32), 0xff00ffff, "名前：%s", SOCKET_MANAGER->GetUser(i).name);
+		}
 	}
 }
 

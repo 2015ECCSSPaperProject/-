@@ -16,7 +16,7 @@ public:
 
 	virtual void Update() = 0;
 
-	virtual void Render() = 0;
+	virtual void Render(iexShader *shader = nullptr, char *name = '\0') = 0;
 
 	void Set_pose(const float angle, const Vector3& pos);
 

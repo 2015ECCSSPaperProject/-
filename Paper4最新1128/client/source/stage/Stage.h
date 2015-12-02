@@ -23,7 +23,7 @@ public:
 	void Initialize();
 	void Release();
 	void Update();
-	void Render();
+	void Render(iexShader *shader = nullptr, char *name = '\0');
 
 	bool Collision_rand(const Vector3 &pos, Vector3 *move, float up);
 

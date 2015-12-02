@@ -35,7 +35,7 @@ public:
 	//	XV‚Æ•`‰æ
 	//===============================================
 	void Update();
-	void Render();
+	void Render(iexShader *shader = nullptr, char *name = '\0');
 
 
 	//===============================================

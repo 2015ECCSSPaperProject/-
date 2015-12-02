@@ -82,7 +82,7 @@ protected:
 			Base(BasePlayer* me) :me(me){}
 			virtual void Initialize(){}
 			virtual void Update(){}
-			virtual void Render(){}
+			virtual void Render(iexShader *shader = nullptr, char *name = '\0'){}
 
 			// 3DObj更新
 			void Update_obj();
@@ -97,7 +97,7 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render();
+			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 		//===========================================
@@ -109,7 +109,7 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render();
+			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 		//===========================================
@@ -121,7 +121,7 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render();
+			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 		//===========================================
@@ -135,7 +135,7 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render();
+			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 		//===========================================
@@ -149,7 +149,7 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render();
+			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 		//===========================================
@@ -161,7 +161,7 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render();
+			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 		//===========================================
@@ -176,7 +176,7 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render();
+			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 		//===========================================
@@ -191,7 +191,7 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render();
+			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 		//===========================================
@@ -203,7 +203,7 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render();
+			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 		//===========================================
@@ -215,7 +215,7 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render();
+			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 		//===========================================
@@ -227,7 +227,7 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render();
+			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 		//===========================================
@@ -239,7 +239,7 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render();
+			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 
@@ -269,7 +269,7 @@ public:
 	//	更新と描画
 	//===============================================
 	virtual void Update();
-	virtual void Render();
+	virtual void Render(iexShader *shader = nullptr, char *name = '\0');
 
 	//===============================================
 	//	ゲッター,セッター

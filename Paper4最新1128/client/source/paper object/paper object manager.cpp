@@ -36,11 +36,21 @@ void Paper_obj_mng::Update()
 	}
 }
 
-void Paper_obj_mng::Render()
+void Paper_obj_mng::Render(iexShader *shader, char *name)
 {
-	for (auto it : obj_array)
+	if (shader)
 	{
-		it->Render();
+		for (auto it : obj_array)
+		{
+			it->Render(shader, name);
+		}
+	}
+	else
+	{
+		for (auto it : obj_array)
+		{
+			it->Render();
+		}
 	}
 }
 
