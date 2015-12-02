@@ -77,7 +77,7 @@ void Camera::Update()
 	if (scriptON) effect_camera->Update();
 
 	mode[mode_part]->Update();
-	shader->SetValue("ViewPos", pos);
+	shaderD->SetValue("ViewPos", pos);
 
 	// “Š‰eİ’è
 	SetProjection(parth.fovY, parth.Near, parth.Far);

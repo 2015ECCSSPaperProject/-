@@ -254,7 +254,7 @@ void SceneMain::Render()
 {
 	camera->Render();
 
-	stage->Render(shader, "copy");
+	stage->Render(shaderD, "copy");
 	sky->Render();
 
 	//　プレイヤー
@@ -265,9 +265,9 @@ void SceneMain::Render()
 
 	//	Text::Draw(950, 20 + (i * 32), 0xff00ffff, "名前：%s", SOCKET_MANAGER->GetUser(i).name);
 	//}
-	player_mng->Render(shader, "copy");
+	player_mng->Render(shaderD, "copy");
 
-	paper_obj_mng->Render(shader, "toon");
+	paper_obj_mng->Render(shaderD, "copy");
 
 	Text::Draw(32, 320, 0xff00ffff, "受信時間%.2f", bench.Get_time());
 

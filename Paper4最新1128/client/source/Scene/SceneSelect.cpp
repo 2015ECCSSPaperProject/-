@@ -447,6 +447,6 @@ void SceneSelect::PosterRender(int i)
 	//テクスチャーとしてシェーダーへ
 	char MapName[64];
 	sprintf(MapName, "PosterMap_%d", i);
-	shader->SetValue(MapName, posterScreen[i]);
+	shaderD->SetValue(MapName, posterScreen[i]);
 
 }
