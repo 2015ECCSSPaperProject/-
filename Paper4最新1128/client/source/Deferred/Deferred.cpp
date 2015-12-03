@@ -791,12 +791,12 @@ void Deferred::ShadowEndL()
 
 	// ソフトシャドウマップにシャドウマップの結果を書き込み
 	/*_____________________________________________________________________________*/
-	softShadowMap->RenderTarget();
-	shaderD->SetValue("TU", 1.0f / shadowSizeL);
-	shaderD->SetValue("TV", 1.0f / shadowSizeL);
+	//softShadowMap->RenderTarget();
+	//shaderD->SetValue("TU", 1.0f / shadowSizeL);
+	//shaderD->SetValue("TV", 1.0f / shadowSizeL);
 
-	// シャドウマップの解像度でブラー処理を変化	
-	shadowMapL->Render(0, 0, shadowSizeL, shadowSizeL, 0, 0, shadowSizeL, shadowSizeL, shaderD, "gaussZ");//奥行を禁止
+	//// シャドウマップの解像度でブラー処理を変化	
+	//shadowMapL->Render(0, 0, shadowSizeL, shadowSizeL, 0, 0, shadowSizeL, shadowSizeL, shaderD, "gaussZ");//奥行を禁止
 
 	/*_____________________________________________________________________________*/
 
@@ -834,8 +834,9 @@ void Deferred::RenderShadow()
 	}
 	else 
 	{
-		shaderD->SetValue("ShadowMapL", softShadowMap);// 遠距離マップを送る
-		shadow->Render(shaderD, "DualShadow");
+	//	shaderD->SetValue("ShadowMapL", softShadowMap);// 遠距離マップを送る
+		shaderD->SetValue("ShadowMapL", shadowMapL);// 遠距離マップを送る
+		shadow->Render(shaderD, "CascadeShadow");
 	}
 
 	// 計算し作った影を後でからめる為シェーダーへ

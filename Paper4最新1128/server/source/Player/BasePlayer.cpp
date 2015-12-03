@@ -28,10 +28,37 @@ BasePlayer::BasePlayer(int id) :m_id(id)
 	move = VECTOR_ZERO;
 }
 
+void BasePlayer::Init_pos()
+{
+	// 基本パラメータ初期化
+	pos.z = 18.0f;
+	pos.y = 1;
+	pos.x = (float)(m_id * 45);// 仮
+	angleY = 0.0f;
+	scale = .5f;
+	move = Vector3(0, 0, 0);
+	speed = 1.5f;
+	fallspeed = .1f;
+	se_receive = 0;
+	isJump = isLand = false;
+	jump_pow = 0;
+	invincible = false;
+	god_gage = 0;
+	mynumber = m_id;
+	// モーション番号
+	motion_no = 0;
+
+	if (action[0] != nullptr)
+	{
+		Change_action(ACTION_PART::MOVE);	// 最初は移動状態
+	}
+}
+
 void BasePlayer::Initialize(iex3DObj **objs)
 {
 	// 基本パラメータ初期化
-	pos.x = (float)(m_id * 4);// 仮
+	pos.z = 18.0f;
+	pos.x = (float)(m_id * 45);// 仮
 	angleY = 0.0f;
 	scale = .5f;
 	move = Vector3(0, 0, 0);

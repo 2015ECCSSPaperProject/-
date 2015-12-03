@@ -200,7 +200,7 @@ void SceneResult::Render()
 		image[IMAGE::P1 + datas[i].p_num]->Render(104, 136 + i * 96, 64, 64, 0, 0, 64, 64);
 
 		int iti, juu, hyaku, sen, man;
-		int s = datas[i].score;
+		int s = datas[i].score * 1000;
 		man = s / 10000;
 		s %= 10000;
 		sen = s / 1000;

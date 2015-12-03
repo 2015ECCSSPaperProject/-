@@ -13,6 +13,7 @@
 #include	"../score/Score.h"
 #include	"../timer/Timer.h"
 #include	"../stage/Stage.h"
+#include "../event/Event list.h"
 
 //#define BYTE_TRUE 0xAA
 //#define BYTE_FALSE 0xF0
@@ -258,10 +259,17 @@ void ServerManager::GameInitData(char* data, int client)
 	//	ゲーム初期化
 	if (count == active)
 	{
-		int hoge = 0;
-		hoge++;
+		delete event_list;
+		event_list = new Event_list();
+
 		//　オブジェをnew
 		//GAME_MASTER->GameInitialize();
+		player_mng->Init_pos();
+		//paper_obj_mng->Release();
+		//paper_obj_mng->Initialize();
+		
+		//stage->Release();
+		//stage->Initialize();
 	}
 
 	//	同期完了

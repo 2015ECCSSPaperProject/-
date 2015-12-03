@@ -28,6 +28,7 @@ public:
 	//===============================================
 	PlayerManager();
 	~PlayerManager();
+	void Init_pos();
 	void Initialize();
 	void Release();
 

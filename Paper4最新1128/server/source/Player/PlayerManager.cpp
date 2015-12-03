@@ -25,6 +25,14 @@ PlayerManager::~PlayerManager()
 	Release();
 }
 
+void PlayerManager::Init_pos()
+{
+	for (int i = 0; i <PLAYER_MAX; ++i)
+	{
+		players[i]->Init_pos();
+	}
+}
+
 void PlayerManager::Initialize()
 {
 	// ƒNƒ[ƒ“
@@ -44,8 +52,6 @@ void PlayerManager::Initialize()
 		players[i] = new NetPlayer(i);
 		players[i]->Initialize(objs);
 	}
-
-
 }
 
 void PlayerManager::Release()

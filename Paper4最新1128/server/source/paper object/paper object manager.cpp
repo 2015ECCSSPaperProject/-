@@ -47,9 +47,9 @@ void Paper_obj_mng::Update()
 
 void Paper_obj_mng::Render()
 {
-	for (auto it : obj_array)
+	for (unsigned i = 0; i < obj_array.size(); i++)
 	{
-		it->Render();
+		obj_array[i]->Render();
 	}
 }
 

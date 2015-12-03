@@ -53,7 +53,7 @@ SceneMainServer::SceneMainServer()
 	timer = nullptr;
 
 	// ポスター
-	PosterInit();
+	//PosterInit();
 
 	//	スレッド開始
 	m_pThread = 0;
@@ -196,20 +196,20 @@ SceneMainServer::~SceneMainServer()
 	SAFE_DELETE(timer);
 
 	// スタンプ
-	for (int i = 0; i < KIND_MAX; i++)
-	{
-		for (int no = 0; no < NO_MAX; no++)
-		{
-			SAFE_DELETE(StampPicture[i][no]);
-		}
-	}
+	//for (int i = 0; i < KIND_MAX; i++)
+	//{
+	//	for (int no = 0; no < NO_MAX; no++)
+	//	{
+	//		SAFE_DELETE(StampPicture[i][no]);
+	//	}
+	//}
 
 	// スクリーン
-	for (int i = 0; i < PLAYER_MAX; i++)
-	{
-		SAFE_DELETE(posterScreen[i]);
-		SAFE_DELETE(posterFrame[i]);
-	}
+	//for (int i = 0; i < PLAYER_MAX; i++)
+	//{
+	//	SAFE_DELETE(posterScreen[i]);
+	//	SAFE_DELETE(posterFrame[i]);
+	//}
 
 	delete event_list;
 }
@@ -247,13 +247,13 @@ void SceneMainServer::Update()
 void SceneMainServer::Render()
 {
 	//　マルチレンダーターゲットでポスターを描画
-	for (int i = 0; i < PLAYER_MAX; i++)
-	{
-		PosterRender(i);
-	}
+	//for (int i = 0; i < PLAYER_MAX; i++)
+	//{
+	//	PosterRender(i);
+	//}
 
 	//バックバッファ
-	iexSystem::Device->SetRenderTarget(0, backbuffer);
+	//iexSystem::Device->SetRenderTarget(0, backbuffer);
 
 	view->Clear();
 
@@ -264,10 +264,10 @@ void SceneMainServer::Render()
 	paper_obj_mng->Render();
 
 	// 皆のポスター
-	for (int i = 0; i < PLAYER_MAX; i++)
-	{
-		posterScreen[i]->Render((i * 160), 580, 512 / 4, 512 / 4, 0, 0, 512, 512);
-	}
+	//for (int i = 0; i < PLAYER_MAX; i++)
+	//{
+	//	posterScreen[i]->Render((i * 160), 580, 512 / 4, 512 / 4, 0, 0, 512, 512);
+	//}
 
 	// サーバー描画
 	ServerManager::Render();

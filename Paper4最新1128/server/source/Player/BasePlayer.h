@@ -260,6 +260,7 @@ public:
 	BasePlayer(){}
 	BasePlayer(int id);
 	virtual ~BasePlayer();
+	virtual void Init_pos();
 	virtual void Initialize(iex3DObj **objs);
 	virtual void Release();
 

@@ -1251,10 +1251,10 @@ PS_SHADOW PS_ShadowMap(float2 Tex	:	TEXCOORD0) : COLOR
 	OUT.Shadow.a = 1.0f;
 
 	//‰¼‚Å
-	if (r <= 0.0f)
-	{
-		OUT.Shadow.rgb = 1.0f;
-	}
+	//if (r <= 0.0f)
+	//{
+	//	OUT.Shadow.rgb = 1.0f;
+	//}
 
 	OUT.Spec.rgb = shadow;
 	OUT.Spec.a = 1.0f;
@@ -1378,7 +1378,7 @@ PS_SHADOW PS_DualShadow(float2 Tex	:	TEXCOORD0) : COLOR
 
 	// š‚²‚è‰Ÿ‚µ‚Å‰“‚­‚És‚­‚Æ”–‚­‚È‚é
 	float n_shadow = GetShadow(vShadow);
-	float f_shadow = GetVarianceShadow(vShadowL, ShadowSampL);
+	float f_shadow = GetShadow(vShadowL, ShadowSampL);
 	//f_shadow *= 100;
 	n_shadow = 1 + n_shadow*-1;
 	n_shadow *= 1.0 - (dist / ShadowRange) * DistAlpha;
