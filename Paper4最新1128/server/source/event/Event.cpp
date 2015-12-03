@@ -2,11 +2,12 @@
 #include "Event.h"
 #include "../timer/Timer.h"
 #include "../timer/Timer.h"
+#include "../score/Score.h"
 
-Event::Event() : start_time(0)
+Event::Event() : start_time(0), telop_id(-1)
 {};
 
-Event::Event(int time) : start_time(time)
+Event::Event(int time) : start_time(time), telop_id(-1)
 {}
 
 void Event::Set_time(unsigned int time)
@@ -20,12 +21,19 @@ void Event::Set_time(unsigned int min, unsigned int sec, unsigned int msec)
 	start_time = msec;
 }
 
+void Event::Set_telop_id(int in)
+{
+	telop_id = in;
+}
+
 
 bool Event::Update()
 {
 	if (start_time <= timer->Get_delta())
 	{
 		Start();
+		if (telop_id >= 0)
+			score->Set_telopID(telop_id);
 		return true;
 	}
 	

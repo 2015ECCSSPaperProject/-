@@ -437,12 +437,18 @@ void ServerManager::UpdateStage(int client)
 	unsigned int num_area = Area_sender::Create_data(&area_data);
 	unsigned int area_size = sizeof(Area_sender) * num_area;
 
+	// テロップ
+	int telop_id = score->Get_telopID();
+	unsigned int telop_size = sizeof(int);
+
+
 	// まとめて送信
-	unsigned int size = paper_obj_size + area_size;
+	unsigned int size = paper_obj_size + area_size + telop_size;
 	char *send_data(nullptr);
 	send_data = new  char[size];
 	memcpy_s(send_data, paper_obj_size, paper_obj_data, paper_obj_size);
 	memcpy_s(send_data + paper_obj_size, area_size, area_data, area_size);
+	memcpy_s(send_data + paper_obj_size + area_size, telop_size, &telop_id, telop_size);
 
 	m_pServer->Send(client, send_data, size);
 

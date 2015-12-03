@@ -5,6 +5,22 @@ class Pie_graph;
 class Skill_gauge;
 class SceneMain;
 
+#include<list>
+
+class Telop
+{
+public:
+	bool erase;		// けしてね
+	Telop();
+	~Telop();
+	void Update();
+	void Render();
+
+private:
+	int app_timer;	// 表示時間
+	iex2DObj *moji;
+};
+
 class UI
 {
 public:
@@ -13,7 +29,7 @@ public:
 	//===============================================
 	enum IMAGE
 	{
-		TEROP,
+		TELOP,
 		NUMBER,
 		ACTION,
 		TAPE,
@@ -26,6 +42,9 @@ public:
 	};
 
 private:
+	int telopID;
+	int seted_ID;
+
 	//===============================================
 	//	何かの実体
 	//===============================================
@@ -100,6 +119,12 @@ private:
 	void TimeLimit();	// タイムリミット
 
 
+	//===============================================
+	//	テロップリスト
+	//===============================================
+	std::list<Telop*> List;
+
+
 	// く
 	bool isYooiDon;
 
@@ -119,9 +144,18 @@ public:
 
 
 	//===============================================
+	//	テロップ追加
+	//===============================================
+	void Set_telopID(int id){ telopID = id; }
+	int Get_telopID(){ return telopID; }
+	void Append_telop(int id);
+
+
+	//===============================================
 	//　GetSet
 	//===============================================
 	bool isStart(){ return isYooiDon; }
+
 
 	//===============================================
 	//	モード変更

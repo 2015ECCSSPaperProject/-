@@ -25,8 +25,16 @@ public:
 
 private:
 	iexView* view;
-	iex2DObj* Select;
+	enum IMAGE{ BACK, R1, R2, R3, R4, R5, R6, P1, P2, P3, P4, P5, P6, KEKKA, ACTION, NUMBER, MAX };
+	iex2DObj* image[IMAGE::MAX];
 
+	struct data
+	{
+		int score;
+		int p_num;
+	}datas[PLAYER_MAX];
+	void Set_ranking();
+	
 	PaperClient* net;
 
 	//---------------------------------------------------------------------

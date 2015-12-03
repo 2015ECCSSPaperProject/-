@@ -184,7 +184,6 @@ void BasePlayer::Action::Base::Update_obj()
 	me->models[(int)me->model_part]->SetScale(me->scale);
 	me->models[(int)me->model_part]->SetAngle(me->angleY);
 	me->models[(int)me->model_part]->SetPos(me->pos);
-	me->models[(int)me->model_part]->Update();
 }
 
 void BasePlayer::Set_motion(int no)
@@ -236,12 +235,13 @@ void BasePlayer::Action::Move::Update()
 	}
 
 	if (me->models[(int)MODEL::NORMAL]->GetFrame() == 265) se->Play("ƒWƒƒƒ“ƒv", me->pos);
+
+	Update_obj();
 }
 
 void BasePlayer::Action::Move::Render(iexShader *shader, char *name)
 {
-	Update_obj();
-	//me->model->Render(shader,"toon");
+	me->models[(int)me->model_part]->Update();
 	if (shader)
 	{
 		me->models[(int)me->model_part]->Render(shader, name);
@@ -275,11 +275,13 @@ void BasePlayer::Action::MoveTarget::Update()
 {
 	// ˆµ‚¢‚É’ˆÓ
 	me->Set_motion(me->motion_no);
+
+	Update_obj();
 }
 
 void BasePlayer::Action::MoveTarget::Render(iexShader *shader, char *name)
 {
-	Update_obj();
+	me->models[(int)me->model_part]->Update();
 	if (shader)
 	{
 		me->models[(int)me->model_part]->Render(shader, name);
@@ -312,13 +314,12 @@ void BasePlayer::Action::Attack::Initialize()
 
 void BasePlayer::Action::Attack::Update()
 {
-
+	Update_obj();
 }
 
 void BasePlayer::Action::Attack::Render(iexShader *shader, char *name)
 {
-
-	Update_obj();
+	me->models[(int)me->model_part]->Update();
 	if (shader)
 	{
 		me->models[(int)me->model_part]->Render(shader, name);
@@ -352,11 +353,12 @@ void BasePlayer::Action::Paste::Initialize()
 
 void BasePlayer::Action::Paste::Update()
 {
+	Update_obj();
 }
 
 void BasePlayer::Action::Paste::Render(iexShader *shader, char *name)
 {
-	Update_obj();
+	me->models[(int)me->model_part]->Update();
 	if (shader)
 	{
 		me->models[(int)me->model_part]->Render(shader, name);
@@ -405,13 +407,18 @@ void BasePlayer::Action::Rend::Update()
 	if (me->models[(int)me->model_part]->GetParam(0) == 1)
 	{
 		// ”j‚­ˆ—
-		if (me->se_receive == -1) me->se_receive = se->Play("”j‚é", me->pos);
+		if (me->se_receive == -1)
+		{
+			me->se_receive = se->Play("”j‚é", me->pos);
+		}
 	}
+
+	Update_obj();
 }
 
 void BasePlayer::Action::Rend::Render(iexShader *shader, char *name)
 {
-	Update_obj();
+	me->models[(int)me->model_part]->Update();
 	if (shader)
 	{
 		me->models[(int)me->model_part]->Render(shader, name);
@@ -481,12 +488,12 @@ void BasePlayer::Action::Die::Initialize()
 
 void BasePlayer::Action::Die::Update()
 {
+	Update_obj();
 }
 
 void BasePlayer::Action::Die::Render(iexShader *shader, char *name)
 {
-	Update_obj();
-
+	me->models[(int)me->model_part]->Update();
 	flashing++;
 	if (flashing < 4) {
 		if (shader)
@@ -526,11 +533,12 @@ void BasePlayer::Action::Respawn::Initialize()
 
 void BasePlayer::Action::Respawn::Update()
 {
+	Update_obj();
 }
 
 void BasePlayer::Action::Respawn::Render(iexShader *shader, char *name)
 {
-	Update_obj();
+	me->models[(int)me->model_part]->Update();
 	flashing++;
 	if (flashing < 4) {
 		if (shader)
@@ -561,11 +569,13 @@ void BasePlayer::Action::Hikouki::Initialize()
 }
 
 void BasePlayer::Action::Hikouki::Update()
-{}
+{
+	Update_obj();
+}
 
 void BasePlayer::Action::Hikouki::Render(iexShader *shader, char *name)
 {
-	Update_obj();
+	me->models[(int)me->model_part]->Update();
 	if (shader)
 	{
 		me->models[(int)me->model_part]->Render(shader, name);
@@ -605,12 +615,14 @@ void BasePlayer::Action::Gun::Update()
 	if (me->models[(int)me->model_part]->GetParam(0) == 1)
 	{
 		//se->Play("Ž†“S–C");
+		me->ExplosionAction();
 	}
+	Update_obj();
 }
 
 void BasePlayer::Action::Gun::Render(iexShader *shader, char *name)
 {
-	Update_obj();
+	me->models[(int)me->model_part]->Update();
 	if (shader)
 	{
 		me->models[(int)me->model_part]->Render(shader, name);
@@ -646,11 +658,12 @@ void BasePlayer::Action::Manhole::Update()
 	//{
 	//se->Play("Ž†“S–C");
 	//}
+	Update_obj();
 }
 
 void BasePlayer::Action::Manhole::Render(iexShader *shader, char *name)
 {
-	Update_obj();
+	me->models[(int)me->model_part]->Update();
 	if (shader)
 	{
 		me->models[(int)me->model_part]->Render(shader, name);
@@ -686,11 +699,12 @@ void BasePlayer::Action::Through::Update()
 	//{
 	//se->Play("Ž†“S–C");
 	//}
+	Update_obj();
 }
 
 void BasePlayer::Action::Through::Render(iexShader *shader, char *name)
 {
-	Update_obj();
+	me->models[(int)me->model_part]->Update();
 	if (shader)
 	{
 		me->models[(int)me->model_part]->Render(shader, name);

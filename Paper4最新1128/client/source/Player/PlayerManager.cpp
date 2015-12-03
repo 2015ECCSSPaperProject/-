@@ -124,16 +124,23 @@ void PlayerManager::Update()
 
 void PlayerManager::Render(iexShader *shader, char *name)
 {
+
 	if (shader)
 	{
 		for (int i = 0; i < PLAYER_MAX; i++)
 		{
+			//Vector3 v = players[i]->Get_pos() - Vector3(matView._41, matView._42, matView._43);
+			//v.Normalize();
+			//if (Vector3Dot(v, Vector3(matView._13, matView._23, matView._33)) < .707f) continue;
 			players[i]->Render(shader, name);
 		}
 	}else
 	{
 		for (int i = 0; i < PLAYER_MAX; i++)
 		{
+			//Vector3 v = players[i]->Get_pos() - Vector3(matView._41, matView._42, matView._43);
+			//v.Normalize();
+			//if (Vector3Dot(v, Vector3(matView._13, matView._23, matView._33)) < .707f) continue;
 			players[i]->Render();
 			//Text::Draw(1100, 20 + (i * 32), 0xff00ffff, "pos.x->%.2f", players[i]->Get_pos().x);
 

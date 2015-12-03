@@ -214,6 +214,8 @@ public:
 	void Get_pos(Vector3 &out){ out = pos; }
 	void Set_pos(const Vector3 &p){ pos = p; }
 
+	Vector3 Get_target(){ return target; }
+
 	// モード
 	MODE Get_mode(){ return mode_part; }
 	void Change_mode(MODE part)
@@ -256,6 +258,7 @@ class EffectCamera : public textLoader
 private:
 	enum class APPOINT
 	{
+		NONE,			// 座標そのまま
 		DIRECT,			// Pos直接指定型
 		SOME_ONE,		// 誰かのPos
 		SOME_ONE_COOD	// 誰かのPos＋Vector3

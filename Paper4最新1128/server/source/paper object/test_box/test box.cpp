@@ -46,7 +46,7 @@ bool Test_box::Can_do(BasePlayer *player)
 	Vector3 poster_player(ppos - position); // ポスターからプレイヤー
 
 	// 距離
-	if (poster_player.LengthSq() > 5 * 5) return false;
+	if (poster_player.LengthSq() > DIST * DIST) return false;
 
 	// 向き
 	if (Vector3Dot(player->Get_forward(), poster_player) >= 0.0f) return false;

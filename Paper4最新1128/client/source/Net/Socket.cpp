@@ -16,6 +16,7 @@
 #include	"../score/Score.h"
 #include	"../timer/Timer.h"
 #include "../stage/Stage.h"
+#include "../ui/UI.h"
 
 Bench_mark bench;
 
@@ -394,13 +395,17 @@ void SocketManager::UpdateStage()
 	unsigned int num_area_data = (unsigned int)ceil(stage->Area_Get_numof() * 0.125f);
 	unsigned int area_size = sizeof(Area_receiver) * num_area_data;
 
-	unsigned int size = Paper_obj_size + area_size;
+	unsigned int telop_size = sizeof(int);
+
+	unsigned int size = Paper_obj_size + area_size + telop_size;
 	char *receive_data = new char[size];
 
 	m_pClient->Receive(receive_data, size);
 
 	Paper_obj_receiver::Fetch_data((Paper_obj_receiver*)receive_data);
 	Area_receiver::Fetch_data((Area_receiver*)(receive_data + Paper_obj_size));
+	int *telopID_p = (int*)(receive_data + Paper_obj_size + area_size);
+	ui->Set_telopID(*(telopID_p));
 
 	delete[] receive_data;
 

@@ -14,6 +14,7 @@ public:
 		REND,
 		MAX
 	}mode;
+	const static unsigned int DIST = 10;
 
 	void Initialize(int model_type, iex3DObj *model, int point);
 

@@ -112,6 +112,9 @@ bool SceneMain::Initialize()
 	// タイマー
 	timer = new Timer;
 
+	// スコア
+	score_mng->Initialize();
+
 	// UI
 	ui = new UI;
 	ui->Initialize(player_mng->Get_player(SOCKET_MANAGER->GetID()));
@@ -326,15 +329,16 @@ void SceneMain::Render()
 
 		player_mng->Render(shaderD, "G_Buffer");
 
-		Vector3 flont;
-		flont.x = matView._31;
-		flont.y = matView._32;
-		flont.z = matView._33;
-		//flont.Normalize();
+		//Vector3 flont;
+		//flont.x = matView._13;
+		//flont.y = matView._23;
+		//flont.z = matView._33;
+		////flont.Normalize();
 
-		player_mng->Get_player(0)->Set_pos(player_mng->Get_player(0)->Get_pos()+(flont*30));
-		player_mng->Get_player(0)->Update();
-		player_mng->Render(shaderD, "G_Buffer");
+		//Vector3 front_pos = player_mng->Get_player(0)->Get_pos() + (flont * 30);
+		//player_mng->Get_player(0)->Set_pos(front_pos);
+		//player_mng->Get_player(0)->Update();
+		//player_mng->Render(shaderD, "G_Buffer");
 
 
 		paper_obj_mng->Render(shaderD, "G_Buffer");
@@ -377,8 +381,6 @@ void SceneMain::Render()
 	}
 	else
 	{
-
-
 		stage->Render();
 		sky->Render();
 

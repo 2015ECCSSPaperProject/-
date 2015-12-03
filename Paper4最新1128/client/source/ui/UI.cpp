@@ -10,7 +10,7 @@
 #include "../skill_gauge/skill_gauge.h"
 #include <assert.h>
 
-UI::UI() :my_player(nullptr), graph(nullptr), gauge(nullptr), mode(nullptr), isYooiDon(false)
+UI::UI() :my_player(nullptr), graph(nullptr), gauge(nullptr), mode(nullptr), isYooiDon(false), telopID(-1), seted_ID(-1)
 {
 	for (int i = 0; i < IMAGE::MAX; i++)image[i] = nullptr;
 }
@@ -53,6 +53,8 @@ UI::~UI()
 	delete graph;
 	delete gauge;
 	SAFE_DELETE(mode);
+	for (auto it : List) delete it;
+	List.clear();
 }
 
 void UI::Update()
@@ -73,7 +75,23 @@ void UI::Render()
 
 void UI::Mode::Main::Update()
 {
+	if (me->telopID != me->seted_ID)
+	{
+		me->seted_ID = me->telopID;
+		me->Append_telop(me->telopID);
+	}
 
+	std::list<Telop*>::iterator it = me->List.begin();
+	while (it != me->List.end())
+	{
+		(*it)->Update();
+		if ((*it)->erase)
+		{
+			delete (*it);
+			it = me->List.erase(it);
+		}
+		else it++;
+	}
 }
 
 void UI::Mode::Main::Render()
@@ -82,6 +100,11 @@ void UI::Mode::Main::Render()
 	me->SkillGauge();
 	me->Action();
 	me->TimeLimit();
+
+	for (auto it : me->List)
+	{
+		it->Render();
+	}
 }
 
 void UI::Graph()
@@ -210,5 +233,42 @@ void UI::Mode::End::Render()
 //
 //=============================================================================================
 
+
+
+
+
+//*****************************************************************************************************************************
+//
+//		ÉeÉçÉbÉvä÷åW
+void UI::Append_telop(int id)
+{
+	Telop *set = new Telop;
+	List.push_back(set);
+}
+
+Telop::Telop() :app_timer(150), erase(false)
+{
+	moji = new iex2DObj("DATA/UI/telop/telop.png");
+}
+
+Telop::~Telop()
+{
+	delete moji;
+}
+
+void Telop::Update()
+{
+	if (--app_timer < 0) erase = true;
+}
+
+void Telop::Render()
+{
+	moji->Render(378, 96, 1024, 128, 0, 0, 1024, 128);
+}
+
+
+
+//
+//=============================================================================================
 
 UI *ui;

@@ -861,38 +861,44 @@ void EffectCamera::Setting_camera(Camera::MODE mode)
 
 	//================================================================
 	//	位置読み込み
-	if ((APPOINT)appoint[0] == APPOINT::DIRECT)
+	switch ((APPOINT)appoint[0])
 	{
+	case APPOINT::NONE:
+		pos = camera->Get_pos();
+		break;
+	case APPOINT::DIRECT:
 		pos.x = LoadFloat();
 		pos.y = LoadFloat();
 		pos.z = LoadFloat();
-	}
-	else if ((APPOINT)appoint[0] == APPOINT::SOME_ONE)
-	{
+		break;
+	case APPOINT::SOME_ONE:
 		Getting_targeter(&pos);
-	}
-	else if ((APPOINT)appoint[0] == APPOINT::SOME_ONE_COOD)
-	{
+		break;
+	case APPOINT::SOME_ONE_COOD:
 		Getting_targeter_coodinate(&pos);
+		break;
 	}
 
 	//================================================================
 	//	ターゲット読み込み
-	if ((APPOINT)appoint[1] == APPOINT::DIRECT)
+	switch ((APPOINT)appoint[1])
 	{
+	case APPOINT::NONE:
+		target = camera->Get_target();
+		break;
+	case APPOINT::DIRECT:
 		target.x = LoadFloat();
 		target.y = LoadFloat();
 		target.z = LoadFloat();
-	}
-	else if ((APPOINT)appoint[1] == APPOINT::SOME_ONE)
-	{
+		break;
+	case APPOINT::SOME_ONE:
 		Getting_targeter(&target);
-	}
-	else if ((APPOINT)appoint[1] == APPOINT::SOME_ONE_COOD)
-	{
+		break;
+	case APPOINT::SOME_ONE_COOD:
 		Getting_targeter_coodinate(&target);
+		break;
 	}
-	
+
 	//================================================================
 	//	位置・注視点の情報セット！！！
 	camera->Change_mode(mode, pos, target);
@@ -911,36 +917,42 @@ void EffectCamera::Setting_camera(Camera::MODE mode)
 
 		//================================================================
 		//	「目標」位置読み込み
-		if ((APPOINT)appoint[0] == APPOINT::DIRECT)
+		switch ((APPOINT)appoint[0])
 		{
+		case APPOINT::NONE:
+			pos = camera->Get_pos();
+			break;
+		case APPOINT::DIRECT:
 			pos.x = LoadFloat();
 			pos.y = LoadFloat();
 			pos.z = LoadFloat();
-		}
-		else if ((APPOINT)appoint[0] == APPOINT::SOME_ONE)
-		{
+			break;
+		case APPOINT::SOME_ONE:
 			Getting_targeter(&pos);
-		}
-		else if ((APPOINT)appoint[0] == APPOINT::SOME_ONE_COOD)
-		{
+			break;
+		case APPOINT::SOME_ONE_COOD:
 			Getting_targeter_coodinate(&pos);
+			break;
 		}
 
 		//================================================================
 		//	「目標」ターゲット読み込み
-		if ((APPOINT)appoint[1] == APPOINT::DIRECT)
+		switch ((APPOINT)appoint[1])
 		{
+		case APPOINT::NONE:
+			target = camera->Get_pos();
+			break;
+		case APPOINT::DIRECT:
 			target.x = LoadFloat();
 			target.y = LoadFloat();
 			target.z = LoadFloat();
-		}
-		else if ((APPOINT)appoint[1] == APPOINT::SOME_ONE)
-		{
+			break;
+		case APPOINT::SOME_ONE:
 			Getting_targeter(&target);
-		}
-		else if ((APPOINT)appoint[1] == APPOINT::SOME_ONE_COOD)
-		{
+			break;
+		case APPOINT::SOME_ONE_COOD:
 			Getting_targeter_coodinate(&target);
+			break;
 		}
 
 		//================================================================
@@ -979,4 +991,4 @@ void EffectCamera::Getting_targeter_coodinate(Vector3 *out)
 	}
 }
 //
-//=============================================================================================
+//*****************************************************************************************************************************

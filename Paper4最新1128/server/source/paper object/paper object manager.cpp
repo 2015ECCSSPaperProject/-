@@ -12,6 +12,7 @@
 
 #include "../../../share_data/Enum_public.h"
 #include "../Player/BasePlayer.h"
+#include "../score/Score.h"
 
 Paper_obj_mng::Paper_obj_mng() : original_model(nullptr), number_of_objects(0)
 {
@@ -231,6 +232,7 @@ void Paper_obj_mng::Load()
 
 			ev = new Event_advent_paper_obj(p);
 			ev->Set_time(0, 40, 0);
+			ev->Set_telop_id(1);
 			event_list->push(ev);
 		}
 	}
