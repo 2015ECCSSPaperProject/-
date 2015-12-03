@@ -259,8 +259,8 @@ void ServerManager::GameInitData(char* data, int client)
 	//	ゲーム初期化
 	if (count == active)
 	{
-		delete event_list;
-		event_list = new Event_list();
+		//delete event_list;
+		//event_list = new Event_list();
 
 		//　オブジェをnew
 		//GAME_MASTER->GameInitialize();
