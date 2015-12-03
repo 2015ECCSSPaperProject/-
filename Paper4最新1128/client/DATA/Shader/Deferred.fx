@@ -1381,7 +1381,7 @@ PS_SHADOW PS_DualShadow(float2 Tex	:	TEXCOORD0) : COLOR
 	float f_shadow = GetVarianceShadow(vShadowL, ShadowSampL);
 	//f_shadow *= 100;
 	n_shadow = 1 + n_shadow*-1;
-	//n_shadow *= 1.0 - (dist / ShadowRange) * DistAlpha;
+	n_shadow *= 1.0 - (dist / ShadowRange) * DistAlpha;
 	f_shadow = 1 + f_shadow*-1;
 	n_shadow += f_shadow;
 	n_shadow = 1 + n_shadow*-1;
@@ -1400,7 +1400,8 @@ PS_SHADOW PS_DualShadow(float2 Tex	:	TEXCOORD0) : COLOR
 
 
 	//@HDR‚Å1ˆÈã‚É‚È‚Á‚Ä‚¢‚é‚Ì‚Å1‚Åa‚é‚æ‚¤‚É‚·‚é
-	OUT.Shadow.rgb = max(0.5f, n_shadow + 1.2f - (1.0f*r));//0~1; //‰e‚Ì”Z‚³‚ğˆê’è‚É 1.0‚Å’²®
+	//OUT.Shadow.rgb = max(0.5f, n_shadow + 1.2f - (1.0f*r));//0~1; //‰e‚Ì”Z‚³‚ğˆê’è‚É 1.0‚Å’²®
+	OUT.Shadow.rgb = n_shadow;//0~1;
 	OUT.Shadow.b += 0.05f;// —V‚Ñ‚ÅÂ‚Á‚Û‚­
 	OUT.Shadow.a = 1.0f;
 

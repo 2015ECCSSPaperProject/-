@@ -105,7 +105,7 @@ HWND InitWindow( HINSTANCE hInstance, int nCmdShow )
 	if( !bFullScreen ){
 		AdjustWindowRect( &WindowSize, WS_OVERLAPPEDWINDOW, FALSE );
 		hWnd = CreateWindow( "IEX2010", AppTitle, WS_OVERLAPPEDWINDOW, 
-								0, 0, WindowSize.right-WindowSize.left, WindowSize.bottom-WindowSize.top,
+								600, 600, WindowSize.right-WindowSize.left, WindowSize.bottom-WindowSize.top,
 								NULL, NULL, hInstance, NULL);
 	} else {
 		hWnd = CreateWindow( "IEX2010", AppTitle, WS_POPUP, 0, 0, WindowSize.right,WindowSize.bottom, NULL, NULL, hInstance, NULL);

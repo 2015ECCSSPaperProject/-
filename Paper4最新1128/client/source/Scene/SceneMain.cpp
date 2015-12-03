@@ -18,6 +18,9 @@
 #include	"../ui/UI.h"
 #include	"../blur/blur.h"
 
+#include	"../Effect/Effect.h"
+
+
 //net
 //#include "Network/TCPServerSocket.h"
 //#include "Network/net_config_loader.h"
@@ -145,6 +148,10 @@ bool SceneMain::Initialize()
 	exposure = -9.0f;
 	FarShadowFlag = 0;
 
+
+	//particle = new iexParticlePlus();
+	particle->Initialize("DATA/effect/particle.png",1024);
+
 	return true;
 
 
@@ -168,6 +175,9 @@ SceneMain::~SceneMain()
 	DeferredManager.Release();
 
 	BlurFilter::CleanUp();
+
+	particle->Release();
+
 }
 
 //===================================================================================
@@ -314,7 +324,19 @@ void SceneMain::Render()
 		stage->Render(shaderD, "G_Buffer");
 		sky->Render(shaderD, "G_Buffer");
 
-		player_mng->Render(shaderD, "G_Buffer");	
+		player_mng->Render(shaderD, "G_Buffer");
+
+		Vector3 flont;
+		flont.x = matView._31;
+		flont.y = matView._32;
+		flont.z = matView._33;
+		//flont.Normalize();
+
+		player_mng->Get_player(0)->Set_pos(player_mng->Get_player(0)->Get_pos()+(flont*30));
+		player_mng->Get_player(0)->Update();
+		player_mng->Render(shaderD, "G_Buffer");
+
+
 		paper_obj_mng->Render(shaderD, "G_Buffer");
 
 		DeferredManager.End();
@@ -404,7 +426,7 @@ void SceneMain::RenderShadow()
 	DeferredManager.ShadowBegin();
 	
 		stage->Render(shaderD, "ShadowBuf");
-		//player_mng->Render(shaderD, "ShadowBuf");
+		player_mng->Render(shaderD, "ShadowBuf");
 
 	DeferredManager.ShadowEnd();// end
 	
