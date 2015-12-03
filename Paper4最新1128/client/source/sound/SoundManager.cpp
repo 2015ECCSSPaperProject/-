@@ -497,7 +497,7 @@ void EventBGM::None()
 {
 	if (!isKouhan)
 	{
-		if (timer->Get_limit_time() % 60 <= (LIMIT_TIME / 4)){
+		if (timer->Get_limit_time() <= (LIMIT_TIME / 4)){
 			this->Set_mode(MODE::KOUHAN);
 			isKouhan = true;
 		}

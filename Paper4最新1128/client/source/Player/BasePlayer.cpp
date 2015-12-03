@@ -381,7 +381,7 @@ void BasePlayer::Action::Rend::Initialize()
 	me->m_controlDesc.moveFlag &= 0x00000000;
 	me->m_controlDesc.rendFlag &= 0x00000000;
 
-
+	me->se_receive = -1;
 	me->model_part = MODEL::NORMAL;
 
 	se->Play("”j‚é\‚¦");
@@ -405,7 +405,7 @@ void BasePlayer::Action::Rend::Update()
 	if (me->models[(int)me->model_part]->GetParam(0) == 1)
 	{
 		// ”j‚­ˆ—
-		se->Play("”j‚é", me->pos);
+		if (me->se_receive == -1) me->se_receive = se->Play("”j‚é", me->pos);
 	}
 }
 
