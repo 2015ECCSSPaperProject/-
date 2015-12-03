@@ -34,6 +34,14 @@ private:
 		int p_num;
 	}datas[PLAYER_MAX];
 	void Set_ranking();
+	int Get_rank(int num)
+	{
+		for (int i = 0; i < PLAYER_MAX; i++)
+		{
+			if (datas[i].p_num == num) return i;
+		}
+		return -1;
+	}
 	
 	PaperClient* net;
 

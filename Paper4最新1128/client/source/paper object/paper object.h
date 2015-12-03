@@ -26,6 +26,8 @@ public:
 
 	const Vector3& Get_pos();
 
+	void Render_mark(iex2DObj *obj, bool target);	// ã‚Ì–îˆó
+
 protected:
 	iex3DObj *model; // 3Dƒ‚ƒfƒ‹
 

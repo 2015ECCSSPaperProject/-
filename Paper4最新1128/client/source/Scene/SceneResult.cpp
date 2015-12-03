@@ -37,7 +37,7 @@ void SceneResult::Set_ranking()
 	}
 	for (int i = 0; i < PLAYER_MAX - 1; i++) for (int j = i + 1; j < PLAYER_MAX; j++)
 	{
-		if (datas[i].score > datas[j].score)
+		if (datas[i].score < datas[j].score)
 		{
 			int temp = datas[i].score;
 			datas[i].score = datas[j].score;
@@ -198,15 +198,32 @@ void SceneResult::Render()
 	for (int i = 0; i < PLAYER_MAX; ++i)
 	{
 		image[IMAGE::P1 + datas[i].p_num]->Render(104, 136 + i * 96, 64, 64, 0, 0, 64, 64);
-		image[IMAGE::NUMBER]->Render(568, 136 + i * 96, 64, 64, 64*11, 0, 64, 64);
+
+		int iti, juu, hyaku, sen, man;
+		int s = datas[i].score;
+		man = s / 10000;
+		s %= 10000;
+		sen = s / 1000;
+		s %= 1000;
+		hyaku = s / 100;
+		s %= 100;
+		juu = s / 10;
+		s %= 10;
+		iti = s;
+
+		image[IMAGE::NUMBER]->Render(392, 136 + i * 96, 64, 64, 64 * man, 0, 64, 64);
+		image[IMAGE::NUMBER]->Render(424, 136 + i * 96, 64, 64, 64 * sen, 0, 64, 64);
+		image[IMAGE::NUMBER]->Render(456, 136 + i * 96, 64, 64, 64 * hyaku, 0, 64, 64);
+		image[IMAGE::NUMBER]->Render(488, 136 + i * 96, 64, 64, 64 * juu, 0, 64, 64);
+		image[IMAGE::NUMBER]->Render(520, 136 + i * 96, 64, 64, 64 * iti, 0, 64, 64);
+		image[IMAGE::NUMBER]->Render(568, 136 + i * 96, 64, 64, 64 * 11, 0, 64, 64);
 	}
 
 	// ランク表示
-	//image[IMAGE::P1 + datas[SOCKET_MANAGER->GetID()].p_num]->Render(104, 136 + i * 96, 64, 64, 0, 0, 64, 64);
+	image[IMAGE::R1 + Get_rank(SOCKET_MANAGER->GetID())]->Render(848, 52, 256, 128, 0, 0, 256, 128);
 
 	// スコア描画
 	//Text::Draw(320, 320, 0xffffffff, "スコア : %d",limited_data->Get_score(SOCKET_MANAGER->GetID()));
-
 
 	//ステップ
 	switch (step)

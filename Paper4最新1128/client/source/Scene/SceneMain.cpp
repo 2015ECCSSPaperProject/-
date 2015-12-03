@@ -341,7 +341,7 @@ void SceneMain::Render()
 		//player_mng->Render(shaderD, "G_Buffer");
 
 
-		paper_obj_mng->Render(shaderD, "G_Buffer");
+		paper_obj_mng->Render(player_mng->Get_player(SOCKET_MANAGER->GetID()), shaderD, "G_Buffer");
 
 		DeferredManager.End();
 
@@ -394,7 +394,7 @@ void SceneMain::Render()
 		//}
 		player_mng->Render();
 
-		paper_obj_mng->Render(shaderD, "copy");
+		paper_obj_mng->Render(player_mng->Get_player(SOCKET_MANAGER->GetID()), shaderD, "copy");
 
 
 
