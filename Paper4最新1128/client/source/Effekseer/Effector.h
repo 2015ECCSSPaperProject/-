@@ -1,7 +1,9 @@
 #pragma once
 #include "iextreme.h"
-#include <Effekseer/Effekseer.h>
-#include <Effekseer/EffekseerRendererDX9.h>
+//#include <Effekseer/Effekseer.h>
+//#include <Effekseer/EffekseerRendererDX9.h>
+#include "Effekseer.h"
+#include "EffekseerRendererDX9.h"
 
 #if _DEBUG
 #pragma comment(lib, "Effekseer.Debug.lib" )

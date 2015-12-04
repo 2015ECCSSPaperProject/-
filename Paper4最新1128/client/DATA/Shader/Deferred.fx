@@ -787,7 +787,7 @@ float4 PS_DOF(float2 Tex : TEXCOORD0) :COLOR
 	pos = mul(pos, InvProj);
 	pos.xyz /= pos.w;
 
-	float3 Length = pos - DOF_target;
+	float3 Length = (float3)pos - DOF_target;
 		float l = length(Length);
 
 	//rangeより離れた位置からαを増やしていく
@@ -1233,7 +1233,7 @@ PS_SHADOW PS_ShadowMap(float2 Tex	:	TEXCOORD0) : COLOR
 	///*****************
 
 	//　ワールド座標の　世界のその場所のPosと目のPosと引いて　目からポジションのVectorをゲット
-	float3 V = world - ViewPos;				//視点からモデルのベクトル
+	float3 V = (float3)world - ViewPos;				//視点からモデルのベクトル
 		V.y = .0f;
 
 	float dist = length(V);//　その向きの距離を取得
@@ -1286,17 +1286,17 @@ float4 PS_ShadowMapCascade(float2 Tex	:	TEXCOORD0) : COLOR
 	//**************************
 	// 視点からの距離計算(カスケード用)
 	//**************************
-	float3 V = world - ViewPos;				//視点からモデルのベクトル
+	float3 V = (float3)world - ViewPos;				//視点からモデルのベクトル
 		V.y = .0f;
 
 	float dist = length(V);
 
-	float3 vShadow = mulScreen(world, ShadowProjection);
-	float3 vShadowL = mulScreen(world, ShadowProjectionL);
+	float4 vShadow = mulScreen(world, ShadowProjection);
+	float4 vShadowL = mulScreen(world, ShadowProjectionL);
 	float vShadowW = (30.0f - (dist - 110.0f)) * 1.25f;			//距離の調整
 	vShadowW = saturate(vShadowW);
 
-	float shadow = GetShadowCascade(vShadow, vShadowL, vShadowW);
+	float shadow = GetShadowCascade((float3)vShadow, (float3)vShadowL, vShadowW);
 	shadow = 1.0f - ((1.0f - shadow) * .5f);
 
 
@@ -1315,7 +1315,7 @@ float4 PS_ShadowMapCascade(float2 Tex	:	TEXCOORD0) : COLOR
 	//OUT.rgb = s;
 
 	// ★ごり押しで遠くに行くと薄くなる
-	float n_shadow = GetShadow(vShadow);
+	float n_shadow = GetShadow((float3)vShadow);
 	n_shadow = 1 + n_shadow * -1;
 	n_shadow *= 1.0 - (dist / ShadowRange) * DistAlpha;
 
@@ -1361,7 +1361,7 @@ PS_SHADOW PS_DualShadow(float2 Tex	:	TEXCOORD0) : COLOR
 	///*****************
 
 	//　ワールド座標の　世界のその場所のPosと目のPosと引いて　目からポジションのVectorをゲット
-	float3 V = world - ViewPos;				//視点からモデルのベクトル
+	float3 V = (float3)world - ViewPos;				//視点からモデルのベクトル
 		V.y = .0f;
 
 	float dist = length(V);//　その向きの距離を取得
@@ -1369,16 +1369,16 @@ PS_SHADOW PS_DualShadow(float2 Tex	:	TEXCOORD0) : COLOR
 	vShadowW = saturate(vShadowW);
 
 	//　↓太陽始点からのそのポジションを手に入れる
-	float3 vShadow = mulScreen(world, ShadowProjection);
-	float3 vShadowL = mulScreen(world, ShadowProjectionL);
+	float4 vShadow = mulScreen(world, ShadowProjection);
+	float4 vShadowL = mulScreen(world, ShadowProjectionL);
 
 
 	//float far_shadow = GetVarianceShadow(vShadowL, ShadowSampL);
 
 
 	// ★ごり押しで遠くに行くと薄くなる
-	float n_shadow = GetShadow(vShadow);
-	float f_shadow = GetShadow(vShadowL, ShadowSampL);
+	float n_shadow = GetShadow((float3)vShadow);
+	float f_shadow = GetShadow((float3)vShadowL, ShadowSampL);
 	//f_shadow *= 100;
 	n_shadow = 1 + n_shadow*-1;
 	n_shadow *= 1.0 - (dist / ShadowRange) * DistAlpha;
@@ -1645,9 +1645,9 @@ float4 PS_Def1(float2 Tex : TEXCOORD0) :COLOR
 {
 	float4 OUT;
 
-	float3 color;
+	float4 color;
 
-	float3 dif;
+	float4 dif;
 	//ディフューズカラーの取得
 	dif = tex2D(DecaleSamp, Tex);
 	color = dif;
@@ -1673,7 +1673,7 @@ float4 PS_Def1(float2 Tex : TEXCOORD0) :COLOR
 	color = (color - rate) * chroma + rate;							//色相
 
 	//カラーバランス調整
-	OUT.rgb = color * ScreenColor;
+	OUT.rgb = (float3)color * ScreenColor;
 	OUT.a = 1.0f;
 
 	//return float4(color,1.0f);
@@ -1702,9 +1702,9 @@ float4 PS_Def2(float2 Tex : TEXCOORD0) :COLOR
 {
 	float4 OUT;
 
-	float3 color;
+	float4 color;
 
-	float3 dif;
+	float4 dif;
 	//ディフューズカラーの取得
 	dif = tex2D(DecaleSamp, Tex);
 	color = dif;
@@ -1728,7 +1728,7 @@ float4 PS_Def2(float2 Tex : TEXCOORD0) :COLOR
 	color = (color - rate) * chroma + rate;							//色相
 
 	//カラーバランス調整
-	OUT.rgb = color * ScreenColor;
+	OUT.rgb = (float3)color * ScreenColor;
 	OUT.a = 1.0f;
 
 	//return float4(color,1.0f);
@@ -1756,9 +1756,9 @@ float4 PS_Def3(float2 Tex : TEXCOORD0) :COLOR
 {
 	float4 OUT;
 
-	float3 color;
+	float4 color;
 
-	float3 dif;
+	float4 dif;
 	//ディフューズカラーの取得
 	dif = tex2D(DecaleSamp, Tex);
 	color = dif;
@@ -1787,7 +1787,7 @@ float4 PS_Def3(float2 Tex : TEXCOORD0) :COLOR
 	color = (color - rate) * chroma + rate;							//色相
 
 	//カラーバランス調整
-	OUT.rgb = color * ScreenColor;
+	OUT.rgb = (float3)color * ScreenColor;
 	OUT.a = 1.0f;
 
 	//return float4(color,1.0f);
@@ -2131,7 +2131,7 @@ float4 PS_Tone(float2 Tex	:	TEXCOORD0) : COLOR
 	float4 OUT = (float4)0;
 
 	//No.2	1.0から2.0　明るい
-	OUT.rgb = tex2D(DecaleSamp, Tex)* exp2(exposure);
+	OUT.rgba = tex2D(DecaleSamp, Tex)* exp2(exposure);
 	OUT.a = 1.0f;
 
 	return OUT;
@@ -2161,7 +2161,7 @@ float4 PS_Tone_DOF(float2 Tex	:	TEXCOORD0) : COLOR
 	float4 OUT = (float4)0;
 
 	//No.2	1.0から2.0　明るい
-	OUT.rgb = tex2D(DecaleSamp, Tex)* exp2(exposure);
+	OUT.rgba = tex2D(DecaleSamp, Tex)* exp2(exposure);
 	OUT.a = 1.0f;
 
 
@@ -2176,7 +2176,7 @@ float4 PS_Tone_DOF(float2 Tex	:	TEXCOORD0) : COLOR
 	pos = mul(pos, InvProj);
 	pos.xyz /= pos.w;
 
-	float3 Length = pos - DOF_target;
+	float3 Length = (float3)pos - DOF_target;
 		float l = length(Length);
 
 	//rangeより離れた位置からαを増やしていく
@@ -2207,163 +2207,163 @@ technique ToneMap_DOF
 //*****************************************
 //		ScreenSpaceAmbientOcclusion
 //*****************************************
-
-//サンプリング数(16,12,10,8)
-#define SAMPLES 16							//周囲ピクセルのサンプリング数
-float HemRadius = 1.0f;						//環境光遮蔽判定用の半球の半径
-float Zfar = 0.01f;							//環境光遮蔽判定用の深度差の最大値
-float AOPower = 3.0f;						//陰の強度
-
-#if SAMPLES == 16
-const float3 SphereArray[16] = {
-	float3(0.53812504f, 0.18565957f, -0.43192f),
-	float3(0.13790712f, 0.24864247f, 0.44301823f),
-	float3(0.33715037f, 0.56794053f, -0.005789503f),
-	float3(-0.6999805f, -0.04511441f, -0.0019965635f),
-	float3(0.06896307f, -0.15983082f, -0.85477847f),
-	float3(0.056099437f, 0.006954967f, -0.1843352f),
-	float3(-0.014653638f, 0.14027752f, 0.0762037f),
-	float3(0.010019933f, -0.1924225f, -0.034443386f),
-	float3(-0.35775623f, -0.5301969f, -0.43581226f),
-	float3(-0.3169221f, 0.106360726f, 0.015860917f),
-	float3(0.010350345f, -0.58698344f, 0.0046293875f),
-	float3(-0.08972908f, -0.49408212f, 0.3287904f),
-	float3(0.7119986f, -0.0154690035f, -0.09183723f),
-	float3(-0.053382345f, 0.059675813f, -0.5411899f),
-	float3(0.035267662f, -0.063188605f, 0.54602677f),
-	float3(-0.47761092f, 0.2847911f, -0.0271716f)
-};
-
-#elif SAMPLES == 12
-const float3 SphereArray[12] = {
-	float3(-0.13657719, 0.30651027, 0.16118456),
-	float3(-0.14714938, 0.33245975, -0.113095455),
-	float3(0.030659059, 0.27887347, -0.7332209),
-	float3(0.009913514, -0.89884496, 0.07381549),
-	float3(0.040318526, 0.40091, 0.6847858),
-	float3(0.22311053, -0.3039437, -0.19340435),
-	float3(0.36235332, 0.21894878, -0.05407306),
-	float3(-0.15198798, -0.38409665, -0.46785462),
-	float3(-0.013492276, -0.5345803, 0.11307949),
-	float3(-0.4972847, 0.037064247, -0.4381323),
-	float3(-0.024175806, -0.008928787, 0.17719103),
-	float3(0.694014, -0.122672155, 0.33098832)
-};
-
-#elif SAMPLES == 10
-const float3 SphereArray[10] = {
-	float3(-0.010735935, 0.01647018, 0.0062425877),
-	float3(-0.06533369, 0.3647007, -0.13746321),
-	float3(-0.6539235, -0.016726388, -0.53000957),
-	float3(0.40958285, 0.0052428036, -0.5591124),
-	float3(-0.1465366, 0.09899267, 0.15571679),
-	float3(-0.44122112, -0.5458797, 0.04912532),
-	float3(0.03755566, -0.10961345, -0.33040273),
-	float3(0.019100213, 0.29652783, 0.066237666),
-	float3(0.8765323, 0.011236004, 0.28265962),
-	float3(0.29264435, -0.40794238, 0.15964167)
-};
-
-#else
-const float3 SphereArray[8] = {
-	float3(0.24710192, 0.6445882, 0.033550154),
-	float3(0.00991752, -0.21947019, 0.7196721),
-	float3(0.25109035, -0.1787317, -0.011580509),
-	float3(-0.08781511, 0.44514698, 0.56647956),
-	float3(-0.011737816, -0.0643377, 0.16030222),
-	float3(0.035941467, 0.04990871, -0.46533614),
-	float3(-0.058801126, 0.7347013, -0.25399926),
-	float3(-0.24799341, -0.022052078, -0.13399573)
-};
-
-#endif
-
-
-float4 PS_SSAO(float2 Tex : TEXCOORD0) :COLOR0
-{
-	float4 OUT;
-
-	//描画ピクセルの法線ベクトルを取得
-	float3 normal = tex2D(NormalBufSamp, Tex).rgb * 2.0f - 1.0f;
-		normal = normalize(normal);
-
-	//描画ピクセルの深度の取得
-	float depth = tex2D(DepthBufSamp, Tex).r;
-
-	//プロジェクション座標系の取得
-	float4 pos;
-	pos.xy = Tex * 2.0f - 1.0f;					//-1から1に戻す
-	pos.y *= -1;
-	pos.z = depth;
-	pos.w = 1.0f;
-
-	//ビュー座標系での位置の取得
-	pos = mul(pos, InvProj);
-	pos.xyz /= pos.w;
-
-	float normAO = .0f;
-	float depthAO = .0f;
-
-	//レイを飛ばして遮蔽されているか
-	for (uint i = 0; i < SAMPLES; i++){
-
-		//レイの方向ベクトル
-		float3 ray = SphereArray[i] * HemRadius;
-
-		//レイの方向ベクトルを描画ピクセルの法線方向の半球内に収まるように方向を変換する
-		ray = sign(dot(normal, ray)) * ray;
-
-		//周囲ピクセルの座標
-		float4 envPos;
-		//レイ方向に移動
-		envPos.xyz = pos.xyz + ray;
-		//プロジェクション座標系に変換
-		envPos = mul(float4(envPos.xyz, 1.0f), matProjection);
-		//スクリーン座標系に変換
-		envPos.xy = envPos.xy / envPos.w * float2(.5f, -.5f) + .5f;
-
-		//周囲ピクセルの法線ベクトルの取得
-		float3 envNormal = tex2D(NormalBufSamp, envPos.xy).xyz * 2.0f - 1.0f;
-			envNormal = normalize(envNormal);
-
-		//周辺ピクセルの深度の取得
-		float envDepth = tex2D(DepthBufSamp, envPos.xy).r;
-
-		//内積の角度が大きくなるほど環境光遮蔽係数が大きくなるように計算する
-		float n = dot(normal, envNormal) * .5f + .5f;
-
-		//エッジが凸になっている部分は遮蔽されないようにする
-		n += step(depth, envDepth);
-		normAO += min(n, 1.0f);
-
-		//深度値の距離が大きいほど環境光遮蔽の影響力が小さくなるようにする
-		depthAO += abs(depth - envDepth) / Zfar;
-	}
-
-	float Color = normAO / (float)SAMPLES + depthAO;
-	//陰を強調する
-	Color = pow(Color, AOPower);
-
-	OUT.rgb = Color;
-	OUT.a = 1.0f;
-
-	//OUT.rgba = 0.0f;
-	return OUT;
-}
-
-
-technique ssao
-{
-	pass P0
-	{
-		AlphaBlendEnable = false;
-		BlendOp = Add;
-		SrcBlend = SrcAlpha;
-		DestBlend = InvSrcAlpha;
-		ZEnable = False;
-
-		PixelShader = compile ps_3_0 PS_SSAO();
-	}
-
-
-}
+//
+////サンプリング数(16,12,10,8)
+//#define SAMPLES 16							//周囲ピクセルのサンプリング数
+//float HemRadius = 1.0f;						//環境光遮蔽判定用の半球の半径
+//float Zfar = 0.01f;							//環境光遮蔽判定用の深度差の最大値
+//float AOPower = 3.0f;						//陰の強度
+//
+//#if SAMPLES == 16
+//const float3 SphereArray[16] = {
+//	float3(0.53812504f, 0.18565957f, -0.43192f),
+//	float3(0.13790712f, 0.24864247f, 0.44301823f),
+//	float3(0.33715037f, 0.56794053f, -0.005789503f),
+//	float3(-0.6999805f, -0.04511441f, -0.0019965635f),
+//	float3(0.06896307f, -0.15983082f, -0.85477847f),
+//	float3(0.056099437f, 0.006954967f, -0.1843352f),
+//	float3(-0.014653638f, 0.14027752f, 0.0762037f),
+//	float3(0.010019933f, -0.1924225f, -0.034443386f),
+//	float3(-0.35775623f, -0.5301969f, -0.43581226f),
+//	float3(-0.3169221f, 0.106360726f, 0.015860917f),
+//	float3(0.010350345f, -0.58698344f, 0.0046293875f),
+//	float3(-0.08972908f, -0.49408212f, 0.3287904f),
+//	float3(0.7119986f, -0.0154690035f, -0.09183723f),
+//	float3(-0.053382345f, 0.059675813f, -0.5411899f),
+//	float3(0.035267662f, -0.063188605f, 0.54602677f),
+//	float3(-0.47761092f, 0.2847911f, -0.0271716f)
+//};
+//
+//#elif SAMPLES == 12
+//const float3 SphereArray[12] = {
+//	float3(-0.13657719, 0.30651027, 0.16118456),
+//	float3(-0.14714938, 0.33245975, -0.113095455),
+//	float3(0.030659059, 0.27887347, -0.7332209),
+//	float3(0.009913514, -0.89884496, 0.07381549),
+//	float3(0.040318526, 0.40091, 0.6847858),
+//	float3(0.22311053, -0.3039437, -0.19340435),
+//	float3(0.36235332, 0.21894878, -0.05407306),
+//	float3(-0.15198798, -0.38409665, -0.46785462),
+//	float3(-0.013492276, -0.5345803, 0.11307949),
+//	float3(-0.4972847, 0.037064247, -0.4381323),
+//	float3(-0.024175806, -0.008928787, 0.17719103),
+//	float3(0.694014, -0.122672155, 0.33098832)
+//};
+//
+//#elif SAMPLES == 10
+//const float3 SphereArray[10] = {
+//	float3(-0.010735935, 0.01647018, 0.0062425877),
+//	float3(-0.06533369, 0.3647007, -0.13746321),
+//	float3(-0.6539235, -0.016726388, -0.53000957),
+//	float3(0.40958285, 0.0052428036, -0.5591124),
+//	float3(-0.1465366, 0.09899267, 0.15571679),
+//	float3(-0.44122112, -0.5458797, 0.04912532),
+//	float3(0.03755566, -0.10961345, -0.33040273),
+//	float3(0.019100213, 0.29652783, 0.066237666),
+//	float3(0.8765323, 0.011236004, 0.28265962),
+//	float3(0.29264435, -0.40794238, 0.15964167)
+//};
+//
+//#else
+//const float3 SphereArray[8] = {
+//	float3(0.24710192, 0.6445882, 0.033550154),
+//	float3(0.00991752, -0.21947019, 0.7196721),
+//	float3(0.25109035, -0.1787317, -0.011580509),
+//	float3(-0.08781511, 0.44514698, 0.56647956),
+//	float3(-0.011737816, -0.0643377, 0.16030222),
+//	float3(0.035941467, 0.04990871, -0.46533614),
+//	float3(-0.058801126, 0.7347013, -0.25399926),
+//	float3(-0.24799341, -0.022052078, -0.13399573)
+//};
+//
+//#endif
+//
+//
+//float4 PS_SSAO(float2 Tex : TEXCOORD0) :COLOR0
+//{
+//	float4 OUT;
+//
+//	//描画ピクセルの法線ベクトルを取得
+//	float3 normal = tex2D(NormalBufSamp, Tex).rgb * 2.0f - 1.0f;
+//		normal = normalize(normal);
+//
+//	//描画ピクセルの深度の取得
+//	float depth = tex2D(DepthBufSamp, Tex).r;
+//
+//	//プロジェクション座標系の取得
+//	float4 pos;
+//	pos.xy = Tex * 2.0f - 1.0f;					//-1から1に戻す
+//	pos.y *= -1;
+//	pos.z = depth;
+//	pos.w = 1.0f;
+//
+//	//ビュー座標系での位置の取得
+//	pos = mul(pos, InvProj);
+//	pos.xyz /= pos.w;
+//
+//	float normAO = .0f;
+//	float depthAO = .0f;
+//
+//	//レイを飛ばして遮蔽されているか
+//	for (uint i = 0; i < SAMPLES; i++){
+//
+//		//レイの方向ベクトル
+//		float3 ray = SphereArray[i] * HemRadius;
+//
+//		//レイの方向ベクトルを描画ピクセルの法線方向の半球内に収まるように方向を変換する
+//		ray = sign(dot(normal, ray)) * ray;
+//
+//		//周囲ピクセルの座標
+//		float4 envPos;
+//		//レイ方向に移動
+//		envPos.xyz = pos.xyz + ray;
+//		//プロジェクション座標系に変換
+//		envPos = mul(float4(envPos.xyz, 1.0f), matProjection);
+//		//スクリーン座標系に変換
+//		envPos.xy = envPos.xy / envPos.w * float2(.5f, -.5f) + .5f;
+//
+//		//周囲ピクセルの法線ベクトルの取得
+//		float3 envNormal = tex2D(NormalBufSamp, envPos.xy).xyz * 2.0f - 1.0f;
+//			envNormal = normalize(envNormal);
+//
+//		//周辺ピクセルの深度の取得
+//		float envDepth = tex2D(DepthBufSamp, envPos.xy).r;
+//
+//		//内積の角度が大きくなるほど環境光遮蔽係数が大きくなるように計算する
+//		float n = dot(normal, envNormal) * .5f + .5f;
+//
+//		//エッジが凸になっている部分は遮蔽されないようにする
+//		n += step(depth, envDepth);
+//		normAO += min(n, 1.0f);
+//
+//		//深度値の距離が大きいほど環境光遮蔽の影響力が小さくなるようにする
+//		depthAO += abs(depth - envDepth) / Zfar;
+//	}
+//
+//	float Color = normAO / (float)SAMPLES + depthAO;
+//	//陰を強調する
+//	Color = pow(Color, AOPower);
+//
+//	OUT.rgb = Color;
+//	OUT.a = 1.0f;
+//
+//	//OUT.rgba = 0.0f;
+//	return OUT;
+//}
+//
+//
+//technique ssao
+//{
+//	pass P0
+//	{
+//		AlphaBlendEnable = false;
+//		BlendOp = Add;
+//		SrcBlend = SrcAlpha;
+//		DestBlend = InvSrcAlpha;
+//		ZEnable = False;
+//
+//		PixelShader = compile ps_3_0 PS_SSAO();
+//	}
+//
+//
+//}
