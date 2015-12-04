@@ -7,15 +7,16 @@
 //	操作デスク
 struct	CONTROL_DESC
 {
-	BYTE	moveFlag; //　上下左右に動かすフラグ
+	BYTE	moveFlag;	// 上下左右に動かすフラグ
 
-	float	mouseX; //マウス
+	float	mouseX;		// マウス
 	float	mouseY;
 
-	BYTE	motion_no;// モーションの番号
+	BYTE	motion_no;	// モーションの番号
 
 	BYTE	rendFlag;	// 破くときに使う
 	BYTE	controlFlag;// ボタン
+	BYTE	skillFlag;	// スキル発動フラグ
 };
 
 #define TYPE1

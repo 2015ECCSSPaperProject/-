@@ -47,6 +47,7 @@ struct ContorlDesc
 
 	BYTE	rendFlag;		// ”j‚­‚Æ‚«‚É‘—‚éƒtƒ‰ƒO
 	BYTE	controlFlag;	// ‚Ú‚½‚ñ
+	BYTE	skillFlag;		// •KŽE‹Z
 };
 
 //---------------------------------------------------------------------
@@ -138,5 +139,13 @@ public:
 		//m_room.desc[i].mouseX = .0f;
 		//m_room.desc[i].mouseY = .0f;
 	}
+	static void InitDesc()
+	{
+		for (int i = 0; i < PLAYER_MAX; i++)
+		{
+			m_room.desc[i].skillFlag = 0xff;
+		}
+	}
+
 
 };

@@ -13,7 +13,6 @@
 
 #include	"../Effect/Effect.h"
 
-
 /*	ベースプレイヤー	*/
 
 //****************************************************************************************************************
@@ -32,6 +31,7 @@ BasePlayer::BasePlayer():prev_pos(pos)
 	m_controlDesc.mouseY = .0f;
 	m_controlDesc.rendFlag &= 0x00000000;
 	m_controlDesc.controlFlag &= 0x00000000;
+	m_controlDesc.skillFlag = 0x0;
 
 	// エフェクト初期化
 	EffectInit();
@@ -64,11 +64,31 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	models[(int)MODEL::PLANE]	 = objs[(int)PlayerManager::CLONE_TYPE::DIE]->Clone();
 	models[(int)MODEL::GUN]		 = objs[(int)PlayerManager::CLONE_TYPE::GUN]->Clone();
 
+	skill_data[(int)SKILL::GUN].do_action = ACTION_PART::GUN;
+	skill_data[(int)SKILL::SYURIKEN].do_action = ACTION_PART::GUN;
+	skill_data[(int)SKILL::KABUTO].do_action = ACTION_PART::GUN;
+	skill_data[(int)SKILL::ZENRYOKU].do_action = ACTION_PART::GUN;
+
+	// 絶対低い順に並べる
+	// 案ロックカウント
+	skill_data[(int)SKILL::GUN].unlock_rend_count = 0;
+	skill_data[(int)SKILL::SYURIKEN].unlock_rend_count = 5;
+	skill_data[(int)SKILL::KABUTO].unlock_rend_count = 10;
+	skill_data[(int)SKILL::ZENRYOKU].unlock_rend_count = 15;
+
+	// クールタイム
+	skill_data[(int)SKILL::GUN].cool_time = 600;
+	skill_data[(int)SKILL::SYURIKEN].cool_time = 300;
+	skill_data[(int)SKILL::KABUTO].cool_time = 150;
+	skill_data[(int)SKILL::ZENRYOKU].cool_time = 600;
+
+	// 全部ロックをかける
 	for (int i = 0; i < (int)SKILL::MAX; i++)
 	{
 		skill_data[i].unlock = false;
 		skill_data[i].wait_time = 0;
 	}
+	skill_data[(int)SKILL::GUN].unlock = true; // 最初のスキルは最初から使える
 
 	select_skill = SKILL::GUN;
 
@@ -128,6 +148,13 @@ void BasePlayer::Update()
 	{
 		ExplosionAction();
 		EffectFireFlour(pos + Get_Flont(), FIRE_COLOR::BLUE, 3);
+	}
+
+	// スキルゲージ更新
+	for (int i = 0; i < (int)SKILL::MAX; i++)
+	{
+		if (!skill_data[i].unlock)break;
+		(skill_data[i].wait_time > 0) ? skill_data[i].wait_time-- : skill_data[i].wait_time &= 0x00000000;
 	}
 }
 
@@ -247,6 +274,7 @@ void BasePlayer::Action::Move::Update()
 	}
 
 	if (me->models[(int)MODEL::NORMAL]->GetFrame() == 265) se->Play("ジャンプ", me->pos);
+
 
 	Update_obj();
 }

@@ -8,7 +8,13 @@
 #include	"../../../share_data/Enum_public.h"
 #include	"../Sound/SoundManager.h"
 
-
+const int FLAG[] =
+{
+	(int)PLAYER_SKILL::GUN,
+	(int)PLAYER_SKILL::SYURIKEN,
+	(int)PLAYER_SKILL::KABUTO,
+	(int)PLAYER_SKILL::ZENRYOKU
+};
 
 //****************************************************************************************************************
 //
@@ -64,6 +70,7 @@ void MyPlayer::Control_all()
 	// 初期化
 	m_controlDesc.moveFlag &= 0x00000000;
 	m_controlDesc.controlFlag &= 0x00000000;
+	m_controlDesc.skillFlag = 0;
 
 	if (KEY_Get(KEY_UP) == 1)
 	{
@@ -100,6 +107,26 @@ void MyPlayer::Control_all()
 	if (KeyBoard(KB_SPACE))
 	{
 		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::SPACE;
+	}
+
+	// 右クリックで必殺技を発動させるか
+	if (m_controlDesc.controlFlag & (int)PLAYER_CONTROL::RIGHT_CLICK)
+	{
+		if (action_part != ACTION_PART::MOVE) return;
+		// ゲージが溜まってたら
+		if (skill_data[(int)select_skill].wait_time <= 0)
+		{
+			m_controlDesc.skillFlag |= FLAG[(int)select_skill];
+			// スキル撃ったのでクールタイム設定
+			skill_data[(int)select_skill].wait_time = skill_data[(int)select_skill].cool_time;
+		}
+		else
+		{
+			// 溜まってなかったら右クリックしてないようにする
+			m_controlDesc.skillFlag = 0;
+			//　基本的に常に0を送る形
+		}
+		//SPI_GET_WHEELSCROLL
 	}
 }
 
@@ -147,9 +174,9 @@ void MyPlayer::Update_listener()
 //*************************************************************************************************************************
 //		描画
 //*************************************************************************************************************************
-void MyPlayer::Render()
+void MyPlayer::Render(iexShader *shader, char *name)
 {
-	BasePlayer::Render();
-	//Text::Draw(32, 600, 0xff000000, "ゲージ : %d", god_gage);
+	BasePlayer::Render(shader, name);
+	Text::Draw(32, 600, 0xff00ffff, "ゲージ : %d", skill_data[(int)select_skill].wait_time);
 	//Text::Draw(32, 620, 0xff000000, "50以上かつ真ん中クリックで紙鉄砲", god_gage);
 }

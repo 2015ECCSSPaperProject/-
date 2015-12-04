@@ -25,6 +25,7 @@ public:
 
 		BYTE rendFlag;			// 破く時に送る
 		BYTE controlFlag;		// ボタン
+		BYTE skillFlag;			// スキル発動フラグ
 
 	};
 	CONTROL_DESC m_controlDesc;//　コントロール
@@ -68,10 +69,22 @@ protected:
 	struct
 	{
 		bool unlock;			// 解禁してるかどうか
+		int unlock_rend_count;	// 解禁に必要な紙を破る枚数
 		int wait_time;			// 0ならスキル撃てる 1以上ならデクリメント
+		int cool_time;			// 使用後に待つ時間(固定値)
+		ACTION_PART do_action;	// 発動アクション
 	}skill_data[(int)SKILL::MAX];
 
 	SKILL select_skill;
+
+	void Check_unlock(int rend_count)
+	{
+		for (int i = (int)ACTION_PART::MAX - 1; i >= 0; i--)
+		{
+			if (skill_data[i].unlock) break;
+			if (rend_count >= skill_data[i].unlock_rend_count) skill_data[i].unlock = true;
+		}
+	}
 
 	//===============================================
 	//	その他

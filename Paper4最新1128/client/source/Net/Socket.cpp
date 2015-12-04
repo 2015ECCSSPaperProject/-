@@ -258,6 +258,7 @@ void SocketManager::UpdateUser()	/* プレイヤー更新 */
 		BYTE motion_no;	// モーション番号
 		BYTE	rendFlag;	// 破くときに送る
 		BYTE	controlFlag;
+		BYTE	skillFlag;	// 必殺！
 	}send;
 
 	//　※ベースプレイヤーのコントロールデスクを持ってくる
@@ -272,6 +273,7 @@ void SocketManager::UpdateUser()	/* プレイヤー更新 */
 	send.motion_no = desc.motion_no;
 	send.rendFlag = desc.rendFlag;
 	send.controlFlag = desc.controlFlag;
+	send.skillFlag = desc.skillFlag;
 
 	m_pClient->Send(&send, sizeof(send)); //自分の操作した情報を渡す
 

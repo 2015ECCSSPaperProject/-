@@ -55,6 +55,9 @@ SceneMainServer::SceneMainServer()
 	// ポスター
 	//PosterInit();
 
+	// デスク情報初期化
+	ServerManager::InitDesc();
+
 	//	スレッド開始
 	m_pThread = 0;
 	isRun = true;

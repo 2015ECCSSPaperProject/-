@@ -17,6 +17,7 @@
 
 const float CAN_TARGET_DIST = 90.0f;
 
+
 //****************************************************************************************************************
 //
 //				 初	期	化	と	解	放	
@@ -169,15 +170,18 @@ void BasePlayer::Update()
 	// ぼたん
 	controlDesc.controlFlag = ServerManager::GetDesc(m_id).controlFlag;
 
+	// 必殺技No
+	controlDesc.skillFlag = ServerManager::GetDesc(m_id).skillFlag;
+
 	//	コントローラーに操作パラメータをパス
 	action[(int)action_part]->Update(controlDesc);
 
 	// スキルゲージ更新
-	for (int i = 0; i < (int)SKILL::MAX; i++)
-	{
-		if (!skill_data[i].unlock)break;
-		(skill_data[i].wait_time > 0) ? skill_data[i].wait_time-- : skill_data[i].wait_time &= 0x00000000;
-	}
+	//for (int i = 0; i < (int)SKILL::MAX; i++)
+	//{
+	//	if (!skill_data[i].unlock)break;
+	//	(skill_data[i].wait_time > 0) ? skill_data[i].wait_time-- : skill_data[i].wait_time &= 0x00000000;
+	//}
 
 	stage->Collision(pos, &move, 5, 2);
 	if (stage->Collision_rand(pos, &move, 0))
@@ -345,16 +349,25 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 
 	//===========================================================================
 	//	右クリック処理
-	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::RIGHT_CLICK)
+	if (_ControlDesc.skillFlag != 0)
 	{
-		if (me->skill_data[(int)me->select_skill].unlock && me->skill_data[(int)me->select_skill].wait_time == 0)
-		{
-			// スキルアクション発動
-			me->Change_action(me->skill_data[(int)me->select_skill].do_action);
+		// ここを通る=必殺技発動
 
-			// クールタイム設定
-			me->skill_data[(int)me->select_skill].wait_time = me->skill_data[(int)me->select_skill].cool_time;
-		}
+		// スキルアクション発動!!!
+		if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::GUN) me->select_skill = SKILL::GUN;
+		else if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::KABUTO) me->select_skill = SKILL::KABUTO;
+		else if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::SYURIKEN) me->select_skill = SKILL::SYURIKEN;
+		if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::ZENRYOKU) me->select_skill = SKILL::ZENRYOKU;
+		me->Change_action(me->skill_data[(int)me->select_skill].do_action);
+
+		//if (me->skill_data[(int)me->select_skill].unlock && me->skill_data[(int)me->select_skill].wait_time == 0)
+		//{
+		//	// スキルアクション発動
+		//	me->Change_action(me->skill_data[(int)me->select_skill].do_action);
+
+		//	// クールタイム設定
+		//	me->skill_data[(int)me->select_skill].wait_time = me->skill_data[(int)me->select_skill].cool_time;
+		//}
 	}
 
 	//===========================================================================
