@@ -38,6 +38,7 @@ public:
 	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, PASTE, REND, FREEZE, DIE, RESPAWN, PLANE, GUN, MANHOLE, THROUGH, MAX };
 	enum class DO_FLAG{ NONE, ATTACK, PASTE, REND, MAX };
 	enum class MODEL{ NORMAL, DIE, PLANE, GUN, MAX };
+	enum class SKILL{ GUN, SYURIKEN, KABUTO, ZENRYOKU, MAX };
 
 protected:
 	//===============================================
@@ -59,6 +60,18 @@ protected:
 
 	int				motion_no;
 	int				god_gage;
+
+
+	//===============================================
+	//	スキルゲージ
+	//===============================================
+	struct
+	{
+		bool unlock;			// 解禁してるかどうか
+		int wait_time;			// 0ならスキル撃てる 1以上ならデクリメント
+	}skill_data[(int)SKILL::MAX];
+
+	SKILL select_skill;
 
 	//===============================================
 	//	その他

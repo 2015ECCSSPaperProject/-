@@ -31,6 +31,7 @@ public:
 	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, PASTE, REND, FREEZE, DIE, RESPAWN, PLANE, GUN, MANHOLE, THROUGH, MAX };
 	enum class DO_FLAG{ NONE, ATTACK, PASTE, REND, MAX };
 	enum class MODEL{ NORMAL, DIE, PLANE, GUN, MAX };
+	enum class SKILL{ GUN, SYURIKEN, KABUTO, ZENRYOKU, MAX };
 
 protected:
 	//===============================================
@@ -54,8 +55,31 @@ protected:
 	float			jump_pow;
 	bool			invincible;
 
-	int				god_gage;	// 神ゲージ
+	int				god_gage;	// 神ゲージ(これを紙を破った枚数にする)
 
+
+	//===============================================
+	//	スキルゲージ
+	//===============================================
+	struct
+	{
+		bool unlock;			// 解禁してるかどうか
+		int unlock_rend_count;	// 解禁に必要な紙を破る枚数
+		int wait_time;			// 0ならスキル撃てる 1以上ならデクリメント
+		int cool_time;			// 使用後に待つ時間(固定値)
+		ACTION_PART do_action;	// 発動アクション
+	}skill_data[(int)SKILL::MAX];
+
+	SKILL select_skill;
+
+	void Check_unlock(int rend_count)
+	{
+		for (int i = (int)ACTION_PART::MAX - 1; i >= 0; i--)
+		{
+			if (skill_data[i].unlock) break;
+			if (rend_count >= skill_data[i].unlock_rend_count) skill_data[i].unlock = true;
+		}
+	}
 
 	//===============================================
 	//	その他

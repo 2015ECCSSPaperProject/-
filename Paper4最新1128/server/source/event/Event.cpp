@@ -29,7 +29,7 @@ void Event::Set_telop_id(int in)
 
 bool Event::Update()
 {
-	if (start_time <= timer->Get_delta())
+	if ((int)start_time <= timer->Get_delta())
 	{
 		Start();
 		if (telop_id >= 0)

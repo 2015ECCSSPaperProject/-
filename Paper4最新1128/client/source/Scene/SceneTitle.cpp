@@ -169,10 +169,10 @@ void SceneTitle::Render()
 	vec.Normalize();
 	float dot = Vector3Dot(vec, aaa_vec);
 
-	aaa->Render(aaa_pos.x, aaa_pos.y, 32, 32, 0, 0, 32, 32);
+	aaa->Render((int)aaa_pos.x, (int)aaa_pos.y, 32, 32, 0, 0, 32, 32);
 	if (dot <= 0.3f)
 	{
-		bbb->Render(bbb_pos.x, bbb_pos.y, 128, 128, 0, 0, 128, 128);
+		bbb->Render((int)bbb_pos.x, (int)bbb_pos.y, 128, 128, 0, 0, 128, 128);
 	}
 	
 	

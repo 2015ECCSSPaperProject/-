@@ -48,6 +48,14 @@ void BasePlayer::Init_pos()
 	// モーション番号
 	motion_no = 0;
 
+	for (int i = 0; i < (int)SKILL::MAX; i++)
+	{
+		skill_data[i].unlock = false;
+		skill_data[i].wait_time = 0;
+	}
+
+	select_skill = SKILL::GUN;
+
 	if (action[0] != nullptr)
 	{
 		Change_action(ACTION_PART::MOVE);	// 最初は移動状態
@@ -70,6 +78,31 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	invincible = false;
 	god_gage = 0;
 
+
+	skill_data[(int)SKILL::GUN].do_action = ACTION_PART::GUN;
+	skill_data[(int)SKILL::SYURIKEN].do_action = ACTION_PART::GUN;
+	skill_data[(int)SKILL::KABUTO].do_action = ACTION_PART::GUN;
+	skill_data[(int)SKILL::ZENRYOKU].do_action = ACTION_PART::GUN;
+
+	// 絶対低い順に並べる
+	skill_data[(int)SKILL::GUN].unlock_rend_count = 0;
+	skill_data[(int)SKILL::SYURIKEN].unlock_rend_count = 5;
+	skill_data[(int)SKILL::KABUTO].unlock_rend_count = 10;
+	skill_data[(int)SKILL::ZENRYOKU].unlock_rend_count = 15;
+
+	skill_data[(int)SKILL::GUN].cool_time = 600;
+	skill_data[(int)SKILL::SYURIKEN].cool_time = 300;
+	skill_data[(int)SKILL::KABUTO].cool_time = 150;
+	skill_data[(int)SKILL::ZENRYOKU].cool_time = 600;
+
+	for (int i = 0; i < (int)SKILL::MAX; i++)
+	{
+		skill_data[i].unlock = false;
+		skill_data[i].wait_time = 0;
+	}
+
+	select_skill = SKILL::GUN;
+
 	// 3D実体
 	models[(int)MODEL::NORMAL] = objs[(int)PlayerManager::CLONE_TYPE::NORMAL]->Clone();
 	models[(int)MODEL::DIE] = objs[(int)PlayerManager::CLONE_TYPE::DIE]->Clone();
@@ -77,7 +110,6 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	models[(int)MODEL::GUN] = objs[(int)PlayerManager::CLONE_TYPE::GUN]->Clone();
 
 	mynumber = m_id;
-
 
 	// 行動状態初期化
 	action[(int)ACTION_PART::MOVE] = new BasePlayer::Action::Move(this);
@@ -92,7 +124,6 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	action[(int)ACTION_PART::GUN] = new BasePlayer::Action::Gun(this);
 	action[(int)ACTION_PART::MANHOLE] = new BasePlayer::Action::Manhole(this);
 	action[(int)ACTION_PART::THROUGH] = new BasePlayer::Action::Through(this);
-
 
 	Change_action(ACTION_PART::MOVE);	// 最初は移動状態
 
@@ -139,10 +170,14 @@ void BasePlayer::Update()
 	controlDesc.controlFlag = ServerManager::GetDesc(m_id).controlFlag;
 
 	//	コントローラーに操作パラメータをパス
-	//Control_Update(controlDesc);//←デスクセット
 	action[(int)action_part]->Update(controlDesc);
 
-	
+	// スキルゲージ更新
+	for (int i = 0; i < (int)SKILL::MAX; i++)
+	{
+		if (!skill_data[i].unlock)break;
+		(skill_data[i].wait_time > 0) ? skill_data[i].wait_time-- : skill_data[i].wait_time &= 0x00000000;
+	}
 
 	stage->Collision(pos, &move, 5, 2);
 	if (stage->Collision_rand(pos, &move, 0))
@@ -312,32 +347,30 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	//	右クリック処理
 	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::RIGHT_CLICK)
 	{
-		//me->poster_num = paper_obj_mng->poster->Can_do(me, me->mynumber);
+		if (me->skill_data[(int)me->select_skill].unlock && me->skill_data[(int)me->select_skill].wait_time == 0)
+		{
+			// スキルアクション発動
+			me->Change_action(me->skill_data[(int)me->select_skill].do_action);
 
-		//// ポスターがあった
-		//if (me->poster_num != -1)
-		//{
-		//	if (paper_obj_mng->poster->Can_paste(me->mynumber, me->poster_num))
-		//	{
-		//		me->Change_action(ACTION_PART::PASTE);
-		//		return;
-		//	}
-		//}
+			// クールタイム設定
+			me->skill_data[(int)me->select_skill].wait_time = me->skill_data[(int)me->select_skill].cool_time;
+		}
 	}
+
 	//===========================================================================
 	//	真ん中クリック処理
 	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::ATTACK_BUTTON)
 	{
-		// 神ゲージ50消費
-		if (me->god_gage >= 50)
-		{
-			me->god_gage -= 50;
-			me->Change_action(ACTION_PART::GUN);
-		}
-		else
-		{
-			me->Change_action(ACTION_PART::ATTACK);
-		}
+		//// 神ゲージ50消費
+		//if (me->god_gage >= 50)
+		//{
+		//	me->god_gage -= 50;
+		//	me->Change_action(ACTION_PART::GUN);
+		//}
+		//else
+		//{
+		//	me->Change_action(ACTION_PART::ATTACK);
+		//}
 	}
 	//===========================================================================
 	//	Cトグル処理
@@ -482,17 +515,7 @@ void BasePlayer::Action::MoveTarget::Update(const CONTROL_DESC &_ControlDesc)
 	//	右クリック処理
 	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::RIGHT_CLICK)
 	{
-		//me->poster_num = paper_obj_mng->poster->Can_do(me, me->mynumber);
 
-		//// ポスターがあった
-		//if (me->poster_num != -1)
-		//{
-		//	if (paper_obj_mng->poster->Can_paste(me->mynumber, me->poster_num))
-		//	{
-		//		me->Change_action(ACTION_PART::PASTE);
-		//		return;
-		//	}
-		//}
 	}
 
 	//===========================================================================
@@ -666,7 +689,7 @@ void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
 			// 破く処理
 			paper_obj_mng->Rend(me->poster_num);
 			score->Add(1, me->mynumber);	// 仮で1点
-			if ((me->god_gage += 5) > 100)me->god_gage = 100;	// 神ゲージUP
+			me->Check_unlock(++me->god_gage);	// 神ゲージUP
 		}
 	}
 }

@@ -64,6 +64,14 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	models[(int)MODEL::PLANE]	 = objs[(int)PlayerManager::CLONE_TYPE::DIE]->Clone();
 	models[(int)MODEL::GUN]		 = objs[(int)PlayerManager::CLONE_TYPE::GUN]->Clone();
 
+	for (int i = 0; i < (int)SKILL::MAX; i++)
+	{
+		skill_data[i].unlock = false;
+		skill_data[i].wait_time = 0;
+	}
+
+	select_skill = SKILL::GUN;
+
 
 	// s“®ó‘Ô‰Šú‰»
 	action[(int)ACTION_PART::MOVE]		 = new BasePlayer::Action::Move(this);
@@ -122,7 +130,6 @@ void BasePlayer::Update()
 		EffectFireFlour(pos + Get_Flont(), FIRE_COLOR::BLUE, 3);
 	}
 }
-
 
 
 //*************************************************************************************************************************
