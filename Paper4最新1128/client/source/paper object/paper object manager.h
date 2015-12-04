@@ -52,6 +52,10 @@ protected:
 	std::vector<Paper_obj*> obj_array;
 
 	void Load();
+
+
+	// –îˆó
+	iex2DObj *mark;
 };
 
 extern Paper_obj_mng *paper_obj_mng;

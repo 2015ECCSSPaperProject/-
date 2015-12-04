@@ -11,5 +11,5 @@ public:
 	int Get_limit_time(){ return limit_time; }
 };
 
-#define LIMIT_TIME 60
+#define LIMIT_TIME 120
 extern Timer *timer;

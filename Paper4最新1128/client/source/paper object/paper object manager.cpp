@@ -15,11 +15,13 @@ Paper_obj_mng::~Paper_obj_mng()
 {
 	delete[] original_model;
 	for (unsigned i = 0; i < obj_array.size(); i++) delete obj_array[i];
+	SAFE_DELETE(mark);
 }
 
 void Paper_obj_mng::Initialize()
 {
 	Load();
+	mark = new iex2DObj("DATA/Camera/mark.png");
 }
 
 void Paper_obj_mng::Release()
@@ -27,6 +29,7 @@ void Paper_obj_mng::Release()
 	delete[] original_model; original_model = nullptr;
 	for (unsigned i = 0; i < obj_array.size(); i++) delete obj_array[i];
 	obj_array.clear();
+	//SAFE_DELETE(mark);
 }
 
 void Paper_obj_mng::Update()
@@ -39,14 +42,15 @@ void Paper_obj_mng::Update()
 
 void Paper_obj_mng::Render(BasePlayer *player, iexShader *shader, char *name)
 {
+	int i = 0;
 	if (shader)
 	{
 		for (auto it : obj_array)
 		{
 			it->Render(shader, name);
-
-			bool isTarget = (player->Get_action() == BasePlayer::ACTION_PART::REND && player->Get_poster_num());
-			//it->Render_mark()
+			bool isTarget = (player->Get_action() == BasePlayer::ACTION_PART::REND && player->Get_poster_num() == i);
+			if(mark)it->Render_mark(mark, isTarget);
+			i++;
 		}
 	}
 	else
@@ -54,6 +58,9 @@ void Paper_obj_mng::Render(BasePlayer *player, iexShader *shader, char *name)
 		for (auto it : obj_array)
 		{
 			it->Render();
+			bool isTarget = (player->Get_action() == BasePlayer::ACTION_PART::REND && player->Get_poster_num() == i);
+			if (mark)it->Render_mark(mark, isTarget);
+			i++;
 		}
 	}
 }

@@ -359,6 +359,9 @@ public:
 	int Get_poster_num(){ return poster_num; }
 	void Set_poster_num(int no){ poster_num = no; }
 
+
+	// ƒ‚ƒfƒ‹
+	iex3DObj* Get_Model(){ return models[(int)model_part]; }
 };
 
 //extern BasePlayer* player[PLAYER_MAX];

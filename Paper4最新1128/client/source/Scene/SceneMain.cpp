@@ -148,7 +148,7 @@ bool SceneMain::Initialize()
 	deferredFlag = true;// flag
 	DebugTex = nullptr;
 	LightVec = Vector3(1.0f, -1.0f, 1.0f);
-	exposure = -9.0f;
+	exposure = -8.6f;
 	FarShadowFlag = 0;
 
 
@@ -170,6 +170,7 @@ SceneMain::~SceneMain()
 
 	SAFE_DELETE(player_mng);
 
+	// 今だけコメントアウト！あとで直す
 	SAFE_DELETE(paper_obj_mng);
 	SAFE_DELETE(ui);
 	SAFE_DELETE(timer);
@@ -235,12 +236,15 @@ void SceneMain::Update()
 	ui->Update();
 	// シェーダーのデバッグ
 	DebugShaderCtrl();
+	particle->Update();
 
 	(this->*Mode_funk[mode])();
 }
 
 void SceneMain::Start()
 {
+	//　プレイヤー
+	player_mng->Update();
 	// カメラ
 	camera->Update();
 
@@ -248,8 +252,6 @@ void SceneMain::Start()
 }
 void SceneMain::Main()
 {
-
-
 	//　プレイヤー
 	player_mng->Update();
 
@@ -285,14 +287,15 @@ void SceneMain::End()
 	}
 }
 
+static float ANGLE = 2.5f;
 // シェーダーのデバッグに色々
 void SceneMain::DebugShaderCtrl()
 {
 
-	static float ANGLE = 2.25f;
+	
 	if ((GetKeyState('U') & 0x80))ANGLE += 0.05f;
 	if ((GetKeyState('I') & 0x80))ANGLE -= 0.05f;
-	LightVec = Vector3(sinf(ANGLE), -0.90f, cosf(ANGLE));
+	LightVec = Vector3(sinf(ANGLE), -0.98f, cosf(ANGLE));
 	LightVec.Normalize();
 
 
@@ -326,7 +329,6 @@ void SceneMain::Render()
 		DeferredManager.Bigin();
 		stage->Render(shaderD, "G_Buffer");
 		sky->Render(shaderD, "G_Buffer");
-
 		player_mng->Render(shaderD, "G_Buffer");
 
 		//Vector3 flont;
@@ -353,6 +355,7 @@ void SceneMain::Render()
 		DeferredManager.ForwardBigin();
 		DeferredManager.GetTex(SURFACE_NAME::SCREEN)->Render(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, shaderD, "ToneMap");
 		player_mng->EffectRender();
+		particle->Render();
 		DeferredManager.ForwardEnd();
 
 		// グロウ
@@ -377,7 +380,7 @@ void SceneMain::Render()
 		BlurFilter::Render();
 
 		// サーフェイス描画
-		SurfaceRender();
+		//SurfaceRender();
 	}
 	else
 	{
@@ -400,8 +403,10 @@ void SceneMain::Render()
 
 	}
 
-		Text::Draw(32, 320, 0xff00ffff, "受信時間%.2f", bench.Get_time());
+		Text::Draw(32, 60, 0xff00ffff, "受信時間%.2f", bench.Get_time());
 
+		//Text::Draw(32, 360, 0xff00ffff, "x%.2f", ANGLE);
+		//Text::Draw(32, 390, 0xff00ffff, "x%.2f", bench.Get_time());
 		//マウスの場所
 		//Text::Draw(10, 60, 0xff000000, "マウスのXの動き%.2f", player_mng->Get_player(SOCKET_MANAGER->GetID())->m_controlDesc.mouseX);
 		//Text::Draw(10, 80, 0xff000000, "マウスのYの動き%.2f", player_mng->Get_player(SOCKET_MANAGER->GetID())->m_controlDesc.mouseY);
@@ -423,12 +428,22 @@ void SceneMain::Render()
 void SceneMain::RenderShadow()
 {
 	// 影用プロジェクションの更新
-	DeferredManager.CreateShadowMatrix(LightVec, player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_pos(), player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_Flont() * 90, 200);
+	DeferredManager.CreateShadowMatrix(LightVec, player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_pos(), player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_Flont() * 100, 300);
 	// near
 	DeferredManager.ShadowBegin();
 	
 		stage->Render(shaderD, "ShadowBuf");
+
+		Vector3 flont;
+		flont.x = matView._13;
+		flont.y = matView._23;
+		flont.z = matView._33;
+		Vector3 savePos = player_mng->Get_player(0)->Get_pos();
+		player_mng->Get_player(0)->Set_pos(player_mng->Get_player(0)->Get_pos() + (flont * 35));
+		player_mng->Get_player(0)->Get_Model()->Update();
 		player_mng->Render(shaderD, "ShadowBuf");
+		player_mng->Get_player(0)->Set_pos(savePos);
+		player_mng->Get_player(0)->Get_Model()->Update();
 
 	DeferredManager.ShadowEnd();// end
 	

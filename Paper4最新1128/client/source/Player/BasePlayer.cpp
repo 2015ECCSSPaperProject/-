@@ -11,6 +11,9 @@
 
 #include	"../blur/blur.h"
 
+#include	"../Effect/Effect.h"
+
+
 /*	ベースプレイヤー	*/
 
 //****************************************************************************************************************
@@ -113,9 +116,10 @@ void BasePlayer::Update()
 	// エフェクト更新
 	EffectUpdate();
 
-	if (KEY_Get(KEY_B)==3)
+	if (KEY(KEY_B)==3)
 	{
 		ExplosionAction();
+		EffectFireFlour(pos + Get_Flont(), FIRE_COLOR::BLUE, 3);
 	}
 }
 
@@ -212,6 +216,7 @@ void BasePlayer::Action::Move::Initialize()
 	me->Set_motion(1);
 
 	me->model_part = MODEL::NORMAL;
+
 }
 
 void BasePlayer::Action::Move::Update()
@@ -616,6 +621,8 @@ void BasePlayer::Action::Gun::Update()
 	{
 		//se->Play("紙鉄砲");
 		me->ExplosionAction();
+		EffectFireFlour(me->pos+me->Get_Flont(), FIRE_COLOR::BLUE, 3);
+
 	}
 	Update_obj();
 }

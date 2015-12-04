@@ -9,11 +9,25 @@
 
 using namespace std;
 
+iex2DObj* aaa;
+Vector3 aaa_pos;
+Vector3 aaa_vec;
+
+iex2DObj* bbb;
+Vector3 bbb_pos;
+
 //******************************************************************
 //		初期化・解放
 //******************************************************************
 bool SceneTitle::Initialize()
 {
+	aaa = new iex2DObj("DATA/USB.png");
+	aaa_pos = Vector3(600,600,0);
+	aaa_vec = Vector3(0, 1, 0);
+
+	bbb = new iex2DObj("DATA/もなど.png");
+	bbb_pos = Vector3(200,200,0);
+
 
 	//	環境設定
 	iexLight::SetAmbient(0x808080);
@@ -132,6 +146,38 @@ void SceneTitle::Render()
 	start_button.obj->Update();
 	start_button.obj->Render();
 
+	if (KEY(KEY_LEFT))
+	{
+		aaa_pos.x--;
+	}
+	if (KEY(KEY_RIGHT))
+	{
+		aaa_pos.x++;
+	}
+	if (KEY(KEY_UP))
+	{
+		aaa_pos.y--;
+	}
+	if (KEY(KEY_DOWN))
+	{
+		aaa_pos.y++;
+	}
+
+	// 内積するで
+	Vector3 vec;
+	vec = bbb_pos - aaa_pos;
+	vec.Normalize();
+	float dot = Vector3Dot(vec, aaa_vec);
+
+	aaa->Render(aaa_pos.x, aaa_pos.y, 32, 32, 0, 0, 32, 32);
+	if (dot <= 0.3f)
+	{
+		bbb->Render(bbb_pos.x, bbb_pos.y, 128, 128, 0, 0, 128, 128);
+	}
+	
+	
+	Text::Draw(100, 10, 0xffff00ff, "dot%.2f", dot);
+	
 	//images[IMAGE::CURSOR]->Render(mouse.pos_x, mouse.pos_y, 64, 64, 0, 64, 64, 64);
 
 	//ナンバーエフェクト

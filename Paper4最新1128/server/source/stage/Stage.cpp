@@ -31,8 +31,8 @@ void Stage::Initialize()
 	area->Push("./DATA/MATI/area/test area 1.IMO");
 	area->Push("./DATA/MATI/area/test area 2.IMO");
 
-	event_list->push(new Event_open_area(10 * 1000, area, 0));
-	event_list->push(new Event_open_area(20 * 1000, area, 1));
+	event_list->push(new Event_open_area(30 * 1000, area, 0));
+	event_list->push(new Event_open_area(60 * 1000, area, 1));
 }
 
 void Stage::Release()

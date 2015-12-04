@@ -41,8 +41,20 @@ const Vector3 &Paper_obj::Get_pos()
 
 void Paper_obj::Render_mark(iex2DObj *obj, bool target)
 {
+	if (number == PLAYER_MAX)
+		return;
+
 	float tu[2];
-	(target) ? tu[0] = 0.5f, tu[1] = 1 : tu[0] = 0, tu[1] = 0.5f;
+	if (target)
+	{
+		tu[0] = 1.0f;
+		tu[1] = 0.5f;
+	}
+	else
+	{
+		tu[0] = 0;
+		tu[1] = 0.5f;
+	}
 	float tv[2] = { 0, 1 };
-	Billboard::Draw3D(position + Vector3(0, 5, 0), obj, 256, 256, tu, tv, RS_COPY);
+	Billboard::Draw3D(position + Vector3(0, 22, 0), obj, 4, 4, tu, tv, RS_COPY);
 }

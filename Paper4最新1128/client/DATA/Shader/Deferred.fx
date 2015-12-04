@@ -823,7 +823,7 @@ float4x4 ShadowProjectionL;
 float4x4 InvViewProj;			//　プロジェクション->ワールド変換行列
 
 float AdjustValue = -0.002f;	//　何処までを影と判断するのか　下げると綺麗に影が付くがジャギーが目立つ　上げるとその逆
-float Shadow = .6f;				//　影の濃さ
+float Shadow = .8f;				//　影の濃さ
 float DistAlpha = .2f;			//　距離に応じて影のαを下げる
 
 float ShadowRange = 0.0f;

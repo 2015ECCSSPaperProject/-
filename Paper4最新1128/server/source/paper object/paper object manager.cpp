@@ -231,7 +231,7 @@ void Paper_obj_mng::Load()
 			this->number_of_objects++;
 
 			ev = new Event_advent_paper_obj(p);
-			ev->Set_time(0, 40, 0);
+			ev->Set_time(0, 100, 0);
 			ev->Set_telop_id(1);
 			event_list->push(ev);
 		}
