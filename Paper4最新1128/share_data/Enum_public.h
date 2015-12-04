@@ -12,11 +12,21 @@ enum class PLAYER_IMPUT
 enum class PLAYER_CONTROL
 {
 	LEFT_CLICK = 0x1,
-	RIGHT_CLICK = 0x2,
-	SPACE = 0x4,
-	TRG_C = 0x8,	// CÉLÅ[âüÇµÇΩèuä‘
-	ATTACK_BUTTON = 0x10
+	RIGHT_CLICK = 0x1 << 1,
+	SPACE = 0x1 << 2,
+	TRG_C = 0x1 << 3,	// CÉLÅ[âüÇµÇΩèuä‘
+	ATTACK_BUTTON = 0x1 << 4
 };
+
+// ïKéEãZ
+enum class PLAYER_SKILL
+{
+	GUN = 0x1,
+	SYURIKEN = 0x1 << 1,
+	KABUTO = 0x1 << 2,
+	ZENRYOKU = 0x1 << 3
+};
+
 
 enum class REND_FLAG
 {
