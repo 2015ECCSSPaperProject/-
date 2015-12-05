@@ -32,4 +32,11 @@ public:
 	void Rend();
 
 	int Get_animation_frame();
+
+	//**************************************************
+
+	unsigned int Get_send_data_size();
+
+	void Get_send_data( char *out );
+
 };

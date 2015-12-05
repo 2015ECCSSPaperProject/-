@@ -83,3 +83,23 @@ int Test_box::Get_animation_frame()
 {
 	return 0;
 }
+
+//**************************************************
+
+struct Test_box_send_data
+{
+	BYTE number;
+	int anim_no;
+};
+
+unsigned int Test_box::Get_send_data_size()
+{
+	return sizeof( Test_box_send_data );
+}
+
+void Test_box::Get_send_data( char *out )
+{
+	Test_box_send_data *data = ( Test_box_send_data* ) out;
+	data->number = number;
+	data->anim_no = model->GetFrame();
+}

@@ -282,3 +282,23 @@ void Poster::Change_user(int number)
 	this->number = number;
 	Change_mode(MODE::WAITE);
 }
+
+//**************************************************
+
+struct Poster_send_data
+{
+	BYTE number;
+	int anim_no;
+};
+
+unsigned int Poster::Get_send_data_size()
+{
+	return sizeof( Poster_send_data );
+}
+
+void Poster::Get_send_data( char *out )
+{
+	Poster_send_data *data = ( Poster_send_data* ) out;
+	data->number = number;
+	data->anim_no = model->GetFrame();
+}

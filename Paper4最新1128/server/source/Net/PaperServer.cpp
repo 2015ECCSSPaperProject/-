@@ -375,29 +375,34 @@ void ServerManager::UpdateUser(char* data, int client)
 void ServerManager::UpdateStage(int client)
 {
 	// 紙
-	class Paper_obj_sender
-	{
-	public:
-		BYTE number;
-		int anim_no;
 
-		static int Create_data(Paper_obj_sender **out)
-		{
-			unsigned int num = paper_obj_mng->Get_numof();
-			*out = new Paper_obj_sender[num];
+	//class Paper_obj_sender
+	//{
+	//public:
+	//	BYTE number;
+	//	int anim_no;
+	//
+	//	static int Create_data(Paper_obj_sender **out)
+	//	{
+	//		unsigned int num = paper_obj_mng->Get_numof();
+	//		*out = new Paper_obj_sender[num];
+	//
+	//		for (unsigned i = 0; i < num; i++)
+	//		{
+	//			(*out)[i].number = paper_obj_mng->Get_number(i);
+	//			(*out)[i].anim_no = paper_obj_mng->Get_animation_frame(i);
+	//		}
+	//
+	//		return num;
+	//	}
+	//};
+	//Paper_obj_sender *paper_obj_data(nullptr);
+	//unsigned int num_paper_obj = Paper_obj_sender::Create_data(&paper_obj_data);
+	//unsigned int paper_obj_size = sizeof(Paper_obj_sender) * num_paper_obj;
 
-			for (unsigned i = 0; i < num; i++)
-			{
-				(*out)[i].number = paper_obj_mng->Get_number(i);
-				(*out)[i].anim_no = paper_obj_mng->Get_animation_frame(i);
-			}
-
-			return num;
-		}
-	};
-	Paper_obj_sender *paper_obj_data(nullptr);
-	unsigned int num_paper_obj = Paper_obj_sender::Create_data(&paper_obj_data);
-	unsigned int paper_obj_size = sizeof(Paper_obj_sender) * num_paper_obj;
+	unsigned int paper_obj_size = paper_obj_mng->Get_send_data_size();
+	char *paper_obj_data = new char[paper_obj_size]{};
+	paper_obj_mng->Get_send_data( paper_obj_data );
 
 	// エリア
 	class Area_sender
@@ -448,7 +453,6 @@ void ServerManager::UpdateStage(int client)
 	// テロップ
 	int telop_id = score->Get_telopID();
 	unsigned int telop_size = sizeof(int);
-
 
 	// まとめて送信
 	unsigned int size = paper_obj_size + area_size + telop_size;

@@ -98,4 +98,11 @@ public:
 	void Change_user(int number);
 
 	int Get_animation_frame(){ return model->GetFrame(); }
+
+	//**************************************************
+
+	unsigned int Get_send_data_size();
+
+	void Get_send_data( char *out );
+
 };

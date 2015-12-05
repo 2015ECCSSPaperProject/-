@@ -170,6 +170,29 @@ float Paper_obj_mng::Get_angle(int index)
 
 //**************************************************
 
+unsigned int Paper_obj_mng::Get_send_data_size()
+{
+	unsigned int out( 0U );
+
+	for( auto it : obj_array )
+	{
+		out += it->Get_send_data_size();
+	}
+
+	return out;
+}
+
+void Paper_obj_mng::Get_send_data( char *out )
+{
+	for( auto it : obj_array )
+	{
+		it->Get_send_data( out );
+		out += it->Get_send_data_size();
+	}
+}
+
+//**************************************************
+
 #include "poster/Poster.h"
 #include "test_box/test box.h"
 #include "../fstream/fstream_paper.h"

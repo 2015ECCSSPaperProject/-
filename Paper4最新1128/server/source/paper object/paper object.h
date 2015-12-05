@@ -47,6 +47,12 @@ public:
 
 	void Set_pose(const float angle, const Vector3& pos);
 
+	//**************************************************
+
+	virtual unsigned int Get_send_data_size() = 0;
+
+	virtual void Get_send_data( char *out ) = 0;
+
 protected:
 	int number;
 
