@@ -45,6 +45,12 @@ public:
 
 	const Vector3& Get_pos(int index);
 
+	//**************************************************
+
+	unsigned int Get_receive_data_size();
+
+	void Set_receive_data( char *in );
+
 protected:
 	iex3DObj *original_model; // クローン関数使う用
 	int number_of_objects;

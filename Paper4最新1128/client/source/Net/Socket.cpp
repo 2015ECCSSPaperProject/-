@@ -335,24 +335,7 @@ void SocketManager::UpdateStage()
 {
 	BYTE comcom = STAGE_DATA;
 	m_pClient->Send(&comcom, sizeof(comcom)); //Ž©•ª‚Ì‘€ì‚µ‚½î•ñ‚ð“n‚·
-
-	class Paper_obj_receiver
-	{
-	public:
-		BYTE user_number;
-		int anim_no;
-
-		static void Fetch_data(Paper_obj_receiver *in)
-		{
-			unsigned int num_Paper_obj = paper_obj_mng->Get_numof();
-			for (unsigned int i = 0; i < num_Paper_obj; i++)
-			{
-				paper_obj_mng->Set_user(i, in[i].user_number);
-				paper_obj_mng->Set_animframe(i, in[i].anim_no);
-			}
-		}
-	};
-
+	
 	class Area_receiver
 	{
 	public:
@@ -371,7 +354,7 @@ void SocketManager::UpdateStage()
 				bool is_work_8 : 1;
 			};
 		};
-
+	
 		static void Fetch_data(Area_receiver *in)
 		{
 			unsigned int num = stage->Area_Get_numof();
@@ -383,7 +366,7 @@ void SocketManager::UpdateStage()
 					unsigned int true_num = i * 8 + eight;
 					if (true_num >= num)
 						break;
-
+	
 					stage->Area_Is_work(true_num, (0x01) & (in[i].is_work >> eight));
 				}
 			}
@@ -391,8 +374,7 @@ void SocketManager::UpdateStage()
 	};
 
 	// ƒTƒCƒYŒvŽZ
-	unsigned int num_Paper_obj = paper_obj_mng->Get_numof();
-	unsigned int Paper_obj_size = sizeof(Paper_obj_receiver) * num_Paper_obj;
+	unsigned int Paper_obj_size = paper_obj_mng->Get_receive_data_size();
 
 	unsigned int num_area_data = (unsigned int)ceil(stage->Area_Get_numof() * 0.125f);
 	unsigned int area_size = sizeof(Area_receiver) * num_area_data;
@@ -404,7 +386,7 @@ void SocketManager::UpdateStage()
 
 	m_pClient->Receive(receive_data, size);
 
-	Paper_obj_receiver::Fetch_data((Paper_obj_receiver*)receive_data);
+	paper_obj_mng->Set_receive_data( receive_data );
 	Area_receiver::Fetch_data((Area_receiver*)(receive_data + Paper_obj_size));
 	int *telopID_p = (int*)(receive_data + Paper_obj_size + area_size);
 	ui->Set_telopID(*(telopID_p));

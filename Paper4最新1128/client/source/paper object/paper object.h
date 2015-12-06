@@ -28,6 +28,12 @@ public:
 
 	void Render_mark(iex2DObj *obj, bool target);	// ã‚Ì–îˆó
 
+	//**************************************************
+
+	virtual unsigned int Get_receive_data_size() = 0;
+
+	virtual void Set_receive_data( char *in ) = 0;
+
 protected:
 	iex3DObj *model; // 3Dƒ‚ƒfƒ‹
 

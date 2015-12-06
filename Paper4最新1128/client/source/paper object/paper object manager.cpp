@@ -89,6 +89,29 @@ const Vector3& Paper_obj_mng::Get_pos(int index)
 
 //**************************************************
 
+unsigned int Paper_obj_mng::Get_receive_data_size()
+{
+	unsigned int size( 0 );
+
+	for( auto it : obj_array )
+	{
+		size += it->Get_receive_data_size();
+	}
+
+	return size;
+}
+
+void Paper_obj_mng::Set_receive_data( char *in )
+{
+	for( auto it : obj_array )
+	{
+		it->Set_receive_data( in );
+		in += it->Get_receive_data_size();
+	}
+}
+
+//**************************************************
+
 #include "poster/Poster.h"
 #include "test_box/test box.h"
 #include "../fstream/fstream_paper.h"

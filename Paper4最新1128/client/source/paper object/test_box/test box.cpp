@@ -37,3 +37,23 @@ void Test_box::Render(iexShader *shader, char *name)
 		model->iexMesh::Render();
 	}
 }
+
+//**************************************************
+
+struct Receive_data
+{
+	BYTE user_number;
+	int anim_no;
+};
+
+unsigned int Test_box::Get_receive_data_size()
+{
+	return sizeof( Receive_data );
+}
+
+void Test_box::Set_receive_data( char *in )
+{
+	Receive_data *data( ( Receive_data* ) in );
+	number = data->user_number;
+	model->SetFrame( data->anim_no );
+}
