@@ -3,7 +3,7 @@
 
 #include	"OKB.h"
 
-OwatasoKeyBoard::OwatasoKeyBoard()
+OwatasoKeyBoard::OwatasoKeyBoard() :current_wheel(0), prev_wheel(0), flag(WHEEL_FLAG::NONE)
 {
 	// キー配列初期化
 	for (int i = 0; i < 256; i++)
@@ -54,7 +54,13 @@ void OwatasoKeyBoard::Update()
 
 	//}
 
-
+	// ホイール
+	if (current_wheel == prev_wheel) flag = WHEEL_FLAG::NONE;
+	else
+	{
+		flag = (current_wheel < prev_wheel) ? WHEEL_FLAG::DOWN : WHEEL_FLAG::UP;
+		prev_wheel = current_wheel;
+	}
 }
 
 BYTE OwatasoKeyBoard::AnyTRG()
@@ -130,3 +136,8 @@ UINT KeyBoard(BYTE KeyCode){ return key_board->on_frame[KeyCode]; }
 bool KeyBoardTRG(BYTE KeyCode, UINT frame) { return (key_board->on_frame[KeyCode] == frame); }
 
 BYTE KeyBoardAnyTRG(){ return key_board->AnyTRG(); }
+
+
+void Up_wheel(){ key_board->current_wheel++; }
+void Down_wheel(){ key_board->current_wheel--; }
+WHEEL_FLAG Get_wheel_flag(){ return key_board->flag; }

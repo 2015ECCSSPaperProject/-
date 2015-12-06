@@ -113,6 +113,11 @@ enum KEY_CODE
 
 };
 
+enum class WHEEL_FLAG
+{
+	NONE, UP, DOWN
+};
+
 class OwatasoKeyBoard
 {
 public:
@@ -123,6 +128,12 @@ public:
 
 	// キーボードの押してる時間
 	UINT on_frame[256];
+
+	// ホイール
+	int prev_wheel;
+	int current_wheel;
+	WHEEL_FLAG flag;
+
 
 	void Update();
 
@@ -157,5 +168,9 @@ if(KeyBoard(KB_A))
 if(KeyBoardTRG(KB_Z, 3))	// 押してから3フレーム目のみtrueが返る
 
 */
+
+void Up_wheel();
+void Down_wheel();
+WHEEL_FLAG Get_wheel_flag();
 
 #endif

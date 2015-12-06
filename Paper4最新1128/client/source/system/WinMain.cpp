@@ -62,6 +62,8 @@ BOOL	InitApp( HWND hWnd )
 	return TRUE;
 }
 
+short mouse_wheel_delta = 0;
+
 //*****************************************************************************************************************************
 //		ウィンドウプロシージャ
 //*****************************************************************************************************************************
@@ -75,6 +77,17 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 			case VK_F1:		iexSystem::OpenDebugWindow(); return 0;
 			}
 			break;
+	case WM_MOUSEWHEEL:
+		mouse_wheel_delta += GET_WHEEL_DELTA_WPARAM(wParam);
+		if (mouse_wheel_delta >= 120){
+			mouse_wheel_delta = 0;
+			Up_wheel();		// OKBの関数
+		}
+		else if (mouse_wheel_delta <= 120){
+			mouse_wheel_delta = 0;
+			Down_wheel();	// OKBの関数
+		}
+		break;
     }
     return DefWindowProc(hWnd, message, wParam, lParam);
 }
