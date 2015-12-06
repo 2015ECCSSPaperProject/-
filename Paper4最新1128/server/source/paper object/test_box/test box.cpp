@@ -12,7 +12,14 @@ void Test_box::Initialize(int model_type, iex3DObj *model, int point)
 }
 
 void Test_box::Update()
-{}
+{
+	if( number == PLAYER_MAX )
+		return;
+	position.y -= 0.1f;
+	if( position.y < 0 )
+		position.y = 0;
+	model->SetPos( position );
+}
 
 void Test_box::Render()
 {
@@ -90,6 +97,7 @@ struct Test_box_send_data
 {
 	BYTE number;
 	int anim_no;
+	Vector3 pos;
 };
 
 unsigned int Test_box::Get_send_data_size()
@@ -102,4 +110,5 @@ void Test_box::Get_send_data( char *out )
 	Test_box_send_data *data = ( Test_box_send_data* ) out;
 	data->number = number;
 	data->anim_no = model->GetFrame();
+	data->pos = position;
 }

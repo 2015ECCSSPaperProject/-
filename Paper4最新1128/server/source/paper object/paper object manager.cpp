@@ -249,12 +249,12 @@ void Paper_obj_mng::Load()
 		{
 			p = new Test_box;
 			p->Initialize(1, &original_model[1], 5);
-			p->Set_pose(.0f, Vector3(i * 20.0f - 100, 0, 50));
+			p->Set_pose(.0f, Vector3(i * 20.0f - 100, 60, 50));
 			obj_array.push_back(p);
 			this->number_of_objects++;
 
 			ev = new Event_advent_paper_obj(p);
-			ev->Set_time(0, 100, 0);
+			ev->Set_time(0, 10, 0);
 			ev->Set_telop_id(1);
 			event_list->push(ev);
 		}

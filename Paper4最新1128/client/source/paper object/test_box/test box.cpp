@@ -17,6 +17,7 @@ void Test_box::Update()
 	if (model == nullptr)
 		return;
 
+	model->SetPos( position );
 	model->iexMesh::Update();
 }
 
@@ -44,6 +45,7 @@ struct Receive_data
 {
 	BYTE user_number;
 	int anim_no;
+	Vector3 pos;
 };
 
 unsigned int Test_box::Get_receive_data_size()
@@ -56,4 +58,5 @@ void Test_box::Set_receive_data( char *in )
 	Receive_data *data( ( Receive_data* ) in );
 	number = data->user_number;
 	model->SetFrame( data->anim_no );
+	position = data->pos;
 }
