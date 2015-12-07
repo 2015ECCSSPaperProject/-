@@ -275,6 +275,8 @@ void SceneMain::Main()
 		ui->Change_mode(SceneMain::MODE::END);
 		mode = MODE::END;
 		m_pThread->End();	// ここでEndすることによってフェードの間にスレッド終了の余裕を持たせる
+		
+		SOCKET_MANAGER->EndGame();// 終わったよと報告
 	}
 }
 void SceneMain::End()

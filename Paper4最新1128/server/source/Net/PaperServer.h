@@ -88,7 +88,8 @@ public:
 		USER_DATA = 5,
 		STAGE_DATA = 6,
 		LAYER_DATA = 7,
-		SCORE_DATA = 8
+		SCORE_DATA = 8,
+		END_GAME = 9
 	};
 
 	/* ユーザーのデータ */
@@ -115,6 +116,9 @@ private:
 	static void UpdateStage(int client);		/*	ポスターの更新											*/
 	static void UpdateLayer(char* data, int client);		/*	レイヤーの更新									　　	*/
 	static void UpdateScore(int client);		/*	スコアの更新	*/
+
+	static void GameEndGame(char* data, int client);			/* エンドゲーム */
+
 
 public:
 	static void Init();			/*	ネットプログラム開始	*/

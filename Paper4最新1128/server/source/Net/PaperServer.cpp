@@ -107,6 +107,9 @@ void ServerManager::Update()
 	case SCORE_DATA:
 		UpdateScore(client);
 		break;
+	case END_GAME:
+		GameEndGame(data, client);
+		break;
 	}
 }
 
@@ -275,6 +278,30 @@ void ServerManager::GameInitData(char* data, int client)
 	//	同期完了
 	send.com = active == count ? 0xFF : 0;// みんなデータを読み込んだら255を送る
 	m_pServer->Send(client, (char*)&send, sizeof(send));
+}
+
+
+//---------------------------------------------------------------------
+//   ゲーム終了時の処理
+//---------------------------------------------------------------------
+void ServerManager::GameEndGame(char* data, int client)
+{
+	/*同期*/
+
+	/*通ったよフラグ*/
+	struct
+	{
+		BYTE com;
+	}send;
+
+	//	ゲーム終りの処理
+
+
+	/*★何も送り変えさない　受け取るだけ　*/
+
+	//	同期完了
+	//send.com = 0xFF;// みんなデータを読み込んだら255を送る
+	//m_pServer->Send(client, (char*)&send, sizeof(send));
 }
 
 //---------------------------------------------------------------------

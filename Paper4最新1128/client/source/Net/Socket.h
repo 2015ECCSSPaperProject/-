@@ -117,7 +117,8 @@ private:
 		USER_DATA = 5,
 		STAGE_DATA = 6,
 		LAYER_DATA = 7,
-		SCORE_DATA = 8
+		SCORE_DATA = 8,
+		END_GAME = 9
 	};
 
 private:
@@ -135,6 +136,7 @@ public:
 	void UpdateTeam(int isReady);	/* 選択中 */
 	void UpdateLayer();				/* 選択中 レイヤー更新　*/
 	void InitGame();				/* 試合前 */
+	void EndGame();					/* エンドゲーム */
 
 	void UpdateUser();				/* プレイヤー更新	*/
 	void UpdateStage();				/* ステージ更新		*/

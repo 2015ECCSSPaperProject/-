@@ -150,13 +150,13 @@ void MyPlayer::Control_all()
 	else if (KeyBoard(MOUSE_CENTAR))
 	{
 		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::ATTACK_BUTTON;
-}
+	}
 
 	if (KeyBoard(KB_SPACE))
 	{
 		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::SPACE;
 	}
-
+}
 float MOUSE_SENS = 0.8f;	// マウスの感度
 
 /*	マウス更新	*/
@@ -181,7 +181,7 @@ void MyPlayer::Mouse_Update()
 	{
 		ShowCursor(FALSE);
 		SetCursorPos(rc.left + iexSystem::ScreenWidth / 2, rc.top + iexSystem::ScreenHeight / 2);
-	}				 
+	}
 
 	//　マウスの動きをデスクに渡す
 	m_controlDesc.mouseX = (float)mousePos.x * 1000;
@@ -193,7 +193,7 @@ void MyPlayer::Mouse_Update()
 		if (++select_skill < (int)SKILL::MAX)
 		{
 			if (skill_data[select_skill].unlock) return;
-}
+		}
 		select_skill = 0;
 	}
 	else if (Get_wheel_flag() == WHEEL_FLAG::UP)
@@ -206,6 +206,7 @@ void MyPlayer::Mouse_Update()
 			}
 		}
 	}
+}
 
 void MyPlayer::Update_listener()
 {
