@@ -114,6 +114,7 @@ void Paper_obj_mng::Set_receive_data( char *in )
 
 #include "poster/Poster.h"
 #include "test_box/test box.h"
+#include "flyer/flyer.h"
 #include "../fstream/fstream_paper.h"
 #include "IEX_Math2.h"
 
@@ -140,7 +141,7 @@ void Paper_obj_mng::Load()
 	{
 		// ÉçÅ[ÉhÇµÇΩÇ¢
 		original_model[0].LoadObject("DATA/paper object/Poster/posuta-.IEM");
-		original_model[1].LoadObject("DATA/paper object/TEST/box.IEM");
+		original_model[1].LoadObject("DATA/paper object/flyer/flyer.IEM");
 		break;
 	}
 
@@ -164,7 +165,7 @@ void Paper_obj_mng::Load()
 
 	for (int i = 0; i < 10; i++)
 	{
-		p = new Test_box;
+		p = new Flyer;
 		p->Initialize(&original_model[1]);
 		p->Set_pose(0, Vector3(i * 20.0f - 100.0f, 0.0f, 50.0f));
 		obj_array.push_back(p);

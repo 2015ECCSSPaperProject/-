@@ -195,6 +195,7 @@ void Paper_obj_mng::Get_send_data( char *out )
 
 #include "poster/Poster.h"
 #include "test_box/test box.h"
+#include "flyer/flyer.h"
 #include "../fstream/fstream_paper.h"
 #include "IEX_Math2.h"
 
@@ -221,7 +222,7 @@ void Paper_obj_mng::Load()
 	{
 		// ÉçÅ[ÉhÇµÇΩÇ¢
 		original_model[0].LoadObject("DATA//paper object/Poster/posuta-.IEM");
-		original_model[1].LoadObject("DATA/paper object/TEST/box.IEM");
+		original_model[1].LoadObject("DATA/paper object/flyer/flyer.IEM");
 		break;
 	}
 
@@ -247,7 +248,7 @@ void Paper_obj_mng::Load()
 		Event_advent_paper_obj *ev;
 		for (int i = 0; i < 10; i++)
 		{
-			p = new Test_box;
+			p = new Flyer;
 			p->Initialize(1, &original_model[1], 5);
 			p->Set_pose(.0f, Vector3(i * 20.0f - 100, 60, 50));
 			obj_array.push_back(p);

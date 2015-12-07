@@ -164,6 +164,9 @@
     <ClCompile Include="source\event\Event open area.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\paper object\flyer\flyer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IEX\iextreme.h">
@@ -212,6 +215,7 @@
     <ClInclude Include="source\event\Event advent paper obj.h" />
     <ClInclude Include="source\event\Event list.h" />
     <ClInclude Include="source\event\Event open area.h" />
+    <ClInclude Include="source\paper object\flyer\flyer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DATA\Shader\2D.fx">

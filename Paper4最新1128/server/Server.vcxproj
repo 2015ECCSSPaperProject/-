@@ -133,6 +133,7 @@
     <ClCompile Include="source\fstream\fstream_paper.cpp" />
     <ClCompile Include="source\Net\PaperServer.cpp" />
     <ClCompile Include="source\Net\UDPServer.cpp" />
+    <ClCompile Include="source\paper object\flyer\flyer.cpp" />
     <ClCompile Include="source\paper object\paper object manager.cpp" />
     <ClCompile Include="source\paper object\paper object.cpp" />
     <ClCompile Include="source\paper object\poster\poster.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="source\fstream\fstream_paper.h" />
     <ClInclude Include="source\Net\PaperServer.h" />
     <ClInclude Include="source\Net\UDPServer.h" />
+    <ClInclude Include="source\paper object\flyer\flyer.h" />
     <ClInclude Include="source\paper object\paper object manager.h" />
     <ClInclude Include="source\paper object\paper object.h" />
     <ClInclude Include="source\paper object\poster\Poster.h" />
