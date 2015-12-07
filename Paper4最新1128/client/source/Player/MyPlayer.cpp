@@ -8,14 +8,6 @@
 #include	"../../../share_data/Enum_public.h"
 #include	"../Sound/SoundManager.h"
 
-const int FLAG[] =
-{
-	(int)PLAYER_SKILL::GUN,
-	(int)PLAYER_SKILL::SYURIKEN,
-	(int)PLAYER_SKILL::KABUTO,
-	(int)PLAYER_SKILL::ZENRYOKU
-};
-
 //****************************************************************************************************************
 //
 //  初期化
@@ -70,7 +62,12 @@ void MyPlayer::Control_all()
 	// 初期化
 	m_controlDesc.moveFlag &= 0x00000000;
 	m_controlDesc.controlFlag &= 0x00000000;
-	m_controlDesc.skillFlag = 0;
+
+	static int skill_wait = 0;
+	if (m_controlDesc.skillFlag != 0)
+	{
+		if (--skill_wait <= 0){ skill_wait = 0; m_controlDesc.skillFlag &= 0x00000000; }
+	}
 
 	if (KEY_Get(KEY_UP) == 1)
 	{
@@ -98,6 +95,31 @@ void MyPlayer::Control_all()
 	else if (KeyBoard(MOUSE_RIGHT))
 	{
 		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::RIGHT_CLICK;
+
+		if (action_part != ACTION_PART::MOVE) return;
+		// ゲージが溜まってたら
+		if (skill_data[(int)select_skill].wait_time <= 0)
+		{
+			const int FLAG[] =
+			{
+				(int)PLAYER_SKILL::GUN,
+				(int)PLAYER_SKILL::SYURIKEN,
+				(int)PLAYER_SKILL::KABUTO,
+				(int)PLAYER_SKILL::ZENRYOKU
+			};
+
+			m_controlDesc.skillFlag |= FLAG[(int)select_skill];
+			// スキル撃ったのでクールタイム設定
+			skill_data[(int)select_skill].wait_time = skill_data[(int)select_skill].cool_time;
+			skill_wait = 3;	// 1フレームだけしか送らなかったらたまに反応しないので3フレームぐらい送る
+		}
+		else
+		{
+			// 溜まってなかったら右クリックしてないようにする
+			m_controlDesc.skillFlag = 0;
+			//　基本的に常に0を送る形
+		}
+		//SPI_GET_WHEELSCROLL
 	}
 	else if (KeyBoard(MOUSE_CENTAR))
 	{
@@ -109,25 +131,6 @@ void MyPlayer::Control_all()
 		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::SPACE;
 	}
 
-	// 右クリックで必殺技を発動させるか
-	if (m_controlDesc.controlFlag & (int)PLAYER_CONTROL::RIGHT_CLICK)
-	{
-		if (action_part != ACTION_PART::MOVE) return;
-		// ゲージが溜まってたら
-		if (skill_data[(int)select_skill].wait_time <= 0)
-		{
-			m_controlDesc.skillFlag |= FLAG[(int)select_skill];
-			// スキル撃ったのでクールタイム設定
-			skill_data[(int)select_skill].wait_time = skill_data[(int)select_skill].cool_time;
-		}
-		else
-		{
-			// 溜まってなかったら右クリックしてないようにする
-			m_controlDesc.skillFlag = 0;
-			//　基本的に常に0を送る形
-		}
-		//SPI_GET_WHEELSCROLL
-	}
 }
 
 
@@ -161,6 +164,26 @@ void MyPlayer::Mouse_Update()
 	m_controlDesc.mouseX = (float)mousePos.x * 1000;
 	m_controlDesc.mouseY = (float)mousePos.y * 1000;
 
+	// ホイール
+	if (Get_wheel_flag() == WHEEL_FLAG::DOWN)
+	{
+		if (++select_skill < (int)SKILL::MAX)
+		{
+			if (skill_data[select_skill].unlock) return;
+		}
+		select_skill = 0;
+	}
+	else if (Get_wheel_flag() == WHEEL_FLAG::UP)
+	{
+		if (--select_skill < 0)
+		{
+			for (int i = (int)SKILL::MAX - 1;; i--)
+			{
+				if (skill_data[i].unlock) { select_skill = i; break; }
+			}
+		}
+	}
+
 }
 
 void MyPlayer::Update_listener()
@@ -177,6 +200,11 @@ void MyPlayer::Update_listener()
 void MyPlayer::Render(iexShader *shader, char *name)
 {
 	BasePlayer::Render(shader, name);
-	Text::Draw(32, 600, 0xff00ffff, "ゲージ : %d", skill_data[(int)select_skill].wait_time);
-	//Text::Draw(32, 620, 0xff000000, "50以上かつ真ん中クリックで紙鉄砲", god_gage);
+	char str[64];
+	if (select_skill == (int)SKILL::GUN) sprintf(str, "紙鉄砲");
+	else if (select_skill == (int)SKILL::SYURIKEN) sprintf(str, "手裏剣");
+	else if (select_skill == (int)SKILL::KABUTO) sprintf(str, "兜");
+
+	Text::Draw(32, 520, 0xff00ffff, "選択スキル : %s", str);
+	Text::Draw(32, 560, 0xff000000, "選択スキルのゲージ : %d", skill_data[(int)select_skill].wait_time);
 }

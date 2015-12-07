@@ -35,9 +35,10 @@ void PlayerManager::Initialize()
 	clone_model[(int)CLONE_TYPE::NORMAL] = new iex3DObj("DATA/CHR/player/run.IEM");
 	clone_model[(int)CLONE_TYPE::DIE] = new iex3DObj("DATA/CHR/player/die.IEM");
 	clone_model[(int)CLONE_TYPE::GUN] = new iex3DObj("DATA/CHR/player/gun.IEM");
+	clone_model[(int)CLONE_TYPE::SYURIKEN] = new iex3DObj("DATA/CHR/player/syuriken/syuriken.IEM");
 
 	// セットするテクスチャ
-	Texture2D *textures[2][6] =
+	Texture2D *textures[3][6] =
 	{
 		// 普通のモデル用カラー
 		{
@@ -57,15 +58,26 @@ void PlayerManager::Initialize()
 			iexTexture::Load("DATA/CHR/player/teppou_green.png"),
 			iexTexture::Load("DATA/CHR/player/teppou_purple.png"),
 			iexTexture::Load("DATA/CHR/player/teppou_pink.png")
+		},
+
+		// 手裏剣モデル用カラー
+		{
+			iexTexture::Load("DATA/CHR/player/syuriken/syuriken_red.png"),
+			iexTexture::Load("DATA/CHR/player/syuriken/syuriken_blue.png"),
+			iexTexture::Load("DATA/CHR/player/syuriken/syuriken_yellow.png"),
+			iexTexture::Load("DATA/CHR/player/syuriken/syuriken_green.png"),
+			iexTexture::Load("DATA/CHR/player/syuriken/syuriken_purple.png"),
+			iexTexture::Load("DATA/CHR/player/syuriken/syuriken_pink.png")
 		}
 	};
-	enum TEX_TYPE{ NORMAL, GUN };
+	enum TEX_TYPE{ NORMAL, GUN, SYURIKEN };
 
 	iex3DObj *objs[(int)CLONE_TYPE::MAX] =
 	{
 		clone_model[(int)CLONE_TYPE::NORMAL],	// 通常モデル
 		clone_model[(int)CLONE_TYPE::DIE],		// 死ぬ用モデル
-		clone_model[(int)CLONE_TYPE::GUN]		// 鉄砲モデル
+		clone_model[(int)CLONE_TYPE::GUN],		// 鉄砲モデル
+		clone_model[(int)CLONE_TYPE::SYURIKEN]	// 手裏剣モデル
 	};
 
 	//■■■　相手と自分で分ける
@@ -85,7 +97,7 @@ void PlayerManager::Initialize()
 		players[i]->Set_texture(BasePlayer::MODEL::DIE, textures[TEX_TYPE::NORMAL][i]);
 		players[i]->Set_texture(BasePlayer::MODEL::PLANE, textures[TEX_TYPE::NORMAL][i]);
 		players[i]->Set_texture(BasePlayer::MODEL::GUN, textures[TEX_TYPE::GUN][i]);
-
+		players[i]->Set_texture(BasePlayer::MODEL::SYURIKEN, textures[TEX_TYPE::SYURIKEN][i]);
 	}
 
 

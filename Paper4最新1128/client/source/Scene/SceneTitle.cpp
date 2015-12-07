@@ -43,7 +43,7 @@ bool SceneTitle::Initialize()
 	images[IMAGE::CURSOR] = new iex2DObj("DATA/makePoster/cursor4.png");
 
 	start_button.pos = Vector3(27, -25, 0);
-	Texture2D *texture = iexTexture::Load("DATA/Poster/tex_start.png");
+	Texture2D *texture = iexTexture::Load("DATA/paper object/Poster/tex_start.png");
 	start_button.obj = new iex3DObj("DATA/paper object/Poster/posuta-.IEM");
 	start_button.obj->SetTexture(texture, 0);
 	start_button.obj->SetAngle(PI);

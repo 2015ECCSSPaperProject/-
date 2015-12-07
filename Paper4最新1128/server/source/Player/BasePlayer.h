@@ -29,9 +29,9 @@ public:
 	//===============================================
 	//	定数
 	//===============================================
-	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, PASTE, REND, FREEZE, DIE, RESPAWN, PLANE, GUN, MANHOLE, THROUGH, MAX };
+	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, PASTE, REND, FREEZE, DIE, RESPAWN, PLANE, GUN, MANHOLE, THROUGH, SYURIKEN, MAX };
 	enum class DO_FLAG{ NONE, ATTACK, PASTE, REND, MAX };
-	enum class MODEL{ NORMAL, DIE, PLANE, GUN, MAX };
+	enum class MODEL{ NORMAL, DIE, PLANE, GUN, SYURIKEN, MAX };
 	enum class SKILL{ GUN, SYURIKEN, KABUTO, ZENRYOKU, MAX };
 
 protected:
@@ -64,23 +64,23 @@ protected:
 	//===============================================
 	struct
 	{
-		bool unlock;			// 解禁してるかどうか
-		int unlock_rend_count;	// 解禁に必要な紙を破る枚数
-		int wait_time;			// 0ならスキル撃てる 1以上ならデクリメント
-		int cool_time;			// 使用後に待つ時間(固定値)
+		//bool unlock;			// 解禁してるかどうか
+		//int unlock_rend_count;	// 解禁に必要な紙を破る枚数
+		//int wait_time;			// 0ならスキル撃てる 1以上ならデクリメント
+		//int cool_time;			// 使用後に待つ時間(固定値)
 		ACTION_PART do_action;	// 発動アクション
 	}skill_data[(int)SKILL::MAX];
 
 	SKILL select_skill;
 
-	void Check_unlock(int rend_count)
-	{
-		for (int i = (int)ACTION_PART::MAX - 1; i >= 0; i--)
-		{
-			if (skill_data[i].unlock) break;
-			if (rend_count >= skill_data[i].unlock_rend_count) skill_data[i].unlock = true;
-		}
-	}
+	//void Check_unlock(int rend_count)
+	//{
+	//	for (int i = (int)ACTION_PART::MAX - 1; i >= 0; i--)
+	//	{
+	//		if (skill_data[i].unlock) break;
+	//		if (rend_count >= skill_data[i].unlock_rend_count) skill_data[i].unlock = true;
+	//	}
+	//}
 
 	//===============================================
 	//	その他
@@ -249,8 +249,7 @@ protected:
 			Manhole(BasePlayer*me) : Base(me){}
 
 			void Initialize();
-			void Update();
-			void Render();
+			void Update(const CONTROL_DESC &_ControlDesc);
 		};
 
 		//===========================================
@@ -261,8 +260,24 @@ protected:
 			Through(BasePlayer*me) : Base(me){}
 
 			void Initialize();
-			void Update();
-			void Render();
+			void Update(const CONTROL_DESC &_ControlDesc);
+		};
+
+		//===========================================
+		//	手裏剣
+		class Syuriken : public Base
+		{
+		private:
+			int syurikentaimaa;
+			float max_speed;
+			float accel;
+			float kasoku;
+			Vector3 move_vec;
+		public:
+			Syuriken(BasePlayer*me) : Base(me){}
+
+			void Initialize();
+			void Update(const CONTROL_DESC &_ControlDesc);
 		};
 	};
 

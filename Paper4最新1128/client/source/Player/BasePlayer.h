@@ -36,9 +36,9 @@ public:
 	//===============================================
 	//	’è”
 	//===============================================
-	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, PASTE, REND, FREEZE, DIE, RESPAWN, PLANE, GUN, MANHOLE, THROUGH, MAX };
+	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, PASTE, REND, FREEZE, DIE, RESPAWN, PLANE, GUN, MANHOLE, THROUGH, SYURIKEN, MAX };
 	enum class DO_FLAG{ NONE, ATTACK, PASTE, REND, MAX };
-	enum class MODEL{ NORMAL, DIE, PLANE, GUN, MAX };
+	enum class MODEL{ NORMAL, DIE, PLANE, GUN, SYURIKEN, MAX };
 	enum class SKILL{ GUN, SYURIKEN, KABUTO, ZENRYOKU, MAX };
 
 protected:
@@ -75,14 +75,15 @@ protected:
 		ACTION_PART do_action;	// ”­“®ƒAƒNƒVƒ‡ƒ“
 	}skill_data[(int)SKILL::MAX];
 
-	SKILL select_skill;
+	int select_skill;	// ++‚Æ‚©‚·‚é‚Ì‚Åint
 
 	void Check_unlock(int rend_count)
 	{
-		for (int i = (int)ACTION_PART::MAX - 1; i >= 0; i--)
+		for (int i = (int)SKILL::MAX - 1; i >= 0; i--)
 		{
 			if (skill_data[i].unlock) break;
-			if (rend_count >= skill_data[i].unlock_rend_count) skill_data[i].unlock = true;
+			if (rend_count >= skill_data[i].unlock_rend_count)
+				skill_data[i].unlock = true;
 		}
 	}
 
@@ -279,7 +280,17 @@ protected:
 			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
+		//===========================================
+		//	Žè— Œ•
+		class Syuriken : public Base
+		{
+		public:
+			Syuriken(BasePlayer*me) : Base(me){}
 
+			void Initialize();
+			void Update();
+			void Render(iexShader *shader = nullptr, char *name = '\0');
+		};
 	};
 
 

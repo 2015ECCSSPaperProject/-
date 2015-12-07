@@ -49,11 +49,11 @@ void BasePlayer::Init_pos()
 	// モーション番号
 	motion_no = 0;
 
-	for (int i = 0; i < (int)SKILL::MAX; i++)
-	{
-		skill_data[i].unlock = false;
-		skill_data[i].wait_time = 0;
-	}
+	//for (int i = 0; i < (int)SKILL::MAX; i++)
+	//{
+	//	skill_data[i].unlock = false;
+	//	skill_data[i].wait_time = 0;
+	//}
 
 	select_skill = SKILL::GUN;
 
@@ -81,26 +81,26 @@ void BasePlayer::Initialize(iex3DObj **objs)
 
 
 	skill_data[(int)SKILL::GUN].do_action = ACTION_PART::GUN;
-	skill_data[(int)SKILL::SYURIKEN].do_action = ACTION_PART::GUN;
+	skill_data[(int)SKILL::SYURIKEN].do_action = ACTION_PART::SYURIKEN;
 	skill_data[(int)SKILL::KABUTO].do_action = ACTION_PART::GUN;
 	skill_data[(int)SKILL::ZENRYOKU].do_action = ACTION_PART::GUN;
 
 	// 絶対低い順に並べる
-	skill_data[(int)SKILL::GUN].unlock_rend_count = 0;
-	skill_data[(int)SKILL::SYURIKEN].unlock_rend_count = 5;
-	skill_data[(int)SKILL::KABUTO].unlock_rend_count = 10;
-	skill_data[(int)SKILL::ZENRYOKU].unlock_rend_count = 15;
+	//skill_data[(int)SKILL::GUN].unlock_rend_count = 0;
+	//skill_data[(int)SKILL::SYURIKEN].unlock_rend_count = 5;
+	//skill_data[(int)SKILL::KABUTO].unlock_rend_count = 10;
+	//skill_data[(int)SKILL::ZENRYOKU].unlock_rend_count = 15;
 
-	skill_data[(int)SKILL::GUN].cool_time = 600;
-	skill_data[(int)SKILL::SYURIKEN].cool_time = 300;
-	skill_data[(int)SKILL::KABUTO].cool_time = 150;
-	skill_data[(int)SKILL::ZENRYOKU].cool_time = 600;
+	//skill_data[(int)SKILL::GUN].cool_time = 600;
+	//skill_data[(int)SKILL::SYURIKEN].cool_time = 300;
+	//skill_data[(int)SKILL::KABUTO].cool_time = 150;
+	//skill_data[(int)SKILL::ZENRYOKU].cool_time = 600;
 
-	for (int i = 0; i < (int)SKILL::MAX; i++)
-	{
-		skill_data[i].unlock = false;
-		skill_data[i].wait_time = 0;
-	}
+	//for (int i = 0; i < (int)SKILL::MAX; i++)
+	//{
+	//	skill_data[i].unlock = false;
+	//	skill_data[i].wait_time = 0;
+	//}
 
 	select_skill = SKILL::GUN;
 
@@ -109,6 +109,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	models[(int)MODEL::DIE] = objs[(int)PlayerManager::CLONE_TYPE::DIE]->Clone();
 	models[(int)MODEL::PLANE] = objs[(int)PlayerManager::CLONE_TYPE::DIE]->Clone();
 	models[(int)MODEL::GUN] = objs[(int)PlayerManager::CLONE_TYPE::GUN]->Clone();
+	models[(int)MODEL::SYURIKEN] = objs[(int)PlayerManager::CLONE_TYPE::SYURIKEN]->Clone();
 
 	mynumber = m_id;
 
@@ -125,6 +126,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	action[(int)ACTION_PART::GUN] = new BasePlayer::Action::Gun(this);
 	action[(int)ACTION_PART::MANHOLE] = new BasePlayer::Action::Manhole(this);
 	action[(int)ACTION_PART::THROUGH] = new BasePlayer::Action::Through(this);
+	action[(int)ACTION_PART::SYURIKEN] = new BasePlayer::Action::Syuriken(this);
 
 	Change_action(ACTION_PART::MOVE);	// 最初は移動状態
 
@@ -332,22 +334,6 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	me->move += Vector3(0, me->move.y - me->fallspeed, 0);
 
 	//===========================================================================
-	//	左クリック処理
-	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
-	{
-		//me->poster_num = paper_obj_mng->Can_do(me);
-		me->poster_num = paper_obj_mng->Can_targeting(me, CAN_TARGET_DIST, 45);
-
-		if (me->poster_num != -1)
-		{
-			if(!trg_target)me->Change_action(ACTION_PART::MOVE_TARGET);
-			return;
-		}
-		trg_target = true;
-	}
-	else trg_target = false;
-
-	//===========================================================================
 	//	右クリック処理
 	if (_ControlDesc.skillFlag != 0)
 	{
@@ -371,8 +357,24 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	}
 
 	//===========================================================================
+	//	左クリック処理
+	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
+	{
+		//me->poster_num = paper_obj_mng->Can_do(me);
+		me->poster_num = paper_obj_mng->Can_targeting(me, CAN_TARGET_DIST, 45);
+
+		if (me->poster_num != -1)
+		{
+			if(!trg_target)me->Change_action(ACTION_PART::MOVE_TARGET);
+			return;
+		}
+		trg_target = true;
+	}
+	else trg_target = false;
+
+	//===========================================================================
 	//	真ん中クリック処理
-	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::ATTACK_BUTTON)
+	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::ATTACK_BUTTON)
 	{
 		//// 神ゲージ50消費
 		//if (me->god_gage >= 50)
@@ -702,7 +704,8 @@ void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
 			// 破く処理
 			paper_obj_mng->Rend(me->poster_num);
 			score->Add(1, me->mynumber);	// 仮で1点
-			me->Check_unlock(++me->god_gage);	// 神ゲージUP
+			me->god_gage++;
+			//me->Check_unlock(++me->god_gage);	// 神ゲージUP
 		}
 	}
 }
@@ -917,6 +920,7 @@ void BasePlayer::Action::Gun::Update(const CONTROL_DESC &_ControlDesc)
 		{
 			paper_obj_mng->Rend(poster_numbers[i]);
 			score->Add(1, me->mynumber);	// 仮で1点
+			me->god_gage++;
 		}
 
 		// Vs Player
@@ -935,15 +939,9 @@ void BasePlayer::Action::Manhole::Initialize()
 {
 }
 
-void BasePlayer::Action::Manhole::Update()
+void BasePlayer::Action::Manhole::Update(const CONTROL_DESC &_ControlDesc)
 {
 }
-
-void BasePlayer::Action::Manhole::Render()
-{
-}
-
-
 
 //*****************************************************************************
 //
@@ -955,10 +953,44 @@ void BasePlayer::Action::Through::Initialize()
 {
 }
 
-void BasePlayer::Action::Through::Update()
+void BasePlayer::Action::Through::Update(const CONTROL_DESC &_ControlDesc)
 {
 }
 
-void BasePlayer::Action::Through::Render()
+
+//*****************************************************************************
+//
+//		「手裏剣」状態処理
+//
+//*****************************************************************************
+
+void BasePlayer::Action::Syuriken::Initialize()
 {
+	me->move = VECTOR_ZERO;
+	me->invincible = true;	// 鉄砲中は無敵
+
+	me->model_part = MODEL::SYURIKEN;
+	// 0フレームにリセット
+	me->motion_no = 1;
+	me->Set_motion(1);
+
+	max_speed = 8.0f;
+	accel = 0;
+	kasoku = .01f;
+	move_vec = Vector3(sinf(me->angleY), 0, cosf(me->angleY));
+	syurikentaimaa = 360;
+}
+
+void BasePlayer::Action::Syuriken::Update(const CONTROL_DESC &_ControlDesc)
+{
+	me->move = move_vec * accel;
+	if ((accel += kasoku) > max_speed)accel = max_speed;
+	else kasoku *= 1.25f;
+
+	if (_ControlDesc.controlFlag & (int)PLAYER_CONTROL::LEFT_CLICK ||
+		--syurikentaimaa < 0)
+	{
+		me->invincible = false;
+		me->Change_action(ACTION_PART::MOVE);
+	}
 }

@@ -13,6 +13,7 @@ public:
 		NORMAL,		// ƒ‚ƒfƒ‹
 		DIE,		// ”j‚ê‚éƒ‚ƒfƒ‹
 		GUN,		// “S–C
+		SYURIKEN,	// Žè— Œ•
 		MAX
 	};
 

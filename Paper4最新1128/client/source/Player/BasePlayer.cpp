@@ -63,6 +63,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	models[(int)MODEL::DIE]		 = objs[(int)PlayerManager::CLONE_TYPE::DIE]->Clone();
 	models[(int)MODEL::PLANE]	 = objs[(int)PlayerManager::CLONE_TYPE::DIE]->Clone();
 	models[(int)MODEL::GUN]		 = objs[(int)PlayerManager::CLONE_TYPE::GUN]->Clone();
+	models[(int)MODEL::SYURIKEN] = objs[(int)PlayerManager::CLONE_TYPE::SYURIKEN]->Clone();
 
 	skill_data[(int)SKILL::GUN].do_action = ACTION_PART::GUN;
 	skill_data[(int)SKILL::SYURIKEN].do_action = ACTION_PART::GUN;
@@ -72,7 +73,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	// 絶対低い順に並べる
 	// 案ロックカウント
 	skill_data[(int)SKILL::GUN].unlock_rend_count = 0;
-	skill_data[(int)SKILL::SYURIKEN].unlock_rend_count = 5;
+	skill_data[(int)SKILL::SYURIKEN].unlock_rend_count = 2;
 	skill_data[(int)SKILL::KABUTO].unlock_rend_count = 10;
 	skill_data[(int)SKILL::ZENRYOKU].unlock_rend_count = 15;
 
@@ -90,7 +91,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	}
 	skill_data[(int)SKILL::GUN].unlock = true; // 最初のスキルは最初から使える
 
-	select_skill = SKILL::GUN;
+	select_skill = (int)SKILL::GUN;
 
 
 	// 行動状態初期化
@@ -106,6 +107,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	action[(int)ACTION_PART::GUN]		 = new BasePlayer::Action::Gun(this);
 	action[(int)ACTION_PART::MANHOLE] = new BasePlayer::Action::Manhole(this);
 	action[(int)ACTION_PART::THROUGH] = new BasePlayer::Action::Through(this);
+	action[(int)ACTION_PART::SYURIKEN] = new BasePlayer::Action::Syuriken(this);
 
 	Change_action(ACTION_PART::MOVE);	// 最初は移動状態
 
@@ -226,9 +228,9 @@ void BasePlayer::Action::Base::Update_obj()
 
 void BasePlayer::Set_motion(int no)
 {
-	if (models[(int)MODEL::NORMAL]->GetMotion() != no)
+	if (models[(int)model_part]->GetMotion() != no)
 	{
-		models[(int)MODEL::NORMAL]->SetMotion(no);
+		models[(int)model_part]->SetMotion(no);
 	}
 }
 
@@ -246,11 +248,12 @@ void BasePlayer::Action::Move::Initialize()
 	me->m_controlDesc.mouseX = .0f;
 	me->m_controlDesc.mouseY = .0f;
 
+	me->model_part = MODEL::NORMAL;
+
 	// 待機モーションセット
 	me->Set_motion(1);
 
-	me->model_part = MODEL::NORMAL;
-
+	me->Check_unlock(me->god_gage);
 }
 
 void BasePlayer::Action::Move::Update()
@@ -305,10 +308,10 @@ void BasePlayer::Action::MoveTarget::Initialize()
 	me->m_controlDesc.mouseX = .0f;
 	me->m_controlDesc.mouseY = .0f;
 
+	me->model_part = MODEL::NORMAL;
+
 	// 待機モーションセット
 	me->Set_motion(1);
-
-	me->model_part = MODEL::NORMAL;
 }
 
 void BasePlayer::Action::MoveTarget::Update()
@@ -347,9 +350,9 @@ void BasePlayer::Action::Attack::Initialize()
 	me->m_controlDesc.moveFlag &= 0x00000000;
 	me->m_controlDesc.rendFlag &= 0x00000000;
 
-	me->Set_motion(4);
-
 	me->model_part = MODEL::NORMAL;
+
+	me->Set_motion(4);
 }
 
 void BasePlayer::Action::Attack::Update()
@@ -386,9 +389,9 @@ void BasePlayer::Action::Paste::Initialize()
 	me->m_controlDesc.moveFlag &= 0x00000000;
 	me->m_controlDesc.rendFlag &= 0x00000000;
 
-	me->Set_motion(3);
-
 	me->model_part = MODEL::NORMAL;
+
+	me->Set_motion(3);
 }
 
 void BasePlayer::Action::Paste::Update()
@@ -485,14 +488,15 @@ void BasePlayer::Action::Freeze::Initialize()
 
 void BasePlayer::Action::Freeze::Update()
 {
-}
-
-void BasePlayer::Action::Freeze::Render(iexShader *shader, char *name)
-{
 	//me->models[(int)me->model_part]->Animation();	// アニメーションしない
 	me->models[(int)me->model_part]->SetScale(me->scale);
 	me->models[(int)me->model_part]->SetAngle(me->angleY);
 	me->models[(int)me->model_part]->SetPos(me->pos);
+}
+
+void BasePlayer::Action::Freeze::Render(iexShader *shader, char *name)
+{
+
 	me->models[(int)me->model_part]->Update();
 
 	if (shader)
@@ -745,6 +749,36 @@ void BasePlayer::Action::Through::Update()
 }
 
 void BasePlayer::Action::Through::Render(iexShader *shader, char *name)
+{
+	me->models[(int)me->model_part]->Update();
+	if (shader)
+	{
+		me->models[(int)me->model_part]->Render(shader, name);
+	}
+	{
+		me->models[(int)me->model_part]->Render();
+	}
+}
+
+
+//*****************************************************************************
+//
+//		「手裏剣」状態処理
+//
+//*****************************************************************************
+
+void BasePlayer::Action::Syuriken::Initialize()
+{
+	me->model_part = MODEL::SYURIKEN;
+	me->Set_motion(1);
+}
+
+void BasePlayer::Action::Syuriken::Update()
+{
+	Update_obj();
+}
+
+void BasePlayer::Action::Syuriken::Render(iexShader *shader, char *name)
 {
 	me->models[(int)me->model_part]->Update();
 	if (shader)

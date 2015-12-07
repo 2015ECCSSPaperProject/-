@@ -39,12 +39,14 @@ void PlayerManager::Initialize()
 	clone_model[(int)CLONE_TYPE::NORMAL] = new iex3DObj("DATA/CHR/player/run.IEM");
 	clone_model[(int)CLONE_TYPE::DIE] = new iex3DObj("DATA/CHR/player/die.IEM");
 	clone_model[(int)CLONE_TYPE::GUN] = new iex3DObj("DATA/CHR/player/gun.IEM");
+	clone_model[(int)CLONE_TYPE::SYURIKEN] = new iex3DObj("DATA/CHR/player/syuriken/syuriken.IEM");
 
 	iex3DObj *objs[(int)CLONE_TYPE::MAX] =
 	{
 		clone_model[(int)CLONE_TYPE::NORMAL],	// 通常モデル
 		clone_model[(int)CLONE_TYPE::DIE],		// 死ぬ用モデル
-		clone_model[(int)CLONE_TYPE::GUN]		// 鉄砲モデル
+		clone_model[(int)CLONE_TYPE::GUN],		// 鉄砲モデル
+		clone_model[(int)CLONE_TYPE::SYURIKEN]	// 手裏剣モデル
 	};
 
 	for (int i = 0; i <PLAYER_MAX; ++i)

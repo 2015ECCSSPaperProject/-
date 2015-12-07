@@ -511,28 +511,33 @@ void EventBGM::Start()
 }
 void EventBGM::Kouhan()
 {
-	switch (step)
-	{
-	case 0:
-		bgm->Fade_out(mainBGM, 6);
-		step++;
-		break;
+	//switch (step)
+	//{
+	//case 0:
+	//	bgm->Fade_out(mainBGM, 6);
+	//	step++;
+	//	break;
 
-	case 1:
-		if (frame++ > 180)
-		{
-			frame = 0;
-			step++;
-		}
-		break;
+	//case 1:
+	//	if (frame++ > 180)
+	//	{
+	//		frame = 0;
+	//		step++;
+	//	}
+	//	break;
 
-	case 2:
+	//case 2:
+	//	bgm->Set_speed(mainBGM, 1.1f);
+	//	bgm->Fade_in(mainBGM, 20);
+	//	step = 0;
+	//	mode = MODE::NONE;
+	//	break;
+	//}
+
 		bgm->Set_speed(mainBGM, 1.1f);
 		bgm->Fade_in(mainBGM, 20);
 		step = 0;
 		mode = MODE::NONE;
-		break;
-	}
 }
 void EventBGM::End()
 {
