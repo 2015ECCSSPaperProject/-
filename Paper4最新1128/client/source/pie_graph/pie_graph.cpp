@@ -36,17 +36,17 @@ void Pie_graph::Set_percent(int num, float size)
 
 void Pie_graph::Add_content(char*filename)
 {
-	contents.push_back(new Content(filename));
+	contents.push_back(new Pie_graph_content(filename));
 }
 
 
 
-Pie_graph::Content::Content(char*filename) :iex2DObj(filename), size(0)
+Pie_graph_content::Pie_graph_content(char*filename) :iex2DObj(filename), size(0)
 {}
 
-Pie_graph::Content::~Content(){}
+Pie_graph_content::~Pie_graph_content(){}
 
-void Pie_graph::Content::Render(float percent, s32 DstX, s32 DstY, s32 DstW, s32 DstH, s32 SrcX, s32 SrcY, s32 width, s32 height, u32 dwFlags, COLOR color, float z)
+void Pie_graph_content::Render(float percent, s32 DstX, s32 DstY, s32 DstW, s32 DstH, s32 SrcX, s32 SrcY, s32 width, s32 height, u32 dwFlags, COLOR color, float z)
 {
 	if (percent <= 0.0f)
 	{

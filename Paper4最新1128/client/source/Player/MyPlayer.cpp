@@ -7,6 +7,8 @@
 #include	"../../IEX/OKB.h"
 #include	"../../../share_data/Enum_public.h"
 #include	"../Sound/SoundManager.h"
+#include "../pie_graph/pie_graph.h"
+#include "../Animation/Spread2D.h"
 
 //****************************************************************************************************************
 //
@@ -14,10 +16,16 @@
 //
 //****************************************************************************************************************
 MyPlayer::MyPlayer() :BasePlayer()
-{}
+{
+	skillGage = new Pie_graph_content("DATA/skillGage/SpiritCircle_gage.png");	//	ゲージ
+	//skillGage->Add_content("DATA/skillGage/SpiritCircle_UNDER.png");
+}
 
 MyPlayer::~MyPlayer()
-{}
+{
+	SAFE_DELETE(skillGage);
+
+}
 
 //void MyPlayer::Initialize(iex3DObj *obj, iex3DObj *die)
 //{
@@ -53,6 +61,11 @@ void MyPlayer::Update()
 
 	// リスナー情報
 	Update_listener();
+
+	// スキルポイント0~1
+	//skillGage->Set_percent(0, 0.25f);
+	//skillGage->Set_percent(1, 0.75);
+
 }
 
 
@@ -95,7 +108,20 @@ void MyPlayer::Control_all()
 	else if (KeyBoard(MOUSE_RIGHT))
 	{
 		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::RIGHT_CLICK;
+	}
+	else if (KeyBoard(MOUSE_CENTAR))
+	{
+		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::ATTACK_BUTTON;
+	}
 
+	if (KeyBoard(KB_SPACE))
+	{
+		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::SPACE;
+	}
+
+	// 右クリックで必殺技を発動させるか
+	if (m_controlDesc.controlFlag & (int)PLAYER_CONTROL::RIGHT_CLICK)
+	{
 		if (action_part != ACTION_PART::MOVE) return;
 		// ゲージが溜まってたら
 		if (skill_data[(int)select_skill].wait_time <= 0)
@@ -124,15 +150,12 @@ void MyPlayer::Control_all()
 	else if (KeyBoard(MOUSE_CENTAR))
 	{
 		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::ATTACK_BUTTON;
-	}
+}
 
 	if (KeyBoard(KB_SPACE))
 	{
 		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::SPACE;
 	}
-
-}
-
 
 float MOUSE_SENS = 0.8f;	// マウスの感度
 
@@ -170,7 +193,7 @@ void MyPlayer::Mouse_Update()
 		if (++select_skill < (int)SKILL::MAX)
 		{
 			if (skill_data[select_skill].unlock) return;
-		}
+}
 		select_skill = 0;
 	}
 	else if (Get_wheel_flag() == WHEEL_FLAG::UP)
@@ -183,8 +206,6 @@ void MyPlayer::Mouse_Update()
 			}
 		}
 	}
-
-}
 
 void MyPlayer::Update_listener()
 {
@@ -205,6 +226,17 @@ void MyPlayer::Render(iexShader *shader, char *name)
 	else if (select_skill == (int)SKILL::SYURIKEN) sprintf(str, "手裏剣");
 	else if (select_skill == (int)SKILL::KABUTO) sprintf(str, "兜");
 
+	// 
 	Text::Draw(32, 520, 0xff00ffff, "選択スキル : %s", str);
 	Text::Draw(32, 560, 0xff000000, "選択スキルのゲージ : %d", skill_data[(int)select_skill].wait_time);
+	DeferredManager.ForwardBigin();
+	Text::Draw(32, 600, 0xff00ffff, "ゲージ : %d", skill_data[(int)select_skill].wait_time);
+
+	//円ゲージ
+	float persent =1.0f - ((float)skill_data[(int)SKILL::GUN].wait_time / (float)skill_data[(int)SKILL::GUN].cool_time);
+	Text::Draw(32, 420, 0xff000000, "aaa%f", persent);
+	skillGage->Render(persent, 0, 300, 128, 128, 0, 0, 128, 128);
+	DeferredManager.ForwardEnd();
+
+	//Text::Draw(32, 620, 0xff000000, "50以上かつ真ん中クリックで紙鉄砲", god_gage);
 }
