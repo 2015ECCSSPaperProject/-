@@ -139,8 +139,8 @@ void Paper_obj_mng::Load()
 	for (unsigned i = 0; i < num_models; i++)
 	{
 		// ƒ[ƒh‚µ‚½‚¢
-		original_model[0].LoadObject("DATA/Poster/posuta-.IEM");
-		original_model[1].LoadObject("DATA/TEST/box.IEM");
+		original_model[0].LoadObject("DATA/paper object/Poster/posuta-.IEM");
+		original_model[1].LoadObject("DATA/paper object/TEST/box.IEM");
 		break;
 	}
 

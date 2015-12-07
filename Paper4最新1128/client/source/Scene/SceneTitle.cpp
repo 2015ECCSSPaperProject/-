@@ -44,7 +44,7 @@ bool SceneTitle::Initialize()
 
 	start_button.pos = Vector3(27, -25, 0);
 	Texture2D *texture = iexTexture::Load("DATA/Poster/tex_start.png");
-	start_button.obj = new iex3DObj("DATA/Poster/posuta-.IEM");
+	start_button.obj = new iex3DObj("DATA/paper object/Poster/posuta-.IEM");
 	start_button.obj->SetTexture(texture, 0);
 	start_button.obj->SetAngle(PI);
 	start_button.obj->SetScale(1.0f);
