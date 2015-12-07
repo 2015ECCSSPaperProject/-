@@ -76,6 +76,9 @@ struct LayerData
 class ServerManager
 {
 public:
+	// ゲーム進行中
+	static bool be_playing;
+
 	/* コマンドの種類 */
 	enum EVENT_COM
 	{

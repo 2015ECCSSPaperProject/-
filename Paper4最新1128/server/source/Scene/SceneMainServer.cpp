@@ -33,21 +33,6 @@ SceneMainServer::SceneMainServer()
 	view->Set(Vector3(0, 600, -60), Vector3(0, 0, 0));
 	view->Activate();
 
-	// イベント
-	event_list = new Event_list;
-
-	//stage = new iexMesh2("DATA/BG/stage_puroto.imo");
-	stage = new Stage;
-	stage->Initialize();
-
-	//　プレイヤー初期化
-	player_mng = new PlayerManager;
-	player_mng->Initialize();
-	
-	score = new Score;
-	paper_obj_mng = new Paper_obj_mng;
-	paper_obj_mng->Initialize();
-
 	// タイマー
 	//timer = new Timer;
 	timer = nullptr;
@@ -223,21 +208,27 @@ SceneMainServer::~SceneMainServer()
 //******************************************************************
 void SceneMainServer::Update()
 {
-
-	//ナンバーエフェクト
-	Number_Effect::Update();
-
-	//フェード処理
-	FadeControl::Update();
-
-	player_mng->Update();
-	
-	paper_obj_mng->Update();
-
-	if (timer)
+	if (ServerManager::be_playing)
 	{
+		//ナンバーエフェクト
+		Number_Effect::Update();
+
+		//フェード処理
+		FadeControl::Update();
+
+		player_mng->Update();
+		paper_obj_mng->Update();
 		event_list->Update();
 		timer->Check();
+	}
+	else if( timer )
+	{
+		SAFE_DELETE( timer );
+		SAFE_DELETE( score );
+		SAFE_DELETE( paper_obj_mng );
+		SAFE_DELETE( player_mng );
+		SAFE_DELETE( stage );
+		SAFE_DELETE( event_list );
 	}
 }
 
@@ -260,27 +251,29 @@ void SceneMainServer::Render()
 
 	view->Clear();
 
-	stage->Render();
+	if( ServerManager::be_playing )
+	{
+		stage->Render();
 
-	player_mng->Render();
+		player_mng->Render();
 
-	paper_obj_mng->Render();
+		paper_obj_mng->Render();
 
-	// 皆のポスター
+		// 皆のポスター
 	//for (int i = 0; i < PLAYER_MAX; i++)
 	//{
 	//	posterScreen[i]->Render((i * 160), 580, 512 / 4, 512 / 4, 0, 0, 512, 512);
 	//}
 
-	// サーバー描画
-	ServerManager::Render();
+		// サーバー描画
+		ServerManager::Render();
 
-	//ナンバーエフェクト
-	Number_Effect::Render();
+		//ナンバーエフェクト
+		Number_Effect::Render();
 
-	//フェード処理
-	FadeControl::Render();
-
+		//フェード処理
+		FadeControl::Render();
+	}
 }
 
 

@@ -23,6 +23,7 @@
 //	UDPサーバー
 //
 //*****************************************************************************************
+bool ServerManager::be_playing = false;
 ServerManager::RoomData			ServerManager::m_room;
 UDPServer*						ServerManager::m_pServer(0);
 
@@ -202,10 +203,6 @@ void ServerManager::TeamData(char* data, int client)
 			//　ゲームスタートの処理
 			m_room.user[client].isReady = UserData::READY_MUTCH_ALL;//　全員参加していたらisReadyをREADY_MUTCH_ALL(2)に！
 			
-			//	※タイマーをここでONにします！
-			if(!timer)timer = new Timer;
-			timer->Start(0, LIMIT_TIME, 0);
-
 			//　ゲームスタートの処理
 			//for (int i = 0; i < PLAYER_MAX; ++i)
 			//{
@@ -262,17 +259,26 @@ void ServerManager::GameInitData(char* data, int client)
 	//	ゲーム初期化
 	if (count == active)
 	{
-		//delete event_list;
-		//event_list = new Event_list();
+		// イベント
+		event_list = new Event_list;
 
-		//　オブジェをnew
-		//GAME_MASTER->GameInitialize();
-		player_mng->Init_pos();
-		//paper_obj_mng->Release();
-		//paper_obj_mng->Initialize();
-		
-		//stage->Release();
-		//stage->Initialize();
+		stage = new Stage;
+		stage->Initialize();
+
+		//　プレイヤー初期化
+		player_mng = new PlayerManager;
+		player_mng->Initialize();
+
+		score = new Score;
+		paper_obj_mng = new Paper_obj_mng;
+		paper_obj_mng->Initialize();
+
+		//	※タイマーをここでONにします！
+		if( !timer )timer = new Timer;
+		timer->Start( 0, LIMIT_TIME, 0 );
+
+		// すべて作成してから
+		be_playing = true;
 	}
 
 	//	同期完了
@@ -289,13 +295,13 @@ void ServerManager::GameEndGame(char* data, int client)
 	/*同期*/
 
 	/*通ったよフラグ*/
-	struct
-	{
-		BYTE com;
-	}send;
+	//struct
+	//{
+	//	BYTE com;
+	//}send;
 
 	//	ゲーム終りの処理
-
+	be_playing = false;
 
 	/*★何も送り変えさない　受け取るだけ　*/
 
