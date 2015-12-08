@@ -40,7 +40,7 @@ public:
 
 private:
 
-	Pie_graph_content* skillGage;
+	//Pie_graph_content* skillGage;
 	
 
 

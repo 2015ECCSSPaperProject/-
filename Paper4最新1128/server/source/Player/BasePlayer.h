@@ -53,6 +53,7 @@ protected:
 
 	bool			isLand;
 	bool			isJump;
+	bool			attackFlag;	// ‹ó’†‚ÅŒ‚‚Ä‚é‚Ì‚Í1‰ñ‚¾‚¯
 	float			jump_pow;
 	bool			invincible;
 

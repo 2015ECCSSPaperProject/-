@@ -396,6 +396,8 @@ public:
 	int Get_poster_num(){ return poster_num; }
 	void Set_poster_num(int no){ poster_num = no; }
 
+	// 0`1
+	float Get_skill_percentage(){ return 1.0f - ((float)skill_data[(int)select_skill].wait_time / (float)skill_data[(int)select_skill].cool_time); }
 
 	// ƒ‚ƒfƒ‹
 	iex3DObj* Get_Model(){ return models[(int)model_part]; }

@@ -17,13 +17,13 @@
 //****************************************************************************************************************
 MyPlayer::MyPlayer() :BasePlayer()
 {
-	skillGage = new Pie_graph_content("DATA/skillGage/SpiritCircle_gage.png");	//	ゲージ
+	//skillGage = new Pie_graph_content("DATA/skillGage/SpiritCircle_gage.png");	//	ゲージ
 	//skillGage->Add_content("DATA/skillGage/SpiritCircle_UNDER.png");
 }
 
 MyPlayer::~MyPlayer()
 {
-	SAFE_DELETE(skillGage);
+	//SAFE_DELETE(skillGage);
 
 }
 
@@ -50,9 +50,9 @@ void MyPlayer::Update()
 	Control_all();
 
 	// Cキーのトグル
-	m_controlDesc.controlFlag &= ((BYTE)PLAYER_CONTROL::TRG_C ^ 0xff);
-	if (toggle_c)
-		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::TRG_C;
+	//m_controlDesc.controlFlag &= ((BYTE)PLAYER_CONTROL::TRG_C ^ 0xff);
+	//if (toggle_c)
+	//	m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::TRG_C;
 
 	/*マウスの処理*/
 	Mouse_Update();
@@ -139,24 +139,10 @@ void MyPlayer::Control_all()
 			skill_data[(int)select_skill].wait_time = skill_data[(int)select_skill].cool_time;
 			skill_wait = 3;	// 1フレームだけしか送らなかったらたまに反応しないので3フレームぐらい送る
 		}
-		else
-		{
-			// 溜まってなかったら右クリックしてないようにする
-			m_controlDesc.skillFlag = 0;
-			//　基本的に常に0を送る形
-		}
 		//SPI_GET_WHEELSCROLL
 	}
-	else if (KeyBoard(MOUSE_CENTAR))
-	{
-		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::ATTACK_BUTTON;
-	}
-
-	if (KeyBoard(KB_SPACE))
-	{
-		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::SPACE;
-	}
 }
+
 float MOUSE_SENS = 0.8f;	// マウスの感度
 
 /*	マウス更新	*/
@@ -226,18 +212,17 @@ void MyPlayer::Render(iexShader *shader, char *name)
 	if (select_skill == (int)SKILL::GUN) sprintf(str, "紙鉄砲");
 	else if (select_skill == (int)SKILL::SYURIKEN) sprintf(str, "手裏剣");
 	else if (select_skill == (int)SKILL::KABUTO) sprintf(str, "兜");
+	else if (select_skill == (int)SKILL::ZENRYOKU) sprintf(str, "全力疾走");
 
 	// 
 	Text::Draw(32, 520, 0xff00ffff, "選択スキル : %s", str);
 	Text::Draw(32, 560, 0xff000000, "選択スキルのゲージ : %d", skill_data[(int)select_skill].wait_time);
-	DeferredManager.ForwardBigin();
-	Text::Draw(32, 600, 0xff00ffff, "ゲージ : %d", skill_data[(int)select_skill].wait_time);
+	//DeferredManager.ForwardBigin();
+	//Text::Draw(32, 600, 0xff00ffff, "ゲージ : %d", skill_data[(int)select_skill].wait_time);
 
 	//円ゲージ
-	float persent =1.0f - ((float)skill_data[(int)SKILL::GUN].wait_time / (float)skill_data[(int)SKILL::GUN].cool_time);
-	Text::Draw(32, 420, 0xff000000, "aaa%f", persent);
-	skillGage->Render(persent, 0, 300, 128, 128, 0, 0, 128, 128);
-	DeferredManager.ForwardEnd();
-
-	//Text::Draw(32, 620, 0xff000000, "50以上かつ真ん中クリックで紙鉄砲", god_gage);
+	//float persent =1.0f - ((float)skill_data[(int)SKILL::GUN].wait_time / (float)skill_data[(int)SKILL::GUN].cool_time);
+	//Text::Draw(32, 420, 0xff00ffff, "aaa%f", persent);
+	//skillGage->Render(persent, 0, 300, 128, 128, 0, 0, 128, 128);
+	//DeferredManager.ForwardEnd();
 }

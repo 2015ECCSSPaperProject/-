@@ -21,8 +21,8 @@ void UI::Initialize(BasePlayer *my)
 	my_player = my;
 
 	// スキルゲージさん
-	gauge = new Skill_gauge;
-	gauge->Initialize();
+	gauge = new Pie_graph_content("DATA/skillGage/SpiritCircle_gage.png");	//	ゲージ
+	//gauge->Initialize();
 
 	// 円グラフさん
 	graph = new Pie_graph;
@@ -124,8 +124,12 @@ void UI::SkillGauge()
 	image[IMAGE::SKILL_KABUTO]->Render(124, 560, 32, 32, 0, 0, 32, 32);
 	image[IMAGE::SKILL_ZENRYOKU]->Render(172, 560, 32, 32, 0, 0, 32, 32);
 
-	int gage_val = my_player->Get_god_gage() / 10;	// スキルゲージ取得
-	gauge->Render(gage_val, 10);
+	//int gage_val = my_player->Get_god_gage() / 10;	// スキルゲージ取得
+	//gauge->Render(gage_val, 10);
+
+	//円ゲージ
+	float persent = my_player->Get_skill_percentage();
+	gauge->Render(persent, 0, 300, 128, 128, 0, 0, 128, 128);
 }
 
 void UI::Action()

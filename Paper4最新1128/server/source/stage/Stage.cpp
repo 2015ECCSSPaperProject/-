@@ -78,10 +78,11 @@ bool Stage::Collision_rand(const Vector3 &pos, Vector3 *move, float up)
 	return true;
 }
 
-void Stage::Collision(const Vector3 &pos, Vector3 *move, float radius, int recursive_counter)
+// voidÅ®boolÇ…ïœçXÇµÇ‹ÇµÇΩ
+bool Stage::Collision(const Vector3 &pos, Vector3 *move, float radius, int recursive_counter)
 {
 	if (recursive_counter <= 0)
-		return;
+		return false;
 
 	Vector3 move_xz(move->x, 0, move->z); // moveÇÃxÇ∆zÇæÇØ
 
@@ -97,6 +98,8 @@ void Stage::Collision(const Vector3 &pos, Vector3 *move, float radius, int recur
 	vec.y = 0;
 	vec.Normalize();
 
+	// true  : ìñÇΩÇ¡ÇƒÇ»Ç¢
+	// false : ìñÇΩÇ¡ÇƒÇÈ
 	bool ret = true;
 	if (collision_model->RayPick(&out, &ray_pos, &vec, &dist) != -1)
 	{
@@ -118,10 +121,13 @@ void Stage::Collision(const Vector3 &pos, Vector3 *move, float radius, int recur
 		normal = vec;
 		length = dist;
 	}
+	// ìñÇΩÇ¡ÇƒÇ»Ç¢
+	if (ret == true)
+		return false;
 
-	if (ret)
-		return;
-
+	/***********
+	  à íuï‚ê≥
+	***********/
 	Vector3 next_pos(pos + move_xz);
 	// ï«Ç…ÇﬂÇËçûÇÒÇæó 
 	Vector3 sink(next_pos - hit_pos);
@@ -132,12 +138,14 @@ void Stage::Collision(const Vector3 &pos, Vector3 *move, float radius, int recur
 	sink_nl = -Vector3Dot(sink, normal);
 
 	if (sink_nl + radius <= 0)
-		return;
+		return false;
 
 	sink_nl += radius;
 	*move += normal * sink_nl;
 
-	Collision(pos, move, radius, recursive_counter - 1);
+	return true;
+
+	return Collision(pos, move, radius, recursive_counter - 1);
 }
 
 

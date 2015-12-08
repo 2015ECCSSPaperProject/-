@@ -12,7 +12,7 @@ public:
 	//===============================================
 	//	íËêî
 	//===============================================
-	enum MODE{ M_FIX, M_PAN, M_SLERP, M_DEBUG, M_TPS, M_FPS, M_RESPAWN, M_ZOOM, M_TARGET, M_THROUGH, M_MAX };
+	enum MODE{ M_FIX, M_PAN, M_SLERP, M_DEBUG, M_TPS, M_FPS, M_RESPAWN, M_ZOOM, M_TARGET, M_THROUGH, M_SYURIKEN, M_MAX };
 	enum class FOV_TYPE{ DEFAULT, HARD };
 
 private:
@@ -167,6 +167,17 @@ private:
 		{
 		public:
 			Through(Camera *me) :Base(me){}
+
+			void Initialize(const Vector3 &pos, const Vector3 &target);
+			void Update();
+		};
+
+		//===========================================
+		//	ã∑Ç¢Ç∆Ç±í ÇËî≤ÇØÉÇÅ[Éh
+		class Syuriken : public Base
+		{
+		public:
+			Syuriken(Camera *me) :Base(me){}
 
 			void Initialize(const Vector3 &pos, const Vector3 &target);
 			void Update();

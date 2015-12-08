@@ -25,7 +25,7 @@ public:
 
 	bool Collision_rand(const Vector3 &pos, Vector3 *move, float up);
 
-	void Collision(const Vector3 &pos, Vector3 *move, float radius, // ”¼Œa
+	bool Collision(const Vector3 &pos, Vector3 *move, float radius, // ”¼Œa
 		int recursive_counter); // Ä‹A”
 
 	unsigned int Area_Get_numof();

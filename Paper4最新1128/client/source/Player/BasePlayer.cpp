@@ -73,13 +73,13 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	// 絶対低い順に並べる
 	// 案ロックカウント
 	skill_data[(int)SKILL::GUN].unlock_rend_count = 0;
-	skill_data[(int)SKILL::SYURIKEN].unlock_rend_count = 2;
+	skill_data[(int)SKILL::SYURIKEN].unlock_rend_count = 1;
 	skill_data[(int)SKILL::KABUTO].unlock_rend_count = 10;
 	skill_data[(int)SKILL::ZENRYOKU].unlock_rend_count = 15;
 
 	// クールタイム
 	skill_data[(int)SKILL::GUN].cool_time = 600;
-	skill_data[(int)SKILL::SYURIKEN].cool_time = 300;
+	skill_data[(int)SKILL::SYURIKEN].cool_time = 100;
 	skill_data[(int)SKILL::KABUTO].cool_time = 150;
 	skill_data[(int)SKILL::ZENRYOKU].cool_time = 600;
 
@@ -352,7 +352,7 @@ void BasePlayer::Action::Attack::Initialize()
 
 	me->model_part = MODEL::NORMAL;
 
-	me->Set_motion(4);
+	(sqrtf(me->move.y*me->move.y) >= .1f) ? me->Set_motion(21) : me->Set_motion(4);
 }
 
 void BasePlayer::Action::Attack::Update()
@@ -658,7 +658,7 @@ void BasePlayer::Action::Gun::Update()
 {
 	if (me->models[(int)me->model_part]->GetParam(0) == 1)
 	{
-		//se->Play("紙鉄砲");
+		se->Play("紙鉄砲", me->pos);
 		me->ExplosionAction();
 		EffectFireFlour(me->pos+me->Get_Flont(), FIRE_COLOR::BLUE, 3);
 
@@ -771,6 +771,8 @@ void BasePlayer::Action::Syuriken::Initialize()
 {
 	me->model_part = MODEL::SYURIKEN;
 	me->Set_motion(1);
+
+	se->Play("手裏剣", me->pos);
 }
 
 void BasePlayer::Action::Syuriken::Update()

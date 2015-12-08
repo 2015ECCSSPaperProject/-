@@ -12,6 +12,7 @@
 #include	"../Player/PlayerManager.h"
 
 #include	"../score/Score.h"
+#include	"../timer/Timer.h"
 
 /*	ベースプレイヤー	*/
 
@@ -41,7 +42,7 @@ void BasePlayer::Init_pos()
 	speed = 1.5f;
 	fallspeed = .1f;
 	se_receive = 0;
-	isJump = isLand = false;
+	isJump = isLand = attackFlag = false;
 	jump_pow = 0;
 	invincible = false;
 	god_gage = 0;
@@ -74,7 +75,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	speed = 1.5f;
 	fallspeed = .1f;
 	se_receive = 0;
-	isJump = isLand = false;
+	isJump = isLand = attackFlag = false;
 	jump_pow = 0;
 	invincible = false;
 	god_gage = 0;
@@ -185,7 +186,11 @@ void BasePlayer::Update()
 	//	(skill_data[i].wait_time > 0) ? skill_data[i].wait_time-- : skill_data[i].wait_time &= 0x00000000;
 	//}
 
-	stage->Collision(pos, &move, 5, 2);
+	if (stage->Collision(pos, &move, 5, 2))
+	{
+		if (action_part == ACTION_PART::SYURIKEN) 
+			Change_action(ACTION_PART::MOVE);
+	}
 	if (stage->Collision_rand(pos, &move, 0))
 	{
 		// 飛ばなくする
@@ -199,6 +204,7 @@ void BasePlayer::Update()
 		}
 		isLand = true;
 		isJump = false;
+		attackFlag = false;
 	}
 	else
 	{
@@ -376,23 +382,18 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	//	真ん中クリック処理
 	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::ATTACK_BUTTON)
 	{
-		//// 神ゲージ50消費
-		//if (me->god_gage >= 50)
-		//{
-		//	me->god_gage -= 50;
-		//	me->Change_action(ACTION_PART::GUN);
-		//}
-		//else
-		//{
-		//	me->Change_action(ACTION_PART::ATTACK);
-		//}
+		if (!me->attackFlag)
+		{
+			me->Change_action(ACTION_PART::ATTACK);
+			me->attackFlag = true;
+		}
 	}
 	//===========================================================================
 	//	Cトグル処理
-	else if (!(_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::TRG_C))
-	{
-		//me->Change_action(ACTION_PART::MOVE_FPS);
-	}
+	//else if (!(_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::TRG_C))
+	//{
+	//	//me->Change_action(ACTION_PART::MOVE_FPS);
+	//}
 }
 
 
@@ -551,10 +552,10 @@ void BasePlayer::Action::MoveTarget::Update(const CONTROL_DESC &_ControlDesc)
 
 	//===========================================================================
 	//	Cトグル処理
-	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::TRG_C)
-	{
-		me->Change_action(ACTION_PART::MOVE);
-	}
+	//else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::TRG_C)
+	//{
+	//	me->Change_action(ACTION_PART::MOVE);
+	//}
 }
 
 
@@ -569,7 +570,7 @@ void BasePlayer::Action::Attack::Initialize()
 	me->move = VECTOR_ZERO;
 
 	me->model_part = MODEL::NORMAL;
-	me->Set_motion(4);
+	(me->isJump) ? me->Set_motion(21) : me->Set_motion(4);
 
 
 	// 固まらせる処理
@@ -974,21 +975,21 @@ void BasePlayer::Action::Syuriken::Initialize()
 	me->motion_no = 1;
 	me->Set_motion(1);
 
-	max_speed = 8.0f;
-	accel = 0;
-	kasoku = .01f;
+	max_speed = 10.0f;
+	accel = max_speed;
+	kasoku = .25f;
 	move_vec = Vector3(sinf(me->angleY), 0, cosf(me->angleY));
-	syurikentaimaa = 360;
+	syurikentaimaa = (int)timer->Get_second_limit();
 }
 
 void BasePlayer::Action::Syuriken::Update(const CONTROL_DESC &_ControlDesc)
 {
 	me->move = move_vec * accel;
-	if ((accel += kasoku) > max_speed)accel = max_speed;
-	else kasoku *= 1.25f;
+	if ((accel -= kasoku) < max_speed * .5f)
+		accel = max_speed * .5f;
 
 	if (_ControlDesc.controlFlag & (int)PLAYER_CONTROL::LEFT_CLICK ||
-		--syurikentaimaa < 0)
+		syurikentaimaa - (int)timer->Get_second_limit() > 3) // 3秒後
 	{
 		me->invincible = false;
 		me->Change_action(ACTION_PART::MOVE);

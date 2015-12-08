@@ -15,7 +15,7 @@ const float Camera::Mode::Base::DIST = 50.0f;
 const float FOVY[2] =
 {
 	D3DX_PI / 4,	// 0.79f
-	.9f
+	1.75f
 };
 
 
@@ -41,7 +41,7 @@ void Camera::Initialize(BasePlayer *my)
 	target = Vector3(0, 0, 0);
 	ipos = Vector3(0, 10.0f, -20.0f);
 	itarget = Vector3(0, 0, 0);
-	angle = Vector3(0, 0, 0);
+	angle = Vector3(-0.1f, 0, 0);
 
 	// 行動状態初期化
 	mode[MODE::M_FIX] = new Mode::Fix(this);
@@ -54,6 +54,7 @@ void Camera::Initialize(BasePlayer *my)
 	mode[MODE::M_ZOOM] = new Camera::Mode::Zoom(this);
 	mode[MODE::M_TARGET] = new Camera::Mode::Target(this);
 	mode[MODE::M_THROUGH] = new Camera::Mode::Through(this);
+	mode[MODE::M_SYURIKEN] = new Camera::Mode::Syuriken(this);
 
 	//Change_mode(MODE::M_TPS);	// 最初は三人称
 	Change_mode(MODE::M_DEBUG);	// デバッグカメラ
@@ -252,6 +253,12 @@ void Camera::Mode::TPS::Update()
 		return;
 	}
 
+	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::SYURIKEN)
+	{
+		me->Change_mode(MODE::M_SYURIKEN);
+		return;
+	}
+
 	// 角度
 	float p_angle = me->my_player->Get_angleY();
 	iangle = p_angle;
@@ -272,8 +279,8 @@ void Camera::Mode::TPS::Update()
 	}
 
 	//カメラの上下移動に制限
-	if (me->angle.x < -0.2f)me->angle.x = -0.2f;
-	if (me->angle.x > 0.2f)me->angle.x = 0.2f;
+	if (me->angle.x < -0.3f)me->angle.x = -0.3f;
+	if (me->angle.x > 0.15f)me->angle.x = 0.15f;
 
 	// 角度の値によるベクトルを作成
 	float ay_x = sinf(me->angle.y);
@@ -307,8 +314,8 @@ void Camera::Mode::TPS::Update()
 	// 注視点はプレイヤー
 	me->target = p_pos;
 
-	me->ipos += Vector3(0, 15, 0);
-	me->target += Vector3(0, 14, 0);
+	me->ipos += Vector3(0, 20, 0);
+	me->target += Vector3(0, 15, 0);
 
 	// 目標座標までゆっくり動かす
 	me->pos = me->pos * .0f + me->ipos * 1.0f;
@@ -580,86 +587,72 @@ void Camera::Mode::Through::Initialize(const Vector3 &pos, const Vector3 &target
 
 void Camera::Mode::Through::Update()
 {
+	me->target.y = me->target.y * .995f + me->itarget.y * .005f;
+	me->pos = me->pos * 0.9f + me->ipos * 0.1f;
+
+	//	視点設定
+	me->Set(me->pos, me->target);
+}
+
+
+//*****************************************************************************
+//
+//		「手裏剣」状態処理
+//
+//*****************************************************************************
+
+void Camera::Mode::Syuriken::Initialize(const Vector3 &pos, const Vector3 &target)
+{
+	me->parth.fovY = FOVY[1];
+	dist = 1.0f;
+}
+
+static float f = 0;
+
+void Camera::Mode::Syuriken::Update()
+{
 	// プレイヤーモードでカメラ切り替え
-	if (me->my_player->Get_action() != BasePlayer::ACTION_PART::MOVE_TARGET
-		&& me->my_player->Get_action() != BasePlayer::ACTION_PART::REND)
+	if (me->my_player->Get_action() != BasePlayer::ACTION_PART::SYURIKEN)
 	{
 		me->Change_mode(MODE::M_TPS);
+		me->parth.fovY = FOVY[0];
 		return;
 	}
 
-	static bool hosei = false;
+	// 角度の値によるベクトルを作成
+	float ay_x = sinf(me->angle.y);
+	float ay_z = cosf(me->angle.y);
 
+	Vector3 vec(
+		ay_x,
+		0,
+		ay_z);
+
+	// ベクトルの長さ決定
+	vec *= this->dist;
+
+
+	// プレイヤー座標取得
 	Vector3 p_pos;
 	me->my_player->Get_pos(p_pos);
-	Vector3 target_pos;
-	target_pos = paper_obj_mng->Get_pos(me->my_player->Get_poster_num());
-	p_pos.y = .0f;
 
-	Vector3 back = p_pos - target_pos;
-	//Back = p_pos - e_pos;
-	float ang = atan2(back.x, back.z);
+	p_pos.y += 5.0f;	// 少し上に
 
-	back.y = .0f;
+	if (KEY(KEY_ENTER) == 3) f += 1;
 
-	Vector3 to_target_vec(paper_obj_mng->Get_pos(me->my_player->Get_poster_num()) - me->pos);	// 時と場合でiposに切り替え
+	// 角度の値のベクトルとプレイヤーからカメラ位置算出
+	me->ipos.x = p_pos.x - vec.x;
+	me->ipos.y = p_pos.y - vec.y;
+	me->ipos.z = p_pos.z - vec.z;
 
-	const static float add_angle = 4.0f;	// この値でプレイヤーと敵の線上にカメラを置かないように補正する
-	if (back.Length() > 80){
-		back.Normalize();
-		me->ipos.x = (p_pos.x + back.x * 50.0f) + sinf(ang + add_angle)*15.0f;
-		me->ipos.z = (p_pos.z + back.z * 50.0f) + cosf(ang + add_angle)*15.0f;
-		me->ipos.y = p_pos.y + 20.0f;
-	}
-	else {
-		back.Normalize();
-		me->ipos.x = (p_pos.x + back.x * 30.0f) + sinf(ang + add_angle)*10.0f;
-		me->ipos.z = (p_pos.z + back.z * 30.0f) + cosf(ang + add_angle)*10.0f;
-		me->ipos.y = p_pos.y + 15.0f;
-	}
-
-	//注視点
-	if (target_pos.y - me->pos.y > 30.0f) target_pos.y -= 20.0f;
-	else  target_pos.y += 15.0f;
-	me->itarget = target_pos;
-
-	me->angle.y = me->my_player->Get_angleY();
-
-	Vector3 camera_front(me->matView._13, me->matView._23, me->matView._33);
-	to_target_vec.Normalize();
-	float siita;// degree.
-	float r = Vector3Dot(camera_front, to_target_vec);
-
-	// とっても大事
-	siita = acosf(r / (camera_front.Length() * to_target_vec.Length())) / 0.01745f;
-
-	if (hosei)
-	{
-		const float percentage = siita / 360;
-		me->target.x = me->target.x * (1 - percentage) + me->itarget.x * percentage;
-		me->target.z = me->target.z * (1 - percentage) + me->itarget.z * percentage;
-		if (siita < 5)
-		{
-			hosei = false;	// 5度以内なら補正終了
-		}
-	}
+	// 注視点はプレイヤー
+	me->itarget = p_pos;
 
 
-	// θ度に入っていないなら追跡
-	else
-	{
-		if (siita > 10)
-		{
-			hosei = true;	// θ度越えたら補正かける(60は敵ごとに設定推奨)
-		}
-		else
-		{
-			me->target.x = me->target.x * .99f + me->itarget.x * .01f;	// 超ゆっくり
-			me->target.z = me->target.z * .99f + me->itarget.z * .01f;
-		}
-	}
+	me->ipos.y += 10;
+	me->itarget.y += 10;
 
-	me->target.y = me->target.y * .995f + me->itarget.y * .005f;
+	me->target = me->target * .5f + me->itarget * .5f;
 	me->pos = me->pos * 0.9f + me->ipos * 0.1f;
 
 	//	視点設定

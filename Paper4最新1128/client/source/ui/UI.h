@@ -2,7 +2,7 @@
 
 class BasePlayer;
 class Pie_graph;
-class Skill_gauge;
+class Pie_graph_content;
 class SceneMain;
 
 #include<list>
@@ -51,7 +51,7 @@ private:
 	BasePlayer *my_player;
 	iex2DObj *image[IMAGE::MAX];
 	Pie_graph *graph;
-	Skill_gauge *gauge;
+	Pie_graph_content *gauge;
 
 	//===============================================
 	//	ˆÏ÷
