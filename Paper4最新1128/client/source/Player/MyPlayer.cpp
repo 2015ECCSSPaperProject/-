@@ -61,11 +61,23 @@ void MyPlayer::Update()
 
 	// リスナー情報
 	Update_listener();
+}
 
-	// スキルポイント0~1
-	//skillGage->Set_percent(0, 0.25f);
-	//skillGage->Set_percent(1, 0.75);
+void MyPlayer::Update_action()
+{
+	// 継承先のアクションクラスを使えないのでここで無理やり更新
 
+	switch (action_part)
+	{
+	case ACTION_PART::REND:
+		// 破くモーションのフレーム
+		if (models[(int)model_part]->GetParam(0) == 1)
+		{
+			// ここでキューにプッシュ
+
+		}
+		break;
+	}
 }
 
 
