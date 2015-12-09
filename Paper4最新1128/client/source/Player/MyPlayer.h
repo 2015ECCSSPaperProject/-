@@ -27,6 +27,7 @@ public:
 	//	更新と描画
 	//===============================================
 	void Update();
+	void Update_action();
 	void Render(iexShader *shader = nullptr, char *name = '\0');
 
 	void Mouse_Update();	//	マウスのポジション
