@@ -66,6 +66,9 @@ protected:
 	std::vector<Paper_obj*> obj_array;
 
 	void Load();
+
+	void Load_poster();
+	void Load_flyer();
 };
 
 extern Paper_obj_mng *paper_obj_mng;

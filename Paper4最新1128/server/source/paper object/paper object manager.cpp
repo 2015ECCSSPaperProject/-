@@ -199,65 +199,114 @@ void Paper_obj_mng::Get_send_data( char *out )
 #include "../fstream/fstream_paper.h"
 #include "IEX_Math2.h"
 
+#include <string>
+
 void Paper_obj_mng::Load()
 {
-	// 仮
-
 	number_of_objects = 0;
 
-	char *filename;
+	Load_poster();
+	Load_flyer();
+}
 
-	filename = "DATA/MATI/poster_pos.txt";
+void Paper_obj_mng::Load_poster()
+{
+	std::ifstream infs( "DATA/MATI/poster_pos.txt" );
 
-	std::ifstream infs(filename);
-
-	//**************************************************
-	/// 3DObjのファイルをロード
-	//**************************************************
-	//char work[256];
-
-	unsigned int num_models = 2;							// モデルの種類
+	unsigned int num_models = 2; // モデルの種類
 	original_model = new iex3DObj[num_models];
-	for (unsigned i = 0; i < num_models; i++)
-	{
-		// ロードしたい
-		original_model[0].LoadObject("DATA//paper object/Poster/posuta-.IEM");
-		original_model[1].LoadObject("DATA/paper object/flyer/flyer.IEM");
-		break;
-	}
+	original_model[0].LoadObject( "DATA//paper object/Poster/posuta-.IEM" );
+	original_model[1].LoadObject( "DATA/paper object/flyer/flyer.IEM" );
 
 	// ポスターの位置とか
-	Paper_obj *p(nullptr);
-	float angle(0);
-	Vector3 pos(0, 0, 0);
-	int point(0);
-	while (!infs.eof())
+	Paper_obj *p( nullptr );
+	float angle( 0 );
+	Vector3 pos( 0, 0, 0 );
+	int point( 0 );
+	while( !infs.eof() )
 	{
 		infs >> angle;
-		angle = Degree_to_radian(angle);
+		angle = Degree_to_radian( angle );
 		infs >> pos;
 		infs >> point;
 		p = new Poster;
-		p->Initialize(0, &original_model[0], point);
-		p->Set_pose(angle, pos);
-		obj_array.push_back(p);
+		p->Initialize( 0, &original_model[0], point );
+		p->Set_pose( angle, pos );
+		obj_array.push_back( p );
 		this->number_of_objects++;
 	}
+	infs.close();
+}
 
+void Paper_obj_mng::Load_flyer()
+{
+	std::ifstream infs( "DATA/MATI/flyer pos.txt" );
+	std::string str;
+	int num_flyer( 0 );
+	Vector3 senter( 0, 0, 0 );
+	float radius( 0.0f );
+	float second( 0.0f );
+
+	unsigned char flag( 0 );
+	while( true )
 	{
+		if( flag != 0x0f )
+		{
+			// 枚数 中心 半径 発生
+			if( infs.eof() )
+				break;
+			infs >> str;
+
+			if( str == "枚数" )
+			{
+				infs >> num_flyer;
+				flag |= 0x1;
+				continue;
+			}
+
+			if( str == "中心" )
+			{
+				infs >> senter;
+				flag |= 0x1 << 1;
+				continue;
+			}
+
+			if( str == "半径" )
+			{
+				infs >> radius;
+				flag |= 0x1 << 2;
+				continue;
+			}
+
+			if( str == "発生" )
+			{
+				infs >> second;
+				flag |= 0x1 << 3;
+				continue;
+			}
+		}
+		flag = 0;
+
+		Flyer *p;
 		Event_advent_paper_obj *ev;
-		for (int i = 0; i < 10; i++)
+		for( int i = 0; i < num_flyer; i++ )
 		{
 			p = new Flyer;
-			p->Initialize(1, &original_model[1], 5);
-			p->Set_pose(.0f, Vector3(i * 20.0f - 100, 60, 50));
-			obj_array.push_back(p);
+			p->Initialize( 1, &original_model[1], 5 );
+			// 位置
+			Vector3 shift( 0, 0, 0 );
+			shift.x = ( float ) rand() / ( float ) RAND_MAX;
+			shift.z = 1 - shift.x;
+			float length = ( float ) rand() / ( float ) RAND_MAX * radius;
+			p->Set_pose( .0f, senter + ( shift * length ) );
+
+			obj_array.push_back( p );
 			this->number_of_objects++;
 
-			ev = new Event_advent_paper_obj(p);
-			ev->Set_time(0, 10, 0);
-			ev->Set_telop_id(1);
-			event_list->push(ev);
+			ev = new Event_advent_paper_obj( p );
+			ev->Set_time( ( unsigned int ) ( second * 1000 ) );
+			ev->Set_telop_id( 1 );
+			event_list->push( ev );
 		}
 	}
 }
