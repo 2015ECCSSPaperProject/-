@@ -143,7 +143,7 @@ bool SceneMain::Initialize()
 	// deferred　初期化
 	DeferredManager;
 	DeferredManager.CreateShadowMap(1024);
-	//DeferredManager.CreateShadowMapL(512);
+	DeferredManager.CreateShadowMapL(512);
 
 	deferredFlag = true;// flag
 	DebugTex = nullptr;
@@ -451,7 +451,7 @@ void SceneMain::RenderShadow()
 	
 	if (DeferredManager.GetCascadeFlag())
 	{
-		if (FarShadowFlag <= 2)
+		if (FarShadowFlag <= 600)
 		{
 			// 遠距離プロジェクションの更新
 			DeferredManager.CreateShadowMatrixL(LightVec, player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_pos(), player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_Flont() * 180, 400);
