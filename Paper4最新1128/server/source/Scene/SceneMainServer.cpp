@@ -223,12 +223,6 @@ void SceneMainServer::Update()
 	}
 	else if( timer )
 	{
-		SAFE_DELETE( timer );
-		SAFE_DELETE( score );
-		SAFE_DELETE( paper_obj_mng );
-		SAFE_DELETE( player_mng );
-		SAFE_DELETE( stage );
-		SAFE_DELETE( event_list );
 	}
 }
 

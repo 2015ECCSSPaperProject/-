@@ -257,8 +257,15 @@ void ServerManager::GameInitData(char* data, int client)
 	}send;
 
 	//	ゲーム初期化
-	if (count == active)
+	if (count == active && be_playing == false)
 	{
+		SAFE_DELETE(timer);
+		SAFE_DELETE(score);
+		SAFE_DELETE(paper_obj_mng);
+		SAFE_DELETE(player_mng);
+		SAFE_DELETE(stage);
+		SAFE_DELETE(event_list);
+
 		// イベント
 		event_list = new Event_list;
 
@@ -295,11 +302,10 @@ void ServerManager::GameEndGame(char* data, int client)
 	/*同期*/
 
 	/*通ったよフラグ*/
-	//struct
-	//{
-	//	BYTE com;
-	//}send;
-
+	for (int i = 0; i < PLAYER_MAX; ++i)
+	{
+		m_room.user[i].isReady = 0;
+	}
 	//	ゲーム終りの処理
 	be_playing = false;
 
