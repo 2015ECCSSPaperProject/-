@@ -16,7 +16,7 @@
 static const int Reduction_lvl = 4;
 static const int Reduction_x = 1280 / Reduction_lvl, Reduction_y = 720 / Reduction_lvl;
 
-static const int MiniTex_lvl = 8;
+static const int MiniTex_lvl = 6;
 static const int MiniTex_x = 1280 / MiniTex_lvl, MiniTex_y = 720 / MiniTex_lvl;
 
 enum SURFACE_NAME{
@@ -54,14 +54,18 @@ public:
 	// 平行光
 	void DirLight(const Vector3 dir, const Vector3 color);
 	// ポイントライト
-	void PointLight(const Vector3 pos, const Vector3 color, const float range = 100.0f, const float power = 3.0f);
-	
+	void PointLight(const Vector3 pos, const Vector3 color, const float range = 100.0f, const float power = 3.0f);	
 	// 軽量ポイントライト
 	void SimpliPointLight(const Vector3 pos, const Vector3 color, const float range = 100.0f);
 
 	// 半球ライティング
 	void HemiLight(const Vector3 SkyColor, const Vector3 GroundColor);
 
+	// 自己発光
+	void Emissive();
+	// フォグ
+	void Fog(const float FogNear, const float FogFar, const Vector3 FogColor);
+	
 	//****************************
 	//		ShadowMaps
 	//****************************

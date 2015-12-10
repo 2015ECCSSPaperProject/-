@@ -24,11 +24,16 @@ void Deferred::Release()
 	}
 }
 
+/* マップの読み込み情報 */
+/// N RGB->法線 
+/// S R->スペキュラ G->ブルームレート B->リムライト
+/// H R->AO G->エミッシブ追加予定　 B->空白
+
 /// 初期化
 void Deferred::Init()
 {
 	// G_Bufferを作成
-	diffuse	= new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_RENDERTARGET); // RGB アルべド
+	diffuse = new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_USEALPHA);	 // RGB アルべド A エミッシブ
 	normal	= new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_USEALPHA);	 // RGB 法線　A アンビエントレート
 	specular= new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_RENDERTARGET); // R スペキュラ G ブルーム　B リムライト
 	depth	= new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_FLOAT);		 // R デプス
@@ -365,6 +370,45 @@ void Deferred::HemiLight(const Vector3 SkyColor, const Vector3 GroundColor)
 	iexSystem::Device->SetRenderTarget(0, now);
 }
 
+// エミッシブ
+void Deferred::Emissive()
+{
+	//現在のレンダーターゲットを一時的に確保
+	Surface* now = nullptr;
+	iexSystem::Device->GetRenderTarget(0, &now);
+
+	//レンダーターゲットの切替え
+	light->RenderTarget();
+
+	//  diffuse.aを使いたいので
+	//	diffuseでレンダリング
+	diffuse->Render(shaderD, "def_Emissive");
+
+	//レンダーターゲットの復元
+	iexSystem::Device->SetRenderTarget(0, now);
+}
+
+void Deferred::Fog(const float FogNear, const float FogFar, const Vector3 FogColor)
+{
+	//	GPUへ送る情報
+	shaderD->SetValue("FogNear", FogNear);
+	shaderD->SetValue("FogFar",  FogFar);
+	shaderD->SetValue("FogColor", (Vector3)FogColor);
+
+	//現在のレンダーターゲットを一時的に確保
+	Surface* now = nullptr;
+	iexSystem::Device->GetRenderTarget(0, &now);
+
+	//レンダーターゲットの切替え
+	light->RenderTarget();
+
+	//  深度を使いたいので
+	//	depthでレンダリング
+	depth->Render(shaderD, "def_Fog");
+
+	//レンダーターゲットの復元
+	iexSystem::Device->SetRenderTarget(0, now);
+}
 
 //****************************
 ///	FORWARD
@@ -448,8 +492,8 @@ void Deferred::BloomRender()
 	bloom->RenderTarget();
 	iexSystem::Device->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0, 1.0f, 0);
 
-	shaderD->SetValue("TU", (float)1 / (float)MiniTex_x);
-	shaderD->SetValue("TV", (float)1 / (float)MiniTex_y);
+	shaderD->SetValue("TU", (float)1.0f / (float)MiniTex_x);
+	shaderD->SetValue("TV", (float)1.0f / (float)MiniTex_y);
 
 	// 画面の明るい部分をブルームの種として抽出
 	bloomScreen->Render(0, 0, MiniTex_x, MiniTex_y, 0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, shaderD, "make_hdrBloomSeed");
@@ -628,7 +672,6 @@ void Deferred::CreateShadowMatrix(Vector3 dir, Vector3 target, Vector3 playerVec
 #ifdef _DEBUG
 	//シャドウマップが生成されていなければ転送しない
 	if (!shadowFlag){
-		//OutputDebugString("Don't create shadowmap!!\n"); _PLACE_; return;
 		MessageBox(iexSystem::Window, "Don't create shadowmap!!", __FUNCTION__, MB_OK);
 		exit(-1);
 	}
@@ -691,12 +734,13 @@ void Deferred::CreateShadowMatrixL(Vector3 dir, Vector3 target, Vector3 playerVe
 	Matrix	ShadowMat, work;
 
 	//cascadeするならそっちの行列も作成する	
-	pos = target - dir * dist;			//近距離シャドウに比べ3倍ほど離す
-	up = Vector3(.0f, 1.0f, .0f);
+	//pos = target - dir * dist;			//近距離シャドウに比べ3倍ほど離す
+	//up = Vector3(.0f, 1.0f, .0f);
 	D3DXMatrixIdentity(&ShadowMat);
 	D3DXMatrixIdentity(&work);
-	LookAtLH(ShadowMat, pos + (playerVec ), target + (playerVec ), up);
-	OlthoLH(work, width, width, 0.02f, width * 2.5f);
+	float MulPower = 3.0f; // ★遠距離はくそ広くてＯＫ？
+	LookAtLH(ShadowMat, pos + (playerVec)*MulPower, target + (playerVec)*MulPower, up);
+	OlthoLH(work, width*MulPower, width*MulPower, 0.02f, width * 2.5f);
 	ShadowMat *= work;
 
 	shaderD->SetValue("ShadowProjectionL", ShadowMat);
@@ -708,7 +752,6 @@ void Deferred::ShadowBegin()
 #ifdef _DEBUG
 	// シャドウマップが生成されていなければ書かない
 	if (!shadowFlag){
-		//OutputDebugString("Don't create shadowmap!!\n"); _PLACE_; return;
 		MessageBox(iexSystem::Window, "Don't create shadowmap!!", __FUNCTION__, MB_OK);
 		exit(-1);
 	}
@@ -743,7 +786,6 @@ void Deferred::ShadowBeginL()
 #ifdef _DEBUG
 	// シャドウマップが生成されていなければ書かない
 	if (!cascadeFlag){
-		//OutputDebugString("Don't create shadowmap!!\n"); _PLACE_; return;
 		MessageBox(iexSystem::Window, "Don't create cascadeFlag!!", __FUNCTION__, MB_OK);
 		exit(-1);
 	}
@@ -791,13 +833,17 @@ void Deferred::ShadowEndL()
 
 	// ソフトシャドウマップにシャドウマップの結果を書き込み
 	/*_____________________________________________________________________________*/
-	//softShadowMap->RenderTarget();
-	//shaderD->SetValue("TU", 1.0f / shadowSizeL);
-	//shaderD->SetValue("TV", 1.0f / shadowSizeL);
+	softShadowMap->RenderTarget();
+	shaderD->SetValue("TU", 1.0f / shadowSizeL); // 2でもありかも
+	shaderD->SetValue("TV", 1.0f / shadowSizeL);
 
-	//// シャドウマップの解像度でブラー処理を変化	
-	//shadowMapL->Render(0, 0, shadowSizeL, shadowSizeL, 0, 0, shadowSizeL, shadowSizeL, shaderD, "gaussZ");//奥行を禁止
+	// シャドウマップの解像度でブラー処理を変化	
+	//for (int i = 0; i < 1; i++)
+	{
+		shadowMapL->Render(0, 0, shadowSizeL, shadowSizeL, 0, 0, shadowSizeL, shadowSizeL, shaderD, "gaussZ");//奥行を禁止
 
+	}
+	
 	/*_____________________________________________________________________________*/
 
 	// レンダーターゲットの復元
@@ -817,7 +863,7 @@ void Deferred::RenderShadow()
 	shaderD->SetValue("DepthTex", depth);			// 奥行用のサーフェイスを送る
 	shaderD->SetValue("ShadowMap",shadowMap);
 	//shaderD->SetValue("ShadowMap", softShadowMap);	// ソフトシャドウのサーフェイスをシャドウマップとして送る
-	shaderD->SetValue("ShadowRange", shadowRange);
+	shaderD->SetValue("ShadowRange", shadowRange);	// 近距離の幅
 
 	shadow->RenderTarget();
 
@@ -834,9 +880,9 @@ void Deferred::RenderShadow()
 	}
 	else 
 	{
-	//	shaderD->SetValue("ShadowMapL", softShadowMap);// 遠距離マップを送る
-		shaderD->SetValue("ShadowMapL", shadowMapL);// 遠距離マップを送る
-		shadow->Render(shaderD, "CascadeShadow");
+		shaderD->SetValue("ShadowMapL", softShadowMap);// 遠距離マップを送る(ソフト)
+	//	shaderD->SetValue("ShadowMapL", shadowMapL);// 遠距離マップを送る
+		shadow->Render(shaderD, "DualShadow");
 	}
 
 	// 計算し作った影を後でからめる為シェーダーへ

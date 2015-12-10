@@ -12,18 +12,31 @@
 //------------------------------------------------------
 //	コンストラクタ
 //------------------------------------------------------
-iexShader::iexShader( char* filename )
+iexShader::iexShader(char* filename, bool iscfx)
 {
 	LPDEVICE	lpDevice = iexSystem::GetDevice();
 	//	ファイル名チェック
 	char fname[256];
+	if (iscfx)
+	{
+		sprintf(fname, "%s", filename);
+	}
+	else
+	{
 	if( filename[ strlen(filename)-3 ] != '.' ) sprintf( fname, "%s.fx", filename );
-	else sprintf( fname, "%s", filename );
+	else sprintf(fname, "%s", filename);
+	}
+
 
 	// シェーダの読み込み
 	HRESULT	hr;
 	LPD3DXBUFFER pErr=NULL;
-	hr = D3DXCreateEffectFromFile( lpDevice, fname, NULL, NULL, 0 , NULL, &m_pShader, &pErr );
+	//D3DXMACRO;
+	//LPD3DXINCLUDE;
+	// コンパイル済みのファイルを読み込む？
+	if (iscfx) hr = D3DXCreateEffectFromFile(lpDevice, fname, NULL, NULL, D3DXSHADER_SKIPVALIDATION, NULL, &m_pShader, &pErr);
+	else hr = D3DXCreateEffectFromFile(lpDevice, fname, NULL, NULL, 0, NULL, &m_pShader, &pErr);
+	
 	if( FAILED(hr) )
 	{
 		char	szBuffer[512];
