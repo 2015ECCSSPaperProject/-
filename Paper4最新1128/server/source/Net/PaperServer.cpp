@@ -14,7 +14,7 @@
 #include	"../timer/Timer.h"
 #include	"../stage/Stage.h"
 #include "../event/Event list.h"
-
+#include "../paperQueue/paperQueue.h"
 //#define BYTE_TRUE 0xAA
 //#define BYTE_FALSE 0xF0
 
@@ -413,99 +413,30 @@ void ServerManager::UpdateUser(char* data, int client)
 
 void ServerManager::UpdateStage(int client)
 {
-	// 紙
-
-	//class Paper_obj_sender
-	//{
-	//public:
-	//	BYTE number;
-	//	int anim_no;
-	//
-	//	static int Create_data(Paper_obj_sender **out)
-	//	{
-	//		unsigned int num = paper_obj_mng->Get_numof();
-	//		*out = new Paper_obj_sender[num];
-	//
-	//		for (unsigned i = 0; i < num; i++)
-	//		{
-	//			(*out)[i].number = paper_obj_mng->Get_number(i);
-	//			(*out)[i].anim_no = paper_obj_mng->Get_animation_frame(i);
-	//		}
-	//
-	//		return num;
-	//	}
-	//};
-	//Paper_obj_sender *paper_obj_data(nullptr);
-	//unsigned int num_paper_obj = Paper_obj_sender::Create_data(&paper_obj_data);
-	//unsigned int paper_obj_size = sizeof(Paper_obj_sender) * num_paper_obj;
-
-	unsigned int paper_obj_size = paper_obj_mng->Get_send_data_size();
-	char *paper_obj_data = new char[paper_obj_size]{};
-	paper_obj_mng->Get_send_data( paper_obj_data );
-
-	// エリア
-	class Area_sender
-	{
-	public:
-		union
-		{
-			unsigned char is_work;
-			struct
-			{
-				bool is_work_1 : 1;
-				bool is_work_2 : 1;
-				bool is_work_3 : 1;
-				bool is_work_4 : 1;
-				bool is_work_5 : 1;
-				bool is_work_6 : 1;
-				bool is_work_7 : 1;
-				bool is_work_8 : 1;
-			};
-		};
-
-		static unsigned int Create_data(Area_sender **out)
-		{
-			unsigned int num = stage->Area_Get_numof();
-			unsigned int retnum = (unsigned int)ceil(num * 0.125f);
-
-			*out = new Area_sender[retnum];
-			for (unsigned int i = 0; i < retnum; i++)
-			{
-				(*out)[i].is_work = 0;
-				for (unsigned int eight = 0; eight < 8; eight++)
-				{
-					unsigned int true_num = i * 8 + eight;
-					if (true_num >= num)
-						break;
-
-					(*out)[i].is_work |= stage->Area_Is_work(true_num) << eight;
-				}
-			}
-
-			return retnum;
-		}
-	};
-	Area_sender *area_data(nullptr);
-	unsigned int num_area = Area_sender::Create_data(&area_data);
-	unsigned int area_size = sizeof(Area_sender) * num_area;
-
 	// テロップ
 	int telop_id = score->Get_telopID();
 	unsigned int telop_size = sizeof(int);
 
+	// 紙
+	/*
+	unsigned int paper_obj_size = paper_obj_mng->Get_send_data_size();
+	char *paper_obj_data = new char[paper_obj_size]
+	{};
+	paper_obj_mng->Get_send_data( paper_obj_data );
+	*/
+	unsigned int paper_obj_size = sizeof( PaperData );
+	PaperData paper_obj_data = player_mng->Get_player( client )->paperqueue->Update();
+
 	// まとめて送信
-	unsigned int size = paper_obj_size + area_size + telop_size;
+	unsigned int size = paper_obj_size + telop_size;
 	char *send_data(nullptr);
 	send_data = new  char[size];
-	memcpy_s(send_data, paper_obj_size, paper_obj_data, paper_obj_size);
-	memcpy_s(send_data + paper_obj_size, area_size, area_data, area_size);
-	memcpy_s(send_data + paper_obj_size + area_size, telop_size, &telop_id, telop_size);
+	memcpy_s(send_data, telop_size, &telop_id, telop_size);
+	memcpy_s( send_data + telop_size, paper_obj_size, &paper_obj_data, paper_obj_size );
 
 	m_pServer->Send(client, send_data, size);
 
 	delete[] send_data;
-	delete[] paper_obj_data;
-	delete[] area_data;
 }
 
 

@@ -138,6 +138,7 @@
     <ClCompile Include="source\paper object\paper object.cpp" />
     <ClCompile Include="source\paper object\poster\poster.cpp" />
     <ClCompile Include="source\paper object\test_box\test box.cpp" />
+    <ClCompile Include="source\paperQueue\paperQueue.cpp" />
     <ClCompile Include="source\Player\BasePlayer.cpp" />
     <ClCompile Include="source\Player\Kohai.cpp" />
     <ClCompile Include="source\Player\NetPlayer.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="source\paper object\paper object.h" />
     <ClInclude Include="source\paper object\poster\Poster.h" />
     <ClInclude Include="source\paper object\test_box\test box.h" />
+    <ClInclude Include="source\paperQueue\paperQueue.h" />
     <ClInclude Include="source\Player\BasePlayer.h" />
     <ClInclude Include="source\Player\NetPlayer.h" />
     <ClInclude Include="source\Player\Kohai.h" />

@@ -13,6 +13,7 @@
 
 #include	"../score/Score.h"
 #include	"../timer/Timer.h"
+#include "../paperQueue/paperQueue.h"
 
 /*	ベースプレイヤー	*/
 
@@ -66,6 +67,8 @@ void BasePlayer::Init_pos()
 
 void BasePlayer::Initialize(iex3DObj **objs)
 {
+	paperqueue = new PaperQueue;
+
 	// 基本パラメータ初期化
 	pos.z = 18.0f;
 	pos.x = (float)(m_id * 45);// 仮
@@ -142,6 +145,7 @@ BasePlayer::~BasePlayer()
 
 void BasePlayer::Release()
 {
+	SAFE_DELETE( paperqueue );
 	for (int i = 0; i < (int)ACTION_PART::MAX; i++)
 	{
 		SAFE_DELETE(action[i]);
@@ -680,6 +684,15 @@ void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
 			me->motion_no = 2;
 			me->Set_motion(2);
 			rended = true;
+
+			// 送信するデータプッシュ
+			for( int i = 0; i < PLAYER_MAX; i++ )
+			{
+				PaperData data;
+				data.from = me->mynumber;
+				data.ID = me->poster_num;
+				player_mng->Get_player( i )->paperqueue->Push( data );
+			}
 		}
 		// マウス離したらモード戻す
 		else if ((_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK) == 0)
@@ -922,6 +935,15 @@ void BasePlayer::Action::Gun::Update(const CONTROL_DESC &_ControlDesc)
 			paper_obj_mng->Rend(poster_numbers[i]);
 			score->Add(1, me->mynumber);	// 仮で1点
 			me->god_gage++;
+
+			// 送信するデータプッシュ
+			for( int i = 0; i < PLAYER_MAX; i++ )
+			{
+				PaperData data;
+				data.from = me->mynumber;
+				data.ID = poster_numbers[i];
+				player_mng->Get_player( i )->paperqueue->Push( data );
+			}
 		}
 
 		// Vs Player

@@ -17,6 +17,7 @@
 #include	"../timer/Timer.h"
 #include "../stage/Stage.h"
 #include "../ui/UI.h"
+#include "../paperQueue/paperQueue.h"
 
 Bench_mark bench;
 
@@ -402,22 +403,22 @@ void SocketManager::UpdateStage()
 	};
 
 	// サイズ計算
-	unsigned int Paper_obj_size = paper_obj_mng->Get_receive_data_size();
-
-	unsigned int num_area_data = (unsigned int)ceil(stage->Area_Get_numof() * 0.125f);
-	unsigned int area_size = sizeof(Area_receiver) * num_area_data;
-
 	unsigned int telop_size = sizeof(int);
 
-	unsigned int size = Paper_obj_size + area_size + telop_size;
+	//unsigned int Paper_obj_size = paper_obj_mng->Get_receive_data_size();
+	unsigned int Paper_obj_size = sizeof( PaperData );
+
+	unsigned int size = telop_size + Paper_obj_size;
 	char *receive_data = new char[size];
 
 	m_pClient->Receive(receive_data, size);
 
-	paper_obj_mng->Set_receive_data( receive_data );
-	Area_receiver::Fetch_data((Area_receiver*)(receive_data + Paper_obj_size));
-	int *telopID_p = (int*)(receive_data + Paper_obj_size + area_size);
+	int *telopID_p = (int*)(receive_data);
 	ui->Set_telopID(*(telopID_p));
+	//paper_obj_mng->Set_receive_data( receive_data + telop_size );
+	PaperData *Paper_obj_data = ( PaperData * ) (receive_data + telop_size);
+	if( Paper_obj_data->ID >= 0 )
+		paper_obj_mng->Set_user( Paper_obj_data->ID, PLAYER_MAX );
 
 	delete[] receive_data;
 

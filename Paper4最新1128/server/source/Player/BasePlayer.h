@@ -21,9 +21,13 @@ struct	CONTROL_DESC
 
 #define TYPE1
 
+class PaperQueue;
+
 class BasePlayer
 {
 public:
+	PaperQueue *paperqueue;
+
 	//==============================================================================
 	// ’Ç‰Á‚½‚¿
 	//===============================================
