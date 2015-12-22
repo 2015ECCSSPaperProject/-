@@ -582,12 +582,51 @@ void Camera::Mode::Target::Update()
 
 void Camera::Mode::Through::Initialize(const Vector3 &pos, const Vector3 &target)
 {
-
+	me->parth.fovY = FOVY[1];
+	dist = 1.0f;
 }
 
 void Camera::Mode::Through::Update()
 {
-	me->target.y = me->target.y * .995f + me->itarget.y * .005f;
+	// プレイヤーモードでカメラ切り替え
+	if (me->my_player->Get_action() != BasePlayer::ACTION_PART::THROUGH)
+	{
+		me->Change_mode(MODE::M_TPS);
+		me->parth.fovY = FOVY[0];
+		return;
+	}
+
+	// 角度の値によるベクトルを作成
+	float ay_x = sinf(me->angle.y);
+	float ay_z = cosf(me->angle.y);
+
+	Vector3 vec(
+		ay_x,
+		0,
+		ay_z);
+
+	// ベクトルの長さ決定
+	vec *= this->dist;
+
+
+	// プレイヤー座標取得
+	Vector3 p_pos;
+	me->my_player->Get_pos(p_pos);
+
+	p_pos.y += 5.0f;	// 少し上に
+
+	// 角度の値のベクトルとプレイヤーからカメラ位置算出
+	me->ipos.x = p_pos.x - vec.x;
+	me->ipos.y = p_pos.y - vec.y;
+	me->ipos.z = p_pos.z - vec.z;
+
+	// 注視点はプレイヤー
+	me->itarget = p_pos;
+
+	me->ipos.y += 10;
+	me->itarget.y += 10;
+
+	me->target = me->target * .5f + me->itarget * .5f;
 	me->pos = me->pos * 0.9f + me->ipos * 0.1f;
 
 	//	視点設定

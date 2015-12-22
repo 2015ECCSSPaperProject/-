@@ -17,6 +17,7 @@ public:
 	void Render();
 
 private:
+	int step;
 	int app_timer;	// 表示時間
 	iex2DObj *moji;
 };
@@ -117,6 +118,7 @@ private:
 	void SkillGauge();	// 左下のスキルゲージ
 	void Action();		// 右下のアクションUI
 	void TimeLimit();	// タイムリミット
+	void Telop_render();// テロップ
 
 
 	//===============================================
@@ -129,6 +131,8 @@ private:
 	bool isYooiDon;
 
 public:
+	static float tape_len;	// テロップテープの長さ(0～1)
+
 	//===============================================
 	//	初期化と解放
 	//===============================================

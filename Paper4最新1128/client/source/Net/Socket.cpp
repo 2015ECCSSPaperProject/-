@@ -243,7 +243,7 @@ void SocketManager::EndGame()
 {
 	// 終わる処理
 	BYTE com = END_GAME;
-	BYTE receive[2];
+	//BYTE receive[2];
 
 	// 皆がシーンメインに行ってこの関数までくるまで無限ループ
 	//while (1)

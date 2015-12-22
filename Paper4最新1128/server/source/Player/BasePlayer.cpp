@@ -131,6 +131,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	action[(int)ACTION_PART::MANHOLE] = new BasePlayer::Action::Manhole(this);
 	action[(int)ACTION_PART::THROUGH] = new BasePlayer::Action::Through(this);
 	action[(int)ACTION_PART::SYURIKEN] = new BasePlayer::Action::Syuriken(this);
+	action[(int)ACTION_PART::TRANS_FORM] = new BasePlayer::Action::TransForm(this);
 
 	Change_action(ACTION_PART::MOVE);	// Å‰‚ÍˆÚ“®ó‘Ô
 
@@ -354,7 +355,8 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 		else if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::KABUTO) me->select_skill = SKILL::KABUTO;
 		else if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::SYURIKEN) me->select_skill = SKILL::SYURIKEN;
 		if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::ZENRYOKU) me->select_skill = SKILL::ZENRYOKU;
-		me->Change_action(me->skill_data[(int)me->select_skill].do_action);
+		me->reserve_action = me->skill_data[(int)me->select_skill].do_action;
+		me->Change_action(ACTION_PART::TRANS_FORM);
 
 		//if (me->skill_data[(int)me->select_skill].unlock && me->skill_data[(int)me->select_skill].wait_time == 0)
 		//{
@@ -928,7 +930,7 @@ void BasePlayer::Action::Gun::Update(const CONTROL_DESC &_ControlDesc)
 	{
 		// Vs Poster
 		int poster_numbers[128];
-		paper_obj_mng->Can_dist(me->pos, 60.0f, poster_numbers);	// ”ÍˆÍ“à‚Ìƒ|ƒXƒ^[”Ô†Žæ“¾
+		paper_obj_mng->Can_dist(me->pos, 80.0f, poster_numbers);	// ”ÍˆÍ“à‚Ìƒ|ƒXƒ^[”Ô†Žæ“¾
 
 		for (int i = 0; poster_numbers[i] != -1; i++)	// -1(I’[)
 		{
@@ -960,10 +962,22 @@ void BasePlayer::Action::Gun::Update(const CONTROL_DESC &_ControlDesc)
 
 void BasePlayer::Action::Manhole::Initialize()
 {
+	me->move = VECTOR_ZERO;
+	me->invincible = true;	// –³“G
+
+	me->model_part = MODEL::NORMAL;
+
+	me->motion_no = 19;
+	me->Set_motion(19);
 }
 
 void BasePlayer::Action::Manhole::Update(const CONTROL_DESC &_ControlDesc)
 {
+	if (me->models[(int)me->model_part]->GetParam(0) == 2)
+	{
+		//pos.y = -1000;
+		me->Change_action(ACTION_PART::MOVE);
+	}
 }
 
 //*****************************************************************************
@@ -974,10 +988,25 @@ void BasePlayer::Action::Manhole::Update(const CONTROL_DESC &_ControlDesc)
 
 void BasePlayer::Action::Through::Initialize()
 {
+	me->move = VECTOR_ZERO;
+	me->invincible = true;	// –³“G
+
+	me->model_part = MODEL::NORMAL;
+
+	me->motion_no = 14;
+	me->Set_motion(14);
 }
 
 void BasePlayer::Action::Through::Update(const CONTROL_DESC &_ControlDesc)
 {
+	me->move.x = sinf(me->angleY)*2.0f;
+	me->move.y = .0f;
+	me->move.z = cosf(me->angleY)*2.0f;
+
+	if (1)
+	{
+		me->Change_action(ACTION_PART::MOVE);
+	}
 }
 
 
@@ -997,11 +1026,14 @@ void BasePlayer::Action::Syuriken::Initialize()
 	me->motion_no = 1;
 	me->Set_motion(1);
 
-	max_speed = 10.0f;
+	max_speed = 6.0f;
 	accel = max_speed;
 	kasoku = .25f;
 	move_vec = Vector3(sinf(me->angleY), 0, cosf(me->angleY));
 	syurikentaimaa = (int)timer->Get_second_limit();
+	r = false;
+
+	ServerManager::ResetControl(me->mynumber);
 }
 
 void BasePlayer::Action::Syuriken::Update(const CONTROL_DESC &_ControlDesc)
@@ -1009,11 +1041,55 @@ void BasePlayer::Action::Syuriken::Update(const CONTROL_DESC &_ControlDesc)
 	me->move = move_vec * accel;
 	if ((accel -= kasoku) < max_speed * .5f)
 		accel = max_speed * .5f;
+	//if (!r)
+	//{
+	//	if (_ControlDesc.controlFlag & (int)PLAYER_CONTROL::LEFT_CLICK ||
+	//		_ControlDesc.controlFlag & (int)PLAYER_CONTROL::ATTACK_BUTTON)
+	//	{
+	//		me->invincible = false;
+	//		me->Change_action(ACTION_PART::MOVE);
+	//	}
 
-	if (_ControlDesc.controlFlag & (int)PLAYER_CONTROL::LEFT_CLICK ||
-		syurikentaimaa - (int)timer->Get_second_limit() > 3) // 3•bŒã
+	//	if ((float)syurikentaimaa - timer->Get_second_limit() > .1f)r = true;
+	//}
+	//else
+	//{
+		if (_ControlDesc.controlFlag & (int)PLAYER_CONTROL::LEFT_CLICK ||
+			_ControlDesc.controlFlag & (int)PLAYER_CONTROL::RIGHT_CLICK ||
+			_ControlDesc.controlFlag & (int)PLAYER_CONTROL::ATTACK_BUTTON ||
+			syurikentaimaa - (int)timer->Get_second_limit() > 3) // 3•bŒã
+		{
+			me->invincible = false;
+			me->Change_action(ACTION_PART::MOVE);
+		}
+	//}
+}
+
+//*****************************************************************************
+//
+//		u•Ïgvó‘Ôˆ—
+//
+//*****************************************************************************
+
+void BasePlayer::Action::TransForm::Initialize()
+{
+	me->move = VECTOR_ZERO;
+	me->invincible = true;	// “S–C’†‚Í–³“G
+
+	me->model_part = MODEL::NORMAL;
+	me->motion_no = 12;
+	me->Set_motion(12);
+
+	hensintaimaa = (int)timer->Get_second_limit();	// Žg‚í‚ñ
+
+	ServerManager::ResetControl(me->mynumber);
+}
+
+void BasePlayer::Action::TransForm::Update(const CONTROL_DESC &_ControlDesc)
+{
+	if (me->models[(int)me->model_part]->GetParam(0) == 1)
 	{
 		me->invincible = false;
-		me->Change_action(ACTION_PART::MOVE);
+		me->Change_action(me->reserve_action);
 	}
 }

@@ -146,6 +146,10 @@ public:
 		//m_room.desc[i].mouseX = .0f;
 		//m_room.desc[i].mouseY = .0f;
 	}
+	static void ResetControl(int i)
+	{
+		m_room.desc[i].controlFlag = 0;
+	}
 	static void InitDesc()
 	{
 		for (int i = 0; i < PLAYER_MAX; i++)

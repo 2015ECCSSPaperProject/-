@@ -28,6 +28,14 @@ private:
 	enum IMAGE{ BACK, R1, R2, R3, R4, R5, R6, P1, P2, P3, P4, P5, P6, KEKKA, ACTION, NUMBER, MAX };
 	iex2DObj* image[IMAGE::MAX];
 
+	struct
+	{
+		Vector3 pos;
+		float angle;
+		iex3DObj* obj;
+		int motion_no;
+	}chara;
+
 	struct data
 	{
 		int score;

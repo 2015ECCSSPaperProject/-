@@ -108,6 +108,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	action[(int)ACTION_PART::MANHOLE] = new BasePlayer::Action::Manhole(this);
 	action[(int)ACTION_PART::THROUGH] = new BasePlayer::Action::Through(this);
 	action[(int)ACTION_PART::SYURIKEN] = new BasePlayer::Action::Syuriken(this);
+	action[(int)ACTION_PART::TRANS_FORM] = new BasePlayer::Action::TransForm(this);
 
 	Change_action(ACTION_PART::MOVE);	// ç≈èâÇÕà⁄ìÆèÛë‘
 
@@ -156,6 +157,7 @@ void BasePlayer::Update()
 	for (int i = 0; i < (int)SKILL::MAX; i++)
 	{
 		if (!skill_data[i].unlock)break;
+		if (skill_data[i].do_action == action_part || action_part == ACTION_PART::TRANS_FORM) continue;
 		(skill_data[i].wait_time > 0) ? skill_data[i].wait_time-- : skill_data[i].wait_time &= 0x00000000;
 	}
 }
@@ -249,6 +251,8 @@ void BasePlayer::Action::Move::Initialize()
 	me->m_controlDesc.mouseY = .0f;
 
 	me->model_part = MODEL::NORMAL;
+
+	me->se_receive = -1;
 
 	// ë“ã@ÉÇÅ[ÉVÉáÉìÉZÉbÉg
 	me->Set_motion(1);
@@ -646,6 +650,8 @@ void BasePlayer::Action::Gun::Initialize()
 	me->m_controlDesc.moveFlag &= 0x00000000;
 	me->m_controlDesc.rendFlag &= 0x00000000;
 
+	me->se_receive = -1;
+
 	// ÉÇÉfÉãÇìSñCÇ…ïœçX
 	me->model_part = MODEL::GUN;
 
@@ -658,10 +664,11 @@ void BasePlayer::Action::Gun::Update()
 {
 	if (me->models[(int)me->model_part]->GetParam(0) == 1)
 	{
-		se->Play("éÜìSñC", me->pos);
-		me->ExplosionAction();
-		EffectFireFlour(me->pos+me->Get_Flont(), FIRE_COLOR::BLUE, 3);
-
+		if (me->se_receive == -1){
+			me->se_receive = se->Play("éÜìSñC", me->pos);
+			me->ExplosionAction();
+			EffectFireFlour(me->pos + me->Get_Flont(), FIRE_COLOR::BLUE, 3);
+		}
 	}
 	Update_obj();
 }
@@ -695,15 +702,15 @@ void BasePlayer::Action::Manhole::Initialize()
 	me->m_controlDesc.rendFlag &= 0x00000000;
 
 	me->model_part = MODEL::NORMAL;
-	me->models[(int)me->model_part]->SetMotion(0);
+	me->models[(int)me->model_part]->SetMotion(19);
 }
 
 void BasePlayer::Action::Manhole::Update()
 {
-	//if (me->models[(int)me->model_part]->GetParam(0) == 1)
-	//{
-	//se->Play("éÜìSñC");
-	//}
+	if (me->models[(int)me->model_part]->GetParam(0) == 1)
+	{
+		se->Play("óéÇøÇÈ");
+	}
 	Update_obj();
 }
 
@@ -736,15 +743,11 @@ void BasePlayer::Action::Through::Initialize()
 	me->m_controlDesc.rendFlag &= 0x00000000;
 
 	me->model_part = MODEL::NORMAL;
-	me->models[(int)me->model_part]->SetMotion(0);
+	me->models[(int)me->model_part]->SetMotion(14);
 }
 
 void BasePlayer::Action::Through::Update()
 {
-	//if (me->models[(int)me->model_part]->GetParam(0) == 1)
-	//{
-	//se->Play("éÜìSñC");
-	//}
 	Update_obj();
 }
 
@@ -771,16 +774,57 @@ void BasePlayer::Action::Syuriken::Initialize()
 {
 	me->model_part = MODEL::SYURIKEN;
 	me->Set_motion(1);
+	trg = false;
 
 	se->Play("éËó†åï", me->pos);
 }
 
 void BasePlayer::Action::Syuriken::Update()
 {
+	if (!trg)
+	{
+		if (!(me->m_controlDesc.controlFlag & (int)PLAYER_CONTROL::RIGHT_CLICK))
+			trg = true;
+		me->m_controlDesc.controlFlag &= (0xff ^ (int)PLAYER_CONTROL::RIGHT_CLICK);
+	}
 	Update_obj();
 }
 
 void BasePlayer::Action::Syuriken::Render(iexShader *shader, char *name)
+{
+	me->models[(int)me->model_part]->Update();
+	if (shader)
+	{
+		me->models[(int)me->model_part]->Render(shader, name);
+	}
+	{
+		me->models[(int)me->model_part]->Render();
+	}
+}
+
+//*****************************************************************************
+//
+//		ÅuïœêgÅvèÛë‘èàóù
+//
+//*****************************************************************************
+
+void BasePlayer::Action::TransForm::Initialize()
+{
+	// ì¸óÕèÓïÒèâä˙âª
+	me->m_controlDesc.controlFlag &= 0x00000000;
+	me->m_controlDesc.moveFlag &= 0x00000000;
+	me->m_controlDesc.rendFlag &= 0x00000000;
+
+	me->model_part = MODEL::NORMAL;
+	me->Set_motion(12);
+}
+
+void BasePlayer::Action::TransForm::Update()
+{
+	Update_obj();
+}
+
+void BasePlayer::Action::TransForm::Render(iexShader *shader, char *name)
 {
 	me->models[(int)me->model_part]->Update();
 	if (shader)

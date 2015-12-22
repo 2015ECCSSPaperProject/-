@@ -33,7 +33,7 @@ public:
 	//===============================================
 	//	定数
 	//===============================================
-	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, PASTE, REND, FREEZE, DIE, RESPAWN, PLANE, GUN, MANHOLE, THROUGH, SYURIKEN, MAX };
+	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, PASTE, REND, FREEZE, DIE, RESPAWN, PLANE, GUN, MANHOLE, THROUGH, SYURIKEN, TRANS_FORM, MAX };
 	enum class DO_FLAG{ NONE, ATTACK, PASTE, REND, MAX };
 	enum class MODEL{ NORMAL, DIE, PLANE, GUN, SYURIKEN, MAX };
 	enum class SKILL{ GUN, SYURIKEN, KABUTO, ZENRYOKU, MAX };
@@ -277,9 +277,23 @@ protected:
 			float max_speed;
 			float accel;
 			float kasoku;
+			bool r;
 			Vector3 move_vec;
 		public:
 			Syuriken(BasePlayer*me) : Base(me){}
+
+			void Initialize();
+			void Update(const CONTROL_DESC &_ControlDesc);
+		};
+
+		//===========================================
+		//	返信
+		class TransForm : public Base
+		{
+		private:
+			int hensintaimaa;
+		public:
+			TransForm(BasePlayer*me) : Base(me){}
 
 			void Initialize();
 			void Update(const CONTROL_DESC &_ControlDesc);
@@ -291,9 +305,10 @@ protected:
 	//	委譲クラスへのポインタ
 	//===============================================
 	Action::Base *action[(unsigned int)ACTION_PART::MAX];
-	ACTION_PART action_part;	// 現在のプレイヤーのモード
+	ACTION_PART action_part;		// 現在のプレイヤーのモード
+	ACTION_PART reserve_action;		// 変身したときの予約
 
-	DO_FLAG do_flag;			// Zキー押したら何をするか
+	DO_FLAG do_flag;				// Zキー押したら何をするか
 
 
 	int		m_id;

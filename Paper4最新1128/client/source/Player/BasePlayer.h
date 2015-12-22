@@ -36,7 +36,7 @@ public:
 	//===============================================
 	//	íËêî
 	//===============================================
-	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, PASTE, REND, FREEZE, DIE, RESPAWN, PLANE, GUN, MANHOLE, THROUGH, SYURIKEN, MAX };
+	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, PASTE, REND, FREEZE, DIE, RESPAWN, PLANE, GUN, MANHOLE, THROUGH, SYURIKEN, TRANS_FORM, MAX };
 	enum class DO_FLAG{ NONE, ATTACK, PASTE, REND, MAX };
 	enum class MODEL{ NORMAL, DIE, PLANE, GUN, SYURIKEN, MAX };
 	enum class SKILL{ GUN, SYURIKEN, KABUTO, ZENRYOKU, MAX };
@@ -284,8 +284,22 @@ protected:
 		//	éËó†åï
 		class Syuriken : public Base
 		{
+		private:
+			bool trg;
 		public:
 			Syuriken(BasePlayer*me) : Base(me){}
+
+			void Initialize();
+			void Update();
+			void Render(iexShader *shader = nullptr, char *name = '\0');
+		};
+
+		//===========================================
+		//	ïœêg
+		class TransForm : public Base
+		{
+		public:
+			TransForm(BasePlayer*me) : Base(me){}
 
 			void Initialize();
 			void Update();
@@ -397,7 +411,9 @@ public:
 	void Set_poster_num(int no){ poster_num = no; }
 
 	// 0Å`1
-	float Get_skill_percentage(){ return 1.0f - ((float)skill_data[(int)select_skill].wait_time / (float)skill_data[(int)select_skill].cool_time); }
+	bool isUnlockSkill(int no){ return skill_data[no].unlock; }
+	int Get_select_skill(){ return (int)select_skill; }
+	float Get_skill_percentage(int no){ return 1.0f - ((float)skill_data[no].wait_time / (float)skill_data[no].cool_time); }
 
 	// ÉÇÉfÉã
 	iex3DObj* Get_Model(){ return models[(int)model_part]; }

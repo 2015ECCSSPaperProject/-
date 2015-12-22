@@ -220,15 +220,15 @@ void MyPlayer::Update_listener()
 void MyPlayer::Render(iexShader *shader, char *name)
 {
 	BasePlayer::Render(shader, name);
-	char str[64];
-	if (select_skill == (int)SKILL::GUN) sprintf(str, "紙鉄砲");
-	else if (select_skill == (int)SKILL::SYURIKEN) sprintf(str, "手裏剣");
-	else if (select_skill == (int)SKILL::KABUTO) sprintf(str, "兜");
-	else if (select_skill == (int)SKILL::ZENRYOKU) sprintf(str, "全力疾走");
+	//char str[64];
+	//if (select_skill == (int)SKILL::GUN) sprintf(str, "紙鉄砲");
+	//else if (select_skill == (int)SKILL::SYURIKEN) sprintf(str, "手裏剣");
+	//else if (select_skill == (int)SKILL::KABUTO) sprintf(str, "兜");
+	//else if (select_skill == (int)SKILL::ZENRYOKU) sprintf(str, "全力疾走");
 
 	// 
-	Text::Draw(32, 520, 0xff00ffff, "選択スキル : %s", str);
-	Text::Draw(32, 560, 0xff000000, "選択スキルのゲージ : %d", skill_data[(int)select_skill].wait_time);
+	//Text::Draw(32, 520, 0xff00ffff, "選択スキル : %s", str);
+	//Text::Draw(32, 560, 0xff000000, "選択スキルのゲージ : %d", skill_data[(int)select_skill].wait_time);
 	//DeferredManager.ForwardBigin();
 	//Text::Draw(32, 600, 0xff00ffff, "ゲージ : %d", skill_data[(int)select_skill].wait_time);
 

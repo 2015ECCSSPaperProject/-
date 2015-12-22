@@ -106,6 +106,9 @@ bool SceneMain::Initialize()
 	player_mng = new PlayerManager;
 	player_mng->Initialize();
 
+	extern int result_my_number;
+	result_my_number = SOCKET_MANAGER->GetID();
+
 	paper_obj_mng = new Paper_obj_mng;
 	paper_obj_mng->Initialize();
 

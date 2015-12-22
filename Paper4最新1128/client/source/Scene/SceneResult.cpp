@@ -19,6 +19,8 @@
 /*	グローバル変数	　*/
 /**********************/
 
+int result_my_number;
+
 //　スレッドを止める為に仮で作った
 //static int ThreadEND = false;
 
@@ -30,12 +32,17 @@ using namespace std;
 //******************************************************************
 void SceneResult::Set_ranking()
 {
+	int MAX;
 	for (int i = 0; i < PLAYER_MAX; i++)
 	{
 		datas[i].p_num = i;
 		datas[i].score = score_mng->Get(i);
+		if (datas[i].score == 0)
+		{
+			MAX = i;
+		}
 	}
-	for (int i = 0; i < PLAYER_MAX - 1; i++) for (int j = i + 1; j < PLAYER_MAX; j++)
+	for (int i = 0; i < MAX - 1; i++) for (int j = i + 1; j < MAX; j++)
 	{
 		if (datas[i].score < datas[j].score)
 		{
@@ -47,6 +54,18 @@ void SceneResult::Set_ranking()
 			datas[j].p_num = temp;
 		}
 	}
+
+	chara.motion_no = 0;
+	for (int i = 0; i < MAX; i++)
+	{
+		if (datas[i].p_num == result_my_number)
+		{
+			if (i == 0)chara.motion_no = 23;
+			else if (i == MAX - 1)chara.motion_no = 24;
+			else chara.motion_no = 22;
+			break;
+		}
+	}
 }
 
 bool SceneResult::Initialize()
@@ -56,37 +75,69 @@ bool SceneResult::Initialize()
 	iexLight::SetFog(800, 3000, 0);
 
 	// Fade処理
-	FadeControl::Setting(FadeControl::FADE_IN, 26);
+	FadeControl::Setting(FadeControl::FADE_IN_W, 16);
 
-	view = new iexView();
-	view->Set(Vector3(0, 30, -60), Vector3(0, 0, 0));
+	view = new iexView;
+	view->Set(Vector3(0, 30, -60), Vector3(0, 30, 0));
+	view->SetProjection(PI / 4, .1f, 500);
 
-	image[IMAGE::R1] = new iex2DObj("DATA/Image/result/rank1");
-	image[IMAGE::R2] = new iex2DObj("DATA/Image/result/rank2");
-	image[IMAGE::R3] = new iex2DObj("DATA/Image/result/rank3");
-	image[IMAGE::R4] = new iex2DObj("DATA/Image/result/rank4");
-	image[IMAGE::R5] = new iex2DObj("DATA/Image/result/rank5");
-	image[IMAGE::R6] = new iex2DObj("DATA/Image/result/rank6");
+	image[IMAGE::R1] = new iex2DObj("DATA/Image/result/rank1.png");
+	image[IMAGE::R2] = new iex2DObj("DATA/Image/result/rank2.png");
+	image[IMAGE::R3] = new iex2DObj("DATA/Image/result/rank3.png");
+	image[IMAGE::R4] = new iex2DObj("DATA/Image/result/rank4.png");
+	image[IMAGE::R5] = new iex2DObj("DATA/Image/result/rank5.png");
+	image[IMAGE::R6] = new iex2DObj("DATA/Image/result/rank6.png");
 	image[IMAGE::P1] = new iex2DObj("DATA/Image/lobby/red.png");
 	image[IMAGE::P2] = new iex2DObj("DATA/Image/lobby/blue.png");
 	image[IMAGE::P3] = new iex2DObj("DATA/Image/lobby/yellow.png");
 	image[IMAGE::P4] = new iex2DObj("DATA/Image/lobby/green.png");
 	image[IMAGE::P5] = new iex2DObj("DATA/Image/lobby/purple.png");
 	image[IMAGE::P6] = new iex2DObj("DATA/Image/lobby/pink.png");
-	image[IMAGE::BACK] = new iex2DObj("DATA/Image/lobby/select.png");
+	image[IMAGE::BACK] = new iex2DObj("DATA/Image/result/back.png");
 	image[IMAGE::ACTION] = new iex2DObj("DATA/UI/action/1.png");
 	image[IMAGE::KEKKA] = new iex2DObj("DATA/Image/result/result.png");
 	image[IMAGE::NUMBER] = new iex2DObj("DATA/UI/Num.png");
 
 	Set_ranking();
 
+	// キャラクター
+	chara.pos = Vector3(19, 10, 0);
+	chara.angle = PI;
+	Texture2D *texture;
+	switch (result_my_number)
+	{
+	case 1:
+		texture = iexTexture::Load("DATA/CHR/player/player_blue.png");
+		break;
+	case 2:
+		texture = iexTexture::Load("DATA/CHR/player/player_yellow.png");
+		break;
+	case 3:
+		texture = iexTexture::Load("DATA/CHR/player/player_green.png");
+		break;
+	case 4:
+		texture = iexTexture::Load("DATA/CHR/player/player_purple.png");
+		break;
+	case 5:
+		texture = iexTexture::Load("DATA/CHR/player/player_pink.png");
+		break;
+	default:
+		texture = iexTexture::Load("DATA/CHR/player/player_red.png");
+		break;
+	}
+
+	chara.obj = new iex3DObj("DATA/CHR/player/run.IEM");
+	chara.obj->SetTexture(texture, 0);
+	chara.obj->SetAngle(chara.angle);
+	chara.obj->SetScale(1.0f);
+	chara.obj->SetPos(chara.pos);
+	chara.obj->SetMotion(chara.motion_no);
+
 	return true;
 }
 
 SceneResult::~SceneResult()
 {
-	//ThreadEND = true;
-
 	delete view;
 	for (int i = 0; i < IMAGE::MAX; i++)delete image[i];
 }
@@ -102,71 +153,7 @@ void SceneResult::Update()
 	//フェード処理
 	FadeControl::Update();
 
-	//switch (step)
-	//{
-	//case STEP::START_NO:
-	//	//　Aボタン押したら
-	//	if (KEY_Get(KEY_ENTER) == 3)
-	//	{
-	//		step = STEP::START_OK;
-	//	}
-
-	//	break;
-	//case STEP::START_OK:
-	//{
-	//					   //　まだ準備できてないので戻ります
-	//					   if (KEY_Get(KEY_ENTER) == 3)
-	//					   {
-	//						   step = STEP::START_NO;
-	//					   }
-
-	//					   //　追記：同期して
-	//					   // 皆isResdy==2だったらゲーム画面へ！！
-	//					   //  enum { READY = 2 };
-	//					   //int count(0);
-	//					   //int active(0);
-	//					   //for (int i = 0; i < PLAYER_MAX; ++i)
-	//					   //{
-	//					   // if (SOCKET_MANAGER->GetUser(i).com == UserData::ACTIVE_USER)
-	//					   //  ++active;
-
-	//					   // // isReadyが全員OKになってたら　カウントするよ
-	//					   // if (SOCKET_MANAGER->GetUser(i).isReady == UserData::READY_MUTCH_ALL)
-	//					   //  ++count;
-	//					   //}
-	//					   ////　全員OKだったら飛ぶ
-	//					   //if (active == count)
-	//					   //{
-	//					   // MainFrame->ChangeScene(new SceneMain());
-	//					   //}
-
-	//					   enum { READY = 2 };
-	//					   if (SOCKET_MANAGER->GetUser(SOCKET_MANAGER->GetID()).isReady == READY)
-	//					   {
-	//						   //	初期シーン登録
-	//						   //ThreadEND = true;
-	//						   //MainFrame->ChangeScene(new SceneMain());	
-
-	//						   step = STEP::GAME;
-
-	//					   }
-
-	//}
-	//	break;
-	//case STEP::GAME:
-
-	//	//if (KEY_Get(KEY_ENTER, 0) == 3)
-	//{
-	//				   MainFrame->ChangeScene(new SceneSelect());
-	//}
-
-	//	break;
-
-	//default:
-
-
-	//	break;
-	//}
+	chara.obj->Animation();
 
 	if (KEY_Get(KEY_ENTER) == 3)
 	{
@@ -186,8 +173,12 @@ void SceneResult::Render()
 
 	view->Clear();
 
-	//image[IMAGE::BACK]->Render(0, 0, 1280, 720, 0, 0, 1280, 720);
-	iexPolygon::Rect(0, 0, 1280, 720, RS_COPY, 0xffffffff);
+	// 背景
+	image[IMAGE::BACK]->Render(0, 0, 1280, 720, 0, 0, 1280, 720, RS_COPY, 0xffffffff, 1.0f);
+
+	// キャラクター
+	chara.obj->Update();
+	chara.obj->Render();
 
 	// 結果発表
 	image[IMAGE::KEKKA]->Render(12, 28, 256, 64, 0, 0, 256, 64);
@@ -220,7 +211,7 @@ void SceneResult::Render()
 	}
 
 	// ランク表示
-	image[IMAGE::R1 + Get_rank(SOCKET_MANAGER->GetID())]->Render(848, 52, 256, 128, 0, 0, 256, 128);
+	image[IMAGE::R1 + Get_rank(result_my_number)]->Render(848, 52, 256, 128, 0, 0, 256, 128);
 
 	// スコア描画
 	//Text::Draw(320, 320, 0xffffffff, "スコア : %d",limited_data->Get_score(SOCKET_MANAGER->GetID()));
