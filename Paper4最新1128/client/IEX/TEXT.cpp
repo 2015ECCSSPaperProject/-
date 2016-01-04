@@ -12,7 +12,7 @@ void Text::Init(){
 	fd.Width = 0;
 	fd.Italic = 0;
 	fd.CharSet = SHIFTJIS_CHARSET;
-	strcpy(fd.FaceName, "メイリオ");
+	strcpy(fd.FaceName, "HG創英角ポップ体");
 
 	D3DXCreateFontIndirect(iexSystem::GetDevice(), &fd, &font);
 }

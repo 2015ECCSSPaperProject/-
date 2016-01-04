@@ -12,13 +12,15 @@
 
 class UDPServer;
 
+static const int nameRen = 18;
+
 //---------------------------------------------------------------------
 //  プレイヤーのログイン状態
 //---------------------------------------------------------------------
 struct UserData
 {
 	BYTE com;
-	char name[9];
+	char name[nameRen];
 	BYTE team;
 	BYTE isReady;
 

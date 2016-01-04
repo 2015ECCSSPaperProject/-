@@ -393,13 +393,13 @@ void SceneMain::Render()
 		sky->Render();
 
 		//　プレイヤー
-		//for (int i = 0; i < PLAYER_MAX; ++i)
-		//{
-		//	player[i]->Render();
-		//	Text::Draw(1100, 20 + (i * 32), 0xff00ffff, "pos.x->%.2f", player[i]->Get_pos().x);
+		for (int i = 0; i < PLAYER_MAX; ++i)
+		{
+			//player[i]->Render();
+			//Text::Draw(1100, 20 + (i * 32), 0xff00ffff, "pos.x->%.2f", player[i]->Get_pos().x);
 
-		//	Text::Draw(950, 20 + (i * 32), 0xff00ffff, "名前：%s", SOCKET_MANAGER->GetUser(i).name);
-		//}
+			Text::Draw(950, 20 + (i * 32), 0xff00ffff, "名前：%s", SOCKET_MANAGER->GetUser(i).name);
+		}
 		player_mng->Render();
 
 		paper_obj_mng->Render(player_mng->Get_player(SOCKET_MANAGER->GetID()), shaderD, "copy");
@@ -424,6 +424,12 @@ void SceneMain::Render()
 
 		// 退魔ー(UIで描画)
 		//timer->Render();
+
+		//　プレイヤーの名前
+		for (int i = 0; i < PLAYER_MAX; ++i)
+		{
+			Text::Draw(950, 20 + (i * 32), 0xff00ffff, "名前：%s", SOCKET_MANAGER->GetUser(i).name);
+		}
 
 		//フェード処理
 		FadeControl::Render();
