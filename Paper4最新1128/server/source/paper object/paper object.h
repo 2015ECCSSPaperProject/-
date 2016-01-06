@@ -4,6 +4,7 @@
 #pragma once
 
 struct Vector3;
+class iexMesh;
 class iex3DObj;
 
 class BasePlayer;
@@ -14,7 +15,7 @@ public:
 	Paper_obj();
 	virtual ~Paper_obj();
 
-	virtual void Initialize(int model_type, iex3DObj *model, int point);
+	virtual void Initialize(int model_type, int point);
 
 	virtual void Update() = 0;
 
@@ -45,7 +46,7 @@ public:
 
 	const Vector3& Get_pos();
 
-	void Set_pose(const float angle, const Vector3& pos);
+	virtual void Set_pose(const float angle, const Vector3& pos);
 
 	//**************************************************
 
@@ -57,11 +58,38 @@ protected:
 	int number;
 
 	int model_type;
-	iex3DObj *model; // 3Dモデル
 
 	Vector3 position; // 位置
 	Vector3 forward; // ポスターの向き<表>
 	float angle; // 向きを model に渡すよう
 
 	int point; // 点数
+};
+
+class Paper_obj_Mesh : public Paper_obj
+{
+public:
+	Paper_obj_Mesh();
+	Paper_obj_Mesh( int model_type, iexMesh *model, int point );
+	virtual void Initialize( int model_type, iexMesh *model, int point );
+	virtual ~Paper_obj_Mesh();
+
+	void Set_pose( const float angle, const Vector3& pos );
+
+protected:
+	iexMesh *model; // 3Dモデル
+};
+
+class Paper_obj_3DObj : public Paper_obj
+{
+public:
+	Paper_obj_3DObj();
+	Paper_obj_3DObj( int model_type, iex3DObj *model, int point );
+	virtual void Initialize( int model_type, iex3DObj *model, int point );
+	virtual ~Paper_obj_3DObj();
+
+	void Set_pose( const float angle, const Vector3& pos );
+
+protected:
+	iex3DObj *model; // 3Dモデル
 };

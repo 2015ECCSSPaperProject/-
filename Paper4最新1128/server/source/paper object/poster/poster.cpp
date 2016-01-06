@@ -13,37 +13,10 @@
 
 // ‘Ò‹@
 void Poster::Mode_waite::Initialize()
-{
-	me->model->SetMotion((int)MOTION_NUMBER::WAITE);
-}
+{}
 void Poster::Mode_waite::Update()
 {}
 void Poster::Mode_waite::Render()
-{
-	if (me->model != nullptr)
-	{
-		me->model->Update();
-		me->model->Render();
-	}
-}
-
-// ”j‚ê‚é
-void Poster::Mode_rend::Initialize()
-{
-	me->model->SetMotion((int)MOTION_NUMBER::REND);
-}
-void Poster::Mode_rend::Update()
-{
-	if (me->model)
-		me->model->Animation();
-
-	if (me->model->GetFrame() >= 47)
-	{
-		me->number = PLAYER_MAX;
-		me->Change_mode(MODE::WAITE);
-	}
-}
-void Poster::Mode_rend::Render()
 {
 	if (me->model != nullptr)
 	{
@@ -60,11 +33,17 @@ void Poster::Change_mode(MODE m)
 
 
 
-Poster::Poster() : Paper_obj(), mode(MODE::WAITE)
+Poster::Poster() : Paper_obj_Mesh(), mode(MODE::WAITE)
 {
 	mode_list[(int)MODE::WAITE] = new Mode_waite(this);
-	mode_list[(int)MODE::REND] = new Mode_rend(this);
 }
+
+Poster::Poster( int model_type, iexMesh *model, int point ) : Paper_obj_Mesh(), mode( MODE::WAITE )
+{
+	mode_list[( int ) MODE::WAITE] = new Mode_waite( this );
+	Initialize( model_type, model, point );
+}
+
 Poster::~Poster()
 {
 	for (int i = 0; i < (int)MODE::MAX; i++)
@@ -74,9 +53,9 @@ Poster::~Poster()
 	Release();
 }
 
-void Poster::Initialize(int model_type, iex3DObj *model, int point)
+void Poster::Initialize( int model_type, iexMesh *model, int point )
 {
-	Paper_obj::Initialize(model_type, model, point);
+	Paper_obj_Mesh::Initialize( model_type, model, point );
 
 	range.forward = 10.0f;
 	range.wide = 5.0f;
@@ -154,18 +133,18 @@ void Poster::Do_playeraction(BasePlayer *player, int number)
 	// ”j‚ê‚é
 	else
 	{
-		Change_mode(MODE::REND);
+		this->number = PLAYER_MAX;
 	}
 }
 
 void Poster::Rend(int number)
 {
-	Change_mode(MODE::REND);
+	this->number = PLAYER_MAX;
 }
 
 void Poster::Rend()
 {
-	Change_mode(MODE::REND);
+	this->number = PLAYER_MAX;
 }
 
 void Poster::Paste(int number)
@@ -176,10 +155,10 @@ void Poster::Paste(int number)
 
 bool Poster::Can_do(BasePlayer *player, int number)
 {
-	if (mode == MODE::REND) // ”j‚ê‚Ä‚é“r’†
+	if (this->number == number) // “¯‚¶F
 		return false;
 
-	if (this->number == number) // “¯‚¶F
+	if( this->number == PLAYER_MAX )
 		return false;
 
 	// ˆÊ’u‚ÆŒü‚«”»’è
@@ -207,7 +186,7 @@ bool Poster::Can_do(BasePlayer *player, int number)
 
 bool Poster::Can_do(BasePlayer *player)
 {
-	if (mode == MODE::REND) // ”j‚ê‚Ä‚é“r’†
+	if( this->number == PLAYER_MAX )
 		return false;
 
 	// ˆÊ’u‚ÆŒü‚«”»’è
@@ -234,7 +213,7 @@ bool Poster::Can_do(BasePlayer *player)
 
 bool Poster::Can_dist(const Vector3 &pos, float dist, int number)
 {
-	if (mode == MODE::REND) // ”j‚ê‚Ä‚é“r’†
+	if (this->number == PLAYER_MAX)
 		return false;
 
 	if (this->number == number) // “¯‚¶F
@@ -248,7 +227,7 @@ bool Poster::Can_dist(const Vector3 &pos, float dist, int number)
 
 bool Poster::Can_dist(const Vector3 &pos, float dist)
 {
-	if (mode == MODE::REND) // ”j‚ê‚Ä‚é“r’†
+	if( this->number == PLAYER_MAX ) // ”j‚ê‚Ä‚é“r’†
 		return false;
 
 	if (!Check_dist(pos, dist))	// ‹——£”»’è
@@ -300,5 +279,5 @@ void Poster::Get_send_data( char *out )
 {
 	Poster_send_data *data = ( Poster_send_data* ) out;
 	data->number = number;
-	data->anim_no = model->GetFrame();
+	data->anim_no = 0;
 }

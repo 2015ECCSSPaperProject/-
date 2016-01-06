@@ -36,4 +36,5 @@ private:
 	// PaperDataƒLƒ…[
 	queue<PaperData> EventQueue;
 
+	std::mutex mtx;
 };

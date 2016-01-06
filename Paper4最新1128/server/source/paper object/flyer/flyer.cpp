@@ -10,7 +10,7 @@ const float Flyer::DIST = 10.0f;
 
 
 
-Flyer::Flyer() : Paper_obj()
+Flyer::Flyer() : Paper_obj_3DObj()
 {}
 
 Flyer::~Flyer()

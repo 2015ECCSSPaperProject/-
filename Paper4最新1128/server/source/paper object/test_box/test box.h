@@ -5,7 +5,7 @@
 #pragma once
 
 // Paper_objのテストで使ったクラス
-class Test_box : public Paper_obj
+class Test_box : public Paper_obj_3DObj
 {
 public:
 	enum class MODE

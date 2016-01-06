@@ -2,18 +2,15 @@
 #include "iextreme.h"
 #include "paper object.h"
 
-Paper_obj::Paper_obj() : model_type(0), model(nullptr), position(0, 0, 0), forward(0, 0, 1), angle(0), point(0)
+Paper_obj::Paper_obj() : model_type(0), position(0, 0, 0), forward(0, 0, 1), angle(0), point(0)
 {}
 
 Paper_obj::~Paper_obj()
-{
-	delete model;
-}
+{}
 
-void Paper_obj::Initialize(int model_type, iex3DObj *model, int point)
+void Paper_obj::Initialize(int model_type, int point)
 {
 	this->model_type = model_type;
-	this->model = model->Clone();
 	this->point = point;
 }
 
@@ -54,8 +51,61 @@ void Paper_obj::Set_pose(const float angle, const Vector3& pos)
 	forward.z = cosf(angle);
 
 	this->angle = angle;
-	model->SetAngle(angle);
-
 	this->position = pos;
-	model->SetPos(position);
+}
+
+
+
+void Paper_obj_Mesh::Initialize( int model_type, iexMesh *model, int point )
+{
+	Paper_obj::Initialize( model_type, point );
+	this->model = model->Clone();
+}
+
+Paper_obj_Mesh::Paper_obj_Mesh( int model_type, iexMesh *model, int point )
+{
+	Initialize( model_type, model, point );
+}
+
+Paper_obj_Mesh::~Paper_obj_Mesh()
+{
+	delete model;
+}
+
+void Paper_obj_Mesh::Set_pose( const float angle, const Vector3& pos )
+{
+	Paper_obj::Set_pose( angle, pos );
+	model->SetAngle( angle );
+	model->SetPos( position );
+}
+
+Paper_obj_Mesh::Paper_obj_Mesh() : model( nullptr )
+{}
+
+
+
+Paper_obj_3DObj::Paper_obj_3DObj() : model( nullptr )
+{}
+
+Paper_obj_3DObj::Paper_obj_3DObj( int model_type, iex3DObj *model, int point )
+{
+	Initialize( model_type, model, point );
+}
+
+void Paper_obj_3DObj::Initialize( int model_type, iex3DObj *model, int point )
+{
+	Paper_obj::Initialize( model_type, point );
+	this->model = model->Clone();
+}
+
+Paper_obj_3DObj::~Paper_obj_3DObj()
+{
+	delete model;
+}
+
+void Paper_obj_3DObj::Set_pose( const float angle, const Vector3& pos )
+{
+	Paper_obj::Set_pose( angle, pos );
+	model->SetAngle( angle );
+	model->SetPos( position );
 }

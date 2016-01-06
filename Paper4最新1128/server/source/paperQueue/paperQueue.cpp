@@ -4,6 +4,7 @@
 // 初期化
 void PaperQueue::Clear()
 {
+	std::lock_guard<std::mutex> lock( mtx );
 	// 空になるまでポップ
 	for( ;; )
 	{
@@ -16,17 +17,19 @@ void PaperQueue::Clear()
 		EventQueue.pop();
 
 	}
-
 }
 
 void PaperQueue::Push( PaperData pData )
 {
+	std::lock_guard<std::mutex> lock( mtx );
 	// ↑のイベントをキューへプッシュ!
 	EventQueue.push( pData );
 }
 
 PaperData PaperQueue::Update()
 {
+	std::lock_guard<std::mutex> lock( mtx );
+
 	PaperData sendData;
 	sendData.ID = -1;	//ダミー
 	sendData.from = -1;

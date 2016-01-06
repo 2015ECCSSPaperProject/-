@@ -6,7 +6,7 @@
 
 void Test_box::Initialize(int model_type, iex3DObj *model, int point)
 {
-	Paper_obj::Initialize(model_type, model, point);
+	Paper_obj_3DObj::Initialize( model_type, model, point );
 	mode = MODE::WAITE;
 	number = 0;
 }

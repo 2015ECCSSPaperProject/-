@@ -3,13 +3,12 @@
 
 class BasePlayer;
 
-class Poster : public Paper_obj
+class Poster : public Paper_obj_Mesh
 {
 private:
 	enum class MOTION_NUMBER
 	{
 		WAITE = 0,
-		REND = 1
 	};
 
 	struct 
@@ -23,7 +22,6 @@ private:
 	enum class MODE
 	{
 		WAITE,
-		REND,
 		MAX
 	}mode;
 	// モード
@@ -47,23 +45,15 @@ private:
 		void Update() override;
 		void Render() override;
 	};
-	// 破られてる
-	class Mode_rend : public Mode
-	{
-	public:
-		Mode_rend(Poster *me) :Mode(me){}
-		void Initialize() override;
-		void Update() override;
-		void Render() override;
-	};
 
 	void Change_mode(MODE mode);
 
 public:
 	Poster();
+	Poster( int model_type, iexMesh *model, int point );
 	~Poster();
 
-	void Initialize(int model_type, iex3DObj *model, int point);
+	void Initialize(int model_type, iexMesh *model, int point);
 	void Release();
 	void Update();
 	void Render();
@@ -97,7 +87,7 @@ public:
 	// テスト
 	void Change_user(int number);
 
-	int Get_animation_frame(){ return model->GetFrame(); }
+	int Get_animation_frame(){ return 0; }
 
 	//**************************************************
 

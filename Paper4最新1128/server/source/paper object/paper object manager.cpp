@@ -229,8 +229,7 @@ void Paper_obj_mng::Load_poster()
 		angle = Degree_to_radian( angle );
 		infs >> pos;
 		infs >> point;
-		p = new Poster;
-		p->Initialize( 0, &original_model[0], point );
+		p = new Poster( 0, &original_model[0], point );
 		p->Set_pose( angle, pos );
 		obj_array.push_back( p );
 		this->number_of_objects++;

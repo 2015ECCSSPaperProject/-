@@ -3,7 +3,7 @@
 
 #pragma once
 
-class Flyer : public Paper_obj
+class Flyer : public Paper_obj_3DObj
 {
 private:
 	static const float DIST;
