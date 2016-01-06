@@ -411,10 +411,11 @@ void SocketManager::UpdateStage()
 	unsigned int Paper_obj_size = sizeof( PaperData );
 
 	unsigned int size = telop_size + Paper_obj_size;
+	// ŽóM
 	char *receive_data = new char[size];
 
 	m_pClient->Receive(receive_data, size);
-
+	// Ý’è
 	int *telopID_p = (int*)(receive_data);
 	ui->Set_telopID(*(telopID_p));
 	//paper_obj_mng->Set_receive_data( receive_data + telop_size );

@@ -89,6 +89,7 @@ public:
 		EXIT_USER = 2,
 		TEAM_DATA = 3,
 		INIT_GAME_DATA = 4,
+
 		/*	USER_INIT,*/
 		USER_DATA = 5,
 		STAGE_DATA = 6,

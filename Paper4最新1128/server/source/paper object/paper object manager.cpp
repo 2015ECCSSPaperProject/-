@@ -241,69 +241,34 @@ void Paper_obj_mng::Load_flyer()
 {
 	std::ifstream infs( "DATA/MATI/flyer pos.txt" );
 	std::string str;
-	int num_flyer( 0 );
-	Vector3 senter( 0, 0, 0 );
-	float radius( 0.0f );
-	float second( 0.0f );
 
-	unsigned char flag( 0 );
-	while( true )
+	unsigned int time = 0;
+	while( !infs.eof() )
 	{
-		if( flag != 0x0f )
+		infs >> str; // 文字列読み込み
+		if( str == "time" ) // 発生時間
 		{
-			// 枚数 中心 半径 発生
-			if( infs.eof() )
-				break;
-			infs >> str;
-
-			if( str == "枚数" )
-			{
-				infs >> num_flyer;
-				flag |= 0x1;
-				continue;
-			}
-
-			if( str == "中心" )
-			{
-				infs >> senter;
-				flag |= 0x1 << 1;
-				continue;
-			}
-
-			if( str == "半径" )
-			{
-				infs >> radius;
-				flag |= 0x1 << 2;
-				continue;
-			}
-
-			if( str == "発生" )
-			{
-				infs >> second;
-				flag |= 0x1 << 3;
-				continue;
-			}
+			infs >> time;
 		}
-		flag = 0;
-
-		Flyer *p;
-		Event_advent_paper_obj *ev;
-		for( int i = 0; i < num_flyer; i++ )
+		else
 		{
-			p = new Flyer;
-			p->Initialize( 1, &original_model[1], 5 );
+			// 角度
+			float angle = std::stof( str, 0 );
 			// 位置
-			Vector3 shift( 0, 0, 0 );
-			shift.x = ( float ) rand() / ( float ) RAND_MAX;
-			shift.z = 1 - shift.x;
-			float length = ( float ) rand() / ( float ) RAND_MAX * radius;
-			p->Set_pose( .0f, senter + ( shift * length ) );
-
+			Vector3 pos;
+			infs >> pos.x;
+			infs >> pos.y;
+			infs >> pos.z;
+			// フライヤー作成
+			Flyer *p = new Flyer;
+			p->Initialize( 1, &original_model[1], 5 );
+			p->Set_pose( angle, pos );
 			obj_array.push_back( p );
 			this->number_of_objects++;
-
+			// イベント設定
+			Event_advent_paper_obj *ev;
 			ev = new Event_advent_paper_obj( p );
-			ev->Set_time( ( unsigned int ) ( second * 1000 ) );
+			ev->Set_time( ( unsigned int ) ( time * 1000 ) );
 			ev->Set_telop_id( 1 );
 			event_list->push( ev );
 		}

@@ -59,6 +59,9 @@ protected:
 
 	void Load();
 
+	void Load_poster();
+
+	void Load_flyer();
 
 	// –îˆó
 	iex2DObj *mark;

@@ -3,21 +3,37 @@
 #include "../paper object.h"
 
 #include "flyer.h"
+#include "../../timer/Timer.h"
 
-void Flyer::Initialize( iex3DObj *model )
+void Flyer::Initialize( iex3DObj *model, int start_time )
 {
 	Paper_obj::Initialize( model );
+	number = PLAYER_MAX;
+	high = 50;
+	this->start_time = start_time;
 }
 
 void Flyer::Update()
 {
 	if( number == PLAYER_MAX )
-		return;
+	{
+		// oŒ»
+		if( start_time >= timer->Get_limit_time() )
+		{
+			number = 0;
+			start_time = UINT_MAX;
+		}
+		else
+			return;
+	}
 
 	if( model == nullptr )
 		return;
 
-	model->SetPos( position );
+	high -= 0.1f;
+	if( high < 0 )
+		high = 0;
+	model->SetPos( position.x, position.y + high, position.z );
 	model->Animation();
 	model->Update();
 }

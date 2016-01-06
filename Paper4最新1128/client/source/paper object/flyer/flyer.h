@@ -7,7 +7,7 @@
 class Flyer : public Paper_obj
 {
 public:
-	void Initialize( iex3DObj *model ) override;
+	void Initialize( iex3DObj *model, int start_time );
 	void Update() override;
 	void Render( iexShader *shader = nullptr, char *name = '\0' ) override;
 
@@ -17,4 +17,9 @@ public:
 
 	void Set_receive_data( char *in )override;
 
+
+
+private:
+	float high; // —‰º’†‚Ì‚‚³
+	int start_time; // —‰ºŠJn •b
 };

@@ -12,7 +12,7 @@ class Area_mng
 public:
 	~Area_mng();
 
-	void Push(char *filename); // mesh‚Ì
+	void Push(char *filename, int time ); // mesh‚Ì
 
 	void Open(int index);
 

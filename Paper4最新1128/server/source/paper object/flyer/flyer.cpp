@@ -11,7 +11,10 @@ const float Flyer::DIST = 10.0f;
 
 
 Flyer::Flyer() : Paper_obj_3DObj()
-{}
+{
+	number = PLAYER_MAX;
+	high = 50;
+}
 
 Flyer::~Flyer()
 {}
@@ -20,20 +23,15 @@ Flyer::~Flyer()
 
 void Flyer::Update()
 {
-	if (number != PLAYER_MAX)
-	{
-		position.y -= 0.1f;
-		if( position.y < 0 )
-		{
-			position.y = 0;
-		}
-		else
-		{
-			model->SetPos( position );
-			model->Animation();
-			model->Update();
-		}
-	}
+	if( number == PLAYER_MAX )
+		return;
+
+	high -= 0.1f;
+	if( high < 0 )
+		high = 0;
+	model->SetPos( position.x, position.y + high, position.z );
+	model->Animation();
+	model->Update();
 }
 
 

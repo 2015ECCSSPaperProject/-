@@ -35,4 +35,7 @@ public:
 	unsigned int Get_send_data_size ();
 
 	void Get_send_data ( char *out );
+
+private:
+	float high; // —‰º’†‚Ì‚‚³
 };

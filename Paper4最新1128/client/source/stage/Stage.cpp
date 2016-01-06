@@ -33,8 +33,8 @@ void Stage::Initialize()
 
 
 	area = new Area_mng;
-	area->Push("./DATA/MATI/area/test area 1.IMO");
-	area->Push("./DATA/MATI/area/test area 2.IMO");
+	area->Push("./DATA/MATI/area/test area 1.IMO", 40);
+	area->Push("./DATA/MATI/area/test area 2.IMO", 20);
 }
 
 void Stage::Release()
@@ -49,9 +49,7 @@ void Stage::Release()
 }
 
 void Stage::Update()
-{
-
-}
+{}
 
 void Stage::Render(iexShader *shader, char *name)
 {

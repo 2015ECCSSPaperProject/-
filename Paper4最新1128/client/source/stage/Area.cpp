@@ -1,12 +1,13 @@
 
 #include "Area.h"
 #include "../../IEX/iextreme.h"
+#include "../timer/Timer.h"
 
 class Area
 {
 public:
 	Area();
-	Area(char *filename);
+	Area(char *filename, int time);
 	~Area();
 
 	void Set_mesh(char *filename);
@@ -20,6 +21,8 @@ public:
 
 	bool Is_work();
 
+	int time_to_break; // è¡Ç¶ÇÈéûä‘
+
 protected:
 	bool is_work; // îªíËÇÇ∆ÇÈÇ©
 	iexMesh *wall;
@@ -28,9 +31,10 @@ protected:
 Area::Area() : wall(nullptr), is_work(true)
 {}
 
-Area::Area(char *filename) : wall(nullptr), is_work(true)
+Area::Area(char *filename, int time) : wall(nullptr), is_work(true)
 {
 	Set_mesh(filename);
+	time_to_break = time;
 }
 
 Area::~Area()
@@ -87,9 +91,9 @@ Area_mng::~Area_mng()
 		delete area_array[i];
 }
 
-void Area_mng::Push(char *filename)
+void Area_mng::Push(char *filename, int time)
 {
-	area_array.push_back(new Area(filename));
+	area_array.push_back(new Area(filename, time));
 }
 
 void Area_mng::Open(int index)
@@ -99,6 +103,14 @@ void Area_mng::Open(int index)
 
 void Area_mng::Render(iexShader *shader, char *name)
 {
+	for( unsigned int i = 0; i < area_array.size(); i++ )
+	{
+		if( area_array[i]->time_to_break > timer->Get_limit_time() )
+		{
+			area_array[i]->Open();
+		}
+	}
+
 	if (shader)
 	{
 		for (unsigned int i = 0; i < area_array.size(); i++)
