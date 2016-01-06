@@ -2,6 +2,7 @@
 #pragma once
 
 #include "iextreme.h"
+#include <vector>
 
 class iexMesh;
 class BasePlayer;
@@ -9,13 +10,6 @@ class Area_mng;
 
 class Stage
 {
-private:
-	iexMesh *show_model, *collision_model;
-
-	float Length(Vector3 &pos, Vector3 &v);
-
-	Area_mng *area;
-
 public:
 	Stage();
 	~Stage();
@@ -32,6 +26,15 @@ public:
 
 	unsigned int Area_Get_numof();
 	void Area_Is_work(unsigned int index, bool in);
+
+private:
+	std::vector<iexMesh*>show_model, collision_model;
+
+	float Length( Vector3 &pos, Vector3 &v );
+
+	Area_mng *area;
+
+	void Load_mapdata();
 };
 
 extern Stage *stage;

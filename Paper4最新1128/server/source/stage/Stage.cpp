@@ -24,7 +24,7 @@ void Stage::Initialize()
 	show_model = new iexMesh("DATA/MATI/stage_machi.IMO");
 	collision_model = new iexMesh("DATA/MATI/stage_atari.IMO");
 	//show_model = new iexMesh("../stage_machi.IMO");
-	//collision_model = new iexMesh("../stage_machi.IMO");
+	//collision_model = new iexMesh("DATA/MATI/stage_machi.IMO");
 
 	if (area)delete area;
 	area = new Area_mng;
