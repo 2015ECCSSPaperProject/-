@@ -9,6 +9,7 @@
 
 class UDPClient;
 
+static const int nameRen= 18;
 
 //===================================================================================
 //   
@@ -19,7 +20,7 @@ class UDPClient;
 struct UserData
 {
 	BYTE	com;		//	データ形式	
-	char	name[9];	//	名前
+	char	name[nameRen];	//	名前
 	BYTE	team;
 	BYTE	isReady;	//
 

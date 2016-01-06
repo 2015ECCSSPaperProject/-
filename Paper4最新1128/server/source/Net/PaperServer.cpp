@@ -154,7 +154,7 @@ void ServerManager::NewUser(char* data, int client)
 
 void ServerManager::InitData(char* data, int client)
 {
-	CopyMemory(m_room.user[client].name, &data[1], 9);
+	CopyMemory(m_room.user[client].name, &data[1], nameRen);
 	printf("ŽQ‰Á:%s\n", m_room.user[client].name, client);
 }
 
@@ -217,7 +217,7 @@ void ServerManager::TeamData(char* data, int client)
 	{
 		UserData data;
 		data.com = m_room.user[i].com;
-		CopyMemory(data.name, m_room.user[i].name, 9);
+		CopyMemory(data.name, m_room.user[i].name, nameRen); //–¼‘O
 		data.team = m_room.user[i].team;
 		data.isReady = m_room.user[i].isReady;		
 

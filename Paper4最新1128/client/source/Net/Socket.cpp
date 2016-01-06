@@ -108,17 +108,19 @@ void SocketManager::SendName()
 	// 仮で名前を付ける
 	std::ifstream in("名前.txt");
 	// バッファにyomi込む
+
 	in >> m_myName;
 	//std::fclose;
 
 	struct
 	{
 		BYTE com;
-		char name[9];
+		char name[nameRen];
 	} info;
 
 	info.com = INIT_DATA;
 	strcpy_s(info.name, m_myName.c_str());
+	//CopyMemory(m_room.user[client].name, &m_myName, 18);
 	m_pClient->Send((char*)&info, sizeof(info));
 }
 
@@ -151,7 +153,7 @@ void SocketManager::UpdateTeam(int isReady)
 	data.isReady = isReady;
 	m_pClient->Send(&data, sizeof(data));
 
-
+	//↑で自分の状況　↓でPlayerの状況更新
 	/*	毎回プレイヤーの状態を更新	*/
 	UserData receive;
 
