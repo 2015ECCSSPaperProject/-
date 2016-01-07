@@ -3,7 +3,7 @@
 
 #include	"IEX_AudioIIDX.h"
 
-HRESULT result;
+HRESULT result_sound;
 
 //**************************************************************************************************************
 //
@@ -14,19 +14,19 @@ HRESULT result;
 //**************************************************************************************************************
 //
 //**************************************************************************************************************
-SoundBufferIIDX::SoundBufferIIDX(LPDIRECTSOUND lpDS, char* filename, bool b3D)
+fstSoundBuffer::fstSoundBuffer(LPDIRECTSOUND8 lpDS, char* filename, bool b3D)
 {
 	DSBUFFERDESC	dsbd;
 	LPVOID			lpbuf1, lpbuf2;
 	DWORD			dwbuf1, dwbuf2;
 
-	lpBuf3D = NULL;
-	lpBuf = NULL;
+	lpBuf3D = nullptr;
+	lpBuf = nullptr;
 
 	/*	WAVファイルのロード	*/
 	lpWBuf = LoadWAV(filename, &size, &wfx);
 	/*	ロード失敗	*/
-	if (lpWBuf == NULL){
+	if (lpWBuf == nullptr){
 		return;
 	}
 
@@ -36,28 +36,32 @@ SoundBufferIIDX::SoundBufferIIDX(LPDIRECTSOUND lpDS, char* filename, bool b3D)
 	/* 二次バッファ作成	*/
 	ZeroMemory(&dsbd, sizeof(DSBUFFERDESC));
 	dsbd.dwSize = sizeof(DSBUFFERDESC);
-	if (b3D) dsbd.dwFlags = DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRL3D;
-	else dsbd.dwFlags = DSBCAPS_CTRLPAN | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLVOLUME;
+	if (b3D) dsbd.dwFlags = DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRL3D | DSBCAPS_CTRLFX;	// CTRL_FX等、サウンド制御に必要なフラグをONにする(CTRL3DをONにするとCTRLPANを使えない)
+	else dsbd.dwFlags = DSBCAPS_CTRLPAN | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFX;
 	dsbd.dwBufferBytes = size;
 	dsbd.lpwfxFormat = &wfx;
 
-	result = lpDS->CreateSoundBuffer(&dsbd, &lpBuf, NULL);
+	/* 本来はDIRECTSOUNDBUFFERを使っていたが、BUFFER8に切り替えるために、一旦BUFFERを作る→そのBUFFERのQueriInterfaceの流れでBUFFER8を作成 */
+	LPDIRECTSOUNDBUFFER lpWork;
+	lpDS->CreateSoundBuffer(&dsbd, &lpWork, nullptr);
+	lpWork->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID*)&lpBuf);
+	lpWork->Release();	// 用済み
 
-	if (b3D && result == E_INVALIDARG && dsbd.lpwfxFormat->nChannels == 2)
-	{
-		MyAssert(false, "3Dサウンドだからステレオ音源は使えないよ！\nモノラルに変換してね");
-	}
+	MyAssert(!b3D || result_sound != E_INVALIDARG || dsbd.lpwfxFormat->nChannels != 2, "3Dサウンドだからステレオ音源は使えないよ！\nモノラルに変換してね");
+	//if (b3D && result == E_INVALIDARG && dsbd.lpwfxFormat->nChannels == 2)
 
-	if (result != DS_OK)
+	if (result_sound != DS_OK)
 	{
 		return;
 	}
 
-	lpBuf3D = NULL;
+	lpBuf3D = nullptr;
 	if (b3D == true)
 	{
-		lpBuf->QueryInterface(IID_IDirectSound3DBuffer, (LPVOID*)&lpBuf3D);
-		this->Set_all3D(DS3D_DEFAULTMAXDISTANCE, DS3D_DEFAULTMINDISTANCE, Vector3(0, 0, 0), Vector3(0, 0, -1), DS3D_MAXCONEANGLE, DS3D_DEFAULTCONEOUTSIDEVOLUME, Vector3(0, 0, 0));
+		/* サウンドバッファから3Dバッファに変換&作成 */
+		lpBuf->QueryInterface(IID_IDirectSound3DBuffer8, (LPVOID*)&lpBuf3D);
+		/* 3Dパラメータ初期化 */
+		this->SetAll3D(DS3D_DEFAULTMAXDISTANCE, DS3D_DEFAULTMINDISTANCE, Vector3(0, 0, 0), Vector3(0, 0, -1), DS3D_MAXCONEANGLE, DS3D_DEFAULTCONEOUTSIDEVOLUME, Vector3(0, 0, 0));
 	}
 
 	/* 二次バッファのロック	*/
@@ -76,7 +80,7 @@ SoundBufferIIDX::SoundBufferIIDX(LPDIRECTSOUND lpDS, char* filename, bool b3D)
 	format = wfx;
 }
 
-void SoundBufferIIDX::Create_and_copy(LPDIRECTSOUND lpDS, char* filename, bool b3D, SoundBufferIIDX **buffers, int dst, int count)
+void fstSoundBuffer::Create_and_copy(LPDIRECTSOUND8 lpDS, char* filename, bool b3D, fstSoundBuffer **buffers, int dst, int count)
 {
 	DSBUFFERDESC	dsbd;
 	LPVOID			lpbuf1, lpbuf2;
@@ -86,8 +90,8 @@ void SoundBufferIIDX::Create_and_copy(LPDIRECTSOUND lpDS, char* filename, bool b
 	//===========================================================
 	//		コピー元作成
 	//===========================================================
-	buffers[dst]->lpBuf3D = NULL;
-	buffers[dst]->lpBuf = NULL;
+	buffers[dst]->lpBuf3D = nullptr;
+	buffers[dst]->lpBuf = nullptr;
 
 	/*	WAVファイルのロード	*/
 	buffers[dst]->lpWBuf = buffers[dst]->LoadWAV(filename, &buffers[dst]->size, &buffers[dst]->wfx);
@@ -98,28 +102,29 @@ void SoundBufferIIDX::Create_and_copy(LPDIRECTSOUND lpDS, char* filename, bool b
 	/* 二次バッファ作成	*/
 	ZeroMemory(&dsbd, sizeof(DSBUFFERDESC));
 	dsbd.dwSize = sizeof(DSBUFFERDESC);
-	if (b3D) dsbd.dwFlags = DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRL3D;
-	else dsbd.dwFlags = DSBCAPS_CTRLPAN | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLVOLUME;
+	if (b3D) dsbd.dwFlags = DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRL3D | DSBCAPS_CTRLFX;
+	else dsbd.dwFlags = DSBCAPS_CTRLPAN | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFX;
 	dsbd.dwBufferBytes = buffers[dst]->size;
 	dsbd.lpwfxFormat = &buffers[dst]->wfx;
 
-	result = lpDS->CreateSoundBuffer(&dsbd, &buffers[dst]->lpBuf, NULL);
+	LPDIRECTSOUNDBUFFER lpWork;
+	result_sound = lpDS->CreateSoundBuffer(&dsbd, &lpWork, nullptr);
 
-	if (b3D && result == E_INVALIDARG && dsbd.lpwfxFormat->nChannels == 2)
-	{
-		MyAssert(false, "3Dサウンドだからステレオ音源は使えないよ！\nモノラルに変換してね");
-	}
+	result_sound = lpWork->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID*)&buffers[dst]->lpBuf);	// LPDIRECTSOUNDBUFFER→LPDIRECTSOUNDBUFFER8
+	lpWork->Release();	// 用済み
 
-	if (result != DS_OK)
+	MyAssert(!b3D || result_sound != E_INVALIDARG || dsbd.lpwfxFormat->nChannels != 2, "3Dサウンドだからステレオ音源は使えないよ！\nモノラルに変換してね");
+
+	if (result_sound != DS_OK)
 	{
 		return;
 	}
 
-	buffers[dst]->lpBuf3D = NULL;
+	buffers[dst]->lpBuf3D = nullptr;
 	if (b3D)
 	{
-		buffers[dst]->lpBuf->QueryInterface(IID_IDirectSound3DBuffer, (LPVOID*)&buffers[dst]->lpBuf3D);
-		buffers[dst]->Set_all3D(DS3D_DEFAULTMAXDISTANCE, DS3D_DEFAULTMINDISTANCE, Vector3(0, 0, 0), Vector3(0, 0, -1), DS3D_MAXCONEANGLE, DS3D_DEFAULTCONEOUTSIDEVOLUME, Vector3(0, 0, 0));
+		buffers[dst]->lpBuf->QueryInterface(IID_IDirectSound3DBuffer8, (LPVOID*)&buffers[dst]->lpBuf3D);
+		buffers[dst]->SetAll3D(DS3D_DEFAULTMAXDISTANCE, DS3D_DEFAULTMINDISTANCE, Vector3(0, 0, 0), Vector3(0, 0, -1), DS3D_MAXCONEANGLE, DS3D_DEFAULTCONEOUTSIDEVOLUME, Vector3(0, 0, 0));
 	}
 
 	/* 二次バッファのロック	*/
@@ -145,33 +150,38 @@ void SoundBufferIIDX::Create_and_copy(LPDIRECTSOUND lpDS, char* filename, bool b
 	{
 
 		DSBUFFERDESC	dsbd;
-		LPVOID			lpbuf1 = NULL, lpbuf2 = NULL;
+		LPVOID			lpbuf1 = nullptr, lpbuf2 = nullptr;
 		DWORD			dwbuf1 = 0, dwbuf2 = 0;
 
-		buffers[no]->lpBuf3D = NULL;
-		buffers[no]->lpBuf = NULL;
+		buffers[no]->lpBuf3D = nullptr;
+		buffers[no]->lpBuf = nullptr;
 
 		/* 二次バッファ作成	*/
 		ZeroMemory(&dsbd, sizeof(DSBUFFERDESC));
 		dsbd.dwSize = sizeof(DSBUFFERDESC);
-		if (b3D == true) dsbd.dwFlags = DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRL3D;
-		else dsbd.dwFlags = DSBCAPS_CTRLPAN | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLVOLUME;
+		if (b3D == true) dsbd.dwFlags = DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRL3D | DSBCAPS_CTRLFX;
+		else dsbd.dwFlags = DSBCAPS_CTRLPAN | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFX;
 		dsbd.dwBufferBytes = buffers[dst]->size;
 		dsbd.lpwfxFormat = &buffers[dst]->wfx;
 
-		result = lpDS->CreateSoundBuffer(&dsbd, &buffers[no]->lpBuf, NULL);
-		if (result == E_OUTOFMEMORY)
+		LPDIRECTSOUNDBUFFER lpWork2;
+		result_sound = lpDS->CreateSoundBuffer(&dsbd, &lpWork2, nullptr);
+
+		if (result_sound == E_OUTOFMEMORY)
 		{
-			MessageBox(0, "再生時間が長いwavファイルが読み込まれすぎてメモリが足りなくなってるよ。セットの数を減らしてね", null, MB_OK);
+			MessageBox(0, "wavファイルが読み込まれすぎてメモリが足りなくなってるよ。セットの数を減らすか、wavファイルの長さを短くしてね", nullptr, MB_OK);
 			assert(0);
 			return;
 		}
 
-		buffers[no]->lpBuf3D = NULL;
+		result_sound = lpWork2->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID*)&buffers[no]->lpBuf);	// LPDIRECTSOUNDBUFFER→LPDIRECTSOUNDBUFFER8
+		lpWork2->Release();	// 用済み
+
+		buffers[no]->lpBuf3D = nullptr;
 		if (b3D)
 		{
-			result = buffers[no]->lpBuf->QueryInterface(IID_IDirectSound3DBuffer, (LPVOID*)&buffers[no]->lpBuf3D);
-			buffers[no]->Set_all3D(DS3D_DEFAULTMAXDISTANCE, DS3D_DEFAULTMINDISTANCE, Vector3(0, 0, 0), Vector3(0, 0, -1), DS3D_MAXCONEANGLE, DS3D_DEFAULTCONEOUTSIDEVOLUME, Vector3(0, 0, 0));
+			result_sound = buffers[no]->lpBuf->QueryInterface(IID_IDirectSound3DBuffer8, (LPVOID*)&buffers[no]->lpBuf3D);
+			buffers[no]->SetAll3D(DS3D_DEFAULTMAXDISTANCE, DS3D_DEFAULTMINDISTANCE, Vector3(0, 0, 0), Vector3(0, 0, -1), DS3D_MAXCONEANGLE, DS3D_DEFAULTCONEOUTSIDEVOLUME, Vector3(0, 0, 0));
 		}
 
 		/* 二次バッファのロック	*/
@@ -194,33 +204,32 @@ void SoundBufferIIDX::Create_and_copy(LPDIRECTSOUND lpDS, char* filename, bool b
 	GlobalFree(buffers[dst]->lpWBuf);
 }
 
-SoundBufferIIDX::~SoundBufferIIDX()
+fstSoundBuffer::~fstSoundBuffer()
 {
-	if (lpBuf != NULL)lpBuf->Release();
-	if (lpBuf3D != NULL) lpBuf3D->Release();
-
+	if (lpBuf != nullptr)lpBuf->Release();
+	if (lpBuf3D != nullptr) lpBuf3D->Release();
 }
 
 //**************************************************************************************************************
 //		ＷＡＶファイルの読み込み
 //**************************************************************************************************************
-LPBYTE SoundBufferIIDX::LoadWAV(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx)
+LPBYTE fstSoundBuffer::LoadWAV(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx)
 {
-	HMMIO			hMMIO = NULL;		/*	ファイルハンドル	*/
+	HMMIO			hMMIO = nullptr;		/*	ファイルハンドル	*/
 	PCMWAVEFORMAT	pwf;				/*	WAVデータ形式		*/
 	MMCKINFO		ckparent, ckinfo;	/*	RIFFチャンク情報	*/
 	MMIOINFO		mminfo;				/*	ファイル情報		*/
 	DWORD			i;
-	LPBYTE			buf = NULL;			/*	読み込みバッファ	*/
+	LPBYTE			buf = nullptr;			/*	読み込みバッファ	*/
 
 	/* オープン	*/
-	if ((hMMIO = mmioOpen(fname, NULL, MMIO_ALLOCBUF | MMIO_READ)) == NULL)
+	if ((hMMIO = mmioOpen(fname, nullptr, MMIO_ALLOCBUF | MMIO_READ)) == nullptr)
 	{
-		MessageBox(0, "wavファイルが入っていないか、wavファイル名が間違っているよ", null, MB_OK);
+		MessageBox(0, "wavファイルが入っていないか、wavファイル名が間違っているよ", nullptr, MB_OK);
 		assert(0);
-		return NULL;
+		return nullptr;
 	}
-	if (mmioDescend(hMMIO, &ckparent, NULL, 0) != 0) goto WAVE_LoadError;
+	if (mmioDescend(hMMIO, &ckparent, nullptr, 0) != 0) goto WAVE_LoadError;
 	/*	ＷＡＶ(RIFF)ファイルチェック		*/
 	if ((ckparent.ckid != FOURCC_RIFF) || (ckparent.fccType != mmioFOURCC('W', 'A', 'V', 'E'))) goto WAVE_LoadError;
 	/*	ｆｍｔチャンクに侵入		*/
@@ -240,10 +249,10 @@ LPBYTE SoundBufferIIDX::LoadWAV(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx)
 	if (mmioDescend(hMMIO, &ckinfo, &ckparent, MMIO_FINDCHUNK) != 0) goto WAVE_LoadError;
 	if (mmioGetInfo(hMMIO, &mminfo, 0) != 0) goto WAVE_LoadError;
 	/*	バッファサイズ保存	*/
-	if (size != NULL) *size = ckinfo.cksize;
+	if (size != nullptr) *size = ckinfo.cksize;
 	/*	ＷＡＶ用バッファの取得	*/
 	buf = (LPBYTE)GlobalAlloc(LPTR, ckinfo.cksize);
-	if (buf == NULL) goto WAVE_LoadError;
+	if (buf == nullptr) goto WAVE_LoadError;
 	/*	データの読みとり	*/
 	for (i = 0; i < ckinfo.cksize; i++){
 		/*	エラーチェック	*/
@@ -261,17 +270,10 @@ LPBYTE SoundBufferIIDX::LoadWAV(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx)
 
 WAVE_LoadError:	/*	エラー終了	*/
 	mmioClose(hMMIO, 0);
-	if (buf != NULL) GlobalFree(buf);
-	return NULL;
+	if (buf != nullptr) GlobalFree(buf);
+	return nullptr;
 }
 
-
-//**************************************************************************************************************
-//	情報設定
-//**************************************************************************************************************
-//-------------------------------------------------------------
-//	位置設定	
-//-------------------------------------------------------------
 
 //**************************************************************************************************************
 //	再生管理
@@ -279,39 +281,48 @@ WAVE_LoadError:	/*	エラー終了	*/
 //-------------------------------------------------------------
 //	再生	
 //-------------------------------------------------------------
-void SoundBufferIIDX::Play(BOOL loop)
+void fstSoundBuffer::Play(bool loop, DWORD cursor)
 {
 	lpBuf->Stop();
-	lpBuf->SetCurrentPosition(PlayCursor);
+	lpBuf->SetCurrentPosition(cursor);
 	//	ループ再生
 	if (loop) lpBuf->Play(0, 0, DSBPLAY_LOOPING);
 	//	ノーマル再生
 	else	   lpBuf->Play(0, 0, 0);
 
 	//	lpBuf->SetFrequency(8000);
-
-
 	PlayCursor = 0;
+	loop_flag = loop;
 }
 
 //-------------------------------------------------------------
 //	停止	
 //-------------------------------------------------------------
-void SoundBufferIIDX::Stop()
+void fstSoundBuffer::Stop()
 {
 	lpBuf->Stop();
 }
 
-void SoundBufferIIDX::Pause()
+void fstSoundBuffer::Pause()
 {
-	lpBuf->GetCurrentPosition(&PlayCursor, NULL);
+	lpBuf->GetCurrentPosition(&PlayCursor, nullptr);
 	lpBuf->Stop();
+}
+void fstSoundBuffer::PauseOff()
+{
+	lpBuf->SetCurrentPosition(PlayCursor);
+	//	ループ再生
+	if (loop_flag) lpBuf->Play(0, 0, DSBPLAY_LOOPING);
+	//	ノーマル再生
+	else	   lpBuf->Play(0, 0, 0);
+
+	PlayCursor = 0;
 }
 
 //-------------------------------------------------------------
 //	ボリューム変更
 //-------------------------------------------------------------
-void SoundBufferIIDX::SetVolume(int volume)
+void fstSoundBuffer::SetVolume(int volume)
 {
 	lpBuf->SetVolume(volume);
 }
@@ -319,7 +330,7 @@ void SoundBufferIIDX::SetVolume(int volume)
 //-------------------------------------------------------------
 //	ボリュームゲッター
 //-------------------------------------------------------------
-int	SoundBufferIIDX::GetVolume()
+int	fstSoundBuffer::GetVolume()
 {
 	LONG ret;
 	lpBuf->GetVolume(&ret);
@@ -329,12 +340,12 @@ int	SoundBufferIIDX::GetVolume()
 //-------------------------------------------------------------
 //	ステレオ(左右音)関係
 //-------------------------------------------------------------
-void SoundBufferIIDX::SetPan(int pan)
+void fstSoundBuffer::SetPan(int pan)
 {
 	lpBuf->SetPan(pan);
 }
 
-int SoundBufferIIDX::GetPan()
+int fstSoundBuffer::GetPan()
 {
 	LONG ret;
 	lpBuf->GetPan(&ret);
@@ -345,12 +356,12 @@ int SoundBufferIIDX::GetPan()
 //-------------------------------------------------------------
 //	周波数関係(再生速度・ピッチ)
 //-------------------------------------------------------------
-void SoundBufferIIDX::SetFrequency(int pitch)
+void fstSoundBuffer::SetFrequency(int pitch)
 {
 	lpBuf->SetFrequency(pitch);
 }
 
-int SoundBufferIIDX::GetFrequency()
+int fstSoundBuffer::GetFrequency()
 {
 	DWORD ret;
 	lpBuf->GetFrequency(&ret);
@@ -360,13 +371,13 @@ int SoundBufferIIDX::GetFrequency()
 //-------------------------------------------------------------
 //	再生速度(上の事やってるだけ)
 //-------------------------------------------------------------
-void SoundBufferIIDX::SetSpeed(float speed)
+void fstSoundBuffer::SetSpeed(float speed)
 {
 	DWORD frequency = (DWORD)(format.nSamplesPerSec*speed);
 	lpBuf->SetFrequency(frequency);
 }
 
-float SoundBufferIIDX::GetSpeed()
+float fstSoundBuffer::GetSpeed()
 {
 	DWORD work;
 	lpBuf->GetFrequency(&work);
@@ -378,48 +389,52 @@ float SoundBufferIIDX::GetSpeed()
 //-------------------------------------------------------------
 //	再生チェック	
 //-------------------------------------------------------------
-BOOL SoundBufferIIDX::isPlay()
+bool fstSoundBuffer::isPlay()
 {
 	DWORD	dwAns;
 	lpBuf->GetStatus(&dwAns);
-	if ((dwAns&DSBSTATUS_PLAYING) != 0) return TRUE;
-	else return FALSE;
+	return ((dwAns&DSBSTATUS_PLAYING) != 0) ? true : false;
 }
 
 
 //-------------------------------------------------------------
 //	再生位置関係
 //-------------------------------------------------------------
-DWORD SoundBufferIIDX::GetPlayCursor()
+DWORD fstSoundBuffer::GetPlayCursor()
 {
 	DWORD ret;
-	lpBuf->GetCurrentPosition(&ret, NULL);
+	lpBuf->GetCurrentPosition(&ret, nullptr);
 
 	return ret;
 }
 
-DWORD SoundBufferIIDX::GetPlayFrame()
+void fstSoundBuffer::SetPlayCursor(DWORD new_position)
+{
+	lpBuf->SetCurrentPosition(new_position);
+}
+
+DWORD fstSoundBuffer::GetPlayFrame()
 {
 	return (GetPlayCursor() / (format.nAvgBytesPerSec / 60));
 }
 
-int SoundBufferIIDX::GetPlaySecond()
+int fstSoundBuffer::GetPlaySecond()
 {
 	return (GetPlayCursor() / format.nAvgBytesPerSec);
 }
 
-void SoundBufferIIDX::SetPlaySecond(int sec)
+void fstSoundBuffer::SetPlaySecond(int sec)
 {
 	DWORD set = sec * format.nAvgBytesPerSec;
 	lpBuf->SetCurrentPosition(set);
 }
 
-DWORD SoundBufferIIDX::GetSize()
+DWORD fstSoundBuffer::GetSize()
 {
 	return BufferSize;
 }
 
-int SoundBufferIIDX::GetLengthSecond()
+int fstSoundBuffer::GetLengthSecond()
 {
 	return (BufferSize / format.nAvgBytesPerSec);
 }
@@ -427,31 +442,31 @@ int SoundBufferIIDX::GetLengthSecond()
 //-------------------------------------------------------------
 //	3Dサウンド関係
 //-------------------------------------------------------------
-void SoundBufferIIDX::Set_dist(float max_dist, float min_dist)
+void fstSoundBuffer::SetDist(float max_dist, float min_dist)
 {
 	lpBuf3D->SetMaxDistance(max_dist, DS3D_DEFERRED), lpBuf3D->SetMinDistance(min_dist, DS3D_DEFERRED);
 }
-void SoundBufferIIDX::Set_pos(const Vector3 &pos)
+void fstSoundBuffer::SetPos(const Vector3 &pos)
 {
 	lpBuf3D->SetPosition(pos.x, pos.y, pos.z, DS3D_DEFERRED);
 }
-void SoundBufferIIDX::Set_front(const Vector3 &front)
+void fstSoundBuffer::SetFront(const Vector3 &front)
 {
 	lpBuf3D->SetConeOrientation(front.x, front.y, front.z, DS3D_DEFERRED);
 }
-void SoundBufferIIDX::Set_range(int degreeIn)
+void fstSoundBuffer::SetRange(int degreeIn)
 {
 	lpBuf3D->SetConeAngles(degreeIn, (DS3D_MAXCONEANGLE - degreeIn), DS3D_DEFERRED);
 }
-void SoundBufferIIDX::Set_outRange_volume(int out_vol)
+void fstSoundBuffer::SetOutRange_volume(int out_vol)
 {
 	lpBuf3D->SetConeOutsideVolume(out_vol, DS3D_DEFERRED);
 }
-void SoundBufferIIDX::Set_move(const Vector3 &move)
+void fstSoundBuffer::SetMove(const Vector3 &move)
 {
 	lpBuf3D->SetVelocity(move.x, move.y, move.z, DS3D_DEFERRED);
 }
-void SoundBufferIIDX::Set_all3D(float max_dist, float min_dist, const Vector3 &pos, const Vector3 &front, int degreeIn, int out_vol, const Vector3 &move)
+void fstSoundBuffer::SetAll3D(float max_dist, float min_dist, const Vector3 &pos, const Vector3 &front, int degreeIn, int out_vol, const Vector3 &move)
 {
 	DS3DBUFFER set;
 	ZeroMemory(&set, sizeof(DS3DBUFFER));
@@ -480,6 +495,59 @@ void SoundBufferIIDX::Set_all3D(float max_dist, float min_dist, const Vector3 &p
 	lpBuf3D->SetAllParameters(&set, DS3D_DEFERRED);
 }
 
+//-------------------------------------------------------------
+//	エフェクト
+//-------------------------------------------------------------
+void fstSoundBuffer::SetFX(DXA_FX flag)
+{
+	bool isPlay(this->isPlay());
+	// 演奏を停止し、エフェクトを全削除する(演奏中は設定不可らしい)
+	if (isPlay)this->Pause();
+	lpBuf->SetFX(0, nullptr, nullptr);
+	if (flag == DXA_FX::DXAFX_OFF)
+	{
+		if (isPlay)this->PauseOff();
+		return;
+	}
+
+	// エフェクト構造体設定
+	DSEFFECTDESC ed;
+	ZeroMemory(&ed, sizeof(ed));
+	ed.dwSize = sizeof(DSEFFECTDESC);
+
+	switch (flag)
+	{
+	case DXA_FX::DXAFX_CHORUS:ed.guidDSFXClass = GUID_DSFX_STANDARD_CHORUS;
+		break;
+	case DXA_FX::DXAFX_COMPRESSOR:ed.guidDSFXClass = GUID_DSFX_STANDARD_COMPRESSOR;
+		break;
+	case DXA_FX::DXAFX_DISTORTION:ed.guidDSFXClass = GUID_DSFX_STANDARD_DISTORTION;
+		break;
+	case DXA_FX::DXAFX_ECHO:ed.guidDSFXClass = GUID_DSFX_STANDARD_ECHO;
+		break;
+	case DXA_FX::DXAFX_FLANGER:ed.guidDSFXClass = GUID_DSFX_STANDARD_FLANGER;
+		break;
+	case DXA_FX::DXAFX_GARGLE:ed.guidDSFXClass = GUID_DSFX_STANDARD_GARGLE;
+		break;
+	case DXA_FX::DXAFX_ENVREVERB:ed.guidDSFXClass = GUID_DSFX_STANDARD_I3DL2REVERB;
+		break;
+	case DXA_FX::DXAFX_PARAMEQ:ed.guidDSFXClass = GUID_DSFX_STANDARD_PARAMEQ;
+		break;
+	case DXA_FX::DXAFX_WAVESREVERB:ed.guidDSFXClass = GUID_DSFX_WAVES_REVERB;
+		break;
+	}
+
+	// DirectSoundに渡す
+	result_sound = lpBuf->SetFX(1, &ed, nullptr);
+
+	MyAssert(result_sound == S_OK || format.wBitsPerSample == 16 || flag != DXA_FX::DXAFX_WAVESREVERB, "ミュージックリバーブエフェクトの設定は16bitのオーディオフォーマットのみです");
+
+	// 再生
+	if (isPlay)this->PauseOff();
+
+	//lpBuf->GetObjectInPath(GUID_DSFX_STANDARD_DISTORTION, 1, IDirectSoundFXDistortion8,)
+}
+
 //**************************************************************************************************************
 //
 //		ストリームサウンド
@@ -495,11 +563,11 @@ static bool ForceEnd = false;
 DWORD WINAPI ThreadIIDX(LPDWORD lpdwParam)
 {
 	DWORD	param;
-	iexStreamSoundIIDX*	lpStream;
+	fstStreamSound*	lpStream;
 
-	lpStream = (iexStreamSoundIIDX*)(lpdwParam);
+	lpStream = (fstStreamSound*)(lpdwParam);
 	for (;;){
-		if (lpStream == NULL) break;
+		if (lpStream == nullptr) break;
 		param = WaitForMultipleObjects(3, lpStream->hEvent, FALSE, 100);
 
 		if (ForceEnd == true) param = -1;
@@ -542,7 +610,7 @@ DWORD WINAPI ThreadIIDX(LPDWORD lpdwParam)
 //**************************************************************************************************************
 //
 //**************************************************************************************************************
-iexStreamSoundIIDX::iexStreamSoundIIDX(LPDIRECTSOUND lpDS, LPSTR filename, BYTE mode, int param)
+fstStreamSound::fstStreamSound(LPDIRECTSOUND lpDS, LPSTR filename, BYTE mode, int param)
 {
 	NumStream++;
 
@@ -557,8 +625,8 @@ iexStreamSoundIIDX::iexStreamSoundIIDX(LPDIRECTSOUND lpDS, LPSTR filename, BYTE 
 	if (mode != STR_FADEIN) SetVolume(255);
 	else SetVolume(0);
 	/*	管理スレッドの作成	*/
-	hStrThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadIIDX, this, 0, &dwThreadId);
-	if (hStrThread == NULL) return;
+	hStrThread = CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)ThreadIIDX, this, 0, &dwThreadId);
+	if (hStrThread == nullptr) return;
 	/*	再生開始	*/
 	lpStream->Play(0, 0, DSBPLAY_LOOPING);
 
@@ -568,17 +636,17 @@ iexStreamSoundIIDX::iexStreamSoundIIDX(LPDIRECTSOUND lpDS, LPSTR filename, BYTE 
 
 
 
-iexStreamSoundIIDX::~iexStreamSoundIIDX()
+fstStreamSound::~fstStreamSound()
 {
-	if (lpStream != NULL){
+	if (lpStream != nullptr){
 		if (type == TYPE_OGG) ov_clear(&vf);
-		else if (hStrFile != NULL) fclose(hStrFile);
+		else if (hStrFile != nullptr) fclose(hStrFile);
 
-		if (lpStrNotify != NULL) lpStrNotify->Release();
-		lpStrNotify = NULL;
+		if (lpStrNotify != nullptr) lpStrNotify->Release();
+		lpStrNotify = nullptr;
 		/*	バッファ開放	*/
-		if (lpStream != NULL) lpStream->Release();
-		lpStream = NULL;
+		if (lpStream != nullptr) lpStream->Release();
+		lpStream = nullptr;
 	}
 
 	NumStream--;
@@ -590,12 +658,12 @@ iexStreamSoundIIDX::~iexStreamSoundIIDX()
 //-------------------------------------------------------------
 //	ブロック作成
 //-------------------------------------------------------------
-BOOL	iexStreamSoundIIDX::OGGRead(LPBYTE dst, unsigned long size)
+BOOL	fstStreamSound::OGGRead(LPBYTE dst, unsigned long size)
 {
 	DWORD	remain = size;
 	char*	dstPtr = (char*)dst;
 	while (remain > 0){
-		long actualRead = ov_read(&vf, dstPtr, remain, 0, 2, 1, NULL);
+		long actualRead = ov_read(&vf, dstPtr, remain, 0, 2, 1, nullptr);
 		//終端チェック
 		if (actualRead <= 0){
 			if (ov_pcm_seek(&vf, 0)) return FALSE;
@@ -606,7 +674,7 @@ BOOL	iexStreamSoundIIDX::OGGRead(LPBYTE dst, unsigned long size)
 	return TRUE;
 }
 
-BOOL	iexStreamSoundIIDX::SetBlockOGG(int block)
+BOOL	fstStreamSound::SetBlockOGG(int block)
 {
 	LPBYTE	blk1, blk2;
 	DWORD	bs1, bs2;
@@ -630,7 +698,7 @@ BOOL	iexStreamSoundIIDX::SetBlockOGG(int block)
 }
 
 
-BOOL	iexStreamSoundIIDX::SetBlockWAV(int block)
+BOOL	fstStreamSound::SetBlockWAV(int block)
 {
 	LPBYTE	blk1, blk2;
 	DWORD	bs1, bs2, work;
@@ -668,14 +736,14 @@ BOOL	iexStreamSoundIIDX::SetBlockWAV(int block)
 //**************************************************************************************************************
 //	データ管理
 //**************************************************************************************************************
-void iexStreamSoundIIDX::Initialize(LPDIRECTSOUND lpDS, int rate)
+void fstStreamSound::Initialize(LPDIRECTSOUND lpDS, int rate)
 {
 	DSBUFFERDESC	dsbd;
 	WAVEFORMATEX	wfx;
 
 
 	/*	初期化チェック	*/
-	if (lpDS == NULL) return;
+	if (lpDS == nullptr) return;
 	/*	ＷＡＶＥフォーマット初期化	*/
 	ZeroMemory(&wfx, sizeof(WAVEFORMATEX));
 	wfx.wFormatTag = WAVE_FORMAT_PCM;
@@ -690,14 +758,14 @@ void iexStreamSoundIIDX::Initialize(LPDIRECTSOUND lpDS, int rate)
 	dsbd.dwFlags = DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLPOSITIONNOTIFY | DSBCAPS_LOCSOFTWARE;
 	dsbd.dwBufferBytes = rate * 4 * STRSECOND * 2;
 	dsbd.lpwfxFormat = &wfx;
-	if (lpDS->CreateSoundBuffer(&dsbd, &lpStream, NULL) != DS_OK) return;
+	if (lpDS->CreateSoundBuffer(&dsbd, &lpStream, nullptr) != DS_OK) return;
 	lpStream->SetFormat(&wfx);
 
 	if (lpStream->QueryInterface(IID_IDirectSoundNotify, (LPVOID*)&lpStrNotify) != DS_OK) return;
 	/*	位置イベント作成	*/
-	hEvent[0] = CreateEvent(NULL, FALSE, FALSE, NULL);
-	hEvent[1] = CreateEvent(NULL, FALSE, FALSE, NULL);
-	hEvent[2] = CreateEvent(NULL, FALSE, FALSE, NULL);
+	hEvent[0] = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	hEvent[1] = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	hEvent[2] = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
 	pn[0].dwOffset = 0;
 	pn[0].hEventNotify = hEvent[0];
@@ -714,15 +782,15 @@ void iexStreamSoundIIDX::Initialize(LPDIRECTSOUND lpDS, int rate)
 }
 
 
-BOOL	iexStreamSoundIIDX::SetWAV(LPDIRECTSOUND lpDS, char* filename)
+BOOL	fstStreamSound::SetWAV(LPDIRECTSOUND lpDS, char* filename)
 {
-	HMMIO			hMMIO = NULL;		/*	ファイルハンドル	*/
+	HMMIO			hMMIO = nullptr;		/*	ファイルハンドル	*/
 	MMCKINFO		ckinfo, ckparent;	/*	RIFFチャンク情報	*/
 	LRESULT			ptr;
 
 	/* オープン	*/
-	hMMIO = mmioOpen(filename, NULL, MMIO_ALLOCBUF | MMIO_READ);
-	mmioDescend(hMMIO, &ckparent, NULL, 0);
+	hMMIO = mmioOpen(filename, nullptr, MMIO_ALLOCBUF | MMIO_READ);
+	mmioDescend(hMMIO, &ckparent, nullptr, 0);
 	/*	ｄａｔａチャンクに侵入		*/
 	ckinfo.ckid = mmioFOURCC('d', 'a', 't', 'a');
 	mmioDescend(hMMIO, &ckinfo, &ckparent, MMIO_FINDCHUNK);
@@ -734,7 +802,7 @@ BOOL	iexStreamSoundIIDX::SetWAV(LPDIRECTSOUND lpDS, char* filename)
 
 	/*	ファイルオープン	*/
 	hStrFile = fopen(filename, "rb");
-	if (hStrFile == NULL) return FALSE;
+	if (hStrFile == nullptr) return FALSE;
 	//	ストリーム情報設定
 	StrPos = 0;
 	LoopPtr = ptr;
@@ -742,7 +810,7 @@ BOOL	iexStreamSoundIIDX::SetWAV(LPDIRECTSOUND lpDS, char* filename)
 	fseek(hStrFile, 0L, SEEK_END);
 	StrSize = ftell(hStrFile) - LoopPtr;
 
-	StrSize = GetFileSize(hStrFile, NULL) - LoopPtr;
+	StrSize = GetFileSize(hStrFile, nullptr) - LoopPtr;
 	//	ファイルシーク
 	fseek(hStrFile, LoopPtr, SEEK_SET);
 
@@ -759,14 +827,14 @@ BOOL	iexStreamSoundIIDX::SetWAV(LPDIRECTSOUND lpDS, char* filename)
 //	OGG用ストリーム初期化
 //
 
-BOOL	iexStreamSoundIIDX::SetOGG(LPDIRECTSOUND lpDS, char* filename)
+BOOL	fstStreamSound::SetOGG(LPDIRECTSOUND lpDS, char* filename)
 {
 	//	ファイルオープン 
 	hStrFile = fopen(filename, "rb");
-	if (hStrFile == NULL) return FALSE;
+	if (hStrFile == nullptr) return FALSE;
 
 	//Oggを開く
-	ov_open(hStrFile, &vf, NULL, 0);
+	ov_open(hStrFile, &vf, nullptr, 0);
 
 	//シーク可能?
 	if (!ov_seekable(&vf)){
@@ -793,18 +861,18 @@ BOOL	iexStreamSoundIIDX::SetOGG(LPDIRECTSOUND lpDS, char* filename)
 //	再生管理
 //**************************************************************************************************************
 
-void iexStreamSoundIIDX::Stop()
+void fstStreamSound::Stop()
 {
-	if (lpStream == NULL) return;
-	if (hStrFile == NULL) return;
+	if (lpStream == nullptr) return;
+	if (hStrFile == nullptr) return;
 
 	lpStream->Stop();
 }
 
-void iexStreamSoundIIDX::SetVolume(int volume)
+void fstStreamSound::SetVolume(int volume)
 {
 	int		vol;
-	if (lpStream == NULL) return;
+	if (lpStream == nullptr) return;
 	/*	音量セット	*/
 	if (volume > 255) volume = 255;
 	if (volume < 0) volume = 0;
@@ -814,7 +882,7 @@ void iexStreamSoundIIDX::SetVolume(int volume)
 	lpStream->SetVolume(-vol*vol);
 }
 
-void iexStreamSoundIIDX::SetMode(BYTE mode, int param)
+void fstStreamSound::SetMode(BYTE mode, int param)
 {
 	this->mode = mode;
 	this->param = param;
@@ -825,35 +893,42 @@ void iexStreamSoundIIDX::SetMode(BYTE mode, int param)
 
 //**************************************************************************************************************
 //
-//		サウンドマネージャ
+//		サウンドマネージャ基底
 //
 //**************************************************************************************************************
 
-//**************************************************************************************************************
-//
-//**************************************************************************************************************
-iexSoundIIDX::iexSoundIIDX()
+//=============================================================================================
+//		初	期	化
+fstSoundBase::fstSoundBase()
 {
 	hWndWAV = iexSystem::Window;
-	CoInitialize(NULL);
+	CoInitialize(nullptr);
 	//	DirectSoundの初期化
-	if (DirectSoundCreate8(NULL, &lpDS, NULL) != DS_OK){
-		lpDS = NULL;
+	if (DirectSoundCreate8(nullptr, &lpDS, nullptr) != DS_OK){
+		lpDS = nullptr;
 		return;
 	}
 
 	lpDS->SetCooperativeLevel(hWndWAV, DSSCL_PRIORITY);
-	for (int i = 0; i<WavNum; i++) buffer[i] = NULL;
 
-	lpPrimary = NULL;
+	lpPrimary = nullptr;
 	DSBUFFERDESC	dsbd;
 	ZeroMemory(&dsbd, sizeof(DSBUFFERDESC));
 	dsbd.dwSize = sizeof(DSBUFFERDESC);
 	dsbd.dwFlags = DSBCAPS_CTRL3D | DSBCAPS_PRIMARYBUFFER;
-	lpDS->CreateSoundBuffer(&dsbd, &lpPrimary, NULL);
+	lpDS->CreateSoundBuffer(&dsbd, &lpPrimary, nullptr);
 
-	lp3DListener = NULL;
-	//lpPrimary->QueryInterface(IID_IDirectSound3DListener, (LPVOID *)lp3DListener);
+	// 3Dリスナー作成
+	lp3DListener = nullptr;
+	result_sound = lpPrimary->QueryInterface(IID_IDirectSound3DListener, (LPVOID *)&lp3DListener);
+
+	if (result_sound == E_INVALIDARG)	// プロシージャの呼び出し、または引数が不正らしい
+	{
+		assert(0);
+	}
+
+	this->SetListenerAll(Vector3(0, 0, 0), Vector3(0, 0, 1), Vector3(0, 1, 0), Vector3(0, 0, 0));
+	this->UpdateListener();
 
 	WAVEFORMATEX   wfx;
 	ZeroMemory(&wfx, sizeof(WAVEFORMATEX));
@@ -866,245 +941,263 @@ iexSoundIIDX::iexSoundIIDX()
 	lpPrimary->SetFormat(&wfx);
 
 }
+//
+//=============================================================================================
 
-iexSoundIIDX::~iexSoundIIDX()
+
+//=============================================================================================
+//		解		放
+fstSoundBase::~fstSoundBase()
 {
-	int		i;
-
 	//	バッファの解放
-	for (i = 0; i<WavNum; i++){
-		if (buffer[i] != NULL) delete buffer[i];
-		buffer[i] = NULL;
-	}
+	//for (int i = 0; i < WavNum; i++) for (UINT j = 0; j < buffer[i].size(); j++)
+	//{
+	//	SAFE_DELETE(buffer[i][j]);
+	//}
 
 	//	Direct Sound解放
-	if (lpPrimary != NULL) lpPrimary->Release();
-	if (lpDS != NULL) lpDS->Release();
+	if (lpPrimary != nullptr) lpPrimary->Release();
+	if (lpDS != nullptr) lpDS->Release();
 
-	lpDS = NULL;
-	lpPrimary = NULL;
+	lpDS = nullptr;
+	lpPrimary = nullptr;
 }
+//
+//=============================================================================================
 
 //**************************************************************************************************************
 //
+//		サウンドマネージャ(SE用)
+//
 //**************************************************************************************************************
-void iexSoundIIDX::Set(int no, char* filename, bool b3D)
+
+//=============================================================================================
+//		初	期	化
+fstSoundSE::fstSoundSE()
+{
+	for (int i = 0; i < WavNum; i++)data[i].clear();
+}
+//
+//=============================================================================================
+
+
+//=============================================================================================
+//		解		放
+fstSoundSE::~fstSoundSE()
+{
+	// バッファ解放
+	for (int i = 0; i < WavNum; i++)
+	{
+		for (UINT j = 0; j < data[i].size(); j++)
+		{
+			delete data[i][j]->buffer;
+			delete data[i][j];
+		}
+	}
+}
+//
+//=============================================================================================
+
+//=============================================================================================
+//		waveファイルセット
+void fstSoundSE::Set(int ID, int num_of_play_simultaneously, char* filename, bool b3D)
 {
 	//	初期化チェック
-	if (lpDS == NULL) return;
+	assert(lpDS);
 	//	既存のバッファの解放
-	if (buffer[no] != NULL) delete buffer[no];
-	buffer[no] = NULL;
-	//	WAVファイルのロード
-	if (filename != NULL)
+	if (ID < (int)data[ID].size())
 	{
-		buffer[no] = new SoundBufferIIDX(lpDS, filename, b3D);
-		if (buffer[no]->GetBuf() == NULL)
+		for (UINT i = 0; i < data[i].size(); i++) SAFE_DELETE(data[ID][i]);
+		data[ID].clear();
+	}
+	assert(filename);
+
+	if (num_of_play_simultaneously == 1)
+	{	// 1個しかないならコピーする意味ないじゃない！
+		SEData *set = new SEData;
+		set->buffer = new fstSoundBuffer(lpDS, filename, b3D);
+		set->b3D = b3D;
+		data[ID].push_back(set);
+	}
+	else
+	{
+		fstSoundBuffer **work = new fstSoundBuffer*[num_of_play_simultaneously];
+		// 同時再生可能分のWAVファイルロード
+		for (int i = 0; i < num_of_play_simultaneously; i++)
 		{
-			delete buffer[no];
-			buffer[no] = NULL;
+			SEData *set = new SEData;
+			set->buffer = new fstSoundBuffer();
+			set->b3D = b3D;
+			data[ID].push_back(set);
+			work[i] = data[ID][i]->buffer;	// アドレスを渡す
 		}
+		fstSoundBuffer::Create_and_copy(lpDS, filename, b3D, work, 0, num_of_play_simultaneously);	// 上でworkにアドレスを渡したのでここでもうbuffer[ID]には作られている
+		delete[] work;
+		assert(data[ID][0]->buffer->GetBuf());
 	}
 }
-
-void iexSoundIIDX::Set_copy(char *filename, int dst, int count, bool b3D)
-{
-	if (count == 1)
-	{
-		Set(dst, filename, b3D);	// 1個しかないならコピーする意味ないじゃない！
-		return;
-	}
-
-	//	初期化チェック
-	if (lpDS == NULL) return;
-
-	for (int i = dst; i < dst + count; i++)
-	{
-		//	既存のバッファの解放
-		if (buffer[i] != NULL) delete buffer[i];
-		buffer[i] = NULL;
-
-		buffer[i] = new SoundBufferIIDX();
-	}
-
-
-	//	WAVファイルのロード
-	if (filename != NULL)
-	{
-		SoundBufferIIDX::Create_and_copy(lpDS, filename, b3D, buffer, dst, count);
-		if (buffer[dst]->GetBuf() == NULL)
-		{
-
-			assert(0);
-		}
-	}
-}
-
-//**************************************************************************************************************
 //
-//**************************************************************************************************************
+//=============================================================================================
 
-void iexSoundIIDX::Play(int no, BOOL loop)
+//=============================================================================================
+//		再		生
+int fstSoundSE::Play(int ID, bool loop)
 {
 	//	初期化チェック
-	if (lpDS == NULL) return;
+	assert(lpDS);
 	//	データが無い！！
-	if (buffer[no] == NULL) return;
-	buffer[no]->Play(loop);
+	assert(data[ID].size() != 0);
+
+	for (UINT play_no = 0; play_no < data[ID].size(); play_no++)
+	{
+		// 再生してないからいつでも514状態の人を検索
+		if (!data[ID][play_no]->buffer->isPlay())
+		{	// 見つかった！
+			data[ID][play_no]->buffer->Play(loop);
+			return play_no;
+		}
+	}
+	
+	// 全員再生状態だったので、再生失敗
+	return -1;
 }
 
-void iexSoundIIDX::Stop(int no)
+int fstSoundSE::Play(int ID, const Vector3 &pos, const Vector3 &front, const Vector3 &move, bool loop)
 {
-	if (lpDS == NULL) return;
-	if (buffer[no] == NULL) return;
-	buffer[no]->Stop();
-}
-
-void iexSoundIIDX::Pause(int no)
-{
-	if (lpDS == NULL) return;
-	if (buffer[no] == NULL) return;
-	buffer[no]->Pause();
-}
-
-
-/*	ボリュームの設定	*/
-void	iexSoundIIDX::SetVolume(int no, int volume)
-{
-	if (lpDS == NULL) return;
-	if (buffer[no] == NULL) return;
-	//	音量セット(0～-10000の範囲)
-	buffer[no]->SetVolume(volume);
-}
-
-int		iexSoundIIDX::GetVolume(int no)
-{
-	if (lpDS == NULL) return 0;
-	if (buffer[no] == NULL) return 0;
-	return buffer[no]->GetVolume();
-}
-
-/*	パン(ステレオ)の設定	*/
-void	iexSoundIIDX::SetPan(int no, int pan)
-{
-	if (lpDS == NULL) return;
-	if (buffer[no] == NULL) return;
-	//	パンセット(-10000(左)～0(真ん中)～10000(右)の範囲)
-	buffer[no]->SetPan(pan);
-}
-int		iexSoundIIDX::GetPan(int no)
-{
-	if (lpDS == NULL) return 0;
-	if (buffer[no] == NULL) return 0;
-	return buffer[no]->GetPan();
-}
-
-/*	周波数の設定	*/
-void	iexSoundIIDX::SetFrequency(int no, int pitch)
-{
-	if (lpDS == NULL) return;
-	if (buffer[no] == NULL) return;
-	buffer[no]->SetFrequency(pitch);
-}
-int	iexSoundIIDX::GetFrequency(int no)
-{
-	if (lpDS == NULL) return 0;
-	if (buffer[no] == NULL) return 0;
-	return buffer[no]->GetFrequency();
-}
-
-/*	再生速度(↑のことやってるだけ)	*/
-void iexSoundIIDX::SetSpeed(int no, float speed)
-{
-	if (lpDS == NULL) return;
-	if (buffer[no] == NULL) return;
-	buffer[no]->SetSpeed(speed);
-}
-float iexSoundIIDX::GetSpeed(int no)
-{
-	if (lpDS == NULL) return 0;
-	if (buffer[no] == NULL) return 0;
-	return buffer[no]->GetSpeed();
-}
-
-
-/*	再生状況のチェック	*/
-BOOL	iexSoundIIDX::isPlay(int no)
-{
-	if (lpDS == NULL) return FALSE;
-	if (buffer[no] == NULL) return FALSE;
-	return buffer[no]->isPlay();
-}
-
-/*	pos(再生位置)の取得	*/
-DWORD	iexSoundIIDX::GetPlayCursor(int no)
-{
-	if (lpDS == NULL) return 0;
-	if (buffer[no] == NULL) return 0;
-	return buffer[no]->GetPlayCursor();
-}
-DWORD	iexSoundIIDX::GetPlayFrame(int no)
-{
-	if (lpDS == NULL) return 0;
-	if (buffer[no] == NULL) return 0;
-	return buffer[no]->GetPlayFrame();
-}
-int		iexSoundIIDX::GetPlaySecond(int no)
-{
-	if (lpDS == NULL) return 0;
-	if (buffer[no] == NULL) return 0;
-	return buffer[no]->GetPlaySecond();
-}
-
-void	iexSoundIIDX::SetPlaySecond(int no, int sec)
-{
-	if (lpDS == NULL) return;
-	if (buffer[no] == NULL) return;
-	buffer[no]->SetPlaySecond(sec);
-}
-
-
-DWORD iexSoundIIDX::GetSize(int no)
-{
-	if (lpDS == NULL) return 0;
-	if (buffer[no] == NULL) return 0;
-	return buffer[no]->GetSize();
-}
-
-int		iexSoundIIDX::GetLengthSecond(int no)
-{
-	if (lpDS == NULL) return 0;
-	if (buffer[no] == NULL) return 0;
-	return buffer[no]->GetLengthSecond();
-}
-
-//**************************************************************************************************************
-//	ストリームサウンド管理
-//**************************************************************************************************************
-iexStreamSoundIIDX* iexSoundIIDX::PlayStream(char* filename)
-{
-	return PlayStream(filename, STR_NORMAL, 0);
-}
-
-iexStreamSoundIIDX* iexSoundIIDX::PlayStream(char* filename, BYTE mode, int param)
-{
-	iexStreamSoundIIDX*	lpStream;
+	MyAssert(data[ID][0]->b3D, "ERROR:b3DフラグOFFの状態で3Dサウンドを使用しています。Setのb3Dをtrueにすると解決します");
 
 	//	初期化チェック
-	if (lpDS == NULL) return NULL;
+	assert(lpDS);
+	//	データが無い！！
+	assert(data[ID].size() != 0);
 
-	lpStream = new iexStreamSoundIIDX(lpDS, filename, mode, param);
-	return lpStream;
+	for (UINT play_no = 0; play_no < data[ID].size(); play_no++)
+	{
+		// 再生してないからいつでも514状態の人を検索
+		if (!data[ID][play_no]->buffer->isPlay())
+		{	// 見つかった！
+			data[ID][play_no]->buffer->SetAll3D(DS3D_DEFAULTMAXDISTANCE, DS3D_DEFAULTMINDISTANCE, pos, front, DS3D_DEFAULTCONEANGLE, DS3D_DEFAULTCONEOUTSIDEVOLUME, move);
+			data[ID][play_no]->buffer->Play(loop);
+			return play_no;
+		}
+	}
+
+	// 全員再生状態だったので、再生失敗
+	return -1;
+}
+//
+//=============================================================================================
+
+//=============================================================================================
+//		停		止
+void fstSoundSE::Stop(int ID, int no)
+{
+	assert(lpDS);
+	assert(data[ID].size() != 0);
+	data[ID][no]->buffer->Stop();
+}
+void fstSoundSE::AllStop()
+{
+	assert(lpDS);
+	for (int i = 0; i < WavNum; i++) for (UINT j = 0; j < data[i].size(); j++)if (data[i][j]->buffer->isPlay())data[i][j]->buffer->Stop();
+}
+//
+//=============================================================================================
+
+//=============================================================================================
+//		ボリューム(-10000～0)
+void fstSoundSE::SetVolume(int ID, int volume)
+{
+	if (data[ID][0]->b3D)return;	// 3Dサウンドに処理を任せているのでこちら側で音はいじれない
+	assert(lpDS);
+	assert(data[ID].size() != 0);
+	for (UINT i = 0; i < data[ID].size(); i++) data[ID][i]->buffer->SetVolume(volume);	// ID分全部設定してるが、各自設定したい場合は、また作ります。
+}
+void fstSoundSE::SetVolume(int ID, float volume)
+{
+	SetVolume(ID, (int)(-5000 * volume));
+}
+int	fstSoundSE::GetVolume(int ID)
+{
+	assert(lpDS);
+	assert(data[ID].size() != 0);
+	return data[ID][0]->buffer->GetVolume();
+}
+//
+//=============================================================================================
+
+//=============================================================================================
+//		ステレオ(-10000～0～10000)
+void	fstSoundSE::SetPan(int ID, int pan)
+{
+	if (data[ID][0]->b3D)return;	// 3Dサウンドに処理を任せているのでこちら側で音はいじれない
+	assert(lpDS);
+	assert(data[ID].size() != 0);
+	for (UINT i = 0; i < data[ID].size(); i++) data[ID][i]->buffer->SetPan(pan);
+}
+int		fstSoundSE::GetPan(int ID)
+{
+	assert(lpDS);
+	assert(data[ID].size() != 0);
+	return data[ID][0]->buffer->GetPan();
+}
+//
+//=============================================================================================
+
+//=============================================================================================
+//		周波数
+void fstSoundSE::SetFrequency(int ID, int frequency)
+{
+	assert(lpDS);
+	assert(data[ID].size() != 0);
+	for (UINT i = 0; i < data[ID].size(); i++) data[ID][i]->buffer->SetFrequency(frequency);
+}
+void fstSoundSE::SetFrequency(int ID, int no, int frequency)
+{
+	assert(lpDS);
+	assert(data[ID].size() != 0);
+	data[ID][no]->buffer->SetFrequency(frequency);
+}
+int	fstSoundSE::GetFrequency(int ID, int no)
+{
+	assert(lpDS);
+	assert(data[ID].size() != 0);
+	return data[ID][no]->buffer->GetFrequency();
+}
+//
+//=============================================================================================
+
+//=============================================================================================
+//		再生速度(周波数いじってるだけ)
+void fstSoundSE::SetSpeed(int ID, float speed)
+{
+	assert(lpDS);
+	assert(data[ID].size() != 0);
+	for (UINT i = 0; i < data[ID].size(); i++) data[ID][i]->buffer->SetSpeed(speed);
 }
 
-
-
-//**************************************************************************************************************
+void fstSoundSE::SetSpeed(int ID, int no, float speed)
+{
+	assert(lpDS);
+	assert(data[ID].size() != 0);
+	data[ID][no]->buffer->SetSpeed(speed);
+}
 //
-//		3Dサウンド
-//
-//**************************************************************************************************************
+//=============================================================================================
 
+//=============================================================================================
+//		再生状態(再生中or停止中)
+bool fstSoundSE::isPlay(int ID, int no)
+{
+	assert(lpDS);
+	assert(data[ID].size() != 0);
+	return data[ID][no]->buffer->isPlay();
+}
+//
+//=============================================================================================
+
+//=============================================================================================
+//		3Dサウンドでの聞こえる人情報設定
 /*
 DS3D_DEFERRED
 アプリケーションが IDirectSound3DListener8::CommitDeferredSettings メソッドを呼び出すまで、
@@ -1113,91 +1206,19 @@ DS3D_DEFERRED
 DS3D_IMMEDIATE
 設定を直ちに適用し、システムはすべての 3D サウンド バッファの 3D 座標を再計算する。
 */
-
-iex3DSoundIIDX::iex3DSoundIIDX()
-{
-	// 3Dリスナー作成
-	lp3DListener = NULL;
-	result = lpPrimary->QueryInterface(IID_IDirectSound3DListener, (LPVOID *)&lp3DListener);
-
-	if (result == E_INVALIDARG)	// プロシージャの呼び出し、または引数が不正らしい
-	{
-		assert(0);
-	}
-
-	this->Set_listener_all(Vector3(0, 0, 0), Vector3(0, 0, 1), Vector3(0, 1, 0), Vector3(0, 0, 0));
-	this->Update();
-}
-
-iex3DSoundIIDX::~iex3DSoundIIDX()
-{
-	int		i;
-
-	//	バッファの解放
-	for (i = 0; i<WavNum; i++){
-		if (buffer[i] != NULL) delete buffer[i];
-		buffer[i] = NULL;
-	}
-
-	//	Direct Sound解放
-	if (lpPrimary != NULL) lpPrimary->Release();
-	if (lpDS != NULL) lpDS->Release();
-	//if (lp3DListener != NULL) lp3DListener->Release();
-
-	lpDS = NULL;
-	lpPrimary = NULL;
-	lp3DListener = NULL;
-}
-
-void iex3DSoundIIDX::Set_dist(int no, float max_dist, float min_dist)
-{
-	buffer[no]->Set_dist(max_dist, min_dist);
-}
-void iex3DSoundIIDX::Set_pos(int no, const Vector3 &pos)
-{
-	buffer[no]->Set_pos(pos);
-}
-void iex3DSoundIIDX::Set_front(int no, const Vector3 &front)
-{
-	buffer[no]->Set_front(front);
-}
-void iex3DSoundIIDX::Set_range(int no, int degreeIn)
-{
-	buffer[no]->Set_range(degreeIn);
-}
-void iex3DSoundIIDX::Set_outRange_volume(int no, int out_vol)
-{
-	buffer[no]->Set_outRange_volume(out_vol);
-}
-void iex3DSoundIIDX::Set_move(int no, const Vector3 &move)
-{
-	buffer[no]->Set_move(move);
-}
-void iex3DSoundIIDX::Set_all3D(int no, float max_dist, float min_dist, const Vector3 &pos, const Vector3 &front, int degreeIn, int out_vol, const Vector3 &move)
-{
-	buffer[no]->Set_all3D(max_dist, min_dist, pos, front, degreeIn, out_vol, move);
-}
-
-//**************************************************************************************************************
-//	音が聞こえる人の情報設定
-//**************************************************************************************************************
-void iex3DSoundIIDX::Set_listener_pos(const Vector3 &pos)
+void fstSoundBase::SetListenerPos(const Vector3 &pos)
 {
 	lp3DListener->SetPosition(pos.x, pos.y, pos.z, DS3D_DEFERRED);
 }
-void iex3DSoundIIDX::Set_listener_orientation(const Vector3 &front, const Vector3 &up)
+void fstSoundBase::SetListenerOrientation(const Vector3 &front, const Vector3 &up)
 {
 	lp3DListener->SetOrientation(front.x, front.y, front.z, up.x, up.y, up.z, DS3D_DEFERRED);
 }
-void iex3DSoundIIDX::Set_listener_move(const Vector3 &move)
+void fstSoundBase::SetListenerMove(const Vector3 &move)
 {
 	lp3DListener->SetVelocity(move.x, move.y, move.z, DS3D_DEFERRED);
 }
-void iex3DSoundIIDX::Set_roll_off_factor(float pow)
-{
-	lp3DListener->SetRolloffFactor(pow, DS3D_DEFERRED);
-}
-void iex3DSoundIIDX::Set_listener_all(const Vector3 &pos, const Vector3 &front, const Vector3 &up, const Vector3 &velocity)
+void fstSoundBase::SetListenerAll(const Vector3 &pos, const Vector3 &front, const Vector3 &up, const Vector3 &velocity)
 {
 	DS3DLISTENER set;
 	ZeroMemory(&set, sizeof(DS3DLISTENER));
@@ -1212,25 +1233,486 @@ void iex3DSoundIIDX::Set_listener_all(const Vector3 &pos, const Vector3 &front, 
 	// サウンド計算情報設定(デフォルト値)
 	set.flDistanceFactor = DS3D_DEFAULTDISTANCEFACTOR;	// ベクトル単位におけるメートル数
 	set.flDopplerFactor = DS3D_DEFAULTDOPPLERFACTOR;	// ドップラー効果についての値
-	set.flRolloffFactor = 0.01f;	// 距離による減衰についての値
+	set.flRolloffFactor = 0.001f;	// 距離による減衰についての値
 
 	lp3DListener->SetAllParameters(&set, DS3D_DEFERRED);
 }
-void iex3DSoundIIDX::Update()
+void fstSoundBase::UpdateListener()
 {
-	result = lp3DListener->CommitDeferredSettings();
-	assert(result == DS_OK);
+	result_sound = lp3DListener->CommitDeferredSettings();
+	assert(result_sound == DS_OK);
+}
+//
+//=============================================================================================
+
+//=============================================================================================
+//		3Dサウンドでの音源情報設定
+void fstSoundSE::SetDist(int ID, int no, float max_dist, float min_dist)
+{
+	MyAssert(data[ID][no]->b3D, "ERROR:b3DフラグOFFの状態で3Dサウンドを使用しています。Setのb3Dをtrueにすると解決します");
+	assert(lpDS);
+	assert(data[ID].size() != 0);
+	data[ID][no]->buffer->SetDist(max_dist, min_dist);
+}
+void fstSoundSE::SetPos(int ID, int no, const Vector3 &pos)
+{
+	MyAssert(data[ID][no]->b3D, "ERROR:b3DフラグOFFの状態で3Dサウンドを使用しています。Setのb3Dをtrueにすると解決します");
+	assert(lpDS);
+	assert(data[ID].size() != 0);
+	data[ID][no]->buffer->SetPos(pos);
+}
+void fstSoundSE::SetFront(int ID, int no, const Vector3 &front)
+{
+	MyAssert(data[ID][no]->b3D, "ERROR:b3DフラグOFFの状態で3Dサウンドを使用しています。Setのb3Dをtrueにすると解決します");
+	assert(lpDS);
+	assert(data[ID].size() != 0);
+	data[ID][no]->buffer->SetFront(front);
+}
+void fstSoundSE::SetRange(int ID, int no, int degreeIn)
+{
+	MyAssert(data[ID][no]->b3D, "ERROR:b3DフラグOFFの状態で3Dサウンドを使用しています。Setのb3Dをtrueにすると解決します");
+	assert(lpDS);
+	assert(data[ID].size() != 0);
+	data[ID][no]->buffer->SetRange(degreeIn);
+}
+void fstSoundSE::SetOutRange_volume(int ID, int no, int out_vol)
+{
+	MyAssert(data[ID][no]->b3D, "ERROR:b3DフラグOFFの状態で3Dサウンドを使用しています。Setのb3Dをtrueにすると解決します");
+	assert(lpDS);
+	assert(data[ID].size() != 0);
+	data[ID][no]->buffer->SetOutRange_volume(out_vol);
+}
+void fstSoundSE::SetMove(int ID, int no, const Vector3 &move)
+{
+	MyAssert(data[ID][no]->b3D, "ERROR:b3DフラグOFFの状態で3Dサウンドを使用しています。Setのb3Dをtrueにすると解決します");
+	assert(lpDS);
+	assert(data[ID].size() != 0);
+	data[ID][no]->buffer->SetMove(move);
+}
+void fstSoundSE::SetAll3D(int ID, int no, float max_dist, float min_dist, const Vector3 &pos, const Vector3 &front, int degreeIn, int out_vol, const Vector3 &move)
+{
+	MyAssert(data[ID][no]->b3D, "ERROR:b3DフラグOFFの状態で3Dサウンドを使用しています。Setのb3Dをtrueにすると解決します");
+	assert(lpDS);
+	assert(data[ID].size() != 0);
+	data[ID][no]->buffer->SetAll3D(max_dist, min_dist, pos, front, degreeIn, out_vol, move);
+}
+//
+//=============================================================================================
+
+//=============================================================================================
+//		エフェクトセット
+void fstSoundSE::SetFX(DXA_FX flag)
+{
+	for (int i = 0; i < WavNum; i++)for (UINT j = 0; j < data[i].size(); j++)data[i][j]->buffer->SetFX(flag);
+}
+void fstSoundSE::SetFX(int ID, DXA_FX flag)
+{
+	for (UINT i = 0; i < data[ID].size(); i++)data[ID][i]->buffer->SetFX(flag);
+}
+//
+//=============================================================================================
+
+
+//**************************************************************************************************************
+//
+//		サウンドマネージャ(BGM用)
+//
+//**************************************************************************************************************
+
+//=============================================================================================
+//		初	期	化
+fstSoundBGM::fstSoundBGM()
+{
+	data.clear();
+	Fade_funk[(int)MODE::NONE] = &fstSoundBGM::None;
+	Fade_funk[(int)MODE::FADE_IN] = &fstSoundBGM::In;
+	Fade_funk[(int)MODE::FADE_OUT] = &fstSoundBGM::Out;
+}
+//
+//=============================================================================================
+
+
+//=============================================================================================
+//		解		放
+fstSoundBGM::~fstSoundBGM()
+{
+	// バッファ解放
+	for (UINT i = 0; i < data.size(); i++)
+	{
+		delete data[i]->buffer;
+		delete data[i];
+	}
+	data.clear();
+}
+//
+//=============================================================================================
+
+//=============================================================================================
+//		更		新
+void fstSoundBGM::Update()
+{
+	for (UINT i = 0; i < data.size(); i++)
+	{
+		(this->*Fade_funk[(int)data[i]->fade_mode])(i);	// モード分岐
+	}
+}
+
+void fstSoundBGM::None(int no){}
+void fstSoundBGM::In(int no)
+{
+	// ボリューム上げていく
+	if ((data[no]->volume += data[no]->fade_speed) >= 1.0f)
+	{
+		// フェードしきった！
+		data[no]->volume = 1.0f;
+		data[no]->fade_mode = MODE::NONE;
+	}
+	const int vol = (int)(MinVolume * (1.0f - data[no]->volume));
+	data[no]->buffer->SetVolume(vol);
+}
+void fstSoundBGM::Out(int no)
+{
+	// ボリューム下げていく
+	if ((data[no]->volume -= data[no]->fade_speed) <= 0)
+	{
+		// フェードしきった！
+		data[no]->volume = 0;
+		data[no]->fade_mode = MODE::NONE;
+		data[no]->buffer->Stop();
+	}
+	const int vol = (int)(MinVolume * (1.0f - data[no]->volume));
+	data[no]->buffer->SetVolume(vol);
+}
+//
+//=============================================================================================
+
+//=============================================================================================
+//		waveファイルセット
+void fstSoundBGM::Set(int ID, char* filename, bool b3D)
+{
+	//	初期化チェック
+	assert(lpDS);
+	//	既存のバッファの解放
+	if (ID < (int)data.size())SAFE_DELETE(data[ID]->buffer);
+
+	assert(filename);
+
+	// 情報設定
+	BGMData *set = new BGMData;
+	set->b3D = b3D;
+	set->buffer = new fstSoundBuffer(lpDS, filename, b3D);
+	set->fade_mode = MODE::NONE;
+	set->fade_speed = 0;
+	set->volume = 1;
+	data.push_back(set);
+	assert(data[ID]->buffer->GetBuf());
+}
+//
+//=============================================================================================
+
+//=============================================================================================
+//		再		生
+void fstSoundBGM::Play(int ID, bool loop, DWORD cursor)
+{
+	//	初期化チェック
+	assert(lpDS);
+	//	データが無い！！
+	assert(data[ID]->buffer);
+	data[ID]->buffer->Play(loop, cursor);
+}
+void fstSoundBGM::Play(int ID, const Vector3 &pos, const Vector3 &front, const Vector3 &move, bool loop)
+{
+	assert(lpDS);
+	assert(data[ID]->buffer);
+	data[ID]->buffer->SetAll3D(DS3D_DEFAULTMAXDISTANCE, DS3D_DEFAULTMINDISTANCE, pos, front, DS3D_DEFAULTCONEANGLE, DS3D_DEFAULTCONEOUTSIDEVOLUME, move);
+	data[ID]->buffer->Play(loop);
+}
+//
+//=============================================================================================
+
+
+//=============================================================================================
+//		停		止
+void fstSoundBGM::Stop(int ID)
+{
+	assert(lpDS);
+	assert(data[ID]->buffer);
+	data[ID]->buffer->Stop();
+}
+void fstSoundBGM::AllStop()
+{
+	assert(lpDS);
+	for (UINT i = 0; i < data.size(); i++)if (data[i]->buffer->isPlay())data[i]->buffer->Stop();
+}
+void fstSoundBGM::Pause(int ID)
+{
+	assert(lpDS);
+	assert(data[ID]->buffer);
+	data[ID]->buffer->Pause();
+}
+//
+//=============================================================================================
+
+//=============================================================================================
+//		フェード関係
+void fstSoundBGM::FadeIn(int ID, float fade_speed, bool loop, DWORD cursor)
+{
+	assert(lpDS);
+	assert(data[ID]->buffer);
+	data[ID]->volume = 0;
+	data[ID]->fade_mode = MODE::FADE_IN;
+	data[ID]->fade_speed = fade_speed;
+	data[ID]->buffer->SetVolume(DSBVOLUME_MIN);
+	data[ID]->buffer->Play(loop, cursor);
+}
+void fstSoundBGM::FadeOut(int ID, float fade_speed)
+{
+	assert(lpDS);
+	assert(data[ID]->buffer);
+	data[ID]->volume = 1.0f;
+	data[ID]->fade_mode = MODE::FADE_OUT;
+	data[ID]->fade_speed = fade_speed;
+	data[ID]->buffer->SetVolume(DSBVOLUME_MAX);
+}
+void fstSoundBGM::CrossFade(int inID, int outID, float fade_speed, CROSS_FADE_TYPE type, bool loop)
+{
+	CrossFade(inID, outID, fade_speed, fade_speed, type, loop);
+}
+void fstSoundBGM::CrossFade(int inID, int outID, float in_speed, float out_speed, CROSS_FADE_TYPE type, bool loop)
+{
+	assert(lpDS);
+	assert(data[inID]->buffer && data[outID]->buffer);
+
+	// フェードアウト設定
+	this->FadeOut(outID, out_speed);
+
+	// フェードイン設定
+	DWORD cursor;
+	switch (type)
+	{
+	case CROSS_FADE_TYPE::NORMAL: cursor = 0;
+		break;
+	case CROSS_FADE_TYPE::END_OF_ETERNITY: cursor = data[outID]->buffer->GetPlayCursor();
+		break;
+	}
+	this->FadeIn(inID, in_speed, loop, cursor);
+}
+//
+//=============================================================================================
+
+//=============================================================================================
+//		ボリューム(-10000～0)
+void fstSoundBGM::SetVolume(int ID, int volume)
+{
+	if (data[ID]->b3D)return;	// 3Dサウンドに処理を任せているのでこちら側で音はいじれない
+	assert(lpDS);
+	assert(data.size() != 0);
+	data[ID]->buffer->SetVolume(volume);
+}
+void fstSoundBGM::SetVolume(int ID, float volume)
+{
+	SetVolume(ID, (int)(-5000 * volume));
+}
+int	fstSoundBGM::GetVolume(int ID)
+{
+	assert(lpDS);
+	assert(data.size() != 0);
+	return data[ID]->buffer->GetVolume();
+}
+//
+//=============================================================================================
+
+//=============================================================================================
+//		ステレオ(-10000～0～10000)
+void fstSoundBGM::SetPan(int ID, int pan)
+{
+	if (data[ID]->b3D)return;	// 3Dサウンドに処理を任せているのでこちら側で音はいじれない
+	assert(lpDS);
+	assert(data.size() != 0);
+	data[ID]->buffer->SetPan(pan);
+}
+int	fstSoundBGM::GetPan(int ID)
+{
+	assert(lpDS);
+	assert(data.size() != 0);
+	return data[ID]->buffer->GetPan();
+}
+//
+//=============================================================================================
+
+//=============================================================================================
+//		周波数
+void fstSoundBGM::SetFrequency(int ID, int frequency)
+{
+	assert(lpDS);
+	assert(data.size() != 0);
+	data[ID]->buffer->SetFrequency(frequency);
+}
+int	fstSoundBGM::GetFrequency(int ID, int no)
+{
+	assert(lpDS);
+	assert(data.size() != 0);
+	return data[ID]->buffer->GetFrequency();
+}
+//
+//=============================================================================================
+
+//=============================================================================================
+//		再生速度(周波数いじってるだけ)
+void fstSoundBGM::SetSpeed(int ID, float speed)
+{
+	assert(lpDS);
+	assert(data.size() != 0);
+	data[ID]->buffer->SetSpeed(speed);
+}
+
+void fstSoundBGM::SetSpeed(int ID, int no, float speed)
+{
+	assert(lpDS);
+	assert(data.size() != 0);
+	data[ID]->buffer->SetSpeed(speed);
+}
+//
+//=============================================================================================
+
+//=============================================================================================
+//		再生状態(再生中or停止中)
+bool fstSoundBGM::isPlay(int ID)
+{
+	assert(lpDS);
+	assert(data.size() != 0);
+	return data[ID]->buffer->isPlay();
+}
+//
+//=============================================================================================
+
+//=============================================================================================
+//		再生カーソル
+DWORD fstSoundBGM::GetPlayCursor(int ID)
+{
+	assert(lpDS);
+	assert(data[ID]->buffer);
+	return data[ID]->buffer->GetPlayCursor();
+}
+DWORD fstSoundBGM::GetPlayFrame(int ID)
+{
+	assert(lpDS);
+	assert(data[ID]->buffer);
+	return data[ID]->buffer->GetPlayFrame();
+}
+int	fstSoundBGM::GetPlaySecond(int ID)
+{
+	assert(lpDS);
+	assert(data[ID]->buffer);
+	return data[ID]->buffer->GetPlaySecond();
+}
+
+void fstSoundBGM::SetPlaySecond(int ID, int sec)
+{
+	assert(lpDS);
+	assert(data[ID]->buffer);
+	data[ID]->buffer->SetPlaySecond(sec);
 }
 
 
-
-//*****************************************************************************************************************************
-//
-//	サウンド制御関数群
-
-void iex3DSoundIIDX::Play(int no, const Vector3 &pos, const Vector3 &front, BOOL loop)
+DWORD fstSoundBGM::GetSize(int ID)
 {
-	buffer[no]->Set_pos(pos);
-	buffer[no]->Set_front(front);
-	buffer[no]->Play(loop);
+	assert(lpDS);
+	assert(data[ID]->buffer);
+	return data[ID]->buffer->GetSize();
+}
+
+int	fstSoundBGM::GetLengthSecond(int ID)
+{
+	assert(lpDS);
+	assert(data[ID]->buffer);
+	return data[ID]->buffer->GetLengthSecond();
+}
+//
+//=============================================================================================
+
+//=============================================================================================
+//		3Dサウンドでの音源情報設定
+void fstSoundBGM::SetDist(int ID, int no, float max_dist, float min_dist)
+{
+	MyAssert(data[ID]->b3D, "ERROR:b3DフラグOFFの状態で3Dサウンドを使用しています。Setのb3Dをtrueにすると解決します");
+	assert(lpDS);
+	assert(data.size() != 0);
+	data[ID]->buffer->SetDist(max_dist, min_dist);
+}
+void fstSoundBGM::SetPos(int ID, int no, const Vector3 &pos)
+{
+	MyAssert(data[ID]->b3D, "ERROR:b3DフラグOFFの状態で3Dサウンドを使用しています。Setのb3Dをtrueにすると解決します");
+	assert(lpDS);
+	assert(data.size() != 0);
+	data[ID]->buffer->SetPos(pos);
+}
+void fstSoundBGM::SetFront(int ID, int no, const Vector3 &front)
+{
+	MyAssert(data[ID]->b3D, "ERROR:b3DフラグOFFの状態で3Dサウンドを使用しています。Setのb3Dをtrueにすると解決します");
+	assert(lpDS);
+	assert(data.size() != 0);
+	data[ID]->buffer->SetFront(front);
+}
+void fstSoundBGM::SetRange(int ID, int no, int degreeIn)
+{
+	MyAssert(data[ID]->b3D, "ERROR:b3DフラグOFFの状態で3Dサウンドを使用しています。Setのb3Dをtrueにすると解決します");
+	assert(lpDS);
+	assert(data.size() != 0);
+	data[ID]->buffer->SetRange(degreeIn);
+}
+void fstSoundBGM::SetOutRange_volume(int ID, int no, int out_vol)
+{
+	MyAssert(data[ID]->b3D, "ERROR:b3DフラグOFFの状態で3Dサウンドを使用しています。Setのb3Dをtrueにすると解決します");
+	assert(lpDS);
+	assert(data.size() != 0);
+	data[ID]->buffer->SetOutRange_volume(out_vol);
+}
+void fstSoundBGM::SetMove(int ID, int no, const Vector3 &move)
+{
+	MyAssert(data[ID]->b3D, "ERROR:b3DフラグOFFの状態で3Dサウンドを使用しています。Setのb3Dをtrueにすると解決します");
+	assert(lpDS);
+	assert(data.size() != 0);
+	data[ID]->buffer->SetMove(move);
+}
+void fstSoundBGM::SetAll3D(int ID, int no, float max_dist, float min_dist, const Vector3 &pos, const Vector3 &front, int degreeIn, int out_vol, const Vector3 &move)
+{
+	MyAssert(data[ID]->b3D, "ERROR:b3DフラグOFFの状態で3Dサウンドを使用しています。Setのb3Dをtrueにすると解決します");
+	assert(lpDS);
+	assert(data.size() != 0);
+	data[ID]->buffer->SetAll3D(max_dist, min_dist, pos, front, degreeIn, out_vol, move);
+}
+//
+//=============================================================================================
+
+//=============================================================================================
+//		エフェクトセット
+void fstSoundBGM::SetFX(DXA_FX flag)
+{
+	for (UINT i = 0; i < data.size(); i++)data[i]->buffer->SetFX(flag);
+}
+void fstSoundBGM::SetFX(int ID, DXA_FX flag)
+{
+	data[ID]->buffer->SetFX(flag);
+}
+//
+//=============================================================================================
+
+//**************************************************************************************************************
+//	ストリームサウンド管理
+//**************************************************************************************************************
+fstStreamSound* fstSoundBGM::PlayStream(char* filename)
+{
+	return PlayStream(filename, STR_NORMAL, 0);
+}
+
+fstStreamSound* fstSoundBGM::PlayStream(char* filename, BYTE mode, int param)
+{
+	fstStreamSound*	lpStream;
+
+	//	初期化チェック
+	if (lpDS == nullptr) return nullptr;
+
+	lpStream = new fstStreamSound(lpDS, filename, mode, param);
+	return lpStream;
 }

@@ -211,7 +211,7 @@ void MyPlayer::Update_listener()
 	const Vector3 front(models[(int)model_part]->TransMatrix._31, models[(int)model_part]->TransMatrix._32, models[(int)model_part]->TransMatrix._33);
 	const Vector3 up(models[(int)model_part]->TransMatrix._21, models[(int)model_part]->TransMatrix._22, models[(int)model_part]->TransMatrix._23);
 
-	SoundManager::Set_listener(pos, front, up, move);
+	se->Set_listener(pos, front, up, move);
 }
 
 //*************************************************************************************************************************

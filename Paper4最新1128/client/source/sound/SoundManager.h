@@ -1,62 +1,41 @@
-#ifndef SOUNDMANAGER_H_
-#define SOUNDMANAGER_H_
+#pragma once
 
 //********************************************************************************************************************
 //
 //		クラスの宣言
 //
 //********************************************************************************************************************
-//		サウンドマネージャー
+//		サウンドマネージャー(グローバル実体で関数呼び出し)
 //****************************************************************************************************************
 
-class iex3DSoundIIDX;
-class iexSoundIIDX;
+#include <map>
+#include	"../../IEX/IEX_AudioIIDX.h"
 
-//=======================================================================================
-//	サウンド実体管理
+class iexSoundBase;
+class fstSoundSE;
+class fstSoundBGM;
+
 namespace SoundManager
 {
 	void Initialize();
 	void Release();
 	void Update();
-	void Set_listener(const Vector3 &pos, const Vector3 &front, const Vector3 &up, const Vector3 &move);
+	void SetFX(DXA_FX flag);
 }
 
-
-
-//=======================================================================================
-//	サウンド基底クラス
-class SoundBase
-{
-protected:
-	iex3DSoundIIDX *play_manager;	// iexSound
-	int data_no;				// wavデータの種類(番号)
-
-
-public:
-	SoundBase() :play_manager(nullptr){}
-	virtual ~SoundBase();
-	enum { NOT_FOUND = -1 };
-
-	void Set_listener(const Vector3 &pos, const Vector3 &front, const Vector3 &up, const Vector3 &move);		// リスナー情報
-
-	//===============================================
-	//	データ検索
-	//===============================================
-	virtual int Find_data_no(char *_ID) = 0;
-};
-
-
-
-//=======================================================================================
-//	SE管理クラス
-class SE : public SoundBase
+class SE_Manager
 {
 private:
-	int max_count;				// セットしたデータ数
+	std::map<LPSTR, int> ID;	// char*型で番号を振り分ける
 
-	int Play_in(int no, float volume, bool loop);
-	int Play_in(int data_num, const Vector3 &pos, const Vector3 &front, bool loop);
+	fstSoundSE *play_manager;	// iexSound
+
+	// データ検索
+	//int Find_data_no(char *_ID);
+
+	int Play_in(int data_num, bool loop);
+	int Play_in(int data_num, float volume, bool loop);
+	int Play_in(int data_num, const Vector3 &pos, const Vector3 &front, const Vector3 &move, bool loop);
 
 public:
 
@@ -64,19 +43,18 @@ public:
 	//	音データ
 	//===============================================
 	struct	DATA{
-		char *id;				// 呼び出す際に使用する識別コード
-		char *file_name;		// ファイルパス
-		int same_play_max;		// 同一の音を複数再生する最大値
-		float volume;			// ボリューム
-		bool b3D;				// 3Dフラグ
-		int start_num;			// 1つのwavデータあたり start_num ～ start_num + same_play_max 分のデータを保持
+		LPSTR id;					// 呼び出す際に使用する識別コード
+		LPSTR file_name;			// ファイルパス
+		int play_simultaneously;	// 同一の音を複数再生する最大値
+		bool b3D;					// 3Dサウンドフラグ
 	};
 
 
 	//===============================================
 	//	初期化と解放
 	//===============================================
-	SE() :SoundBase(){}
+	SE_Manager(){}
+	~SE_Manager();
 	void Initialize();
 
 	//===============================================
@@ -88,53 +66,50 @@ public:
 	//===============================================
 	//	処		理
 	//===============================================
-	int Play(char *_ID, bool loop = false);			// 簡易版
-	int Play(char *_ID, const Vector3 &pos, const Vector3 &front = Vector3(0, 0, -1), bool loop = false);	// 3D設定版
-	void Stop(int no);								// Playで返ってきた数値を入れる
-	void Stop_all();								// 全部止める
-	bool isPlay(char *ID);
-	bool isPlay(int no);
-	void Set_data(int no, const Vector3 &pos, const Vector3 &front = Vector3(0, 0, -1), const Vector3 &move = Vector3(0, 0, 0));
+	int Play(LPSTR _ID, bool loop = false);																											// 簡易版
+	int Play(LPSTR _ID, float volume, bool loop);																									// ボリューム設定版
+	int Play(LPSTR _ID, const Vector3 &pos, const Vector3 &front = Vector3(0, 0, -1), const Vector3 &move = Vector3(0, 0, 0), bool loop = false);	// 3D設定版
+	void Stop(LPSTR _ID, int no);																													// Playで返ってきた数値を入れる
+	void Stop_all();																																// 全部止める
+	bool isPlay(char *ID, int no);
+	void SetFX(DXA_FX flag){ play_manager->SetFX(flag); }
 
-	//===============================================
-	//	データ検索
-	//===============================================
-	int Find_data_no(char *_ID);
+	void Set_listener(const Vector3 &pos, const Vector3 &front, const Vector3 &up, const Vector3 &move);											// リスナー情報
 };
 
-
-//=======================================================================================
-//	BGM管理クラス
-class BGM : public SoundBase
+class BGM_Manager
 {
 private:
-	int Play_in(int no, float volume, bool loop);
+	std::map<LPSTR, int> ID;	// char*型で番号を振り分ける
+
+	fstSoundBGM *play_manager;	// iexSound
+
+	// データ検索
+	//int Find_data_no(char *_ID);
+
+	void Play_in(int data_num, bool loop);
+	void Play_in(int data_num, float volume, bool loop);
+	void Play_in(int data_num, const Vector3 &pos, const Vector3 &front, const Vector3 &move, bool loop);
 
 public:
-	enum F_TYPE{ FADE_NONE = 0, FADE_IN, FADE_OUT };
-	void None(int no);
-	void In(int no);
-	void Out(int no);
-	void(BGM::*Fade_mode_funk[3])(int);
+
+	int effect_no = 0;
 
 	//===============================================
 	//	音データ
 	//===============================================
 	struct	DATA{
-		char *id;					// 呼び出す際に使用する識別コード
-		char *file_name;			// ファイルパス
-		float max_vol;				// 最大音量
-		float fade_speed;			// フェードスピード
-		F_TYPE fade_type;			// 関数が分岐する
-		float volume;				// ボリューム
+		LPSTR id;					// 呼び出す際に使用する識別コード
+		LPSTR file_name;			// ファイルパス
+		bool b3D;
 	};
 
 
 	//===============================================
 	//	初期化と解放
 	//===============================================
-	BGM() :SoundBase(){}
 	void Initialize();
+	~BGM_Manager();
 
 	//===============================================
 	//	更		新
@@ -145,24 +120,21 @@ public:
 	//===============================================
 	//	処		理
 	//===============================================
-	int Play(char *_ID, bool loop = true);				// 簡易版
-	int Play(char *_ID, float volume, bool loop);		// フル設定版
-	int Fade_in(char *_ID, int speed, bool loop = true);// フェードイン
+	void Play(LPSTR _ID, bool loop = true);																											// 簡易版
+	void Play(LPSTR _ID, float volume, bool loop);																									// ボリューム設定版
+	void Play(LPSTR _ID, const Vector3 &pos, const Vector3 &front = Vector3(0, 0, -1), const Vector3 &move = Vector3(0, 0, 0), bool loop = true);	// 3D設定版
+	void Stop(LPSTR _ID);																															// Playで返ってきた数値を入れる
+	void Stop_all();																																// 全部止める
+	bool isPlay(LPSTR _ID);
+	void Set_speed(LPSTR _ID, float speed);
+	void Fade_in(LPSTR _ID, float fade_speed, bool loop = true);
+	void Fade_out(LPSTR _ID, float fade_speed);
+	void Cross_fade(LPSTR inID, LPSTR outID, float fade_speed = .0075f, bool loop = true);
+	void Cross_fade(LPSTR inID, LPSTR outID, float in_speed, float out_speed, bool loop);
+	void SetFX(DXA_FX flag){ play_manager->SetFX(flag); }
 
-	void Stop(char *_ID);								// 停止
-	void Fade_out(char *_ID, int speed);				// フェードアウト
-	void Stop_all();									// 全部止める
-	void Pause(char *_ID);								// ポーズ
-	bool isPlay(char *_ID);
-
-	void Set_speed(char *_ID, float speed);				// 再生速度変更
-
-	//===============================================
-	//	データ検索
-	//===============================================
-	int Find_data_no(char *_ID);
+	void Set_listener(const Vector3 &pos, const Vector3 &front, const Vector3 &up, const Vector3 &move);											// リスナー情報
 };
-
 
 //=======================================================================================
 //	イベントでいろいろ
@@ -216,10 +188,7 @@ public:
 #define event_bgm ( EventBGM::getInstance() )
 
 //===============================================
-//	実体
+//	実体(関数呼び出しはこれらを使う)
 //===============================================
-extern SE *se;
-extern BGM *bgm;
-
-
-#endif
+extern SE_Manager *se;
+extern BGM_Manager *bgm;
