@@ -2,6 +2,8 @@
 #include "iextreme.h"
 #include "paper object.h"
 
+#include "./../../../share_data/Enum_public.h"
+
 Paper_obj::Paper_obj() : model_type(0), position(0, 0, 0), forward(0, 0, 1), angle(0), point(0)
 {}
 

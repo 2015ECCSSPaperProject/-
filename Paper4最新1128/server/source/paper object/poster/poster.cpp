@@ -281,3 +281,17 @@ void Poster::Get_send_data( char *out )
 	data->number = number;
 	data->anim_no = 0;
 }
+
+KIND_PAPER_OBJECT Poster::Get_kind()
+{
+	return KIND_PAPER_OBJECT::POSTER;
+}
+
+
+
+// ポスターを継承したクラス
+
+KIND_PAPER_OBJECT Calendar::Get_kind()
+{
+	return KIND_PAPER_OBJECT::CALENDAR;
+}

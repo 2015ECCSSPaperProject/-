@@ -106,3 +106,8 @@ void Flyer::Get_send_data ( char *out )
 	Send_data data { number, model->GetFrame (), position };
 	memcpy_s( out, Get_send_data_size(), &data, Get_send_data_size() );
 }
+
+KIND_PAPER_OBJECT Flyer::Get_kind()
+{
+	return KIND_PAPER_OBJECT::FLYER;
+}

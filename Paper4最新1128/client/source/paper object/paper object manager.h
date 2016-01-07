@@ -52,16 +52,17 @@ public:
 	void Set_receive_data( char *in );
 
 protected:
-	iex3DObj *original_model; // クローン関数使う用
+	// クローン関数使う用
+	iex3DObj *original_flyer;
+	iexMesh *original_model;
 	int number_of_objects;
 
 	std::vector<Paper_obj*> obj_array;
 
 	void Load();
 
-	void Load_poster();
-
 	void Load_flyer();
+	template<class POSTERCLASS>void Load_poster_tmp( char *filename, iexMesh *model );
 
 	// 矢印
 	iex2DObj *mark;

@@ -172,6 +172,8 @@ void Stage::Load_mapdata()
 		// 配置する個数
 		int num;
 		ifs >> num;
+		if( num == 0 )
+			delete mesh;
 		// num個配置
 		for( int i = 0; i < num; i++ )
 		{

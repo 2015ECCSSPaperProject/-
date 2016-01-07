@@ -1,6 +1,8 @@
 
 #pragma once
 
+// #include "../../../../share_data/Enum_public.h"
+
 class BasePlayer;
 
 class Poster : public Paper_obj_Mesh
@@ -95,4 +97,15 @@ public:
 
 	void Get_send_data( char *out );
 
+	virtual KIND_PAPER_OBJECT Get_kind();
+};
+
+
+
+// ポスターを継承したクラス
+
+class Calendar : public Poster
+{
+public:
+	KIND_PAPER_OBJECT Get_kind();
 };

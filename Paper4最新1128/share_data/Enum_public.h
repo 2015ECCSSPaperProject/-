@@ -45,3 +45,11 @@ enum KIND_NAME
 {
 	OBJECT = 0, FOOD = 1, BACK = 2
 };
+
+// ペーパーオブジェクトの種類
+enum KIND_PAPER_OBJECT
+{
+	POSTER = 0,
+	FLYER = 1,
+	CALENDAR = 2,
+};

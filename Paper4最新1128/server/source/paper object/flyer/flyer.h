@@ -36,6 +36,8 @@ public:
 
 	void Get_send_data ( char *out );
 
+	KIND_PAPER_OBJECT Get_kind();
+
 private:
 	float high; // —‰º’†‚Ì‚‚³
 };

@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include "../../../../share_data/Enum_public.h"
+
 class Score;
 class BasePlayer;
 
@@ -20,4 +22,14 @@ public:
 
 	void Set_receive_data( char *in );
 
+};
+
+
+
+// ポスターを継承したクラス
+
+class Calendar : public Poster
+{
+public:
+	KIND_PAPER_OBJECT Get_kind();
 };

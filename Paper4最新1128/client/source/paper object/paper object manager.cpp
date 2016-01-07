@@ -14,7 +14,9 @@ Paper_obj_mng::Paper_obj_mng() : original_model(nullptr), number_of_objects(0)
 Paper_obj_mng::~Paper_obj_mng()
 {
 	delete[] original_model;
-	for (unsigned i = 0; i < obj_array.size(); i++) delete obj_array[i];
+	delete original_flyer;
+	for (unsigned i = 0; i < obj_array.size(); i++)
+		delete obj_array[i];
 	SAFE_DELETE(mark);
 }
 
@@ -29,6 +31,7 @@ void Paper_obj_mng::Release()
 	delete[] original_model; original_model = nullptr;
 	for (unsigned i = 0; i < obj_array.size(); i++) delete obj_array[i];
 	obj_array.clear();
+	delete original_flyer;
 	//SAFE_DELETE(mark);
 }
 
@@ -128,42 +131,16 @@ void Paper_obj_mng::Load()
 	//**************************************************
 	//char work[256];
 
+	// モデルロード
+	original_flyer = new iex3DObj( "DATA/paper object/flyer/flyer.IEM" );
 	unsigned int num_models = 2;							// モデルの種類
-	original_model = new iex3DObj[num_models];
-	for (unsigned i = 0; i < num_models; i++)
-	{
-		// ロードしたい
-		original_model[0].LoadObject("DATA/paper object/Poster/posuta-.IEM");
-		original_model[1].LoadObject("DATA/paper object/flyer/flyer.IEM");
-		break;
-	}
-
-	Load_poster();
-
+	original_model = new iexMesh[num_models];
+	original_model[0].LoadIMO("DATA/paper object/Poster/posuta-.IMO");
+	original_model[1].LoadIMO( "DATA/paper object/calendar/calendar.IMO" );
+	// 位置ロード
 	Load_flyer();
-}
-
-void Paper_obj_mng::Load_poster()
-{
-	std::ifstream infs( "DATA/MATI/poster_pos.txt" );
-
-	// ポスターの位置とか
-	Poster *p( nullptr );
-	float angle( 0 );
-	Vector3 pos( 0, 0, 0 );
-	int point( 0 );
-	while( !infs.eof() )
-	{
-		infs >> angle;
-		angle = Degree_to_radian( angle );
-		infs >> pos;
-		infs >> point;
-		p = new Poster;
-		p->Initialize( &original_model[0] );
-		p->Set_pose( angle, pos );
-		obj_array.push_back( p );
-		this->number_of_objects++;
-	}
+	Load_poster_tmp<Poster>( "DATA/MATI/poster_pos.txt", &original_model[0] );
+	Load_poster_tmp<Calendar>( "DATA/MATI/calendar_pos.txt", &original_model[1] );
 }
 
 void Paper_obj_mng::Load_flyer()
@@ -190,12 +167,36 @@ void Paper_obj_mng::Load_flyer()
 			infs >> pos.z;
 			// フライヤー作成
 			Flyer *p = new Flyer;
-			p->Initialize( &original_model[1], time );
+			p->Initialize( original_flyer, time );
 			p->Set_pose( angle, pos );
 			obj_array.push_back( p );
 			this->number_of_objects++;
 		}
 	}
+}
+
+template<class POSTERCLASS>void Paper_obj_mng::Load_poster_tmp( char *filename, iexMesh *model )
+{
+	std::ifstream infs( filename );
+
+	// ポスターの位置とか
+	POSTERCLASS *p( nullptr );
+	float angle( 0 );
+	Vector3 pos( 0, 0, 0 );
+	int point( 0 );
+	while( !infs.eof() )
+	{
+		infs >> angle;
+		angle = Degree_to_radian( angle );
+		infs >> pos;
+		infs >> point;
+		p = new POSTERCLASS;
+		p->Initialize( model );
+		p->Set_pose( angle, pos );
+		obj_array.push_back( p );
+		this->number_of_objects++;
+	}
+	infs.close();
 }
 
 Paper_obj_mng *paper_obj_mng = nullptr;

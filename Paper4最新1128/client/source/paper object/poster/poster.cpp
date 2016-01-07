@@ -2,6 +2,7 @@
 #include "iextreme.h"
 #include "../../system/System.h"
 #include "../paper object.h"
+#include "../../../../share_data/Enum_public.h"
 #include "Poster.h"
 //#include "../score/Score.h"
 //#include "../player/Player.h"

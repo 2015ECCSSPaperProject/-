@@ -628,6 +628,7 @@ BOOL iexMesh::LoadIMO( LPSTR filename )
 	SetScale(1.0f);
 	dwFlags = 0;
 
+	bLoad = TRUE;
 	return TRUE;
 }
 

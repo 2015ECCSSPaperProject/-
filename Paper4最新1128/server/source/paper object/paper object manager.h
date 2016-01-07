@@ -67,8 +67,8 @@ protected:
 
 	void Load();
 
-	void Load_poster();
 	void Load_flyer();
+	template<class POSTERCLASS>void Load_poster_tmp( char *filename );
 };
 
 extern Paper_obj_mng *paper_obj_mng;

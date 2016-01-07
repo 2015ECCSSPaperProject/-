@@ -203,38 +203,16 @@ void Paper_obj_mng::Get_send_data( char *out )
 
 void Paper_obj_mng::Load()
 {
-	number_of_objects = 0;
-
-	Load_poster();
-	Load_flyer();
-}
-
-void Paper_obj_mng::Load_poster()
-{
-	std::ifstream infs( "DATA/MATI/poster_pos.txt" );
-
 	unsigned int num_models = 2; // モデルの種類
 	original_model = new iex3DObj[num_models];
 	original_model[0].LoadObject( "DATA//paper object/Poster/posuta-.IEM" );
 	original_model[1].LoadObject( "DATA/paper object/flyer/flyer.IEM" );
 
-	// ポスターの位置とか
-	Paper_obj *p( nullptr );
-	float angle( 0 );
-	Vector3 pos( 0, 0, 0 );
-	int point( 0 );
-	while( !infs.eof() )
-	{
-		infs >> angle;
-		angle = Degree_to_radian( angle );
-		infs >> pos;
-		infs >> point;
-		p = new Poster( 0, &original_model[0], point );
-		p->Set_pose( angle, pos );
-		obj_array.push_back( p );
-		this->number_of_objects++;
-	}
-	infs.close();
+	number_of_objects = 0;
+
+	Load_flyer();
+	Load_poster_tmp<Poster>( "DATA/MATI/poster_pos.txt" );
+	Load_poster_tmp<Calendar>( "DATA/MATI/calendar_pos.txt" );
 }
 
 void Paper_obj_mng::Load_flyer()
@@ -273,6 +251,30 @@ void Paper_obj_mng::Load_flyer()
 			event_list->push( ev );
 		}
 	}
+}
+
+template<class POSTERCLASS>void Paper_obj_mng::Load_poster_tmp( char *filename )
+{
+	std::ifstream infs( filename );
+
+	// ポスターの位置とか
+	POSTERCLASS *p( nullptr );
+	float angle( 0 );
+	Vector3 pos( 0, 0, 0 );
+	int point( 0 );
+	while( !infs.eof() )
+	{
+		infs >> angle;
+		angle = Degree_to_radian( angle );
+		infs >> pos;
+		infs >> point;
+		p = new POSTERCLASS;
+		p->Initialize( 0, &original_model[0], point );
+		p->Set_pose( angle, pos );
+		obj_array.push_back( p );
+		this->number_of_objects++;
+	}
+	infs.close();
 }
 
 Paper_obj_mng *paper_obj_mng = nullptr;

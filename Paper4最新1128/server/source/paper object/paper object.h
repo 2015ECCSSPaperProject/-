@@ -9,6 +9,8 @@ class iex3DObj;
 
 class BasePlayer;
 
+enum KIND_PAPER_OBJECT;
+
 class Paper_obj
 {
 public:
@@ -53,6 +55,8 @@ public:
 	virtual unsigned int Get_send_data_size() = 0;
 
 	virtual void Get_send_data( char *out ) = 0;
+
+	virtual KIND_PAPER_OBJECT Get_kind() = 0;
 
 protected:
 	int number;
