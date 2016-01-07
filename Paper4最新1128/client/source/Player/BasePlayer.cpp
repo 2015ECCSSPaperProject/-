@@ -64,6 +64,13 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	models[(int)MODEL::PLANE]	 = objs[(int)PlayerManager::CLONE_TYPE::DIE]->Clone();
 	models[(int)MODEL::GUN]		 = objs[(int)PlayerManager::CLONE_TYPE::GUN]->Clone();
 	models[(int)MODEL::SYURIKEN] = objs[(int)PlayerManager::CLONE_TYPE::SYURIKEN]->Clone();
+	models[(int)MODEL::REND_CALENDAR] = objs[(int)PlayerManager::CLONE_TYPE::REND_CALENDAR]->Clone(2);
+	models[(int)MODEL::REND_MAGAZINE] = objs[(int)PlayerManager::CLONE_TYPE::REND_MAGAZINE]->Clone(2);
+	models[(int)MODEL::REND_MONEY] = objs[(int)PlayerManager::CLONE_TYPE::REND_MONEY]->Clone(2);
+	models[(int)MODEL::REND_SHINBUN] = objs[(int)PlayerManager::CLONE_TYPE::REND_SHINBUN]->Clone(2);
+	models[(int)MODEL::REND_SIGN] = objs[(int)PlayerManager::CLONE_TYPE::REND_SIGN]->Clone(2);
+	models[(int)MODEL::REND_WC_PAPER] = objs[(int)PlayerManager::CLONE_TYPE::REND_WC_PAPER]->Clone(2);
+	models[(int)MODEL::REND_ZASSHI] = objs[(int)PlayerManager::CLONE_TYPE::REND_ZASSHI]->Clone(2);
 
 	skill_data[(int)SKILL::GUN].do_action = ACTION_PART::GUN;
 	skill_data[(int)SKILL::SYURIKEN].do_action = ACTION_PART::GUN;
@@ -109,6 +116,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	action[(int)ACTION_PART::THROUGH] = new BasePlayer::Action::Through(this);
 	action[(int)ACTION_PART::SYURIKEN] = new BasePlayer::Action::Syuriken(this);
 	action[(int)ACTION_PART::TRANS_FORM] = new BasePlayer::Action::TransForm(this);
+	action[(int)ACTION_PART::REND_OBJ] = new BasePlayer::Action::RendObj(this);
 
 	Change_action(ACTION_PART::MOVE);	// 最初は移動状態
 
@@ -252,37 +260,54 @@ void BasePlayer::Action::Move::Initialize()
 
 	me->model_part = MODEL::NORMAL;
 
-	me->se_receive = -1;
-
 	// 待機モーションセット
 	me->Set_motion(1);
 
 	me->Check_unlock(me->god_gage);
+
+	me->se_receive = me->se_receive2 = -1;
 }
 
 void BasePlayer::Action::Move::Update()
 {
 	// 扱いに注意
 	me->Set_motion(me->motion_no);
-
+	
 	// 無理やり
-	if (me->m_controlDesc.moveFlag & (int)PLAYER_IMPUT::DOWN ||
-		me->m_controlDesc.moveFlag & (int)PLAYER_IMPUT::UP ||
-		me->m_controlDesc.moveFlag & (int)PLAYER_IMPUT::LEFT ||
-		me->m_controlDesc.moveFlag & (int)PLAYER_IMPUT::RIGHT)
+	//if (me->m_controlDesc.moveFlag & (int)PLAYER_IMPUT::DOWN ||
+	//	me->m_controlDesc.moveFlag & (int)PLAYER_IMPUT::UP ||
+	//	me->m_controlDesc.moveFlag & (int)PLAYER_IMPUT::LEFT ||
+	//	me->m_controlDesc.moveFlag & (int)PLAYER_IMPUT::RIGHT)
+	//{
+	//	if (me->se_receive == -1) me->se_receive = se->Play("歩行", me->pos, Vector3(me->models[(int)me->model_part]->TransMatrix._31, 0, me->models[(int)me->model_part]->TransMatrix._32), true);
+	//	else se->Set_data(me->se_receive, me->pos, Vector3(me->models[(int)me->model_part]->TransMatrix._31, 0, me->models[(int)me->model_part]->TransMatrix._32), me->move);
+	//}
+	//else if (me->se_receive != -1)
+	//{
+	//	se->Stop(me->se_receive);
+	//	me->se_receive = -1;
+	//}
+	if (me->models[(int)MODEL::NORMAL]->GetParam(1) == 1)
 	{
-		if (me->se_receive == -1) me->se_receive = se->Play("歩行", me->pos, Vector3(me->models[(int)me->model_part]->TransMatrix._31, 0, me->models[(int)me->model_part]->TransMatrix._32), true);
-		else se->Set_data(me->se_receive, me->pos, Vector3(me->models[(int)me->model_part]->TransMatrix._31, 0, me->models[(int)me->model_part]->TransMatrix._32), me->move);
+		if(me->se_receive==-1)me->se_receive=se->Play("歩行1", me->pos, Vector3(me->models[(int)me->model_part]->TransMatrix._31, 0, me->models[(int)me->model_part]->TransMatrix._32));
 	}
-	else if (me->se_receive != -1)
+	else if (me->models[(int)MODEL::NORMAL]->GetParam(1) == 2)
 	{
-		se->Stop(me->se_receive);
-		me->se_receive = -1;
+		if(me->se_receive2==-1)me->se_receive2=se->Play("歩行2", me->pos, Vector3(me->models[(int)me->model_part]->TransMatrix._31, 0, me->models[(int)me->model_part]->TransMatrix._32));
+	}
+	else if (me->models[(int)MODEL::NORMAL]->GetParam(1) == 0)
+	{
+		me->se_receive = me->se_receive2 = -1;
 	}
 
 	if (me->models[(int)MODEL::NORMAL]->GetFrame() == 265) se->Play("ジャンプ", me->pos);
 
 
+	//if (KEY(KEY_ENTER) == 3)
+	//{
+	//	me->model_part = MODEL::REND_MONEY;
+	//	me->Set_motion(0);
+	//}
 	Update_obj();
 }
 
@@ -433,7 +458,7 @@ void BasePlayer::Action::Rend::Initialize()
 	me->se_receive = -1;
 	me->model_part = MODEL::NORMAL;
 
-	se->Play("破る構え");
+	//se->Play("破る構え");
 }
 
 void BasePlayer::Action::Rend::Update()
@@ -836,6 +861,40 @@ void BasePlayer::Action::TransForm::Render(iexShader *shader, char *name)
 	}
 }
 
+
+//*****************************************************************************
+//
+//		「対小物破り」状態処理
+//
+//*****************************************************************************
+
+void BasePlayer::Action::RendObj::Initialize()
+{
+	// 入力情報初期化
+	me->m_controlDesc.controlFlag &= 0x00000000;
+	me->m_controlDesc.moveFlag &= 0x00000000;
+	me->m_controlDesc.rendFlag &= 0x00000000;
+
+	me->model_part = MODEL::NORMAL;
+	me->Set_motion(12);
+}
+
+void BasePlayer::Action::RendObj::Update()
+{
+	Update_obj();
+}
+
+void BasePlayer::Action::RendObj::Render(iexShader *shader, char *name)
+{
+	me->models[(int)me->model_part]->Update();
+	if (shader)
+	{
+		me->models[(int)me->model_part]->Render(shader, name);
+	}
+	{
+		me->models[(int)me->model_part]->Render();
+	}
+}
 
 //　実態
 //BasePlayer* player[PLAYER_MAX];

@@ -132,6 +132,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	action[(int)ACTION_PART::THROUGH] = new BasePlayer::Action::Through(this);
 	action[(int)ACTION_PART::SYURIKEN] = new BasePlayer::Action::Syuriken(this);
 	action[(int)ACTION_PART::TRANS_FORM] = new BasePlayer::Action::TransForm(this);
+	action[(int)ACTION_PART::REND_OBJ] = new BasePlayer::Action::RendObj(this);
 
 	Change_action(ACTION_PART::MOVE);	// 最初は移動状態
 
@@ -1091,5 +1092,50 @@ void BasePlayer::Action::TransForm::Update(const CONTROL_DESC &_ControlDesc)
 	{
 		me->invincible = false;
 		me->Change_action(me->reserve_action);
+	}
+}
+
+
+//*****************************************************************************
+//
+//		「対小物破る」状態処理
+//
+//*****************************************************************************
+
+void BasePlayer::Action::RendObj::Initialize()
+{
+	me->move = VECTOR_ZERO;
+	me->invincible = true;	// 無敵
+
+	// サーバー側でモデル差し替えはしない、するのはクライアント側
+	me->model_part = MODEL::NORMAL;
+	me->Set_motion(1);
+
+	ServerManager::ResetControl(me->mynumber);
+
+	enum class SOEJI
+	{
+		VS_CALENDAR, VS_MONEY, VS_SIGN, VS_SHINBUN, VS_WC_PAPER, VS_ZASSHI, VS_MAGAZINE, MAX
+	};
+	// 各破るモーションが終わる時間
+	int timer_list[(int)SOEJI::MAX];
+	timer_list[(int)SOEJI::VS_CALENDAR] = 118;
+	timer_list[(int)SOEJI::VS_MONEY] = 140;
+	timer_list[(int)SOEJI::VS_MAGAZINE] = 53;
+	timer_list[(int)SOEJI::VS_SHINBUN] = 99;
+	timer_list[(int)SOEJI::VS_SIGN] = 58;
+	timer_list[(int)SOEJI::VS_WC_PAPER] = 169;
+	timer_list[(int)SOEJI::VS_ZASSHI] = 49;
+
+	rend_timer = timer_list[0];
+}
+
+void BasePlayer::Action::RendObj::Update(const CONTROL_DESC &_ControlDesc)
+{
+	// 時間経過
+	if (--rend_timer < 0)
+	{
+		me->invincible = false;
+		me->Change_action(ACTION_PART::MOVE);
 	}
 }

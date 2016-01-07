@@ -1,19 +1,17 @@
-
 #include	"iextreme.h"
-#include	"../IEX/IEX_AudioIIDX.h"
 #include	"SoundManager.h"
 
-SoundBase::~SoundBase(){ SAFE_DELETE(play_manager); }
-
-//********************************************************************************************************
+//**************************************************************************************************************
 //
-//									実体管理
+//		サウンド管理クラス(winmainとframeworkで使うだけ)
 //
-//********************************************************************************************************
+//**************************************************************************************************************
 void SoundManager::Initialize()
 {
-	se = new SE, se->Initialize();
-	bgm = new BGM, bgm->Initialize();
+	se = new SE_Manager;
+	se->Initialize();
+	bgm = new BGM_Manager;
+	bgm->Initialize();
 }
 
 void SoundManager::Release()
@@ -28,68 +26,50 @@ void SoundManager::Update()
 	bgm->Update();
 }
 
-void SoundManager::Set_listener(const Vector3 &pos, const Vector3 &front, const Vector3 &up, const Vector3 &move)
+void SoundManager::SetFX(DXA_FX flag)
 {
-	se->Set_listener(pos, front, up, move);
-	bgm->Set_listener(pos, front, up, move);
+	se->SetFX(flag);
+	bgm->SetFX(flag);
 }
 
-void SoundBase::Set_listener(const Vector3 &pos, const Vector3 &front, const Vector3 &up, const Vector3 &move)
-{
-	play_manager->Set_listener_all(pos, front, up, move);
-}
-
-
-//********************************************************************************************************
+//**************************************************************************************************************
 //
-//									S	E
+//		SE管理クラス
 //
-//********************************************************************************************************
-
+//**************************************************************************************************************
 //*********************************************************************************************
 //		パラメータの設定
 //*********************************************************************************************
-//	SEデータ(textで読み込むのも良いかもしれない)
-SE::DATA	all_se_data[] = 
+//	サウンドデータ(textで読み込むのも良いかもしれない)
+SE_Manager::DATA all_dataS[] =
 {
-	{ "歩行", "DATA/Sound/SE/run.wav", 6, 1.0f, true },
-	{ "貼る", "DATA/Sound/SE/paper-haru.wav", 6, 1.0f, true },
-	{ "破る", "DATA/Sound/SE/紙を破る音.wav", 6, 1.0f, true },
-	{ "破る2", "DATA/Sound/SE/破る1.wav", 6, 1.0f, true },
-	{ "紙鉄砲", "DATA/Sound/SE/paper_gun.wav", 6, 1.0f, true },
-	{ "手裏剣", "DATA/Sound/SE/syuriken.wav", 6, 1.0f, true },
-	{ "落ちる", "DATA/Sound/SE/fall.wav", 1, 1.0f, false },
-	{ "ホイッスル", "DATA/Sound/SE/whistle.wav", 1, 1.0f, false },
-	{ "破る構え", "DATA/Sound/SE/cursor3.wav", 1, 1.0f, false },
-	{ "ジャンプ", "DATA/Sound/SE/jump.wav", 6, 1.0f, true },
+	{ "歩行1", "DATA/Sound/SE/page03.wav", 12, true },
+	{ "歩行2", "DATA/Sound/SE/page04.wav", 12, true },
+	{ "貼る", "DATA/Sound/SE/paper-haru.wav", 6, true },
+	{ "破る", "DATA/Sound/SE/紙を破る音.wav", 6, true },
+	{ "破る2", "DATA/Sound/SE/破る1.wav", 6, true },
+	{ "紙鉄砲", "DATA/Sound/SE/paper_gun.wav", 6, true },
+	{ "手裏剣", "DATA/Sound/SE/syuriken.wav", 6, true },
+	{ "落ちる", "DATA/Sound/SE/fall.wav", 1, false },
+	{ "破る構え", "DATA/Sound/SE/cursor3.wav", 1, false },
+	{ "ジャンプ", "DATA/Sound/SE/jump.wav", 6, true },
 	{ "END", nullptr }
 };
 
 
 //=============================================================================================
 //		初	期	化
-void SE::Initialize()
+void SE_Manager::Initialize()
 {
-	play_manager = new iex3DSoundIIDX;
+	play_manager = new fstSoundSE;
 
-	data_no = 0;
-	int set_num = 0;
-	max_count = 0;
-
-	while (true)
+	for (int i = 0;;i++)
 	{
-		if (strcmp(all_se_data[data_no].id, "END") == 0) break;	// 終端
-		
-		// 基準位置保存
-		all_se_data[data_no].start_num = set_num;
+		if (strcmp(all_dataS[i].id, "END") == 0) break;	// 終端
 
-		play_manager->Set_copy(all_se_data[data_no].file_name, all_se_data[data_no].start_num, all_se_data[data_no].same_play_max, all_se_data[data_no].b3D);
-		set_num += all_se_data[data_no].same_play_max;
-
-		data_no++;
+		ID[all_dataS[i].id] = i;
+		play_manager->Set(i, all_dataS[i].play_simultaneously, all_dataS[i].file_name, all_dataS[i].b3D);
 	}
-
-	max_count = set_num;
 }
 //
 //=============================================================================================
@@ -98,10 +78,10 @@ void SE::Initialize()
 
 //=============================================================================================
 //		解		放
-//void SE::Release()
-//{
-//	delete play_manager;
-//}
+SE_Manager::~SE_Manager()
+{
+	delete play_manager;
+}
 //
 //=============================================================================================
 
@@ -109,9 +89,9 @@ void SE::Initialize()
 
 //=============================================================================================
 //		更		新
-void SE::Update()
+void SE_Manager::Update()
 {
-	play_manager->Update();
+	play_manager->UpdateListener();
 }
 //
 //=============================================================================================
@@ -120,345 +100,221 @@ void SE::Update()
 
 //=============================================================================================
 //		処		理
-int SE::Play_in(int no, float volume, bool loop)
+int SE_Manager::Play_in(int data_num, bool loop)
 {
-	int played = -1;	// データ見つからないか再生領域満タンなら-1が返る
-
-	if (no != NOT_FOUND)
-	{
-		// 再生していない領域を探す
-		for (int found = all_se_data[no].start_num; found < all_se_data[no].start_num + all_se_data[no].same_play_max; found++)
-		{
-			if (!play_manager->isPlay(found)){	// 見つかった！
-				const int vol = (int)(-3000 * (1.0f - volume));
-				play_manager->SetVolume(found, vol);
-				play_manager->Play(found, loop);
-				played = found;
-				break;	// 見つかったのでループ抜けます(書くの忘れると悲惨)
-			}
-		}
-	}
-
-	return played;
-	//return data_num;
-}
-int SE::Play_in(int data_num, const Vector3 &pos, const Vector3 &front, bool loop)
-{
-	int play_num = -1;						// 実際にセットした番号
-
 	if (data_num != -1)
 	{
-		// 再生していない領域を探す
-		for (play_num = all_se_data[data_num].start_num; play_num < all_se_data[data_num].start_num + all_se_data[data_num].same_play_max; play_num++)
-		{
-			if (!play_manager->isPlay(play_num)){	// 見つかった！
-				play_manager->Play(play_num, pos, front, loop);
-				break;	// 見つかったのでループ抜けます(書くの忘れると悲惨)
-			}
-		}
+		return play_manager->Play(data_num, loop);
 	}
-
-	return play_num;
+	return -1;
 }
 
-int SE::Play(char *_ID, bool loop)
+int SE_Manager::Play_in(int data_num, float volume, bool loop)
 {
-	const int data_num = Find_data_no(_ID);	// 区切るためのID
-
-	return Play_in(data_num, all_se_data[data_num].volume, loop);
-}
-
-int SE::Play(char *_ID, const Vector3 &pos, const Vector3 &front, bool loop)
-{
-	const int data_num = Find_data_no(_ID);
-	return Play_in(data_num, pos, front, loop);
-}
-
-void SE::Stop(int no)
-{
-	play_manager->Stop(no);
-}
-
-void SE::Stop_all()
-{
-	for (int i = 0; i < max_count; i++) play_manager->Stop(i);
-}
-
-bool SE::isPlay(char *_ID)
-{
-	const int no = Find_data_no(_ID);	// 区切るためのID
-
-	if (no != NOT_FOUND)
+	if (data_num != -1)
 	{
-		// 再生していない領域を探す
-		for (int found = all_se_data[no].start_num; found < all_se_data[no].start_num + all_se_data[no].same_play_max; found++)
-		{
-			if (play_manager->isPlay(found)){	// 見つかった！
-				return true;
-			}
-		}
+		play_manager->SetVolume(data_num, volume);
+		return play_manager->Play(data_num, loop);
 	}
-	return false;
+	return -1;
 }
-void SE::Set_data(int no, const Vector3 &pos, const Vector3 &front, const Vector3 &move)
-{
-	play_manager->Set_pos(no, pos);
-	play_manager->Set_front(no, front);
-	play_manager->Set_move(no, move);
-}
-//
-//=============================================================================================
 
-
-//=============================================================================================
-//		ＩＤ一致データ検索
-int	SE::Find_data_no(char *_ID)
+int SE_Manager::Play_in(int data_num, const Vector3 &pos, const Vector3 &front, const Vector3 &move, bool loop)
 {
-	int	result = NOT_FOUND;
-	// データ数分ループ
-	for (int i = 0; i < data_no; i++)
+	if (data_num != -1)
 	{
-		// 判定
-		if (strcmp(all_se_data[i].id, _ID) != 0) continue;
-
-		// 発見
-		result = i;
-		// ループを抜ける
-		break;
+		return play_manager->Play(data_num, pos, front, move, loop);
 	}
-
-	return result;
-}
-//
-//=============================================================================================
-
-
-
-
-//********************************************************************************************************
-//
-//									B	G	M
-//
-//********************************************************************************************************
-
-//*********************************************************************************************
-//		パラメータの設定
-//*********************************************************************************************
-//	BGMデータ(textで読み込むのも良いかもしれない)
-BGM::DATA	all_bgm_data[] =
-{
-	{ "フライハイ", "DATA/Sound/BGM/フライ・ハイ.wav", .5f, BGM::FADE_NONE },
-	{ "END", nullptr }
-};
-
-
-//=============================================================================================
-//		初	期	化
-void BGM::Initialize()
-{
-	play_manager = new iex3DSoundIIDX;
-
-	data_no = 0;
-
-	while (true)
-	{
-		if (strcmp(all_bgm_data[data_no].id, "END") == 0) break;	// 終端
-
-		all_bgm_data[data_no].volume = all_bgm_data[data_no].max_vol;
-		play_manager->Set(data_no, all_bgm_data[data_no].file_name, false);
-		const int vol = (int)(-3000 * (1.0f - all_bgm_data[data_no].volume));
-		play_manager->SetVolume(data_no, vol);
-		data_no++;
-	}
-
-
-	// 関数ポインタ
-	Fade_mode_funk[FADE_NONE] = &BGM::None;
-	Fade_mode_funk[FADE_IN] = &BGM::In;
-	Fade_mode_funk[FADE_OUT] = &BGM::Out;
-}
-//
-//=============================================================================================
-
-
-
-//=============================================================================================
-//		解		放
-//void BGM::Release()
-//{
-//	delete play_manager;
-//}
-//
-//=============================================================================================
-
-
-
-//=============================================================================================
-//		更		新
-void BGM::Update()
-{
-	for (int i = 0; i < BGM::data_no; i++)
-	{
-		(this->*Fade_mode_funk[all_bgm_data[i].fade_type])(i);	// フェード関数実行
-	}
-	play_manager->Update();
-}
-//
-//=============================================================================================
-
-
-
-//=============================================================================================
-//		処		理
-void BGM::None(int no)
-{}
-
-void BGM::In(int no)
-{
-	// ボリューム上げていく
-	all_bgm_data[no].volume += all_bgm_data[no].fade_speed;
-	const int vol = (int)(-3000 * (1.0f - all_bgm_data[no].volume));
-
-	// フェードしきった！
-	if (all_bgm_data[no].volume > all_bgm_data[no].max_vol)
-	{
-		all_bgm_data[no].volume = all_bgm_data[no].max_vol;
-		all_bgm_data[no].fade_type = FADE_NONE;
-	}
-
-	play_manager->SetVolume(no, vol);
+	return -1;
 }
 
-void BGM::Out(int no)
+int SE_Manager::Play(LPSTR _ID, bool loop)
 {
-	// ボリューム下げていく
-	all_bgm_data[no].volume -= all_bgm_data[no].fade_speed;
-	const int vol = (int)(-3000 * (1.0f - all_bgm_data[no].volume));
-
-	// フェードしきった！
-	if (all_bgm_data[no].volume < 0.1f)
-	{
-		all_bgm_data[no].volume = 0.0f;
-		all_bgm_data[no].fade_type = FADE_NONE;
-		play_manager->Stop(no);
-	}
-
-	play_manager->SetVolume(no, vol);
+	return Play_in(ID[_ID], loop);
 }
 
-int BGM::Play_in(int no, float volume, bool loop)
+int SE_Manager::Play(LPSTR _ID, float volume, bool loop)
 {
-	if (no != NOT_FOUND)
-	{
-		const int vol = (int)(-3000 * (1.0f - volume));
-		play_manager->SetVolume(no, vol);
-		play_manager->SetSpeed(no, 1.0f);
-		play_manager->Play(no, loop);
-	}
-
-	return no;
-}
-
-int BGM::Play(char *_ID, bool loop)
-{
-	const int no = Find_data_no(_ID);
-
-	return Play_in(no, all_bgm_data[no].volume, loop);
-}
-
-int BGM::Play(char *_ID, float volume, bool loop)
-{
-	const int no = Find_data_no(_ID);
-
 	if (volume < 0) volume = 0;
 	else if (volume > 1.0f) volume = 1.0f;
 
-	return Play_in(no, volume, loop);
+	return Play_in(ID[_ID], volume, loop);
 }
 
-void BGM::Stop(char *_ID)
+int SE_Manager::Play(LPSTR _ID, const Vector3 &pos, const Vector3 &front, const Vector3 &move, bool loop)
 {
-	int no = Find_data_no(_ID);
-	if (no == NOT_FOUND) return;
-	play_manager->Stop(no);
+	return Play_in(ID[_ID], pos, front, move, loop);
 }
 
-int BGM::Fade_in(char *_ID, int speed, bool loop)
+void SE_Manager::Stop(LPSTR _ID, int no)
 {
-	/*	呼び出しは1回だけでお願いします	*/
-	int no = Find_data_no(_ID);
-	if (no == NOT_FOUND) return NOT_FOUND;
-	all_bgm_data[no].volume = .0f;
-	all_bgm_data[no].fade_type = F_TYPE::FADE_IN;
-	if (speed <= 0) speed = 1;
-	all_bgm_data[no].fade_speed = (speed * .001f);
-	play_manager->SetVolume(no, -10000);
-	play_manager->Play(no, loop);
-
-
-	return no;
+	play_manager->Stop(ID[_ID], no);
 }
 
-void BGM::Fade_out(char *_ID, int speed)
+void SE_Manager::Stop_all()
 {
-	/*	呼び出しは1回だけでお願いします	*/
-
-	int no = Find_data_no(_ID);
-	if (no == NOT_FOUND) return;
-	all_bgm_data[no].volume = all_bgm_data[no].max_vol;
-	all_bgm_data[no].fade_type = F_TYPE::FADE_OUT;
-	if (speed <= 0) speed = 1;
-	all_bgm_data[no].fade_speed = (speed * .001f);
+	play_manager->AllStop();
 }
 
-void BGM::Stop_all()
+bool SE_Manager::isPlay(char *_ID,int no)
 {
-	for (int i = 0; i < data_no; i++) play_manager->Stop(i);
+	return play_manager->isPlay(ID[_ID], no);
 }
 
-void BGM::Pause(char *_ID)
+void SE_Manager::Set_listener(const Vector3 &pos, const Vector3 &front, const Vector3 &up, const Vector3 &move)
 {
-	int no = Find_data_no(_ID);
-	if (no == NOT_FOUND) return;
-	play_manager->Pause(no);
+	play_manager->SetListenerAll(pos, front, up, move);
 }
+//
+//=============================================================================================
 
-bool BGM::isPlay(char *_ID)
+
+
+//**************************************************************************************************************
+//
+//		BGM管理クラス
+//
+//**************************************************************************************************************
+//*********************************************************************************************
+//		パラメータの設定
+//*********************************************************************************************
+//	サウンドデータ(textで読み込むのも良いかもしれない)
+BGM_Manager::DATA all_dataB[] =
 {
-	int no = Find_data_no(_ID);
-	if (no == NOT_FOUND) return false;
-	return (play_manager->isPlay(no) != 0);
-}
+	{ "フライハイ", "DATA/Sound/BGM/フライ・ハイ.wav", false },
+	{ "ホイッスル", "DATA/Sound/SE/whistle.wav", false },
+	{ "END", nullptr }
+};
 
-void BGM::Set_speed(char *_ID, float speed)
+
+//=============================================================================================
+//		初	期	化
+void BGM_Manager::Initialize()
 {
-	int no = Find_data_no(_ID);
-	if (no == NOT_FOUND) return;
-	play_manager->SetSpeed(no, speed);
+	play_manager = new fstSoundBGM;
+
+	for (int i = 0;;i++)
+	{
+		if (strcmp(all_dataB[i].id, "END") == 0) break;	// 終端
+
+		ID[all_dataB[i].id] = i;
+		play_manager->Set(i, all_dataB[i].file_name, all_dataB[i].b3D);
+	}
 }
+//
+//=============================================================================================
 
 
+
+//=============================================================================================
+//		解		放
+BGM_Manager::~BGM_Manager()
+{
+	delete play_manager;
+}
 //
 //=============================================================================================
 
 //=============================================================================================
-//		ＩＤ一致データ検索
-int	BGM::Find_data_no(char *_ID)
+//		更		新
+void BGM_Manager::Update()
 {
-	int	result = NOT_FOUND;
-	// データ数分ループ
-	for (int i = 0; i < data_no; i++)
+	play_manager->Update();
+	play_manager->UpdateListener();
+}
+//
+//=============================================================================================
+
+
+
+//=============================================================================================
+//		処		理
+void BGM_Manager::Play_in(int data_num, bool loop)
+{
+	if (data_num != -1)
 	{
-		// 判定
-		if (strcmp(all_bgm_data[i].id, _ID) != 0) continue;
-
-		// 発見
-		result = i;
-		// ループを抜ける
-		break;
+		play_manager->Play(data_num, loop);
 	}
+}
 
-	return result;
+void BGM_Manager::Play_in(int data_num, float volume, bool loop)
+{
+	if (data_num != -1)
+	{
+		play_manager->SetVolume(data_num, volume);
+		play_manager->Play(data_num, loop);
+	}
+}
+
+void BGM_Manager::Play_in(int data_num, const Vector3 &pos, const Vector3 &front, const Vector3 &move, bool loop)
+{
+	if (data_num != -1)
+	{
+		play_manager->Play(data_num, pos, front, move, loop);
+	}
+}
+
+void BGM_Manager::Play(LPSTR _ID, bool loop)
+{
+	Play_in(ID[_ID], loop);
+}
+
+void BGM_Manager::Play(LPSTR _ID, float volume, bool loop)
+{
+	if (volume < 0) volume = 0;
+	else if (volume > 1.0f) volume = 1.0f;
+
+	Play_in(ID[_ID], volume, loop);
+}
+
+void BGM_Manager::Play(LPSTR _ID, const Vector3 &pos, const Vector3 &front, const Vector3 &move, bool loop)
+{
+	return Play_in(ID[_ID], pos, front, move, loop);
+}
+
+void BGM_Manager::Stop(LPSTR _ID)
+{
+	play_manager->Stop(ID[_ID]);
+}
+
+void BGM_Manager::Stop_all()
+{
+	play_manager->AllStop();
+}
+
+bool BGM_Manager::isPlay(LPSTR _ID)
+{
+	return play_manager->isPlay(ID[_ID]);
+}
+
+void BGM_Manager::Set_speed(LPSTR _ID, float speed)
+{
+	return play_manager->SetSpeed(ID[_ID], speed);
+}
+
+void BGM_Manager::Fade_in(LPSTR _ID, float fade_speed, bool loop)
+{
+	play_manager->FadeIn(ID[_ID], fade_speed, loop);
+}
+
+void BGM_Manager::Fade_out(LPSTR _ID, float fade_speed)
+{
+	play_manager->FadeOut(ID[_ID], fade_speed);
+}
+
+void BGM_Manager::Cross_fade(LPSTR inID, LPSTR outID, float fade_speed, bool loop)
+{
+	play_manager->CrossFade(ID[inID], ID[outID], fade_speed, fstSoundBGM::CROSS_FADE_TYPE::END_OF_ETERNITY, loop);
+}
+
+void BGM_Manager::Cross_fade(LPSTR inID, LPSTR outID, float in_speed, float out_speed, bool loop)
+{
+	play_manager->CrossFade(ID[inID], ID[outID], in_speed, out_speed, fstSoundBGM::CROSS_FADE_TYPE::END_OF_ETERNITY, loop);
+}
+
+void BGM_Manager::Set_listener(const Vector3 &pos, const Vector3 &front, const Vector3 &up, const Vector3 &move)
+{
+	play_manager->SetListenerAll(pos, front, up, move);
 }
 //
 //=============================================================================================
@@ -535,22 +391,22 @@ void EventBGM::Kouhan()
 	//	break;
 	//}
 
-		bgm->Set_speed(mainBGM, 1.1f);
-		bgm->Fade_in(mainBGM, 20);
-		step = 0;
-		mode = MODE::NONE;
+	bgm->Set_speed(mainBGM, 1.1f);
+	bgm->Fade_in(mainBGM, 20);
+	step = 0;
+	mode = MODE::NONE;
 }
 void EventBGM::End()
 {
 	switch (step)
 	{
 	case 0:
-		se->Play("ホイッスル");
+		bgm->Play("ホイッスル");
 		step++;
 		break;
 
 	case 1:
-		if (!se->isPlay("ホイッスル"))
+		if (!bgm->isPlay("ホイッスル"))
 		{
 			FadeControl::Setting(FadeControl::FADE_OUT_W, 2);
 			step++;
@@ -569,7 +425,7 @@ void EventBGM::End()
 
 //=============================================================================================
 //		実		体
-SE *se;
-BGM *bgm;
+SE_Manager *se;
+BGM_Manager *bgm;
 //
 //=============================================================================================

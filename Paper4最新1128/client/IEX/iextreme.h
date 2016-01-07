@@ -910,6 +910,7 @@ public:
 	~iex3DObj();
 
 	iex3DObj*	Clone();
+	iex3DObj*	Clone(int num_tex);
 
 	BOOL LoadObject( char* filename );
 	int LoadiEM( LPIEMFILE lpIem, LPSTR filename );

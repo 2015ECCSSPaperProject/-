@@ -14,6 +14,13 @@ public:
 		DIE,		// ”j‚ê‚éƒ‚ƒfƒ‹
 		GUN,		// “S–C
 		SYURIKEN,	// Žè— Œ•
+		REND_CALENDAR, 
+		REND_MONEY, 
+		REND_SIGN, 
+		REND_SHINBUN, 
+		REND_WC_PAPER, 
+		REND_ZASSHI, 
+		REND_MAGAZINE,
 		MAX
 	};
 

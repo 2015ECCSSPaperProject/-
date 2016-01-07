@@ -33,7 +33,7 @@ public:
 	//===============================================
 	//	íËêî
 	//===============================================
-	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, PASTE, REND, FREEZE, DIE, RESPAWN, PLANE, GUN, MANHOLE, THROUGH, SYURIKEN, TRANS_FORM, MAX };
+	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, PASTE, REND, FREEZE, DIE, RESPAWN, PLANE, GUN, MANHOLE, THROUGH, SYURIKEN, TRANS_FORM, REND_OBJ, MAX };
 	enum class DO_FLAG{ NONE, ATTACK, PASTE, REND, MAX };
 	enum class MODEL{ NORMAL, DIE, PLANE, GUN, SYURIKEN, MAX };
 	enum class SKILL{ GUN, SYURIKEN, KABUTO, ZENRYOKU, MAX };
@@ -294,6 +294,20 @@ protected:
 			int hensintaimaa;
 		public:
 			TransForm(BasePlayer*me) : Base(me){}
+
+			void Initialize();
+			void Update(const CONTROL_DESC &_ControlDesc);
+		};
+
+		//===========================================
+		//	ëŒè¨ï®ÇÃîjÇÈ
+		class RendObj : public Base
+		{
+		private:
+			int rend_timer;	// InitiailzeÇ≈Ç±ÇÃéûä‘Çê›íËÇµÇƒÅAÇ±ÇÃéûä‘Ç™âﬂÇ¨ÇΩÇÁâèú
+
+		public:
+			RendObj(BasePlayer*me) : Base(me){}
 
 			void Initialize();
 			void Update(const CONTROL_DESC &_ControlDesc);
