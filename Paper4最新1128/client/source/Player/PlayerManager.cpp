@@ -32,10 +32,17 @@ PlayerManager::~PlayerManager()
 void PlayerManager::Initialize()
 {
 	// クローン
-	clone_model[(int)CLONE_TYPE::NORMAL] = new iex3DObj("DATA/CHR/player/run.IEM");
-	clone_model[(int)CLONE_TYPE::DIE] = new iex3DObj("DATA/CHR/player/die.IEM");
-	clone_model[(int)CLONE_TYPE::GUN] = new iex3DObj("DATA/CHR/player/gun.IEM");
-	clone_model[(int)CLONE_TYPE::SYURIKEN] = new iex3DObj("DATA/CHR/player/syuriken/syuriken.IEM");
+	clone_model[(int)CLONE_TYPE::NORMAL]		 = new iex3DObj("DATA/CHR/player/run.IEM");
+	clone_model[(int)CLONE_TYPE::DIE]			 = new iex3DObj("DATA/CHR/player/die.IEM");
+	clone_model[(int)CLONE_TYPE::GUN]			 = new iex3DObj("DATA/CHR/player/gun.IEM");
+	clone_model[(int)CLONE_TYPE::SYURIKEN]		 = new iex3DObj("DATA/CHR/player/syuriken/syuriken.IEM");
+	clone_model[(int)CLONE_TYPE::REND_CALENDAR]	 = new iex3DObj("DATA/CHR/player/rend_motion/animation_calendar.IEM");
+	clone_model[(int)CLONE_TYPE::REND_MONEY]	 = new iex3DObj("DATA/CHR/player/rend_motion/animation_money.IEM");
+	clone_model[(int)CLONE_TYPE::REND_SIGN]		 = new iex3DObj("DATA/CHR/player/rend_motion/animation_sign.IEM");
+	clone_model[(int)CLONE_TYPE::REND_SHINBUN]	 = new iex3DObj("DATA/CHR/player/rend_motion/animation_sinbun.IEM");
+	clone_model[(int)CLONE_TYPE::REND_WC_PAPER]	 = new iex3DObj("DATA/CHR/player/rend_motion/animation_toile.IEM");
+	clone_model[(int)CLONE_TYPE::REND_ZASSHI]	 = new iex3DObj("DATA/CHR/player/rend_motion/animation_zassi.IEM");
+	clone_model[(int)CLONE_TYPE::REND_MAGAZINE]	 = new iex3DObj("DATA/CHR/player/rend_motion/animation_magazin.IEM");
 
 	// セットするテクスチャ
 	Texture2D *textures[3][6] =
@@ -77,7 +84,16 @@ void PlayerManager::Initialize()
 		clone_model[(int)CLONE_TYPE::NORMAL],	// 通常モデル
 		clone_model[(int)CLONE_TYPE::DIE],		// 死ぬ用モデル
 		clone_model[(int)CLONE_TYPE::GUN],		// 鉄砲モデル
-		clone_model[(int)CLONE_TYPE::SYURIKEN]	// 手裏剣モデル
+		clone_model[(int)CLONE_TYPE::SYURIKEN],	// 手裏剣モデル
+
+		// 各破るモーションのモデル
+		clone_model[(int)CLONE_TYPE::REND_CALENDAR],
+		clone_model[(int)CLONE_TYPE::REND_MAGAZINE],
+		clone_model[(int)CLONE_TYPE::REND_MONEY],
+		clone_model[(int)CLONE_TYPE::REND_SHINBUN],
+		clone_model[(int)CLONE_TYPE::REND_SIGN],
+		clone_model[(int)CLONE_TYPE::REND_WC_PAPER],
+		clone_model[(int)CLONE_TYPE::REND_ZASSHI],
 	};
 
 	//■■■　相手と自分で分ける
@@ -98,9 +114,14 @@ void PlayerManager::Initialize()
 		players[i]->Set_texture(BasePlayer::MODEL::PLANE, textures[TEX_TYPE::NORMAL][i]);
 		players[i]->Set_texture(BasePlayer::MODEL::GUN, textures[TEX_TYPE::GUN][i]);
 		players[i]->Set_texture(BasePlayer::MODEL::SYURIKEN, textures[TEX_TYPE::SYURIKEN][i]);
+		players[i]->Set_texture(BasePlayer::MODEL::REND_CALENDAR, textures[TEX_TYPE::NORMAL][i]);
+		players[i]->Set_texture(BasePlayer::MODEL::REND_MAGAZINE, textures[TEX_TYPE::NORMAL][i]);
+		players[i]->Set_texture(BasePlayer::MODEL::REND_MONEY, textures[TEX_TYPE::NORMAL][i]);
+		players[i]->Set_texture(BasePlayer::MODEL::REND_SHINBUN, textures[TEX_TYPE::NORMAL][i]);
+		players[i]->Set_texture(BasePlayer::MODEL::REND_SIGN, textures[TEX_TYPE::NORMAL][i]);
+		players[i]->Set_texture(BasePlayer::MODEL::REND_WC_PAPER, textures[TEX_TYPE::NORMAL][i]);
+		players[i]->Set_texture(BasePlayer::MODEL::REND_ZASSHI, textures[TEX_TYPE::NORMAL][i]);
 	}
-
-
 }
 
 void PlayerManager::Release()
@@ -137,7 +158,7 @@ void PlayerManager::Update()
 void PlayerManager::Render(iexShader *shader, char *name)
 {
 
-	if (shader)
+	if ((false)?false:shader)
 	{
 		for (int i = 0; i < PLAYER_MAX; i++)
 		{

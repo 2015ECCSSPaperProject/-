@@ -93,6 +93,7 @@ public:
 	void Stop(int no);								// Play‚Å•Ô‚Á‚Ä‚«‚½”’l‚ğ“ü‚ê‚é
 	void Stop_all();								// ‘S•”~‚ß‚é
 	bool isPlay(char *ID);
+	bool isPlay(int no);
 	void Set_data(int no, const Vector3 &pos, const Vector3 &front = Vector3(0, 0, -1), const Vector3 &move = Vector3(0, 0, 0));
 
 	//===============================================

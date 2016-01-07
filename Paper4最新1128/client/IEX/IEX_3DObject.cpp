@@ -73,6 +73,17 @@ iex3DObj*	iex3DObj::Clone()
 	return obj;
 }
 
+iex3DObj*	iex3DObj::Clone(int num_tex)
+{
+	iex3DObj*	obj = new iex3DObj(*this);
+
+	obj->lpTexture = new Texture2D*[num_tex];
+	for (int i = 0; i < num_tex; i++) obj->lpTexture[i] = this->lpTexture[i];
+
+	obj->SetLoadFlag(FALSE);
+	return obj;
+}
+
 //*****************************************************************************
 //	î•ñİ’è
 //*****************************************************************************

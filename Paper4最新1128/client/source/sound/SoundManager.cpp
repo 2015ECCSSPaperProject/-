@@ -52,7 +52,8 @@ void SoundBase::Set_listener(const Vector3 &pos, const Vector3 &front, const Vec
 //	SEƒf[ƒ^(text‚Å“Ç‚Ýž‚Þ‚Ì‚à—Ç‚¢‚©‚à‚µ‚ê‚È‚¢)
 SE::DATA	all_se_data[] = 
 {
-	{ "•às", "DATA/Sound/SE/run.wav", 6, 1.0f, true },
+	{ "•às1", "DATA/Sound/SE/page03.wav", 12, 1.0f, true },
+	{ "•às2", "DATA/Sound/SE/page04.wav", 12, 1.0f, true },
 	{ "“\‚é", "DATA/Sound/SE/paper-haru.wav", 6, 1.0f, true },
 	{ "”j‚é", "DATA/Sound/SE/Ž†‚ð”j‚é‰¹.wav", 6, 1.0f, true },
 	{ "”j‚é2", "DATA/Sound/SE/”j‚é1.wav", 6, 1.0f, true },
@@ -200,6 +201,11 @@ bool SE::isPlay(char *_ID)
 	}
 	return false;
 }
+bool SE::isPlay(int no)
+{
+	return (play_manager->isPlay(no) == TRUE) ? true : false;
+}
+
 void SE::Set_data(int no, const Vector3 &pos, const Vector3 &front, const Vector3 &move)
 {
 	play_manager->Set_pos(no, pos);

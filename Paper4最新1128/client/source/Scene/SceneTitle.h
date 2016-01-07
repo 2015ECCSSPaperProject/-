@@ -39,6 +39,15 @@ public:
 private:
 	iexView* view;
 
+	enum class STEP
+	{
+		WAIT,
+		CLICK,
+		DRAG,
+		REND_PAPER,
+	};
+	STEP step;
+
 	struct
 	{
 		Vector3 pos;
@@ -49,7 +58,7 @@ private:
 
 	const Vector2 max_v = Vector2(1110, 645), min_v = Vector2(980, 460);
 
-	enum IMAGE{ BACK, CURSOR, MAX };
+	enum IMAGE{ BACK, CURSOR, CLICK1, CLICK2, CLICK3, GAME_START, MOUSE, TITLE, MAX };
 	iex2DObj* images[MAX];
 
 	Mouse mouse;

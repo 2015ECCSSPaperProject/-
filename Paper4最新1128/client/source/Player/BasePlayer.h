@@ -36,9 +36,9 @@ public:
 	//===============================================
 	//	íËêî
 	//===============================================
-	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, PASTE, REND, FREEZE, DIE, RESPAWN, PLANE, GUN, MANHOLE, THROUGH, SYURIKEN, TRANS_FORM, MAX };
+	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, PASTE, REND, FREEZE, DIE, RESPAWN, PLANE, GUN, MANHOLE, THROUGH, SYURIKEN, TRANS_FORM, REND_OBJ, MAX };
 	enum class DO_FLAG{ NONE, ATTACK, PASTE, REND, MAX };
-	enum class MODEL{ NORMAL, DIE, PLANE, GUN, SYURIKEN, MAX };
+	enum class MODEL{ NORMAL, DIE, PLANE, GUN, SYURIKEN, REND_CALENDAR, REND_MONEY, REND_SIGN, REND_SHINBUN, REND_WC_PAPER, REND_ZASSHI, REND_MAGAZINE, MAX };
 	enum class SKILL{ GUN, SYURIKEN, KABUTO, ZENRYOKU, MAX };
 
 protected:
@@ -54,6 +54,7 @@ protected:
 	float			speed;
 	float			fallspeed;
 	int				se_receive;
+	int				se_receive2;
 
 	iex3DObj		*models[(int)MODEL::MAX];
 
@@ -300,6 +301,18 @@ protected:
 		{
 		public:
 			TransForm(BasePlayer*me) : Base(me){}
+
+			void Initialize();
+			void Update();
+			void Render(iexShader *shader = nullptr, char *name = '\0');
+		};
+
+		//===========================================
+		//	ëŒè¨ï®ÇÃîjÇÈ
+		class RendObj : public Base
+		{
+		public:
+			RendObj(BasePlayer*me) : Base(me){}
 
 			void Initialize();
 			void Update();
