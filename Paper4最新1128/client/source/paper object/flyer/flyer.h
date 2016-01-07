@@ -4,7 +4,7 @@
 
 #pragma once
 
-class Flyer : public Paper_obj
+class Flyer : public Paper_obj_3DObj
 {
 public:
 	void Initialize( iex3DObj *model, int start_time );

@@ -4,9 +4,9 @@
 #include "test box.h"
 #include "../../Player/BasePlayer.h"
 
-void Test_box::Initialize(iex3DObj *model)
+void Test_box::Initialize( iexMesh *model )
 {
-	Paper_obj::Initialize(model);
+	Paper_obj_Mesh::Initialize(model);
 }
 
 void Test_box::Update()
@@ -57,6 +57,5 @@ void Test_box::Set_receive_data( char *in )
 {
 	Receive_data *data( ( Receive_data* ) in );
 	number = data->user_number;
-	model->SetFrame( data->anim_no );
 	position = data->pos;
 }

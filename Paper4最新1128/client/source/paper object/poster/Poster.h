@@ -4,13 +4,13 @@
 class Score;
 class BasePlayer;
 
-class Poster : public Paper_obj
+class Poster : public Paper_obj_Mesh
 {
 public:
 	Poster();
 	~Poster();
 
-	void Initialize(iex3DObj *model) override;
+	void Initialize(iexMesh *model) override;
 	void Update() override;
 	void Render(iexShader *shader = nullptr, char *name = '\0') override;
 

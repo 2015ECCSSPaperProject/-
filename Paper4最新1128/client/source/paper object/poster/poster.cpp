@@ -13,9 +13,9 @@ Poster::Poster()
 Poster::~Poster()
 {}
 
-void Poster::Initialize(iex3DObj *model)
+void Poster::Initialize(iexMesh *model)
 {
-	Paper_obj::Initialize(model);
+	Paper_obj_Mesh::Initialize(model);
 }
 
 void Poster::Update()
@@ -58,5 +58,4 @@ void Poster::Set_receive_data( char *in )
 {
 	Receive_data *data( ( Receive_data* ) in );
 	number = data->user_number;
-	model->SetFrame( data->anim_no );
 }

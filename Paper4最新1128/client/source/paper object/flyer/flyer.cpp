@@ -7,7 +7,7 @@
 
 void Flyer::Initialize( iex3DObj *model, int start_time )
 {
-	Paper_obj::Initialize( model );
+	Paper_obj_3DObj::Initialize( model );
 	number = PLAYER_MAX;
 	high = 50;
 	this->start_time = start_time;

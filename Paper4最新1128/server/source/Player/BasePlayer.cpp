@@ -939,12 +939,12 @@ void BasePlayer::Action::Gun::Update(const CONTROL_DESC &_ControlDesc)
 			me->god_gage++;
 
 			// 送信するデータプッシュ
-			for( int i = 0; i < PLAYER_MAX; i++ )
+			for( int n = 0; n < PLAYER_MAX; n++ )
 			{
 				PaperData data;
 				data.from = me->mynumber;
 				data.ID = poster_numbers[i];
-				player_mng->Get_player( i )->paperqueue->Push( data );
+				player_mng->Get_player( n )->paperqueue->Push( data );
 			}
 		}
 

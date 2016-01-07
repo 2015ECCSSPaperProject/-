@@ -148,7 +148,7 @@ void Paper_obj_mng::Load_poster()
 	std::ifstream infs( "DATA/MATI/poster_pos.txt" );
 
 	// ポスターの位置とか
-	Paper_obj *p( nullptr );
+	Poster *p( nullptr );
 	float angle( 0 );
 	Vector3 pos( 0, 0, 0 );
 	int point( 0 );
