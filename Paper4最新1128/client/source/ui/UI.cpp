@@ -31,8 +31,8 @@ void UI::Initialize(BasePlayer *my)
 	graph = new Pie_graph;
 	graph->Add_content("DATA/UI/graph/red.png");
 	graph->Add_content("DATA/UI/graph/blue.png");
-	graph->Add_content("DATA/UI/graph/green.png");
 	graph->Add_content("DATA/UI/graph/yellow.png");
+	graph->Add_content("DATA/UI/graph/green.png");
 	graph->Add_content("DATA/UI/graph/purple.png");
 	graph->Add_content("DATA/UI/graph/pink.png");
 

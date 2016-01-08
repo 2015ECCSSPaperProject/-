@@ -59,6 +59,7 @@ void MyPlayer::Update()
 	Mouse_Update();
 
 	BasePlayer::Update();
+	Update_action();
 
 	// リスナー情報
 	Update_listener();
@@ -76,6 +77,13 @@ void MyPlayer::Update_action()
 		{
 			// ここでキューにプッシュ
 
+		}
+		break;
+
+	case ACTION_PART::MANHOLE:
+		if (models[(int)model_part]->GetParam(0) == 1)
+		{
+			if (se_receive == -1)se_receive = se->Play((isManhole) ? "のぼる": "落ちる");
 		}
 		break;
 	}

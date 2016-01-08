@@ -51,6 +51,7 @@ SE_Manager::DATA all_dataS[] =
 	{ "紙鉄砲", "DATA/Sound/SE/paper_gun.wav", 6, true },
 	{ "手裏剣", "DATA/Sound/SE/syuriken.wav", 6, true },
 	{ "落ちる", "DATA/Sound/SE/fall.wav", 1, false },
+	{ "のぼる", "DATA/Sound/SE/rise.wav", 1, false },
 	{ "破る構え", "DATA/Sound/SE/cursor3.wav", 1, false },
 	{ "ジャンプ", "DATA/Sound/SE/jump.wav", 6, true },
 	{ "END", nullptr }
@@ -444,7 +445,7 @@ void EventBGM::Set_manhole(bool in)
 	// マンホール内エフェクト
 	if (in)
 	{
-		mainVolume = -1500;
+		mainVolume = -1000;
 		bgm->Set_volume(mainBGM, mainVolume);
 		bgm->SetFX(DXA_FX::DXAFX_DISTORTION);
 		se->SetFX(DXA_FX::DXAFX_ECHO);

@@ -744,17 +744,11 @@ void BasePlayer::Action::Manhole::Initialize()
 	me->model_part = MODEL::NORMAL;
 	me->models[(int)me->model_part]->SetMotion(19);
 
-
-
 	me->se_receive = -1;
 }
 
 void BasePlayer::Action::Manhole::Update()
 {
-	if (me->models[(int)me->model_part]->GetParam(0) == 1)
-	{
-		if (me->se_receive == -1)me->se_receive = se->Play("—Ž‚¿‚é");
-	}
 	Update_obj();
 }
 

@@ -1125,24 +1125,25 @@ void BasePlayer::Action::RendObj::Initialize()
 
 	ServerManager::ResetControl(me->mynumber);
 
-	enum class SOEJI
-	{
-		VS_CALENDAR, VS_MONEY, VS_SIGN, VS_SHINBUN, VS_WC_PAPER, VS_ZASSHI, VS_MAGAZINE, MAX
-	};
-	// 各破るモーションが終わる時間
-	int timer_list[(int)SOEJI::MAX];
-	timer_list[(int)SOEJI::VS_CALENDAR] = 118;
-	timer_list[(int)SOEJI::VS_MONEY] = 140;
-	timer_list[(int)SOEJI::VS_MAGAZINE] = 53;
-	timer_list[(int)SOEJI::VS_SHINBUN] = 99;
-	timer_list[(int)SOEJI::VS_SIGN] = 58;
-	timer_list[(int)SOEJI::VS_WC_PAPER] = 169;
-	timer_list[(int)SOEJI::VS_ZASSHI] = 49;
+	//enum class SOEJI
+	//{
+	//	VS_CALENDAR, VS_MONEY, VS_SIGN, VS_SHINBUN, VS_WC_PAPER, VS_ZASSHI, VS_MAGAZINE, MAX
+	//};
+	//// 各破るモーションが終わる時間
+	//int timer_list[(int)SOEJI::MAX];
+	//timer_list[(int)SOEJI::VS_CALENDAR] = 118;
+	//timer_list[(int)SOEJI::VS_MONEY] = 140;
+	//timer_list[(int)SOEJI::VS_MAGAZINE] = 53;
+	//timer_list[(int)SOEJI::VS_SHINBUN] = 99;
+	//timer_list[(int)SOEJI::VS_SIGN] = 58;
+	//timer_list[(int)SOEJI::VS_WC_PAPER] = 169;
+	//timer_list[(int)SOEJI::VS_ZASSHI] = 49;
 
 	rend_timer = 10;
 
+	score->Add(paper_obj_mng->Get_point(me->poster_num), me->mynumber);
 	paper_obj_mng->Rend(me->poster_num);
-	score->Add(1, me->mynumber);	// 仮で1点
+
 	me->god_gage++;
 }
 
