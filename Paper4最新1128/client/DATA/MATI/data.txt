@@ -56,7 +56,7 @@ DATA/MATI/bill2.IMO 3
 -120
 0
 
-276.225
+-276.225
 0
 275.6244
 
@@ -126,7 +126,7 @@ DATA/MATI/konbini.IMO 3
 -120
 0
 
--17.8423
+-117.8423
 0
 336.1089
 
@@ -145,15 +145,15 @@ DATA/MATI/manho-ru.IMO 3
 0
 
 572
-0
+50
 0
 
 0
 -120
 0
 
-286
-0
+-286
+50
 495.3665
 
 0
@@ -161,7 +161,7 @@ DATA/MATI/manho-ru.IMO 3
 0
 
 -286
-0
+50
 -495.3665
 
 DATA/MATI/mansyon.IMO 3
@@ -180,7 +180,7 @@ DATA/MATI/mansyon.IMO 3
 
 -285.584
 0
-652.626
+-652.626
 
 0
 -120
@@ -193,7 +193,7 @@ DATA/MATI/mansyon.IMO 3
 DATA/MATI/mo-ru1.IMO 3
 
 0
--120
+0
 0
 
 -540
@@ -209,12 +209,12 @@ DATA/MATI/mo-ru1.IMO 3
 517.7877
 
 0
-120
+-120
 0
 
-181.1654
+358.3346
 0
-517.7877
+-416.6537
 
 DATA/MATI/mo-ru2.IMO 3
 
