@@ -140,6 +140,7 @@
     <ClCompile Include="source\Effekseer\Effector.cpp" />
     <ClCompile Include="source\Explosion\Explosion.cpp" />
     <ClCompile Include="source\fstream\fstream_paper.cpp" />
+    <ClCompile Include="source\Manhole\Manhole.cpp" />
     <ClCompile Include="source\Net\Socket.cpp" />
     <ClCompile Include="source\Net\UDPClient.cpp" />
     <ClCompile Include="source\paper object\flyer\flyer.cpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="source\Effekseer\EffekseerRendererDX9.h" />
     <ClInclude Include="source\Explosion\Explosion.h" />
     <ClInclude Include="source\fstream\fstream_paper.h" />
+    <ClInclude Include="source\Manhole\Manhole.h" />
     <ClInclude Include="source\Net\Socket.h" />
     <ClInclude Include="source\Net\UDPClient.h" />
     <ClInclude Include="source\paper object\flyer\flyer.h" />

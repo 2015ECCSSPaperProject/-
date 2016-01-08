@@ -170,6 +170,9 @@
     <ClCompile Include="source\paperQueue\paperQueue.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\Manhole\Manhole.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IEX\iextreme.h">
@@ -220,6 +223,7 @@
     <ClInclude Include="source\event\Event open area.h" />
     <ClInclude Include="source\paper object\flyer\flyer.h" />
     <ClInclude Include="source\paperQueue\paperQueue.h" />
+    <ClInclude Include="source\Manhole\Manhole.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DATA\Shader\2D.fx">

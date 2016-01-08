@@ -93,7 +93,6 @@ protected:
 	//===============================================
 	int				poster_num;
 	MODEL			model_part;
-	bool			toggle_c;
 
 	//===============================================
 	//	エフェクト
@@ -430,6 +429,12 @@ public:
 
 	// モデル
 	iex3DObj* Get_Model(){ return models[(int)model_part]; }
+
+
+	// マンホール
+	bool			isManhole;
+	bool			manhole_no_haninai;
+	Vector3			next_manhole_pos;	// 降りた先の、上がった先の座標
 };
 
 //extern BasePlayer* player[PLAYER_MAX];

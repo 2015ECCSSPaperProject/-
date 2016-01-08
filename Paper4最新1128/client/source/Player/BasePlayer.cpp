@@ -6,12 +6,11 @@
 //#include	"../Mouse/Mouse.h"
 
 #include	"PlayerManager.h"
-
 #include	"../sound/SoundManager.h"
-
 #include	"../blur/blur.h"
-
 #include	"../Effect/Effect.h"
+
+#include	"../Manhole/Manhole.h"
 
 /*	ベースプレイヤー	*/
 
@@ -56,7 +55,8 @@ void BasePlayer::Initialize(iex3DObj **objs)
 
 	// その他初期化
 	poster_num = 0;
-	toggle_c = true;
+	isManhole = false;
+	manhole_no_haninai = false;
 
 	// 3D実体
 	models[(int)MODEL::NORMAL]	 = objs[(int)PlayerManager::CLONE_TYPE::NORMAL]->Clone();
@@ -309,6 +309,9 @@ void BasePlayer::Action::Move::Update()
 	//	me->Set_motion(0);
 	//}
 	Update_obj();
+
+	// マンホール範囲内
+	me->manhole_no_haninai = manhole_mng->CheckManhole((me->isManhole) ? ManholeMng::LAND_TYPE::TIKA : ManholeMng::LAND_TYPE::TIJOU, me->pos, 8, &me->next_manhole_pos);
 }
 
 void BasePlayer::Action::Move::Render(iexShader *shader, char *name)
@@ -728,6 +731,8 @@ void BasePlayer::Action::Manhole::Initialize()
 
 	me->model_part = MODEL::NORMAL;
 	me->models[(int)me->model_part]->SetMotion(19);
+
+	me->isManhole = true;
 }
 
 void BasePlayer::Action::Manhole::Update()

@@ -131,6 +131,7 @@
     <ClCompile Include="source\event\Event open area.cpp" />
     <ClCompile Include="source\event\Event.cpp" />
     <ClCompile Include="source\fstream\fstream_paper.cpp" />
+    <ClCompile Include="source\Manhole\Manhole.cpp" />
     <ClCompile Include="source\Net\PaperServer.cpp" />
     <ClCompile Include="source\Net\UDPServer.cpp" />
     <ClCompile Include="source\paper object\flyer\flyer.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="source\event\Event open area.h" />
     <ClInclude Include="source\event\Event.h" />
     <ClInclude Include="source\fstream\fstream_paper.h" />
+    <ClInclude Include="source\Manhole\Manhole.h" />
     <ClInclude Include="source\Net\PaperServer.h" />
     <ClInclude Include="source\Net\UDPServer.h" />
     <ClInclude Include="source\paper object\flyer\flyer.h" />

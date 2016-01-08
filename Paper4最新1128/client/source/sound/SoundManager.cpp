@@ -401,7 +401,7 @@ void EventBGM::End()
 	switch (step)
 	{
 	case 0:
-		bgm->Play("ホイッスル");
+		bgm->Play("ホイッスル", false);
 		step++;
 		break;
 
