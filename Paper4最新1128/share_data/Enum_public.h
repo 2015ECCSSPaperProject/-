@@ -52,4 +52,5 @@ enum KIND_PAPER_OBJECT
 	POSTER = 0,
 	FLYER = 1,
 	CALENDAR = 2,
+	MAGAZIN = 3,
 };

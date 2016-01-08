@@ -74,3 +74,8 @@ KIND_PAPER_OBJECT Calendar::Get_kind()
 {
 	return KIND_PAPER_OBJECT::CALENDAR;
 }
+
+KIND_PAPER_OBJECT Magazin::Get_kind()
+{
+	return KIND_PAPER_OBJECT::MAGAZIN;
+}

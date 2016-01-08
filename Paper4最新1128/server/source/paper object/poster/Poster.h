@@ -109,3 +109,9 @@ class Calendar : public Poster
 public:
 	KIND_PAPER_OBJECT Get_kind();
 };
+
+class Magazin : public Poster
+{
+public:
+	KIND_PAPER_OBJECT Get_kind();
+};

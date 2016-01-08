@@ -212,6 +212,7 @@ void Paper_obj_mng::Load()
 	Load_flyer();
 	Load_poster_tmp<Poster>( "DATA/MATI/poster_pos.txt" );
 	Load_poster_tmp<Calendar>( "DATA/MATI/calendar_pos.txt" );
+	Load_poster_tmp<Magazin>( "DATA/MATI/magazin_pos.txt" );
 }
 
 void Paper_obj_mng::Load_flyer()
