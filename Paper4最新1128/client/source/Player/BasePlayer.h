@@ -386,14 +386,7 @@ public:
 
 	// プレイヤーのモード
 	ACTION_PART Get_action(){ return action_part; }
-	void Set_aciton(ACTION_PART part)
-	{
-		//if (action_part == ACTION_PART::REND_OBJ) return;
-		if (action_part != part)
-		{
-			Change_action(part);
-		}
-	}
+	void Set_aciton(ACTION_PART part);
 	void Change_action(ACTION_PART part)
 	{
 		action_part = part;

@@ -308,6 +308,7 @@ public:
 	/* フェード関係(BGMとSEで分けた要因の1つ) */
 	void FadeOut(int ID, float fade_speed);	// fade_speedは0～1の範囲。0.01とかの値になる
 	void FadeIn(int ID, float fade_speed, bool loop = true, DWORD cursor = 0);
+	void FadeStop(int ID){ data[ID]->fade_mode = MODE::NONE; }
 
 	enum class CROSS_FADE_TYPE
 	{

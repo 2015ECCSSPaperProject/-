@@ -84,9 +84,6 @@ private:
 
 	fstSoundBGM *play_manager;	// iexSound
 
-	// データ検索
-	//int Find_data_no(char *_ID);
-
 	void Play_in(int data_num, bool loop);
 	void Play_in(int data_num, float volume, bool loop);
 	void Play_in(int data_num, const Vector3 &pos, const Vector3 &front, const Vector3 &move, bool loop);
@@ -126,9 +123,12 @@ public:
 	void Stop(LPSTR _ID);																															// Playで返ってきた数値を入れる
 	void Stop_all();																																// 全部止める
 	bool isPlay(LPSTR _ID);
+	void Set_volume(LPSTR _ID, int vol);
 	void Set_speed(LPSTR _ID, float speed);
+	int Get_volume(LPSTR _ID){ return play_manager->GetVolume(ID[_ID]); }
 	void Fade_in(LPSTR _ID, float fade_speed, bool loop = true);
 	void Fade_out(LPSTR _ID, float fade_speed);
+	void Fade_stop(LPSTR _ID){ play_manager->FadeStop(ID[_ID]); }
 	void Cross_fade(LPSTR inID, LPSTR outID, float fade_speed = .0075f, bool loop = true);
 	void Cross_fade(LPSTR inID, LPSTR outID, float in_speed, float out_speed, bool loop);
 	void SetFX(DXA_FX flag){ play_manager->SetFX(flag); }
@@ -154,6 +154,7 @@ private:
 	char mainBGM[64];
 	int step;
 	int frame;
+	int mainVolume;
 
 	MODE mode;
 	bool isKouhan;
@@ -184,6 +185,7 @@ public:
 		mode = m;
 	}
 	MODE Get_mode(){ return mode; }
+	void Set_manhole(bool in);
 };
 #define event_bgm ( EventBGM::getInstance() )
 
