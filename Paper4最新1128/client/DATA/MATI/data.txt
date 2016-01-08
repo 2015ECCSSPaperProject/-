@@ -145,7 +145,7 @@ DATA/MATI/manho-ru.IMO 3
 0
 
 572
-50
+0
 0
 
 0
@@ -153,7 +153,7 @@ DATA/MATI/manho-ru.IMO 3
 0
 
 -286
-50
+0
 495.3665
 
 0
@@ -161,7 +161,7 @@ DATA/MATI/manho-ru.IMO 3
 0
 
 -286
-50
+0
 -495.3665
 
 DATA/MATI/mansyon.IMO 3
