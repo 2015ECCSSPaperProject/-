@@ -244,7 +244,18 @@ void BasePlayer::Set_motion(int no)
 	}
 }
 
-
+void BasePlayer::Set_aciton(ACTION_PART part)
+{
+	if (action_part != part)
+	{
+		if (action_part == ACTION_PART::MANHOLE && part == ACTION_PART::MOVE)
+		{
+			isManhole ^= 1;
+			event_bgm->Set_manhole(isManhole);
+		}
+		Change_action(part);
+	}
+}
 
 
 //*****************************************************************************
@@ -732,14 +743,16 @@ void BasePlayer::Action::Manhole::Initialize()
 	me->model_part = MODEL::NORMAL;
 	me->models[(int)me->model_part]->SetMotion(19);
 
-	me->isManhole = true;
+
+
+	me->se_receive = -1;
 }
 
 void BasePlayer::Action::Manhole::Update()
 {
 	if (me->models[(int)me->model_part]->GetParam(0) == 1)
 	{
-		se->Play("—Ž‚¿‚é");
+		if (me->se_receive == -1)me->se_receive = se->Play("—Ž‚¿‚é");
 	}
 	Update_obj();
 }
@@ -883,16 +896,21 @@ void BasePlayer::Action::RendObj::Initialize()
 	kind_paper_obj = (int)paper_obj_mng->Get_kind(me->poster_num);
 	switch ((KIND_PAPER_OBJECT)kind_paper_obj)
 	{
-	case KIND_PAPER_OBJECT::POSTER:
-	case KIND_PAPER_OBJECT::FLYER:
-		me->model_part = MODEL::NORMAL;
-		me->Set_motion(2);
-		break;
-
 	case KIND_PAPER_OBJECT::CALENDAR:
 		me->model_part = MODEL::REND_CALENDAR;
 		me->Set_motion(0);
 		break;
+
+	case KIND_PAPER_OBJECT::MAGAZIN:
+		me->model_part = MODEL::REND_MAGAZINE;
+		me->Set_motion(0);
+		break;
+
+	case KIND_PAPER_OBJECT::POSTER:
+	case KIND_PAPER_OBJECT::FLYER:
+		me->model_part = MODEL::NORMAL;
+			me->Set_motion(2);
+			break;
 	}
 
 	me->m_controlDesc.motion_no = (int)PLAYER_CONTROL::RENDING;

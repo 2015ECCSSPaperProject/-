@@ -182,6 +182,7 @@ void SE_Manager::Set_listener(const Vector3 &pos, const Vector3 &front, const Ve
 BGM_Manager::DATA all_dataB[] =
 {
 	{ "フライハイ", "DATA/Sound/BGM/フライ・ハイ.wav", false },
+	{ "フライハイ2", "DATA/Sound/BGM/フライ・ハイ.wav", false },
 	{ "ホイッスル", "DATA/Sound/SE/whistle.wav", false },
 	{ "END", nullptr }
 };
@@ -292,6 +293,12 @@ void BGM_Manager::Set_speed(LPSTR _ID, float speed)
 	return play_manager->SetSpeed(ID[_ID], speed);
 }
 
+void BGM_Manager::Set_volume(LPSTR _ID, int vol)
+{
+	return play_manager->SetVolume(ID[_ID], vol);
+}
+
+
 void BGM_Manager::Fade_in(LPSTR _ID, float fade_speed, bool loop)
 {
 	play_manager->FadeIn(ID[_ID], fade_speed, loop);
@@ -344,7 +351,7 @@ void EventBGM::Initialize(char *mainBGMname)
 	Mode_funk[MODE::END] = &EventBGM::End;
 
 	isKouhan = false;
-	step = frame = 0;
+	step = frame = mainVolume = 0;
 }
 void EventBGM::Update()
 {
@@ -358,6 +365,11 @@ void EventBGM::None()
 			this->Set_mode(MODE::KOUHAN);
 			isKouhan = true;
 		}
+	}
+
+	if (bgm->Get_volume(mainBGM) > mainVolume)
+	{
+		bgm->Fade_stop(mainBGM);
 	}
 }
 void EventBGM::Start()
@@ -391,8 +403,13 @@ void EventBGM::Kouhan()
 	//	break;
 	//}
 
+	char str[64];
+	strcpy_s(str, 64, mainBGM);
+	strcat(mainBGM, "2");
+
+	bgm->Cross_fade(mainBGM, str, .01f);
+
 	bgm->Set_speed(mainBGM, 1.1f);
-	bgm->Fade_in(mainBGM, 20);
 	step = 0;
 	mode = MODE::NONE;
 }
@@ -419,6 +436,27 @@ void EventBGM::End()
 			mode = MODE::NONE;
 		}
 		break;
+	}
+}
+
+void EventBGM::Set_manhole(bool in)
+{
+	// マンホール内エフェクト
+	if (in)
+	{
+		mainVolume = -1500;
+		bgm->Set_volume(mainBGM, mainVolume);
+		bgm->SetFX(DXA_FX::DXAFX_DISTORTION);
+		se->SetFX(DXA_FX::DXAFX_ECHO);
+	}
+
+	// マンホール外(通常)
+	else
+	{
+		mainVolume = DSBVOLUME_MAX;
+		bgm->Set_volume(mainBGM, mainVolume);
+		bgm->SetFX(DXA_FX::DXAFX_OFF);
+		se->SetFX(DXA_FX::DXAFX_OFF);
 	}
 }
 
