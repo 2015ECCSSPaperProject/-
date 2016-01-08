@@ -310,6 +310,8 @@ protected:
 		//	対小物の破る
 		class RendObj : public Base
 		{
+		private:
+			int kind_paper_obj;	// ヘッダーのインクルードの問題があるのでint型にする
 		public:
 			RendObj(BasePlayer*me) : Base(me){}
 
@@ -386,6 +388,7 @@ public:
 	ACTION_PART Get_action(){ return action_part; }
 	void Set_aciton(ACTION_PART part)
 	{
+		//if (action_part == ACTION_PART::REND_OBJ) return;
 		if (action_part != part)
 		{
 			Change_action(part);

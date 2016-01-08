@@ -173,8 +173,8 @@ void BasePlayer::Update()
 	controlDesc.mouseY = ServerManager::GetDesc(m_id).mouseY;//マウスY
 
 
-	// クライアント側で再生しているモーションの番号(いらない)
-	//controlDesc.motion_no = motion_no = ServerManager::GetDesc(m_id).motion_no;//モーション番号
+	// クライアント側で再生しているモーションの番号(無理やり何かに使う)
+	controlDesc.motion_no = ServerManager::GetDesc(m_id).motion_no;//モーション番号
 
 	// 破くフラグ
 	controlDesc.rendFlag = ServerManager::GetDesc(m_id).rendFlag;
@@ -704,6 +704,7 @@ void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
 				data.ID = me->poster_num;
 				player_mng->Get_player( i )->paperqueue->Push( data );
 			}
+			me->Change_action(ACTION_PART::REND_OBJ);
 		}
 		// マウス離したらモード戻す
 		else if ((_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK) == 0)
@@ -1138,7 +1139,11 @@ void BasePlayer::Action::RendObj::Initialize()
 	timer_list[(int)SOEJI::VS_WC_PAPER] = 169;
 	timer_list[(int)SOEJI::VS_ZASSHI] = 49;
 
-	rend_timer = timer_list[0];
+	rend_timer = 10;
+
+	paper_obj_mng->Rend(me->poster_num);
+	score->Add(1, me->mynumber);	// 仮で1点
+	me->god_gage++;
 }
 
 void BasePlayer::Action::RendObj::Update(const CONTROL_DESC &_ControlDesc)
@@ -1146,7 +1151,9 @@ void BasePlayer::Action::RendObj::Update(const CONTROL_DESC &_ControlDesc)
 	// 時間経過
 	if (--rend_timer < 0)
 	{
-		me->invincible = false;
-		me->Change_action(ACTION_PART::MOVE);
+		if (_ControlDesc.motion_no != (int)PLAYER_CONTROL::RENDING){ // クライアント->小物破り終わったよ
+			me->invincible = false;
+			me->Change_action(ACTION_PART::MOVE);
+		}
 	}
 }

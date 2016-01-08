@@ -9,7 +9,7 @@
 #include	"../sound/SoundManager.h"
 #include	"../blur/blur.h"
 #include	"../Effect/Effect.h"
-
+#include	"../paper object/paper object manager.h"
 #include	"../Manhole/Manhole.h"
 
 /*	ベースプレイヤー	*/
@@ -69,7 +69,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	models[(int)MODEL::REND_MONEY] = objs[(int)PlayerManager::CLONE_TYPE::REND_MONEY]->Clone(2);
 	models[(int)MODEL::REND_SHINBUN] = objs[(int)PlayerManager::CLONE_TYPE::REND_SHINBUN]->Clone(2);
 	models[(int)MODEL::REND_SIGN] = objs[(int)PlayerManager::CLONE_TYPE::REND_SIGN]->Clone(2);
-	models[(int)MODEL::REND_WC_PAPER] = objs[(int)PlayerManager::CLONE_TYPE::REND_WC_PAPER]->Clone(2);
+	models[(int)MODEL::REND_WC_PAPER] = objs[(int)PlayerManager::CLONE_TYPE::REND_WC_PAPER]->Clone(3);
 	models[(int)MODEL::REND_ZASSHI] = objs[(int)PlayerManager::CLONE_TYPE::REND_ZASSHI]->Clone(2);
 
 	skill_data[(int)SKILL::GUN].do_action = ACTION_PART::GUN;
@@ -880,13 +880,32 @@ void BasePlayer::Action::RendObj::Initialize()
 	me->m_controlDesc.moveFlag &= 0x00000000;
 	me->m_controlDesc.rendFlag &= 0x00000000;
 
-	me->model_part = MODEL::NORMAL;
-	me->Set_motion(12);
+	kind_paper_obj = (int)paper_obj_mng->Get_kind(me->poster_num);
+	switch ((KIND_PAPER_OBJECT)kind_paper_obj)
+	{
+	case KIND_PAPER_OBJECT::POSTER:
+	case KIND_PAPER_OBJECT::FLYER:
+		me->model_part = MODEL::NORMAL;
+		me->Set_motion(2);
+		break;
+
+	case KIND_PAPER_OBJECT::CALENDAR:
+		me->model_part = MODEL::REND_CALENDAR;
+		me->Set_motion(0);
+		break;
+	}
+
+	me->m_controlDesc.motion_no = (int)PLAYER_CONTROL::RENDING;
 }
 
 void BasePlayer::Action::RendObj::Update()
 {
 	Update_obj();
+	if (me->models[(int)me->model_part]->GetParam(0) == 2)
+	{
+		me->m_controlDesc.motion_no = 0;
+		//me->Change_action(ACTION_PART::MOVE);
+	}
 }
 
 void BasePlayer::Action::RendObj::Render(iexShader *shader, char *name)

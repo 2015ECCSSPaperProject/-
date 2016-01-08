@@ -14,7 +14,7 @@ enum class PLAYER_CONTROL
 	LEFT_CLICK = 0x1,
 	RIGHT_CLICK = 0x1 << 1,
 	SPACE = 0x1 << 2,
-	//TRG_C = 0x1 << 3,	// CƒL[‰Ÿ‚µ‚½uŠÔ
+	RENDING = 0x1 << 4,	// ¬•¨‚ð”j‚Á‚Ä‚é“r’†
 	ATTACK_BUTTON = 0x1 << 3
 };
 
