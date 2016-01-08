@@ -1,11 +1,16 @@
 
 #pragma once
 
+//#include <vector>
+//#include "iextreme.h"
+
 struct Vector3;
 class iex3DObj;
 
 class BasePlayer;
 class Paper_obj;
+
+enum KIND_PAPER_OBJECT;
 
 class Paper_obj_mng
 {
@@ -44,6 +49,8 @@ public:
 	void Set_animframe(int index, int frame);
 
 	const Vector3& Get_pos(int index);
+
+	KIND_PAPER_OBJECT Get_kind( int index );
 
 	//**************************************************
 

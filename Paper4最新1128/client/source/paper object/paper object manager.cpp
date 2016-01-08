@@ -1,6 +1,7 @@
 
 #include <vector>
 #include "iextreme.h"
+#include "../../../share_data/Enum_public.h"
 #include "paper object manager.h"
 
 #include "../Player/BasePlayer.h"
@@ -88,6 +89,11 @@ void Paper_obj_mng::Set_animframe(int index, int frame)
 const Vector3& Paper_obj_mng::Get_pos(int index)
 {
 	return obj_array[index]->Get_pos();
+}
+
+KIND_PAPER_OBJECT Paper_obj_mng::Get_kind( int index )
+{
+	return obj_array[index]->Get_kind();
 }
 
 //**************************************************

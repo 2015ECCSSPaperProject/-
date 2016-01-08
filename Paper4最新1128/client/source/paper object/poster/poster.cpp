@@ -2,8 +2,8 @@
 #include "iextreme.h"
 #include "../../system/System.h"
 #include "../paper object.h"
-#include "../../../../share_data/Enum_public.h"
 #include "Poster.h"
+#include "../../../../share_data/Enum_public.h"
 //#include "../score/Score.h"
 //#include "../player/Player.h"
 
@@ -42,6 +42,11 @@ void Poster::Render(iexShader *shader, char *name)
 	}
 }
 
+KIND_PAPER_OBJECT Poster::Get_kind()
+{
+	return KIND_PAPER_OBJECT::POSTER;
+}
+
 //**************************************************
 
 struct Receive_data
@@ -59,4 +64,13 @@ void Poster::Set_receive_data( char *in )
 {
 	Receive_data *data( ( Receive_data* ) in );
 	number = data->user_number;
+}
+
+
+
+// ポスターを継承したクラス
+
+KIND_PAPER_OBJECT Calendar::Get_kind()
+{
+	return KIND_PAPER_OBJECT::CALENDAR;
 }

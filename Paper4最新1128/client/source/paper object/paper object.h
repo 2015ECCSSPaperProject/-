@@ -7,6 +7,8 @@ class iexMesh;
 
 class BasePlayer;
 
+enum KIND_PAPER_OBJECT;
+
 class Paper_obj
 {
 public:
@@ -25,6 +27,8 @@ public:
 	{};
 
 	const Vector3& Get_pos();
+
+	virtual KIND_PAPER_OBJECT Get_kind() = 0;
 
 	void Render_mark(iex2DObj *obj, bool target);	// è„ÇÃñÓàÛ
 

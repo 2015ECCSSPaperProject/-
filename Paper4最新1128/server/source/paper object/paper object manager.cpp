@@ -1,6 +1,5 @@
 
 #include <vector>
-
 #include "paper object manager.h"
 
 #include "iextreme.h"

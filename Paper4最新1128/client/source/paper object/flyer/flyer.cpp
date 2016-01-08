@@ -4,6 +4,7 @@
 
 #include "flyer.h"
 #include "../../timer/Timer.h"
+#include "../../../../share_data/Enum_public.h"
 
 void Flyer::Initialize( iex3DObj *model, int start_time )
 {
@@ -54,6 +55,11 @@ void Flyer::Render( iexShader *shader, char *name )
 	{
 		model->iexMesh::Render();
 	}
+}
+
+KIND_PAPER_OBJECT Flyer::Get_kind()
+{
+	return KIND_PAPER_OBJECT::FLYER;
 }
 
 //**************************************************

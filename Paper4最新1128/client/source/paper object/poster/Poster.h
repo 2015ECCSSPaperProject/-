@@ -1,10 +1,10 @@
 
 #pragma once
 
-#include "../../../../share_data/Enum_public.h"
-
 class Score;
 class BasePlayer;
+
+enum KIND_PAPER_OBJECT;
 
 class Poster : public Paper_obj_Mesh
 {
@@ -15,6 +15,8 @@ public:
 	void Initialize(iexMesh *model) override;
 	void Update() override;
 	void Render(iexShader *shader = nullptr, char *name = '\0') override;
+
+	virtual	KIND_PAPER_OBJECT Get_kind();
 
 	//**************************************************
 
