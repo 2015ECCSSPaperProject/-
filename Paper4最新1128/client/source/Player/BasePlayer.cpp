@@ -71,6 +71,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	models[(int)MODEL::REND_SIGN] = objs[(int)PlayerManager::CLONE_TYPE::REND_SIGN]->Clone(2);
 	models[(int)MODEL::REND_WC_PAPER] = objs[(int)PlayerManager::CLONE_TYPE::REND_WC_PAPER]->Clone(3);
 	models[(int)MODEL::REND_ZASSHI] = objs[(int)PlayerManager::CLONE_TYPE::REND_ZASSHI]->Clone(2);
+	models[(int)MODEL::REND_SEISHO] = objs[(int)PlayerManager::CLONE_TYPE::REND_SEISHO]->Clone(2);
 
 	skill_data[(int)SKILL::GUN].do_action = ACTION_PART::GUN;
 	skill_data[(int)SKILL::SYURIKEN].do_action = ACTION_PART::GUN;
@@ -906,11 +907,41 @@ void BasePlayer::Action::RendObj::Initialize()
 		me->Set_motion(0);
 		break;
 
+	case KIND_PAPER_OBJECT::MONEY:
+		me->model_part = MODEL::REND_MONEY;
+		me->Set_motion(0);
+		break;
+
+	case KIND_PAPER_OBJECT::SEISHO:
+		me->model_part = MODEL::REND_SEISHO;
+		me->Set_motion(0);
+		break;
+
+	case KIND_PAPER_OBJECT::SHINBUN:
+		me->model_part = MODEL::REND_SHINBUN;
+		me->Set_motion(0);
+		break;
+
+	case KIND_PAPER_OBJECT::SIGN:
+		me->model_part = MODEL::REND_SIGN;
+		me->Set_motion(0);
+		break;
+
+	case KIND_PAPER_OBJECT::TOILET_PAPER:
+		me->model_part = MODEL::REND_WC_PAPER;
+		me->Set_motion(0);
+		break;
+
+	case KIND_PAPER_OBJECT::ZASSHI:
+		me->model_part = MODEL::REND_ZASSHI;
+		me->Set_motion(0);
+		break;
+
 	case KIND_PAPER_OBJECT::POSTER:
 	case KIND_PAPER_OBJECT::FLYER:
 		me->model_part = MODEL::NORMAL;
-			me->Set_motion(2);
-			break;
+		me->Set_motion(2);
+		break;
 	}
 
 	me->m_controlDesc.motion_no = (int)PLAYER_CONTROL::RENDING;

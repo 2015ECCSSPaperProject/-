@@ -21,6 +21,7 @@ public:
 		REND_WC_PAPER, 
 		REND_ZASSHI, 
 		REND_MAGAZINE,
+		REND_SEISHO,
 		MAX
 	};
 
