@@ -268,7 +268,7 @@ DATA/MATI/tenanto.IMO 3
 0
 476.8325
 
-DATA/MATI/jimen.IMO 3
+DATA/MATI/jimen.IMO 0
 
 0
 0
