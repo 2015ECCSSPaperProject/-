@@ -41,3 +41,39 @@ class Magazin : public Poster
 public:
 	KIND_PAPER_OBJECT Get_kind();
 };
+
+class Money : public Poster
+{
+public:
+	KIND_PAPER_OBJECT Get_kind();
+};
+
+class Seisho : public Poster
+{
+public:
+	KIND_PAPER_OBJECT Get_kind();
+};
+
+class Shinbun : public Poster
+{
+public:
+	KIND_PAPER_OBJECT Get_kind();
+};
+
+class Sign : public Poster
+{
+public:
+	KIND_PAPER_OBJECT Get_kind();
+};
+
+class Toilet_paper : public Poster
+{
+public:
+	KIND_PAPER_OBJECT Get_kind();
+};
+
+class Zasshi : public Poster
+{
+public:
+	KIND_PAPER_OBJECT Get_kind();
+};

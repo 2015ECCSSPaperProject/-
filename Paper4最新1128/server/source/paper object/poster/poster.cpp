@@ -300,3 +300,33 @@ KIND_PAPER_OBJECT Magazin::Get_kind()
 {
 	return KIND_PAPER_OBJECT::MAGAZIN;
 }
+
+KIND_PAPER_OBJECT Money::Get_kind()
+{
+	return KIND_PAPER_OBJECT::MONEY;
+}
+
+KIND_PAPER_OBJECT Seisho::Get_kind()
+{
+	return KIND_PAPER_OBJECT::SEISHO;
+}
+
+KIND_PAPER_OBJECT Shinbun::Get_kind()
+{
+	return KIND_PAPER_OBJECT::SHINBUN;
+}
+
+KIND_PAPER_OBJECT Sign::Get_kind()
+{
+	return KIND_PAPER_OBJECT::SIGN;
+}
+
+KIND_PAPER_OBJECT Toilet_paper::Get_kind()
+{
+	return KIND_PAPER_OBJECT::TOILET_PAPER;
+}
+
+KIND_PAPER_OBJECT Zasshi::Get_kind()
+{
+	return KIND_PAPER_OBJECT::ZASSHI;
+}

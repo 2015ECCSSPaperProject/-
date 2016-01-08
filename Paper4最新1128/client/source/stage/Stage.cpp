@@ -146,7 +146,7 @@ void Stage::Area_Is_work(unsigned int index, bool in)
 void Stage::Load_mapdata()
 {
 	// テキストファイルを開く
-	std::ifstream ifs( "DATA/MATI/data.txt" );
+	std::ifstream ifs( "DATA/MATI/position/stage.txt" );
 	// 最後までループ
 	while( ifs.eof() == false )
 	{

@@ -139,21 +139,33 @@ void Paper_obj_mng::Load()
 
 	// モデルロード
 	original_flyer = new iex3DObj( "DATA/paper object/flyer/flyer.IEM" );
-	unsigned int num_models = 3;							// モデルの種類
+	unsigned int num_models = 8;							// モデルの種類
 	original_model = new iexMesh[num_models];
 	original_model[0].LoadIMO( "DATA/paper object/Poster/posuta-.IMO" );
 	original_model[1].LoadIMO( "DATA/paper object/calendar/calendar.IMO" );
 	original_model[2].LoadIMO( "DATA/paper object/magazin/magazin.IMO" );
+	original_model[3].LoadIMO( "DATA/paper object/money/money.IMO" );
+	original_model[4].LoadIMO( "DATA/paper object/seisho/seisho.IMO" );
+	original_model[5].LoadIMO( "DATA/paper object/sign/sign.IMO" );
+	original_model[6].LoadIMO( "DATA/paper object/toilet_paper/toilet_roll.IMO" );
+	original_model[7].LoadIMO( "DATA/paper object/zasshi/zasshi.IMO" );
+
 	// 位置ロード
 	Load_flyer();
-	Load_poster_tmp<Poster>( "DATA/MATI/poster_pos.txt", &original_model[0] );
-	Load_poster_tmp<Calendar>( "DATA/MATI/calendar_pos.txt", &original_model[1] );
-	Load_poster_tmp<Magazin>( "DATA/MATI/magazin_pos.txt", &original_model[2] );
+	Load_poster_tmp<Poster>( "DATA/MATI/position/poster_pos.txt", &original_model[0] );
+	Load_poster_tmp<Calendar>( "DATA/MATI/position/calendar_pos.txt", &original_model[1] );
+	Load_poster_tmp<Magazin>( "DATA/MATI/position/magazin_pos.txt", &original_model[2] );
+	Load_poster_tmp<Money>( "DATA/MATI/position/money_pos.txt", &original_model[3] );
+	Load_poster_tmp<Seisho>( "DATA/MATI/position/seisho_pos.txt", &original_model[4] );
+	Load_poster_tmp<Sign>( "DATA/MATI/position/sign_pos.txt", &original_model[5] );
+	Load_poster_tmp<Toilet_paper>( "DATA/MATI/position/toilet_paper_pos.txt", &original_model[6] );
+	Load_poster_tmp<Zasshi>( "DATA/MATI/position/zasshi.txt", &original_model[7] );
+
 }
 
 void Paper_obj_mng::Load_flyer()
 {
-	std::ifstream infs( "DATA/MATI/flyer pos.txt" );
+	std::ifstream infs( "DATA/MATI/position/flyer pos.txt" );
 	std::string str;
 
 	unsigned int time = 0;

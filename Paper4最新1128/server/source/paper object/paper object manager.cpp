@@ -210,14 +210,20 @@ void Paper_obj_mng::Load()
 	number_of_objects = 0;
 
 	Load_flyer();
-	Load_poster_tmp<Poster>( "DATA/MATI/poster_pos.txt" );
-	Load_poster_tmp<Calendar>( "DATA/MATI/calendar_pos.txt" );
-	Load_poster_tmp<Magazin>( "DATA/MATI/magazin_pos.txt" );
+	Load_poster_tmp<Poster>( "DATA/MATI/position/poster_pos.txt" );
+	Load_poster_tmp<Calendar>( "DATA/MATI/position/calendar_pos.txt" );
+	Load_poster_tmp<Magazin>( "DATA/MATI/position/magazin_pos.txt" );
+	Load_poster_tmp<Money>( "DATA/MATI/position/money_pos.txt" );
+	Load_poster_tmp<Seisho>( "DATA/MATI/position/seisho_pos.txt" );
+	Load_poster_tmp<Sign>( "DATA/MATI/position/sign_pos.txt" );
+	Load_poster_tmp<Toilet_paper>( "DATA/MATI/position/toilet_paper_pos.txt" );
+	Load_poster_tmp<Zasshi>( "DATA/MATI/position/zasshi.txt" );
+
 }
 
 void Paper_obj_mng::Load_flyer()
 {
-	std::ifstream infs( "DATA/MATI/flyer pos.txt" );
+	std::ifstream infs( "DATA/MATI/position/flyer pos.txt" );
 	std::string str;
 
 	unsigned int time = 0;
