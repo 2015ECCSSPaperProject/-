@@ -15,6 +15,8 @@
 #include	"../timer/Timer.h"
 #include "../paperQueue/paperQueue.h"
 
+#include	"../Manhole/Manhole.h"
+
 /*	ベースプレイヤー	*/
 
 const float CAN_TARGET_DIST = 90.0f;
@@ -48,6 +50,7 @@ void BasePlayer::Init_pos()
 	invincible = false;
 	god_gage = 0;
 	mynumber = m_id;
+	isManhole = false;
 	// モーション番号
 	motion_no = 0;
 
@@ -82,7 +85,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	jump_pow = 0;
 	invincible = false;
 	god_gage = 0;
-
+	isManhole = false;
 
 	skill_data[(int)SKILL::GUN].do_action = ACTION_PART::GUN;
 	skill_data[(int)SKILL::SYURIKEN].do_action = ACTION_PART::SYURIKEN;
@@ -382,6 +385,11 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 			return;
 		}
 		trg_target = true;
+
+		if (manhole_mng->CheckManhole((me->isManhole) ? ManholeMng::LAND_TYPE::TIKA : ManholeMng::LAND_TYPE::TIJOU, 8, &me->pos, &me->angleY, &me->next_manhole_pos))
+		{
+			me->Change_action(ACTION_PART::MANHOLE);
+		}
 	}
 	else trg_target = false;
 
@@ -976,7 +984,10 @@ void BasePlayer::Action::Manhole::Update(const CONTROL_DESC &_ControlDesc)
 {
 	if (me->models[(int)me->model_part]->GetParam(0) == 2)
 	{
-		//pos.y = -1000;
+		//pos.y = -120;
+		me->isManhole ^= 0x1;
+		me->pos = me->next_manhole_pos;
+		me->Set_motion(1);
 		me->Change_action(ACTION_PART::MOVE);
 	}
 }
