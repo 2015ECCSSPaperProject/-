@@ -63,6 +63,7 @@ protected:
 	int				motion_no;
 	int				god_gage;
 
+	bool			isMyNunber;
 
 	//===============================================
 	//	スキルゲージ

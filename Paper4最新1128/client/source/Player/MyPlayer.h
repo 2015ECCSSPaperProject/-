@@ -18,7 +18,7 @@ public:
 	//===============================================
 	MyPlayer();
 	~MyPlayer();
-	//void Initialize(iex3DObj *obj, iex3DObj *die);
+	void Initialize(iex3DObj **obj);
 	void Release();
 
 

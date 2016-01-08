@@ -28,10 +28,11 @@ MyPlayer::~MyPlayer()
 
 }
 
-//void MyPlayer::Initialize(iex3DObj *obj, iex3DObj *die)
-//{
-//	BasePlayer::Initialize(obj, die);
-//}
+void MyPlayer::Initialize(iex3DObj **obj)
+{
+	BasePlayer::Initialize(obj);
+	isMyNunber = true;
+}
 
 void MyPlayer::Release()
 {

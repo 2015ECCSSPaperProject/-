@@ -57,6 +57,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	poster_num = 0;
 	isManhole = false;
 	manhole_no_haninai = false;
+	isMyNunber = false;
 
 	// 3DŽÀ‘Ì
 	models[(int)MODEL::NORMAL]	 = objs[(int)PlayerManager::CLONE_TYPE::NORMAL]->Clone();
@@ -252,7 +253,7 @@ void BasePlayer::Set_aciton(ACTION_PART part)
 		if (action_part == ACTION_PART::MANHOLE && part == ACTION_PART::MOVE)
 		{
 			isManhole ^= 1;
-			event_bgm->Set_manhole(isManhole);
+			if (isMyNunber)event_bgm->Set_manhole(isManhole);
 		}
 		Change_action(part);
 	}
@@ -893,41 +894,57 @@ void BasePlayer::Action::RendObj::Initialize()
 	{
 	case KIND_PAPER_OBJECT::CALENDAR:
 		me->model_part = MODEL::REND_CALENDAR;
+		me->models[(int)me->model_part]->SetFrame(0);
+		me->models[(int)me->model_part]->SetParam(0, 0);
 		me->Set_motion(0);
 		break;
 
 	case KIND_PAPER_OBJECT::MAGAZIN:
 		me->model_part = MODEL::REND_MAGAZINE;
+		me->models[(int)me->model_part]->SetFrame(0);
+		me->models[(int)me->model_part]->SetParam(0, 0);
 		me->Set_motion(0);
 		break;
 
 	case KIND_PAPER_OBJECT::MONEY:
 		me->model_part = MODEL::REND_MONEY;
+		me->models[(int)me->model_part]->SetFrame(0);
+		me->models[(int)me->model_part]->SetParam(0, 0);
 		me->Set_motion(0);
 		break;
 
 	case KIND_PAPER_OBJECT::SEISHO:
 		me->model_part = MODEL::REND_SEISHO;
+		me->models[(int)me->model_part]->SetFrame(0);
+		me->models[(int)me->model_part]->SetParam(0, 0);
 		me->Set_motion(0);
 		break;
 
 	case KIND_PAPER_OBJECT::SHINBUN:
 		me->model_part = MODEL::REND_SHINBUN;
+		me->models[(int)me->model_part]->SetFrame(0);
+		me->models[(int)me->model_part]->SetParam(0, 0);
 		me->Set_motion(0);
 		break;
 
 	case KIND_PAPER_OBJECT::SIGN:
 		me->model_part = MODEL::REND_SIGN;
+		me->models[(int)me->model_part]->SetFrame(0);
+		me->models[(int)me->model_part]->SetParam(0, 0);
 		me->Set_motion(0);
 		break;
 
 	case KIND_PAPER_OBJECT::TOILET_PAPER:
 		me->model_part = MODEL::REND_WC_PAPER;
+		me->models[(int)me->model_part]->SetFrame(0);
+		me->models[(int)me->model_part]->SetParam(0, 0);
 		me->Set_motion(0);
 		break;
 
 	case KIND_PAPER_OBJECT::ZASSHI:
 		me->model_part = MODEL::REND_ZASSHI;
+		me->models[(int)me->model_part]->SetFrame(0);
+		me->models[(int)me->model_part]->SetParam(0, 0);
 		me->Set_motion(0);
 		break;
 
