@@ -8,7 +8,7 @@ DATA/MATI/kiso.IMO 1
 0
 0
 
-DATA/MATI/bill1.IMO 3
+DATA/MATI/bill.IMO 3
 
 0
 0
