@@ -9,19 +9,19 @@
 void Flyer::Initialize( iex3DObj *model, int start_time )
 {
 	Paper_obj_3DObj::Initialize( model );
-	number = PLAYER_MAX;
+	broken = true;
 	high = 50;
 	this->start_time = start_time;
 }
 
 void Flyer::Update()
 {
-	if( number == PLAYER_MAX )
+	if( broken )
 	{
 		// oŒ»
 		if( start_time >= timer->Get_limit_time() )
 		{
-			number = 0;
+			broken = false;
 			start_time = UINT_MAX;
 		}
 		else
@@ -41,7 +41,7 @@ void Flyer::Update()
 
 void Flyer::Render( iexShader *shader, char *name )
 {
-	if( number == PLAYER_MAX )
+	if( broken )
 		return;
 
 	if( model == nullptr )
@@ -79,7 +79,7 @@ unsigned int Flyer::Get_receive_data_size()
 void Flyer::Set_receive_data( char *in )
 {
 	Receive_data *data( ( Receive_data* ) in );
-	number = data->user_number;
+	/*number = data->user_number;*/
 	model->SetFrame( data->anim_no );
 	position = data->pos;
 }

@@ -71,14 +71,15 @@ void Paper_obj_mng::Render(BasePlayer *player, iexShader *shader, char *name)
 
 //**************************************************
 
+void Paper_obj_mng::Rend( int index )
+{
+	obj_array[index]->Rend();
+}
+
+
 int Paper_obj_mng::Get_numof()
 {
 	return number_of_objects;
-}
-
-void Paper_obj_mng::Set_user(int index, int number)
-{
-	obj_array[index]->Set_user(number);
 }
 
 void Paper_obj_mng::Set_animframe(int index, int frame)

@@ -421,7 +421,7 @@ void SocketManager::UpdateStage()
 	//paper_obj_mng->Set_receive_data( receive_data + telop_size );
 	PaperData *Paper_obj_data = ( PaperData * ) (receive_data + telop_size);
 	if( Paper_obj_data->ID >= 0 )
-		paper_obj_mng->Set_user( Paper_obj_data->ID, PLAYER_MAX );
+		paper_obj_mng->Rend( Paper_obj_data->ID );
 
 	delete[] receive_data;
 

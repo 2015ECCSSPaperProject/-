@@ -36,7 +36,7 @@ public:
 	bool Can_rend(int index);
 
 	// ”j‚é
-	void Rend_poster(int index);
+	void Rend(int index);
 
 	//**************************************************
 	/// Get Set
@@ -44,8 +44,6 @@ public:
 	
 	int Get_numof();
 		
-	void Set_user(int index, int number);
-
 	void Set_animframe(int index, int frame);
 
 	const Vector3& Get_pos(int index);

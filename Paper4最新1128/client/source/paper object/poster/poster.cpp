@@ -21,14 +21,14 @@ void Poster::Initialize(iexMesh *model)
 
 void Poster::Update()
 {
-	if (number == PLAYER_MAX) return;
+	if (broken) return;
 
 	model->Update();
 }
 
 void Poster::Render(iexShader *shader, char *name)
 {
-	if (number == PLAYER_MAX) return;
+	if (broken) return;
 
 	model->Update();
 
@@ -63,7 +63,7 @@ unsigned int Poster::Get_receive_data_size()
 void Poster::Set_receive_data( char *in )
 {
 	Receive_data *data( ( Receive_data* ) in );
-	number = data->user_number;
+	/*number = data->user_number*/;
 }
 
 

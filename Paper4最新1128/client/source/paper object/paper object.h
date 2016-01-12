@@ -21,8 +21,6 @@ public:
 
 	void Set_pose(const float angle, const Vector3& pos);
 
-	void Set_user(int number);
-
 	void Set_animframe( int frame )
 	{};
 
@@ -32,6 +30,8 @@ public:
 
 	void Render_mark(iex2DObj *obj, bool target);	// ã‚Ì–îˆó
 
+	void Rend(); // ”j‚é
+
 	//**************************************************
 
 	virtual unsigned int Get_receive_data_size() = 0;
@@ -39,7 +39,7 @@ public:
 	virtual void Set_receive_data( char *in ) = 0;
 
 protected:
-	int number;
+	bool broken;
 	Vector3 position; // ˆÊ’u
 	float angle; // Œü‚«‚ğ model ‚É“n‚·‚æ‚¤
 };

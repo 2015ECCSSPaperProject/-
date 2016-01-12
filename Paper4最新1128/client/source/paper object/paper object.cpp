@@ -2,7 +2,7 @@
 #include "iextreme.h"
 #include "paper object.h"
 
-Paper_obj::Paper_obj() : position(0, 0, 0), angle(0)
+Paper_obj::Paper_obj() : position( 0, 0, 0 ), angle( 0 ), broken( false )
 {}
 
 Paper_obj::~Paper_obj()
@@ -14,11 +14,6 @@ void Paper_obj::Set_pose(const float angle, const Vector3& pos)
 	this->position = pos;
 }
 
-void Paper_obj::Set_user(int number)
-{
-	this->number = number;
-}
-
 const Vector3 &Paper_obj::Get_pos()
 {
 	return position;
@@ -26,7 +21,7 @@ const Vector3 &Paper_obj::Get_pos()
 
 void Paper_obj::Render_mark(iex2DObj *obj, bool target)
 {
-	if (number == PLAYER_MAX)
+	if (broken)
 		return;
 
 	float tu[2];
@@ -42,6 +37,11 @@ void Paper_obj::Render_mark(iex2DObj *obj, bool target)
 	}
 	float tv[2] = { 0, 1 };
 	Billboard::Draw3D(position + Vector3(0, 22, 0), obj, 4, 4, tu, tv, RS_COPY);
+}
+
+void Paper_obj::Rend()
+{
+	broken = true;
 }
 
 
