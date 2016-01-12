@@ -64,6 +64,7 @@ protected:
 	int				god_gage;
 
 	bool			isMyNunber;
+	int kind_paper_obj;			// 破ってる小物の種類(-1が何も破っていない状態)ヘッダーのインクルードの問題があるのでint型にする
 
 	//===============================================
 	//	スキルゲージ
@@ -311,8 +312,6 @@ protected:
 		//	対小物の破る
 		class RendObj : public Base
 		{
-		private:
-			int kind_paper_obj;	// ヘッダーのインクルードの問題があるのでint型にする
 		public:
 			RendObj(BasePlayer*me) : Base(me){}
 
@@ -387,8 +386,8 @@ public:
 
 	// プレイヤーのモード
 	ACTION_PART Get_action(){ return action_part; }
-	void Set_aciton(ACTION_PART part);
-	void Change_action(ACTION_PART part)
+	virtual void Set_action(ACTION_PART part);
+	virtual void Change_action(ACTION_PART part)
 	{
 		action_part = part;
 		action[(unsigned int)part]->Initialize();

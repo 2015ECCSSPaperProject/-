@@ -263,6 +263,8 @@ void BasePlayer::Action::Move::Initialize()
 	me->motion_no = 1;
 	me->Set_motion(1);
 	trg_target = true;
+
+	me->poster_num = -1;
 }
 
 void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
@@ -682,6 +684,20 @@ void BasePlayer::Action::Rend::Initialize()
 
 	me->motion_no = 1;
 	me->Set_motion(1);
+
+	me->motion_no = 2;
+	me->Set_motion(2);
+	rended = true;
+
+	// 送信するデータプッシュ
+	for (int i = 0; i < PLAYER_MAX; i++)
+	{
+		PaperData data;
+		data.from = me->mynumber;
+		data.ID = me->poster_num;
+		player_mng->Get_player(i)->paperqueue->Push(data);
+	}
+	me->Change_action(ACTION_PART::REND_OBJ);
 }
 
 void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)

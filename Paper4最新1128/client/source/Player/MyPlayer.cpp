@@ -20,6 +20,18 @@ MyPlayer::MyPlayer() :BasePlayer()
 {
 	//skillGage = new Pie_graph_content("DATA/skillGage/SpiritCircle_gage.png");	//	ゲージ
 	//skillGage->Add_content("DATA/skillGage/SpiritCircle_UNDER.png");
+
+	// 関数ポインタ初期化
+	RendSE[KIND_PAPER_OBJECT::POSTER] = &MyPlayer::RendPosterSE;
+	RendSE[KIND_PAPER_OBJECT::FLYER] = &MyPlayer::RendFlyerSE;
+	RendSE[KIND_PAPER_OBJECT::CALENDAR] = &MyPlayer::RendCalendarSE;
+	RendSE[KIND_PAPER_OBJECT::MAGAZIN] = &MyPlayer::RendMagazineSE;
+	RendSE[KIND_PAPER_OBJECT::MONEY] = &MyPlayer::RendMoneySE;
+	RendSE[KIND_PAPER_OBJECT::SEISHO] = &MyPlayer::RendSeisyoSE;
+	RendSE[KIND_PAPER_OBJECT::SHINBUN] = &MyPlayer::RendShinbunSE;
+	RendSE[KIND_PAPER_OBJECT::SIGN] = &MyPlayer::RendSignSE;
+	RendSE[KIND_PAPER_OBJECT::TOILET_PAPER] = &MyPlayer::RendToileSE;
+	RendSE[KIND_PAPER_OBJECT::ZASSHI] = &MyPlayer::RendZasshiSE;
 }
 
 MyPlayer::~MyPlayer()
@@ -32,6 +44,7 @@ void MyPlayer::Initialize(iex3DObj **obj)
 {
 	BasePlayer::Initialize(obj);
 	isMyNunber = true;
+	se_step = 0;
 }
 
 void MyPlayer::Release()
@@ -86,6 +99,10 @@ void MyPlayer::Update_action()
 		{
 			if (se_receive == -1)se_receive = se->Play((isManhole) ? "のぼる": "落ちる");
 		}
+		break;
+
+	case ACTION_PART::REND_OBJ:
+		if (kind_paper_obj != -1)(this->*RendSE[kind_paper_obj])();	// それぞれのモーションに合わせて音を出す
 		break;
 	}
 }
@@ -222,6 +239,171 @@ void MyPlayer::Update_listener()
 	const Vector3 up(models[(int)model_part]->TransMatrix._21, models[(int)model_part]->TransMatrix._22, models[(int)model_part]->TransMatrix._23);
 
 	se->Set_listener(pos, front, up, move);
+}
+
+void MyPlayer::RendPosterSE()
+{
+
+}
+void MyPlayer::RendFlyerSE()
+{
+
+}
+void MyPlayer::RendCalendarSE()
+{
+	switch (se_step)
+	{
+	case 0:
+		// 破き始め
+		if (models[(int)model_part]->GetParam(5) == 1)
+		{
+			se_receive = se->Play("カレンダー破り", true);
+			se_step++;
+		}
+		break;
+	case 1:
+		// 破き終わり
+		if (models[(int)model_part]->GetParam(5) == 2)
+		{
+			se->Stop("カレンダー破り", se_receive);
+			se_step++;
+		}
+		break;
+	case 2:
+		// 雄叫び
+		if (models[(int)model_part]->GetParam(5) == 3)
+		{
+			se_step = 99;	// ステップ終わり
+		}
+	}
+}
+void MyPlayer::RendMagazineSE()
+{
+	switch (se_step)
+	{
+	case 0:
+		// 最初から鳴らす
+		se_receive=se->Play("マガジン破り");
+		se_step++;
+
+		break;
+	case 1:
+		// 破き
+		if (models[(int)model_part]->GetParam(5) == 1)
+		{
+			se->Stop("マガジン破り", se_receive);
+			se->Play("マガジン破り2");
+			se_step = 99;	// ステップ終わり
+		}
+		break;
+	}
+}
+void MyPlayer::RendMoneySE()
+{
+
+}
+void MyPlayer::RendSeisyoSE()
+{
+	switch (se_step)
+	{
+	case 0:
+		// 最初から鳴らす
+		se_receive = se->Play("聖書破り");
+		se_step++;
+		break;
+
+	case 1:
+		// 上に投げ
+		if (models[(int)model_part]->GetParam(5) == 1)
+		{
+			se->Play("聖書破り2");
+			se_step++;	// ステップ終わり
+		}
+		break;
+
+	case 2:
+		// 破き
+		if (models[(int)model_part]->GetParam(5) == 2)
+		{
+			se->Stop("聖書破り", se_receive);
+			se->Play("聖書破り3");
+			se_step = 99;	// ステップ終わり
+		}
+		break;
+	}
+}
+void MyPlayer::RendSignSE()
+{
+	switch (se_step)
+	{
+	case 0:
+		// 破き始め
+		if (models[(int)model_part]->GetParam(5) == 1)
+		{
+			se->Play("サイン破り");
+			se_step++;
+		}
+		break;
+	case 1:
+		// 破き終わり
+		if (models[(int)model_part]->GetParam(5) == 2)
+		{
+			//se->Play("サイン破り2");
+			se->Play("短い破り");
+			se_step = 99;	// ステップ終わり
+		}
+		break;
+	}
+}
+void MyPlayer::RendShinbunSE()
+{
+	switch (se_step)
+	{
+	case 0:
+		// 紙の音的な
+
+		se_step++;
+		break;
+
+	case 1:
+		// 破き始め
+		if (models[(int)model_part]->GetParam(5) == 1)
+		{
+			se->Play("新聞破り");
+			se_step++;
+		}
+		break;
+	case 2:
+		// 破き終わり
+		if (models[(int)model_part]->GetParam(5) == 2)
+		{
+			se->Play("新聞破り2");
+			se_step = 99;	// ステップ終わり
+		}
+		break;
+	}
+}
+void MyPlayer::RendToileSE()
+{
+
+}
+void MyPlayer::RendZasshiSE()
+{
+
+}
+
+void MyPlayer::Set_action(ACTION_PART part)
+{
+	if (action_part != part)
+	{
+		if (action_part == ACTION_PART::MANHOLE && part == ACTION_PART::MOVE)
+		{
+			isManhole ^= 1;
+			event_bgm->Set_manhole(isManhole);
+		}
+		if (part == ACTION_PART::REND_OBJ) se_step = 0;
+		Change_action(part);
+	}
 }
 
 //*************************************************************************************************************************

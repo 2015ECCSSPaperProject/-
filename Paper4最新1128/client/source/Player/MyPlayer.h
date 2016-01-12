@@ -12,6 +12,21 @@ class Spread2D;
 //****************************************************************************************************************
 class	MyPlayer : public	BasePlayer
 {
+private:
+	int se_step;
+	void (MyPlayer::*RendSE[10])();	// 小物破くSE
+	void RendPosterSE();
+	void RendFlyerSE();
+	void RendCalendarSE();
+	void RendMagazineSE();
+	void RendMoneySE();
+	void RendSeisyoSE();
+	void RendSignSE();
+	void RendShinbunSE();
+	void RendToileSE();
+	void RendZasshiSE();
+
+
 public:
 	//===============================================
 	//	初期化と解放
@@ -37,13 +52,5 @@ public:
 	//===============================================
 	//	ゲッター,セッター
 	//===============================================
-
-
-private:
-
-	//Pie_graph_content* skillGage;
-	
-
-
-
+	void Set_action(ACTION_PART part);	// オーバーライド
 };

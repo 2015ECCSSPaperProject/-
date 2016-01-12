@@ -151,7 +151,7 @@ void PlayerManager::Update()
 		players[i]->Set_angleY(sendPlayer.angleY);
 
 		players[i]->Set_motion_no(sendPlayer.motion_no);	// ここで帰ってきたモーションの番号をセット
-		players[i]->Set_aciton((BasePlayer::ACTION_PART)sendPlayer.action_part);
+		players[i]->Set_action((BasePlayer::ACTION_PART)sendPlayer.action_part);
 		players[i]->Set_god_gage(sendPlayer.god_gage);
 		players[i]->Set_poster_num(sendPlayer.target_no);
 		players[i]->Update();

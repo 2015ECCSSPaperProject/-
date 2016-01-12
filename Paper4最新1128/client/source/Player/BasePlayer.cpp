@@ -58,6 +58,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	isManhole = false;
 	manhole_no_haninai = false;
 	isMyNunber = false;
+	kind_paper_obj = -1;
 
 	// 3DŽÀ‘Ì
 	models[(int)MODEL::NORMAL]	 = objs[(int)PlayerManager::CLONE_TYPE::NORMAL]->Clone();
@@ -246,14 +247,13 @@ void BasePlayer::Set_motion(int no)
 	}
 }
 
-void BasePlayer::Set_aciton(ACTION_PART part)
+void BasePlayer::Set_action(ACTION_PART part)
 {
 	if (action_part != part)
 	{
 		if (action_part == ACTION_PART::MANHOLE && part == ACTION_PART::MOVE)
 		{
 			isManhole ^= 1;
-			if (isMyNunber)event_bgm->Set_manhole(isManhole);
 		}
 		Change_action(part);
 	}
@@ -279,6 +279,7 @@ void BasePlayer::Action::Move::Initialize()
 	me->Check_unlock(me->god_gage);
 
 	me->se_receive = me->se_receive2 = -1;
+	me->kind_paper_obj = -1;
 }
 
 void BasePlayer::Action::Move::Update()
@@ -889,63 +890,42 @@ void BasePlayer::Action::RendObj::Initialize()
 	me->m_controlDesc.moveFlag &= 0x00000000;
 	me->m_controlDesc.rendFlag &= 0x00000000;
 
-	kind_paper_obj = (int)paper_obj_mng->Get_kind(me->poster_num);
-	switch ((KIND_PAPER_OBJECT)kind_paper_obj)
+	// SEŽó‚¯Žæ‚èî•ñ‰Šú‰»
+	me->se_receive = me->se_receive2 = -1;
+
+	me->kind_paper_obj = (int)paper_obj_mng->Get_kind(me->poster_num);
+	switch ((KIND_PAPER_OBJECT)me->kind_paper_obj)
 	{
 	case KIND_PAPER_OBJECT::CALENDAR:
 		me->model_part = MODEL::REND_CALENDAR;
-		me->models[(int)me->model_part]->SetFrame(0);
-		me->models[(int)me->model_part]->SetParam(0, 0);
-		me->Set_motion(0);
 		break;
 
 	case KIND_PAPER_OBJECT::MAGAZIN:
 		me->model_part = MODEL::REND_MAGAZINE;
-		me->models[(int)me->model_part]->SetFrame(0);
-		me->models[(int)me->model_part]->SetParam(0, 0);
-		me->Set_motion(0);
 		break;
 
 	case KIND_PAPER_OBJECT::MONEY:
 		me->model_part = MODEL::REND_MONEY;
-		me->models[(int)me->model_part]->SetFrame(0);
-		me->models[(int)me->model_part]->SetParam(0, 0);
-		me->Set_motion(0);
 		break;
 
 	case KIND_PAPER_OBJECT::SEISHO:
 		me->model_part = MODEL::REND_SEISHO;
-		me->models[(int)me->model_part]->SetFrame(0);
-		me->models[(int)me->model_part]->SetParam(0, 0);
-		me->Set_motion(0);
 		break;
 
 	case KIND_PAPER_OBJECT::SHINBUN:
 		me->model_part = MODEL::REND_SHINBUN;
-		me->models[(int)me->model_part]->SetFrame(0);
-		me->models[(int)me->model_part]->SetParam(0, 0);
-		me->Set_motion(0);
 		break;
 
 	case KIND_PAPER_OBJECT::SIGN:
 		me->model_part = MODEL::REND_SIGN;
-		me->models[(int)me->model_part]->SetFrame(0);
-		me->models[(int)me->model_part]->SetParam(0, 0);
-		me->Set_motion(0);
 		break;
 
 	case KIND_PAPER_OBJECT::TOILET_PAPER:
 		me->model_part = MODEL::REND_WC_PAPER;
-		me->models[(int)me->model_part]->SetFrame(0);
-		me->models[(int)me->model_part]->SetParam(0, 0);
-		me->Set_motion(0);
 		break;
 
 	case KIND_PAPER_OBJECT::ZASSHI:
 		me->model_part = MODEL::REND_ZASSHI;
-		me->models[(int)me->model_part]->SetFrame(0);
-		me->models[(int)me->model_part]->SetParam(0, 0);
-		me->Set_motion(0);
 		break;
 
 	case KIND_PAPER_OBJECT::POSTER:
@@ -953,6 +933,15 @@ void BasePlayer::Action::RendObj::Initialize()
 		me->model_part = MODEL::NORMAL;
 		me->Set_motion(2);
 		break;
+	}
+
+	// ·‚µ‘Ö‚¦ƒ‚ƒfƒ‹‚Ìê‡
+	if (me->model_part != MODEL::NORMAL)
+	{
+		me->models[(int)me->model_part]->SetFrame(0);
+		me->models[(int)me->model_part]->SetParam(0, 0);
+		me->models[(int)me->model_part]->SetParam(5, 0);
+		me->Set_motion(0);
 	}
 
 	me->m_controlDesc.motion_no = (int)PLAYER_CONTROL::RENDING;
