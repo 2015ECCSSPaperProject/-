@@ -14,5 +14,5 @@ Event_advent_paper_obj::Event_advent_paper_obj(Paper_obj *obj) : Event(), obj(ob
 
 void Event_advent_paper_obj::Start()
 {
-	obj->Set_broken_true();
+	obj->Set_broken_false();
 }

@@ -48,7 +48,7 @@ public:
 
 	virtual void Set_pose(const float angle, const Vector3& pos);
 	// オブジェクト復活
-	void Set_broken_true();
+	void Set_broken_false();
 
 	//**************************************************
 

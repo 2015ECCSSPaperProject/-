@@ -57,9 +57,9 @@ void Paper_obj::Set_pose(const float angle, const Vector3& pos)
 	this->position = pos;
 }
 
-void Paper_obj::Set_broken_true()
+void Paper_obj::Set_broken_false()
 {
-	broken = true;
+	broken = false;
 }
 
 
