@@ -603,6 +603,13 @@ typedef struct tagLNVERTEX {
 #define	IEX2D_FLOAT2		110
 #define	IEX2D_HDR			200
 
+#define	IEX2D_HDR_SYSTEMMEM	201
+#define	IEX2D_R16			202
+#define	IEX2D_R16_SYSTEMMEM	203
+
+#define	IEX2D_FLOAT4_SYSTEMMEM	205
+#define	IEX2D_FLOAT4 206
+#define	IEX2D_DYNAMIC 207
 //------------------------------------------------------
 //		２Ｄオブジェクト
 //------------------------------------------------------
@@ -643,6 +650,7 @@ public:
 	//------------------------------------------------------
 	void RenderTarget( int index = 0 );
 	Texture2D*	GetTexture(){ return lpTexture; }
+	Surface*	GetSurface(){ return lpSurface; }
 
 	//------------------------------------------------------
 	//	描画

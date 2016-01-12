@@ -26,16 +26,16 @@ void Deferred::Release()
 
 /* マップの読み込み情報 */
 /// N RGB->法線 
-/// S R->スペキュラ G->ブルームレート B->リムライト
+/// S R->スペキュラ G->ブルームレート B->リムライト　A→エミッシブ
 /// H R->AO G->エミッシブ追加予定　 B->空白
 
 /// 初期化
 void Deferred::Init()
 {
 	// G_Bufferを作成
-	diffuse = new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_USEALPHA);	 // RGB アルべド A エミッシブ
+	diffuse = new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_RENDERTARGET); // RGB アルべド
 	normal	= new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_USEALPHA);	 // RGB 法線　A アンビエントレート
-	specular= new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_RENDERTARGET); // R スペキュラ G ブルーム　B リムライト
+	specular= new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_USEALPHA);	 // R スペキュラ G ブルーム　B リムライト A　エミッシブ
 	depth	= new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_FLOAT);		 // R デプス
 
 	// G-Bufferを利用するサーフェイス
@@ -50,22 +50,32 @@ void Deferred::Init()
 	// ForwardSurface
 	forward = new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_USEALPHA);		//	上から被せるため透明度も採用
 
-	// Bloom
-	bloomScreen = new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_HDR);			//　ゲーム画面をHDR用にいじる用
-	bloom = new iex2DObj(MiniTex_x, MiniTex_y, IEX2D_HDR);		// HDR
+	// Bloom HDR済みのものを描画しているので　HDRからUSEALPHAへ
+	bloomScreen = new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_USEALPHA);			//　ゲーム画面をHDR用にいじる用
+	bloom = new iex2DObj(MiniTex_x, MiniTex_y, IEX2D_USEALPHA);		// HDR
 
 	// Glow
 	glowScreen = new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_RENDERTARGET);	//　ゲーム画面をGlow用にいじる用
-	glow = new iex2DObj(MiniTex_x, MiniTex_y, IEX2D_HDR);		// Glow
+	glow = new iex2DObj(MiniTex_x, MiniTex_y, IEX2D_HDR);			// Glow
 
-	// SSAO
-	ssao = nullptr;
-	ssaoFlag = false;
+	// DownSample
+	downSample = new iex2DObj(downSampleSize, downSampleSize, IEX2D_FLOAT);
+	calcDownSample = new iex2DObj(downSampleSize, downSampleSize, IEX2D_SYSTEMMEM);
+	
+	// 計算用PointLight
+	infoPointLight = new iex2DObj(InfoPL_X, InfoPL_Y, IEX2D_FLOAT4_SYSTEMMEM);
+
+	// 露光レベル
+	exposure = 0.0f;
+	// 輝度レベル
+	luminance = 0.0f;
 
 	// BackBuffer
 	iexSystem::Device->GetRenderTarget(0, &backbuffer);
 	iexSystem::Device->GetDepthStencilSurface(&backbufferZ);
 	iexSystem::GetDevice()->GetRenderTarget(0, &savebackbuffer);
+	iexSystem::Device->GetViewport(&saveViewport);// 現在のビューポートの一時保管
+
 
 	//ShadowMaps
 	shadowZ = nullptr;
@@ -82,6 +92,7 @@ void Deferred::Init()
 	// 環境マップ
 	EnvMap = new iex2DObj("DATA/Shader/Env.png");
 	shaderD->SetValue("EnvMap", EnvMap);
+
 }
 
 Deferred::Deferred()
@@ -117,14 +128,13 @@ Deferred::~Deferred()
 	// glowSurface
 	ReleaseSurface(glow);
 	ReleaseSurface(glowScreen);
+		
+	// downSample
+	ReleaseSurface(downSample);
+	ReleaseSurface(calcDownSample);
 
-	// ssaoSurface
-	if (ssaoFlag)
-	{
-		ReleaseSurface(ssao);
-		ReleaseSurface(ssaoScreen);
-	}
-	
+	// infoPointLight
+	ReleaseSurface(infoPointLight);
 
 	//BackBufferSurface
 	backbuffer->Release();
@@ -152,7 +162,7 @@ Deferred::~Deferred()
 }
 
 /// G_Buffer作成開始 &前回使用したのサーフェイスのクリア
-void Deferred::Bigin()
+void Deferred::G_Bigin()
 {
 	//バックバッファサーフェイスの保存
 	iexSystem::Device->GetRenderTarget(0, &backbuffer);
@@ -179,7 +189,7 @@ void Deferred::Bigin()
 
 }
 /// G_Buffer作成終了
-void Deferred::End()
+void Deferred::G_End()
 {
 	//バックバッファサーフェイスの復元・MRTの終了処理
 	iexSystem::Device->SetRenderTarget(NORMAL, nullptr);
@@ -191,7 +201,6 @@ void Deferred::End()
 	shaderD->SetValue("DepthBuf", depth);
 	shaderD->SetValue("SpecularBuf", specular);
 	shaderD->SetValue("NormalBuf", normal);
-
 
 	iexSystem::Device->SetRenderTarget(0, backbuffer);
 
@@ -208,13 +217,7 @@ void Deferred::Update(const Vector3 ViewPos)
 	Matrix invproj = matProjection;
 	D3DXMatrixInverse(&invproj, nullptr, &invproj);
 	shaderD->SetValue("InvProj", invproj);
-
-	//SSAOを導入するなら、プロジェクション変換行列を転送
-	if (ssaoFlag) shaderD->SetValue("matProjection", matProjection);
-	//  多分送られているのでかかない 
-	//	シェーダーに必要な情報を送る
-	//shaderD->SetValue("matView", matView);
-
+	
 	if (shadowFlag){
 		//ビュー逆行列生成
 		Matrix invview = matView;
@@ -233,7 +236,11 @@ void Deferred::DirLight(const Vector3 dir, const Vector3 color)
 	Matrix matV = matView;
 
 	Vector3 LightDir;
-
+	// ワールドの平行光を渡す
+	Vector3 wLightDir = dir;
+	wLightDir.Normalize();
+	shaderD->SetValue("wLightVec", wLightDir);
+	
 	//ビュー座標系に変換
 	LightDir.x = dir.x * matV._11 + dir.y * matV._21 + dir.z * matV._31;
 	LightDir.y = dir.x * matV._12 + dir.y * matV._22 + dir.z * matV._32;
@@ -243,7 +250,7 @@ void Deferred::DirLight(const Vector3 dir, const Vector3 color)
 	LightDir.Normalize();
 
 	//	シェーダー設定 shaderDに送る
-	shaderD->SetValue("LightVec", LightDir);
+	shaderD->SetValue("ViewLightVec", LightDir);
 	shaderD->SetValue("LightColor", (Vector3)color);
 
 	//現在のレンダーターゲットを一時的に確保
@@ -263,32 +270,212 @@ void Deferred::DirLight(const Vector3 dir, const Vector3 color)
 	iexSystem::Device->SetRenderTarget(1, nullptr);
 }
 
-/// ポイントライト
-void Deferred::PointLight(const Vector3 pos, const Vector3 color, const float range, const float power)
+// 全部一括で
+void Deferred::AllLight(const Vector3 dir, const Vector3 color, const Vector3 SkyColor, const Vector3 GroundColor, float EmissivePower)
 {
 
-	Matrix mWV = matView;// ビュー行列
+	Matrix matV = matView;
 
+	Vector3 LightDir;
+
+	//ビュー座標系に変換
+	LightDir.x = dir.x * matV._11 + dir.y * matV._21 + dir.z * matV._31;
+	LightDir.y = dir.x * matV._12 + dir.y * matV._22 + dir.z * matV._32;
+	LightDir.z = dir.x * matV._13 + dir.y * matV._23 + dir.z * matV._33;
+
+
+	LightDir.Normalize();
+
+	//	シェーダー設定 
+	shaderD->SetValue("LightVec", LightDir);
+	shaderD->SetValue("LightColor", (Vector3)color);
+	//	シェーダー設定
+	shaderD->SetValue("SkyColor", (Vector3)SkyColor);
+	shaderD->SetValue("GroundColor", (Vector3)GroundColor);
+	//	シェーダー設定
+	shaderD->SetValue("EmissivePowerRate", EmissivePower);
+
+	//現在のレンダーターゲットを一時的に確保
+	Surface* now = nullptr;
+	iexSystem::Device->GetRenderTarget(0, &now);
+
+	//レンダーターゲットの切替え
+	light->RenderTarget();
+	spec->RenderTarget(1);
+
+
+	//	レンダリング
+	normal->Render(shaderD, "def_AllLight");
+
+	//レンダーターゲットの復元
+	iexSystem::Device->SetRenderTarget(0, now);
+	iexSystem::Device->SetRenderTarget(1, nullptr);
+}
+
+
+//****************************
+///		POINTLIGHT
+//****************************
+
+void Deferred::ClearPointLight()
+{
+	PL_NUM = 0;
+	PLdata.clear(); 
+
+	// ポイントライトの情報を初期化
+}
+void Deferred::SetInfoPointLight(const Vector3 pos, const Vector3 color, const float range, const float power)
+{
+	PointLightData data;
+
+	// 今のままだとカリングが意味をなさない
+	Matrix mWV = matView;// ビュー行列
 	// 視錐台カリング処理
 	Vector3 flont(mWV._13, mWV._23, mWV._33);
 	flont.Normalize();
 	Vector3 dir = pos - (ViewPos - flont * range);			//レンジの値分下げて、カリングを緩める。
 	dir.Normalize();
-
 	float dot = Vector3Dot(dir, flont);
-	if (dot < .5f) return;
+	if (dot < 0.5)
+	{
+		return;			// 見えていないポイントライトを消去
+	}
 
-	// ライト位置をビュー座標系に変換
-	Vector3 PointLight;
-	D3DXVECTOR3 plight = D3DXVECTOR3(pos.x, pos.y, pos.z);
-	D3DXVec3TransformCoord(&plight, &plight, &mWV);
-	PointLight = Vector3(plight.x, plight.y, plight.z);
 
-	// 必要パラメータの転送
-	shaderD->SetValue("LightPos", PointLight);
-	shaderD->SetValue("LightColor", (Vector3)color);
-	shaderD->SetValue("LightRange", range);
-	shaderD->SetValue("LightPower", power);
+	// カメラ空間変換
+	Matrix mat = matView;
+	data.pos.x = pos.x * mat._11 + pos.y * mat._21 + pos.z * mat._31 + mat._41;
+	data.pos.y = pos.x * mat._12 + pos.y * mat._22 + pos.z * mat._32 + mat._42;
+	data.pos.z = pos.x * mat._13 + pos.y * mat._23 + pos.z * mat._33 + mat._43;
+
+	data.range = range;
+	data.color = color;
+	data.power = power;
+
+	// 配列に加える
+	PLdata.push_back(data);
+
+}
+//void Deferred::PointLightRender()
+//{
+//	//// ポイントライトの数
+//	//shaderD->SetValue("PL_NUM", (int)PLdata.size());
+//
+//	//// ポイントライトの情報を送る
+//	//for (int i = 0; i < (int)PLdata.size(); i++)
+//	//{
+//	//	if (i >= PL_MAX)
+//	//	{
+//	//		MessageBox(iexSystem::Window, "ポイントライトの最大数を超えました", "ERROR", MB_OK);
+//	//	}
+//	//	char str[128];
+//	//	sprintf(str, "PLpos[%d]", i);
+//	//	shaderD->SetValue(str, PLdata[i].pos);
+//	//	sprintf(str, "PLrange[%d]", i);
+//	//	shaderD->SetValue(str, PLdata[i].range);
+//	//	sprintf(str, "PLcolor[%d]", i);
+//	//	shaderD->SetValue(str, PLdata[i].color);
+//	//	sprintf(str, "PLpower[%d]", i);
+//	//	shaderD->SetValue(str, PLdata[i].power);
+//	//}
+//
+//
+//	//// 現在のレンダーターゲットを一時的に確保
+//	//Surface* now = nullptr;
+//	//iexSystem::Device->GetRenderTarget(0, &now);
+//
+//	//// レンダーターゲットの切替え
+//	//light->RenderTarget();
+//	//
+//	//// レンダリング
+//	//normal->Render(shaderD, "def_PointLight");
+//
+//	//// レンダーターゲットの復元
+//	//iexSystem::Device->SetRenderTarget(0, now);
+//}
+
+void Deferred::PointLightRender()
+{
+	// ポイントライトの数
+	shaderD->SetValue("PL_NUM", (int)PLdata.size());
+
+	// サーフェスをロックしてコピー
+	D3DLOCKED_RECT LockedRect;// テクスチャ リソース上の矩形をロックする
+	// RGBA34のポイントライト
+	infoPointLight->GetTexture()->LockRect(0, &LockedRect, NULL, D3DLOCK_DISCARD);
+	
+	// float4の型を作成
+	struct SEND_COLOR
+	{
+		float r, g, b, a;
+	};
+	SEND_COLOR col4;
+
+	// 0初期化
+	FillMemory(LockedRect.pBits, LockedRect.Pitch * InfoPL_Y, 0);
+	// 絵を描きこむ
+	float* pData;
+	for (int y = 0; y < InfoPL_Y; y++)
+	{
+		/*書き込む行の先頭アドレスに移動！*/
+		pData = (float*)((LPBYTE)LockedRect.pBits + LockedRect.Pitch * y);// yの値だけ移動
+
+		for (int x = 0; x < InfoPL_X; x++)
+		{
+	
+			// ポイントライトの最大数まで来たらcontinue
+			if (x >= (int)PLdata.size()) continue;
+	
+			// memcpy
+			// コピー先のポインタ
+			// コピー元のポインタ
+			// コピー元のポインタのサイズ
+
+			col4.r = col4.g = col4.b = col4.a = 0.0f;	
+			// テクスチャの0行目に ポジションとレンジを
+			if (y == 0)
+			{
+				// ポイントライトのポジションをRGBに詰める！
+				col4.r = PLdata[x].pos.x;
+				col4.g = PLdata[x].pos.y;
+				col4.b = PLdata[x].pos.z;
+
+				// Rangeをαに詰める
+				col4.a = PLdata[x].range;
+				
+				// テクスチャへ書き込む
+				memcpy((float*)pData + (4 * x), &col4, sizeof(SEND_COLOR));
+			}
+			// テクスチャの1行目に カラーと強さを
+			else if (y == 1)
+			{
+				// ポイントライトのカラーをRGBに詰める！
+				col4.r = PLdata[x].color.x;
+				col4.g = PLdata[x].color.y;
+				col4.b = PLdata[x].color.z;
+
+				// ポイントライトの強さをαに詰める
+				col4.a = PLdata[x].power;
+
+				// テクスチャへ書き込む
+				memcpy((float*)pData + (4 * x), &col4, sizeof(SEND_COLOR));
+			}
+	
+		}
+
+	}
+
+	// サーフェイスのロックを解除
+	infoPointLight->GetTexture()->UnlockRect(0);
+
+
+	// ポイントライトの情報を詰めたテクスチャをGPUへ送る！
+	shaderD->SetValue("InfoPLMap", infoPointLight);
+
+
+	/*********************************/
+	//		ポイントライト描画
+	/*********************************/
 
 	// 現在のレンダーターゲットを一時的に確保
 	Surface* now = nullptr;
@@ -296,59 +483,116 @@ void Deferred::PointLight(const Vector3 pos, const Vector3 color, const float ra
 
 	// レンダーターゲットの切替え
 	light->RenderTarget();
-	spec->RenderTarget(1);
-
 
 	// レンダリング
 	normal->Render(shaderD, "def_PointLight");
 
 	// レンダーターゲットの復元
 	iexSystem::Device->SetRenderTarget(0, now);
-	iexSystem::Device->SetRenderTarget(1, nullptr);
-
 }
+
+//void Deferred::PointLight(const Vector3 pos, const Vector3 color, const float range, const float power)
+//{
+//
+//	Matrix mWV = matView;// ビュー行列
+//
+//	// 視錐台カリング処理
+//	Vector3 flont(mWV._13, mWV._23, mWV._33);
+//	flont.Normalize();
+//	Vector3 dir = pos - (ViewPos - flont * range);			//レンジの値分下げて、カリングを緩める。
+//	dir.Normalize();
+//
+//	float dot = Vector3Dot(dir, flont);
+//	if (dot < .5f) return;					//　わかったああああああ！！！ポイントライト消失事件
+//
+//	// ライト位置をビュー座標系に変換
+//	Vector3 PointLight;
+//	D3DXVECTOR3 plight = D3DXVECTOR3(pos.x, pos.y, pos.z);
+//	D3DXVec3TransformCoord(&plight, &plight, &mWV);
+//	PointLight = Vector3(plight.x, plight.y, plight.z);
+//
+//	// 必要パラメータの転送
+//	shaderD->SetValue("LightPos", PointLight);
+//	shaderD->SetValue("LightColor", (Vector3)color);
+//	shaderD->SetValue("LightRange", range);
+//	shaderD->SetValue("LightPower", power);
+//
+//	// 現在のレンダーターゲットを一時的に確保
+//	Surface* now = nullptr;
+//	iexSystem::Device->GetRenderTarget(0, &now);
+//
+//	// レンダーターゲットの切替え
+//	light->RenderTarget();
+//	//spec->RenderTarget(1);
+//
+//
+//	// レンダリング
+//	normal->Render(shaderD, "def_PointLight");
+//	//normal->Render(shaderD, "def_PointLight");
+//	//normal->Render(shaderD, "def_PointLight");
+//	//normal->Render(shaderD, "def_PointLight");
+//	//normal->Render(shaderD, "def_PointLight");
+//	//normal->Render(shaderD, "def_PointLight");
+//	//normal->Render(shaderD, "def_PointLight");
+//	//normal->Render(shaderD, "def_PointLight");
+//	
+//	//normal->Render(shaderD, "def_Emissive");
+//	//normal->Render(shaderD, "def_Emissive");
+//	//normal->Render(shaderD, "def_Emissive");
+//	//normal->Render(shaderD, "def_Emissive");
+//	//normal->Render(shaderD, "def_Emissive");
+//	//normal->Render(shaderD, "def_Emissive");
+//	//normal->Render(shaderD, "def_Emissive");
+//	//normal->Render(shaderD, "def_Emissive");
+//	
+//	// レンダーターゲットの復元
+//	iexSystem::Device->SetRenderTarget(0, now);
+//	//iexSystem::Device->SetRenderTarget(1, nullptr);
+//
+//}
+
 
 /// シンプルポイントライト
-void Deferred::SimpliPointLight(const Vector3 pos, const Vector3 color, const float range)
-{
-
-	Matrix mWV = matView;// ビュー行列
-
-	// 視錐台カリング処理
-	Vector3 flont(mWV._13, mWV._23, mWV._33);
-	flont.Normalize();
-	Vector3 dir = pos - (ViewPos - flont * range);			//レンジの値分下げて、カリングを緩める。
-	dir.Normalize();
-
-	float dot = Vector3Dot(dir, flont);
-	if (dot < .5f) return;
-
-	// ライト位置をビュー座標系に変換
-	Vector3 PointLight;
-	D3DXVECTOR3 plight = D3DXVECTOR3(pos.x, pos.y, pos.z);
-	D3DXVec3TransformCoord(&plight, &plight, &mWV);
-	PointLight = Vector3(plight.x, plight.y, plight.z);
-
-	// 必要パラメータの転送
-	shaderD->SetValue("LightPos", PointLight);
-	shaderD->SetValue("LightColor", (Vector3)color);
-	shaderD->SetValue("LightRange", range);
-
-	// 現在のレンダーターゲットを一時的に確保
-	Surface* now = nullptr;
-	iexSystem::Device->GetRenderTarget(0, &now);
-
-	// レンダーターゲットの切替え
-	light->RenderTarget();
-	spec->RenderTarget(1);
-
-	// レンダリング
-	normal->Render(shaderD, "def_SimpliPointLight");
-
-	// レンダーターゲットの復元
-	iexSystem::Device->SetRenderTarget(0, now);
-	iexSystem::Device->SetRenderTarget(1, nullptr);
-}
+//void Deferred::SimpliPointLight(const Vector3 pos, const Vector3 color, const float range)
+//{
+//
+//	//Matrix mWV = matView;// ビュー行列
+//
+//	//// 視錐台カリング処理
+//	//Vector3 flont(mWV._13, mWV._23, mWV._33);
+//	//flont.Normalize();
+//	//Vector3 dir = pos - (ViewPos - flont * range);			//レンジの値分下げて、カリングを緩める。
+//	//dir.Normalize();
+//
+//	//float dot = Vector3Dot(dir, flont);
+//	//if (dot < .5f) return;
+//
+//	//// ライト位置をビュー座標系に変換
+//	//Vector3 PointLight;
+//	//D3DXVECTOR3 plight = D3DXVECTOR3(pos.x, pos.y, pos.z);
+//	//D3DXVec3TransformCoord(&plight, &plight, &mWV);
+//	//PointLight = Vector3(plight.x, plight.y, plight.z);
+//
+//	//// 必要パラメータの転送
+//	//shaderD->SetValue("LightPos", PointLight);
+//	//shaderD->SetValue("LightColor", (Vector3)color);
+//	//shaderD->SetValue("LightRange", range);
+//
+//	//// 現在のレンダーターゲットを一時的に確保
+//	//Surface* now = nullptr;
+//	//iexSystem::Device->GetRenderTarget(0, &now);
+//
+//	//// レンダーターゲットの切替え
+//	//light->RenderTarget();
+//	//spec->RenderTarget(1);
+//
+//	//// レンダリング
+//	//normal->Render(shaderD, "def_SimpliPointLight");
+//
+//	//// レンダーターゲットの復元
+//	//iexSystem::Device->SetRenderTarget(0, now);
+//	//iexSystem::Device->SetRenderTarget(1, nullptr);
+//}
 // 半球ライティング
 void Deferred::HemiLight(const Vector3 SkyColor, const Vector3 GroundColor)
 {
@@ -380,13 +624,40 @@ void Deferred::Emissive()
 	//レンダーターゲットの切替え
 	light->RenderTarget();
 
-	//  diffuse.aを使いたいので
-	//	diffuseでレンダリング
-	diffuse->Render(shaderD, "def_Emissive");
+	//  specular.aを使いたいので
+	//	specularでレンダリング
+	specular->Render(shaderD, "def_Emissive");
 
 	//レンダーターゲットの復元
 	iexSystem::Device->SetRenderTarget(0, now);
 }
+
+void Deferred::Emissive(float EmissivePower)
+{
+	//現在のレンダーターゲットを一時的に確保
+	Surface* now = nullptr;
+	iexSystem::Device->GetRenderTarget(0, &now);
+
+	//レンダーターゲットの切替え
+	light->RenderTarget();
+
+	//	シェーダー設定
+	shaderD->SetValue("EmissivePowerRate", EmissivePower);
+	
+	//  specular.aを使いたいので
+	//	specularでレンダリング
+	specular->Render(shaderD, "def_Emissive");
+
+	//レンダーターゲットの復元
+	iexSystem::Device->SetRenderTarget(0, now);
+}
+
+void Deferred::SetEmissiveRate(float rate)
+{
+	//	シェーダー設定
+	shaderD->SetValue("EmissivePowerRate", rate);
+}
+
 
 void Deferred::Fog(const float FogNear, const float FogFar, const Vector3 FogColor)
 {
@@ -473,10 +744,18 @@ void Deferred::BeginDrawBloom()
 	// まずは今のサーフェイスを保存
 	iexSystem::GetDevice()->GetRenderTarget(0, &savebackbuffer);
 	bloomScreen->RenderTarget();//
+	
+	//iexSystem::Device->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);//Zバッファに書き込まない
+	// ↓から映すであろう一枚絵は次から描画するものの為に
+	//　Zバッファに書き込まないようにする
 
+	// ※IEXのRenderがDefaltで書き込むように設定してるので　描画の対象に　RS_COPY_NOZとするしかない
 };
 void Deferred::EndDrawBloom()
 {
+	// ↑でZバッファをOFFにしていたので戻す
+	//iexSystem::Device->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);//Zバッファに書き込む
+
 	iexSystem::GetDevice()->SetRenderTarget(0, savebackbuffer);
 };
 void Deferred::BloomRender()
@@ -492,14 +771,14 @@ void Deferred::BloomRender()
 	bloom->RenderTarget();
 	iexSystem::Device->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0, 1.0f, 0);
 
-	shaderD->SetValue("TU", (float)1.0f / (float)MiniTex_x);
-	shaderD->SetValue("TV", (float)1.0f / (float)MiniTex_y);
+	shaderD->SetValue("TU", (float)1.25f / (float)MiniTex_x);
+	shaderD->SetValue("TV", (float)1.25f / (float)MiniTex_y);
 
 	// 画面の明るい部分をブルームの種として抽出
 	bloomScreen->Render(0, 0, MiniTex_x, MiniTex_y, 0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, shaderD, "make_hdrBloomSeed");
 
 	//ボケ度　回数が少ないほどボケない
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		bloom->Render(0, 0, MiniTex_x, MiniTex_y, 0, 0, MiniTex_x, MiniTex_y, shaderD, "gaussZ");//奥行を禁止
 	}
@@ -557,7 +836,7 @@ void Deferred::GlowRender()
 	//ボケ度　回数が少ないほどボケない
 	for (int i = 0; i < 2; i++)
 	{
-		glow->Render(0, 0, MiniTex_x, MiniTex_y, 0, 0, MiniTex_x, MiniTex_y, shaderD, "gaussZ", 0xFFFFFFFF);//奥行を禁止
+		glow->Render(0, 0, MiniTex_x, MiniTex_y, 0, 0, MiniTex_x, MiniTex_y, shaderD, "gaussZ");//奥行を禁止
 	}
 
 	iexSystem::Device->SetViewport(&save_viewport);
@@ -566,68 +845,192 @@ void Deferred::GlowRender()
 	//明るさ　回数が多いほど明るく
 	for (int i = 0; i < 2; i++)
 	{
-		glow->Render(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, MiniTex_x, MiniTex_y, RS_ADD, 0xffffffff);
+		glow->Render(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, MiniTex_x, MiniTex_y, RS_ADD);
 	}
 
 };
 
 //****************************
-///		SSAO
+///		DOWNSAMPLE
 //****************************
-void Deferred::CreateSSAO()
+//void Deferred::BeginDownSample()
+//{
+//	// レンダーターゲット切り替え
+//	// 今のサーフェイスを保存
+//	iexSystem::GetDevice()->GetRenderTarget(0, &savebackbuffer);
+//	downSample->RenderTarget();
+//
+//	// ビューポート作成
+//	iexSystem::Device->GetViewport(&saveViewport);// 現在のビューポートの一時保管
+//	// ビューポートの作成
+//	D3DVIEWPORT9 vp = { 0, 0, downSampleSize, downSampleSize, 0, 1.0f };
+//	iexSystem::Device->SetViewport(&vp);
+//
+//}
+//void Deferred::EndDownSample()
+//{
+//	// 
+//
+//	// サーフェスをロックしてコピー
+//	D3DLOCKED_RECT LockedRect;// テクスチャ リソース上の矩形をロックする
+//	calcDownSample->GetTexture()->LockRect(0, &LockedRect, NULL, D3DLOCK_READONLY);
+//
+//	// 矩形分のバッファを作成 
+//	float buffer[downSampleSize*downSampleSize];
+//
+//	// 全画像データをコピー
+//	for (int y = 0; y < downSampleSize; y++)
+//	{
+//		CopyMemory(&buffer[downSampleSize * y], (char*)LockedRect.pBits + LockedRect.Pitch * y, downSampleSize * sizeof(float));
+//	}
+//
+//	// サーフェイスのロックを解除
+//	calcDownSample->GetTexture()->UnlockRect(0);
+//
+//	// pixelの数
+//	float maxPixel = downSampleSize*downSampleSize;
+//
+//	// 全pixelの輝度を加算
+//	float sum = 0;
+//	for (int i = 0; i < maxPixel; i++)
+//	{
+//		sum += buffer[i];
+//	}
+//	// 最後に加算した分割って平均化
+//	sum /= maxPixel;
+//
+//
+//
+//	// 元に
+//	iexSystem::GetDevice()->SetRenderTarget(0, savebackbuffer);
+//	iexSystem::Device->SetViewport(&saveViewport);
+//}
+
+
+void Deferred::UpdateDownSample(float maxLumi, float minLumi)
 {
-	// SSAOを追加するフラグを立てる
-	ssaoFlag = true;
 
-	// SSAO用のサーフェイスを作る
-	ssaoScreen = new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_RENDERTARGET);	//　SSAOの結果を入れる
-	ssao = new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_RENDERTARGET);		// SSAOの結果をぼかし最終出力
-
-}
-
-void Deferred::ClearSSAO()
-{
+	// レンダーターゲット切り替え
 	// 今のサーフェイスを保存
 	iexSystem::GetDevice()->GetRenderTarget(0, &savebackbuffer);
-	// glowを描画する元の
-	ssaoScreen->RenderTarget();
-	iexSystem::GetDevice()->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0, 1.0f, 0);
+	downSample->RenderTarget();
+
+	// ビューポート作成
+	iexSystem::Device->GetViewport(&saveViewport);// 現在のビューポートの一時保管
+	// ビューポートの作成
+	D3DVIEWPORT9 vp = { 0, 0, downSampleSize, downSampleSize, 0, 1.0f };
+	iexSystem::Device->SetViewport(&vp);
+
+	// 現在のスクリーンをダウンサンプル用に描画
+	//screen->Render(0, 0, downSampleSize, downSampleSize, 0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, shaderD, "ToneMap_DownSample");
+	screen->Render(0, 0, downSampleSize, downSampleSize, 0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, shaderD, "DownSample");
+
+	// 絵を描き終わったので元に戻す
+	iexSystem::Device->SetViewport(&saveViewport); // 先にビューポートから
 
 	iexSystem::GetDevice()->SetRenderTarget(0, savebackbuffer);
 
-}
 
+	// レンダリング先テクスチャの内容をサーフェスに転送
+	iexSystem::GetDevice()->GetRenderTargetData(
+		downSample->GetSurface(),
+		calcDownSample->GetSurface());
 
-void Deferred::SSAORender()
-{
-	// 保存用サーフェイス
-	Surface* save;
-	// まずは今のサーフェイスを保存
-	iexSystem::GetDevice()->GetRenderTarget(0, &save);
+	// サーフェスをロックしてコピー
+	D3DLOCKED_RECT LockedRect;// テクスチャ リソース上の矩形をロックする
+	calcDownSample->GetTexture()->LockRect(0, &LockedRect, NULL, D3DLOCK_READONLY);
 
-	// SSAOを導入
-	if (ssaoFlag == true)
+	// 矩形分のバッファを作成 
+	float buffer[downSampleSize*downSampleSize];
+
+	// 全画像データをコピー
+	for (int y = 0; y < downSampleSize; y++)
 	{
-		ssao->RenderTarget();// SSAOに切り替え
-		iexSystem::Device->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0, 1.0f, 0);
-		
-		shaderD->SetValue("TU", (float)1 / (float)iexSystem::ScreenWidth);
-		shaderD->SetValue("TV", (float)1 / (float)iexSystem::ScreenHeight);
+		//Destination［入力］コピー先の開始アドレスへのポインタを指定します。
+		//Source［入力］コピー元のメモリブロックの開始アドレスへのポインタを指定します。
+		//Length［入力］コピーしたいメモリブロックのバイト数を指定します。
+		CopyMemory(&buffer[downSampleSize * y], (char*)LockedRect.pBits + LockedRect.Pitch * y, downSampleSize * sizeof(float));
+	}	
 
-		ssaoScreen->Render(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, shaderD, "ssao");	
+	// サーフェイスのロックを解除
+	calcDownSample->GetTexture()->UnlockRect(0);
 
-		//ボケ度　回数が少ないほどボケない
-		for (int i = 0; i < 2; i++)
+	// pixelの数
+	float maxPixel = downSampleSize*downSampleSize;
+
+	// 全pixelの輝度を加算
+	luminance = 0;
+	//for (int i = 0; i < maxPixel; i++)
+	//{
+	//	luminance += buffer[i];
+	//}
+	//// 最後に加算した分割って平均化
+	//luminance /= maxPixel;
+
+	//luminance += buffer[5];
+	//luminance += buffer[6];
+	//luminance += buffer[9];
+	//luminance += buffer[10];
+	//luminance += buffer[13];
+	//luminance += buffer[14];
+	//luminance /= 6;
+
+	for (int i = 0; i < maxPixel; i++)
+	{
+		if (luminance < buffer[i])
 		{
-			ssao->Render(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, shaderD, "gaussZ", 0xFFFFFFFF);//奥行を禁止
+			luminance = buffer[i];
+		}
+	}
+
+	// 最後に輝度により露光レベル調整
+	// ・ワンポイント　滑らかに順応するようにするとよりリアルに
+	
+	// 何処で明るくするか
+	if (luminance <= minLumi)
+	{
+		//if (exposure <= -7.0f)
+		{
+			exposure += 0.004f;
 		}
 
 	}
-	
-	//　元のサーフェイスへ戻す
-	iexSystem::GetDevice()->SetRenderTarget(0, save);
+	// 何処で暗く
+	if (luminance >= maxLumi)
+	{
+
+	//if (exposure >= -10.0f)
+	{
+		exposure -= 0.007f;
+	}
+
+
+	}
+
+	// 結果を送る
+	shaderD->SetValue("exposure", exposure);
+
+
+
+#ifdef _DEBUG
+
+	if ((GetKeyState('O') & 0x80))exposure += 0.01f;
+	if ((GetKeyState('P') & 0x80))exposure -= 0.01f;
+	if ((GetKeyState('K') & 0x80))exposure += 1.0f;
+	if ((GetKeyState('L') & 0x80))exposure -= 1.0f;
+
+	// 1以上の輝度はない
+	if (maxLumi >= 1.0f || minLumi >= 1.0f)
+	{
+		assert(false);
+	}
+
+
+#endif
 
 }
+
+
 
 //*****************************************************
 ///						ShadowMaps
@@ -672,7 +1075,7 @@ void Deferred::CreateShadowMatrix(Vector3 dir, Vector3 target, Vector3 playerVec
 #ifdef _DEBUG
 	//シャドウマップが生成されていなければ転送しない
 	if (!shadowFlag){
-		MessageBox(iexSystem::Window, "Don't create shadowmap!!", __FUNCTION__, MB_OK);
+		MessageBox(iexSystem::Window, "シャドウマップを作っていない", __FUNCTION__, MB_OK);
 		exit(-1);
 	}
 
@@ -715,7 +1118,6 @@ void Deferred::CreateShadowMatrix(Vector3 dir, Vector3 target, Vector3 playerVec
 	//shaderD->SetValue("ShadowProjectionL", ShadowMat);
 }
 
-
 //　シャドウの更新
 void Deferred::CreateShadowMatrixL(Vector3 dir, Vector3 target, Vector3 playerVec, const float dist)
 {
@@ -752,7 +1154,7 @@ void Deferred::ShadowBegin()
 #ifdef _DEBUG
 	// シャドウマップが生成されていなければ書かない
 	if (!shadowFlag){
-		MessageBox(iexSystem::Window, "Don't create shadowmap!!", __FUNCTION__, MB_OK);
+		MessageBox(iexSystem::Window, "シャドウマップが作られていない", __FUNCTION__, MB_OK);
 		exit(-1);
 	}
 #endif
@@ -786,7 +1188,7 @@ void Deferred::ShadowBeginL()
 #ifdef _DEBUG
 	// シャドウマップが生成されていなければ書かない
 	if (!cascadeFlag){
-		MessageBox(iexSystem::Window, "Don't create cascadeFlag!!", __FUNCTION__, MB_OK);
+		MessageBox(iexSystem::Window, "遠距離シャドウマップが作られていない！", __FUNCTION__, MB_OK);
 		exit(-1);
 	}
 
@@ -818,6 +1220,15 @@ void Deferred::ShadowBeginL()
 //　シャドウマップ用の描画終了
 void Deferred::ShadowEnd()
 {
+
+	//shaderD->SetValue("TU", 1.0f / shadowSize); // 2でもありかも
+	//shaderD->SetValue("TV", 1.0f / shadowSize);
+	//// シャドウマップの解像度でブラー処理を変化	
+	//for (int i = 0; i < 2; i++)
+	//{
+	//	shadowMap->Render(0, 0, shadowSize, shadowSize, 0, 0, shadowSize, shadowSize, shaderD, "gaussian");//弱いぼかし
+	//}
+	
 	//レンダーターゲットの復元
 	iexSystem::Device->SetRenderTarget(0, backbuffer);
 
@@ -840,7 +1251,7 @@ void Deferred::ShadowEndL()
 	// シャドウマップの解像度でブラー処理を変化	
 	//for (int i = 0; i < 1; i++)
 	{
-		shadowMapL->Render(0, 0, shadowSizeL, shadowSizeL, 0, 0, shadowSizeL, shadowSizeL, shaderD, "gaussZ");//奥行を禁止
+		shadowMapL->Render(0, 0, shadowSizeL, shadowSizeL, 0, 0, shadowSizeL, shadowSizeL, shaderD, "gaussian");//奥行を禁止
 
 	}
 	
@@ -868,7 +1279,8 @@ void Deferred::RenderShadow()
 	shadow->RenderTarget();
 
 	//画面クリア
-	iexSystem::GetDevice()->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0);
+	//iexSystem::GetDevice()->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0);
+	iexSystem::GetDevice()->Clear(0, nullptr, D3DCLEAR_TARGET, 0xFFFFFFFF, 1.0f, 0);// (?)　ZBufferを消さないようにしました?
 
 	// 影によりスペキュラも弱めるため2番目に設定
 	spec->RenderTarget(1);
@@ -902,9 +1314,11 @@ void Deferred::ShadowSetting(const float ShadowStrength, const float AdjustValue
 //***********************************
 ///				Rendering
 //***********************************
-/// 描画
-void Deferred::Render(const int outX, const int outY, const int W, const int H, const int inX, const int inY)
+
+// 最後のスクリーンを作る
+void Deferred::FinalResultDeferred()
 {
+
 	//現在のレンダーターゲットを一時的に確保
 	Surface* now = nullptr;
 	iexSystem::Device->GetRenderTarget(0, &now);
@@ -919,9 +1333,14 @@ void Deferred::Render(const int outX, const int outY, const int W, const int H, 
 	//レンダーターゲットの復元
 	iexSystem::Device->SetRenderTarget(0, now);
 
+}
+
+/// 描画
+void Deferred::RenderDeferred(const int outX, const int outY, const int W, const int H, const int inX, const int inY)
+{
 	// FinalPassSurfaceを移す
-	screen->Render(outX, outY, W, H, 0, 0, inX, inY,shaderD,"ToneMap");
-	
+	screen->Render(outX, outY, W, H, 0, 0, inX, inY);
+
 }
 
 // 被写界深度
@@ -950,7 +1369,7 @@ void Deferred::RenderDOF(const Vector3 target, const float range)
 	shaderD->SetValue("DOF_Range", range);
 
 	// ToneMap+近い所のアルファを切り取る処理 
-	screen->Render(0, 0, Reduction_x, Reduction_y, 0, 0, 1280, 720, shaderD, "ToneMap_DOF");	
+	screen->Render(0, 0, Reduction_x, Reduction_y, 0, 0, 1280, 720, shaderD, "def_DOF");	
 
 	//********************************************
 	///		↑で作成したイメージをぼかす
@@ -990,27 +1409,23 @@ void Deferred::DefaultRender()
 
 	if (shadowFlag == true)
 	{
-		if (ssaoFlag==true){
-			shaderD->SetValue("SSAOTex", ssao);
-			diffuse->Render(shaderD, "def_mix3");
-		}
-		else
-		{
-			diffuse->Render(shaderD, "def_mix1");		//通常描画
-			//diffuse->Render();
-		}
-		
+		diffuse->Render(shaderD, "finalPut");		//通常描画
 	}
 	else
 	{
-		diffuse->Render(shaderD, "def_mix2");		//影なし描画
+		diffuse->Render(shaderD, "finalPut_notShadow");		//影なし描画
 	}
 	
+	// 中でトーンマッピング
+	screen->Render(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, shaderD, "ToneMap");
+
+	//forward->Render(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight,shaderD,"HDR_Lighting");
+
 
 }
 
 //******************************************
-///				Debug
+///				texture
 //******************************************
 
 iex2DObj* Deferred::GetTex(const int type)
@@ -1044,13 +1459,13 @@ iex2DObj* Deferred::GetTex(const int type)
 		break;
 	case SHADOWMAP:
 		if (!shadowFlag)
-		MessageBox(iexSystem::Window, "Don't on shadowFlag!!", __FUNCTION__, MB_OK);
+		MessageBox(iexSystem::Window, "影を作っていない！", __FUNCTION__, MB_OK);
 
 		ret = shadowMap;
 		break;
 	case SHADOWMAPL:
 		if (!cascadeFlag)
-		MessageBox(iexSystem::Window, "Don't on cascadeFlag!!", __FUNCTION__, MB_OK);
+		MessageBox(iexSystem::Window, "二重影にしていない！", __FUNCTION__, MB_OK);
 		
 		ret = shadowMapL;
 		break;
@@ -1069,15 +1484,11 @@ iex2DObj* Deferred::GetTex(const int type)
 	case FORWARD:
 		ret = forward;
 		break;
-	case SSAOSCREEN:
-		if (!ssaoFlag)
-			MessageBox(iexSystem::Window, "SSAOマップが作られていない", __FUNCTION__, MB_OK);
-		ret = ssaoScreen;
+	case DOWNSAMPLE:
+		ret = downSample;
 		break;
-	case SSAO:
-		if (!ssaoFlag)
-		MessageBox(iexSystem::Window, "SSAOマップが作られていない", __FUNCTION__, MB_OK);
-		ret = ssao;
+	case INFOPL:
+		ret = infoPointLight;
 		break;
 	case SCREEN:
 		ret = screen;

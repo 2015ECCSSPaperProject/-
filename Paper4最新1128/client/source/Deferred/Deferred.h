@@ -1,7 +1,7 @@
 #pragma once
 #include "iextreme.h"
 #include	"../system/system.h"
-
+#include <vector>
 /*
 *	Deferred
 */
@@ -19,10 +19,17 @@ static const int Reduction_x = 1280 / Reduction_lvl, Reduction_y = 720 / Reducti
 static const int MiniTex_lvl = 6;
 static const int MiniTex_x = 1280 / MiniTex_lvl, MiniTex_y = 720 / MiniTex_lvl;
 
+// ダウンサンプル用
+static const int downSampleSize = 4;
+
+// ポイントライト用
+static const int InfoPL_X = 32;
+static const int InfoPL_Y = 2;
+
 enum SURFACE_NAME{
 	DIFFUSE, NORMAL, SPECULAR, DEPTH,		//G-Buffer
 	LIGHT, SPEC, DOF, SHADOW, SHADOWMAP, SHADOWMAPL,
-	BLOOMSCREEN, BLOOM, GLOWSCREEN, GLOW, FORWARD, SSAOSCREEN, SSAO,
+	BLOOMSCREEN, BLOOM, GLOWSCREEN, GLOW, FORWARD, DOWNSAMPLE,INFOPL,
 	SCREEN
 };
 
@@ -44,8 +51,8 @@ public:
 	//		Deferred_Set
 	//***************************
 
-	void Bigin();
-	void End();
+	void G_Bigin();
+	void G_End();
 	void Update(const Vector3 ViewPos);
 
 	//***************************
@@ -53,19 +60,34 @@ public:
 	//***************************
 	// 平行光
 	void DirLight(const Vector3 dir, const Vector3 color);
-	// ポイントライト
-	void PointLight(const Vector3 pos, const Vector3 color, const float range = 100.0f, const float power = 3.0f);	
+		
+	//void PointLight(const Vector3 pos, const Vector3 color, const float range = 100.0f, const float power = 3.0f);	
 	// 軽量ポイントライト
-	void SimpliPointLight(const Vector3 pos, const Vector3 color, const float range = 100.0f);
+	//void SimpliPointLight(const Vector3 pos, const Vector3 color, const float range = 100.0f);
 
 	// 半球ライティング
 	void HemiLight(const Vector3 SkyColor, const Vector3 GroundColor);
 
 	// 自己発光
 	void Emissive();
+	void Emissive(float EmissivePower);
+	void SetEmissiveRate(float rate);
+
 	// フォグ
 	void Fog(const float FogNear, const float FogFar, const Vector3 FogColor);
 	
+
+	// 全部一括でライト処理
+	void AllLight(const Vector3 dir, const Vector3 color, const Vector3 SkyColor, const Vector3 GroundColor, float EmissivePower);
+
+	//****************************
+	///		PointLight
+	//****************************
+	void ClearPointLight();
+	void SetInfoPointLight(const Vector3 pos, const Vector3 color, const float range = 100.0f, const float power = 2.0f);
+	void PointLightRender();
+	//void InfoPointLight();
+
 	//****************************
 	//		ShadowMaps
 	//****************************
@@ -105,18 +127,22 @@ public:
 	void GlowRender();
 
 	//****************************
-	//		SSAO
+	//		DOWNSAMPLE
 	//****************************
-	void CreateSSAO();
-	void ClearSSAO();
-	void SSAORender();
-	void BeginDrawSSAO();
-	void EndDrawSSAO();
+	//void BeginDownSample();
+	//void EndDownSample();
+	void UpdateDownSample(float maxLuminance, float minLuminance);
+	float GetExposure(){ return exposure; }
+	void SetExposure(float exposure){ this->exposure = exposure; }
+	void AddExposure(float exposure){ this->exposure += exposure; }
+	float GetLuminance(){ return luminance; }
 
 	//****************************
-	//		Deferredshading
+	//		DeferredRender
 	//****************************
-	void Render(const int outX = 0, const int outY = 0, const int W = iexSystem::ScreenWidth, const int H = iexSystem::ScreenHeight, const int inX = iexSystem::ScreenWidth, const int inY = iexSystem::ScreenHeight);
+	void FinalResultDeferred();	// G_Bufferを合わせる
+
+	void RenderDeferred(const int outX = 0, const int outY = 0, const int W = iexSystem::ScreenWidth, const int H = iexSystem::ScreenHeight, const int inX = iexSystem::ScreenWidth, const int inY = iexSystem::ScreenHeight);
 	void RenderDOF(const Vector3 target, const float range);
 	void RenderShadow();// 
 	
@@ -148,8 +174,18 @@ private:
 	iex2DObj* bloom;			// HDR
 	iex2DObj* glowScreen;		// GLOWをかけるスクリーン
 	iex2DObj* glow;				// GLOW
-	iex2DObj* ssaoScreen;		// SSAOをかけるスクリーン
-	iex2DObj* ssao;				// SSAO用サーフェイス
+
+	// DownSample
+	iex2DObj* downSample;		// DownSample用
+	iex2DObj* calcDownSample;	// 計算用DownSample用
+
+	// PointLight
+	iex2DObj* infoPointLight;	// 情報用PointLight用
+
+	// 露光レベル
+	float exposure;
+	// シーンの輝度
+	float luminance;
 
 	// ForwardSurface
 	iex2DObj* forward;			// deferredで通さず直接描画するサーフェイス
@@ -161,7 +197,7 @@ private:
 	Surface* backbufferZ;
 	// 保存用サーフェイス
 	Surface* savebackbuffer;
-
+	D3DVIEWPORT9	saveViewport;// ビューポート保存用
 
 	// カメラの位置
 	Vector3 ViewPos;
@@ -169,8 +205,19 @@ private:
 	// 環境マップ
 	iex2DObj* EnvMap;
 
-	// SSAOを使用するかのフラグ
-	bool ssaoFlag;
+	/*************************/
+	//	PointLight用
+	/*************************/
+	typedef struct
+	{
+		Vector3 pos;
+		float range;
+		Vector3 color;
+		float power;
+	} PointLightData;
+	std::vector<PointLightData> PLdata;	// ポイントライトのデータ
+	static const int PL_MAX = 20;		// ポイントライトの最大数
+	int PL_NUM;							// ポイントライトの数
 
 	//****************************
 	//		ShadowMap

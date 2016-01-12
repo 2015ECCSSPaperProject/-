@@ -37,37 +37,64 @@ iex2DObj::iex2DObj( u32 width, u32 height, u8 flag )
 	u32			usage = 0;
 	D3DPOOL		pool = D3DPOOL_MANAGED;
 
-	switch( flag ){
+	switch (flag){
 	case IEX2D_RENDERTARGET:	//	レンダー可能
-					usage = D3DUSAGE_RENDERTARGET;
-					fmt = iexSystem::ScreenFormat;
-					pool = D3DPOOL_DEFAULT;
-					break;
+		usage = D3DUSAGE_RENDERTARGET;
+		fmt = iexSystem::ScreenFormat;
+		pool = D3DPOOL_DEFAULT;
+		break;
 	case IEX2D_FLOAT2:	//	レンダー可能
-					usage = D3DUSAGE_RENDERTARGET;
-					fmt = D3DFMT_G32R32F;
-					pool = D3DPOOL_DEFAULT;
-					break;
+		usage = D3DUSAGE_RENDERTARGET;
+		fmt = D3DFMT_G32R32F;
+		pool = D3DPOOL_DEFAULT;
+		break;
 	case IEX2D_FLOAT:	//	レンダー可能
-					usage = D3DUSAGE_RENDERTARGET;
-					fmt = D3DFMT_R32F;
-					pool = D3DPOOL_DEFAULT;
-					break;
+		usage = D3DUSAGE_RENDERTARGET;
+		fmt = D3DFMT_R32F;
+		pool = D3DPOOL_DEFAULT;
+		break;
 
-	case IEX2D_USEALPHA:		//	透明度付
-					usage = D3DUSAGE_RENDERTARGET;
-					fmt = D3DFMT_A8R8G8B8;
-					pool = D3DPOOL_DEFAULT;
-					break;
-	case IEX2D_SYSTEMMEM:
-					fmt = iexSystem::ScreenFormat;
-					pool = D3DPOOL_SYSTEMMEM;
-					break;
+	case IEX2D_USEALPHA:		//	透明度付もレンダー可能
+		usage = D3DUSAGE_RENDERTARGET;
+		fmt = D3DFMT_A8R8G8B8;
+		pool = D3DPOOL_DEFAULT;
+		break;
+	case IEX2D_SYSTEMMEM: //iexSystem::ScreenFormatからダウンサンプリング用に
+		usage = D3DUSAGE_DYNAMIC;	//←読み込み専用
+		fmt = D3DFMT_R32F;
+		pool = D3DPOOL_SYSTEMMEM;
+		break;
 	case IEX2D_HDR:	//	HDRレンダー用
-					usage = D3DUSAGE_RENDERTARGET;
-					fmt = D3DFMT_A16B16G16R16F;
-					pool = D3DPOOL_DEFAULT;
-					break;
+		usage = D3DUSAGE_RENDERTARGET;
+		fmt = D3DFMT_A16B16G16R16F;
+		pool = D3DPOOL_DEFAULT;
+		break;
+	case IEX2D_R16_SYSTEMMEM: //iexSystem::ScreenFormatからダウンサンプリング用に
+		usage = D3DUSAGE_DYNAMIC;	//←多分これで書き込める？
+		fmt = D3DFMT_R16F;
+		pool = D3DPOOL_SYSTEMMEM;
+		break;
+	case IEX2D_R16:	//	HDRレンダー用
+		usage = D3DUSAGE_RENDERTARGET;
+		fmt = D3DFMT_R16F;
+		pool = D3DPOOL_DEFAULT;
+		break;
+	case IEX2D_FLOAT4_SYSTEMMEM: //iexSystem::ScreenFormatからダウンサンプリング用に
+		usage = D3DUSAGE_DYNAMIC;	//←多分これで書き込める？
+		fmt = D3DFMT_A32B32G32R32F;
+		pool = D3DPOOL_DEFAULT;
+		break;
+	case IEX2D_FLOAT4:	//	
+		usage = D3DUSAGE_RENDERTARGET;
+		fmt = D3DFMT_A32B32G32R32F;
+		pool = D3DPOOL_DEFAULT;
+		break;
+	case IEX2D_DYNAMIC:	//	書き込み用
+		usage = D3DUSAGE_DYNAMIC;
+		fmt = D3DFMT_A8R8G8B8;
+		pool = D3DPOOL_DEFAULT;
+		break;
+
 	}
 	dwFlags= 0;
 	//	テクスチャ作成

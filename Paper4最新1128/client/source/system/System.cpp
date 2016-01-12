@@ -33,7 +33,7 @@ void	SYSTEM_Initialize()
 	//	シェーダー読み込み
 	//shader = new iexShader("DATA\\SHADER\\3D.fx");
 	shader2D = new iexShader("DATA\\SHADER\\2D.fx");
-	shaderD = new iexShader("DATA\\SHADER\\Deferred.cfx",true);
+	shaderD = new iexShader("DATA\\SHADER\\d.cfx",true);
 	//	パーティクルシステム初期化
 //	iexParticle::Initialize("DATA\\PARTICLE.PNG", 10000 );
 }
