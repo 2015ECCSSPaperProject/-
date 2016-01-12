@@ -893,7 +893,14 @@ void BasePlayer::Action::RendObj::Initialize()
 	// SE受け取り情報初期化
 	me->se_receive = me->se_receive2 = -1;
 
-	me->kind_paper_obj = (int)paper_obj_mng->Get_kind(me->poster_num);
+	// 破りまくったらバグってしまう原因を直す
+	if (me->poster_num == -1)
+	{
+		me->Change_action(ACTION_PART::MOVE);
+		return;
+	}
+	me->kind_paper_obj = (int)paper_obj_mng->Get_kind(me->poster_num);	// poster_numが-1になる時がたまにあり、配列参照外で落ちる
+
 	switch ((KIND_PAPER_OBJECT)me->kind_paper_obj)
 	{
 	case KIND_PAPER_OBJECT::CALENDAR:
