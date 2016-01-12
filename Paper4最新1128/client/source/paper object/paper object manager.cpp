@@ -123,7 +123,6 @@ void Paper_obj_mng::Set_receive_data( char *in )
 //**************************************************
 
 #include "poster/Poster.h"
-#include "test_box/test box.h"
 #include "flyer/flyer.h"
 #include "../fstream/fstream_paper.h"
 #include "IEX_Math2.h"
