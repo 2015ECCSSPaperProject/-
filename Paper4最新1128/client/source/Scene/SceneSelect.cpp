@@ -12,6 +12,8 @@
 #include	"SceneMain.h"
 
 #include	"../../IEX/OKB.h"
+#include	"../Animation/AnimationRipple.h"
+
 
 /**********************/
 /*	グローバル変数	　*/
@@ -61,6 +63,22 @@ bool SceneSelect::Initialize()
 	image[IMAGE::NOPLAYER] = new iex2DObj("DATA/Image/lobby/noPlayer.png");
 	image[IMAGE::WANTED] = new iex2DObj("DATA/Image/lobby/Wanted.png");
 	image[IMAGE::TEN] = new iex2DObj("DATA/Image/lobby/ten.png");
+
+	// 文字のアニメーション
+	for (int i = 0; i < PLAYER_MAX; i++)
+	{
+		isActivePlayer[i] = false;
+		moveX[i] = +300;
+		alpha[i] = 64;
+	}
+	// Rip用
+	IconRip[0] = new AnimationRipple("DATA/Image/lobby/red.png", 15, 0.1f);
+	IconRip[1] = new AnimationRipple("DATA/Image/lobby/blue.png", 15, 0.1f);
+	IconRip[2] = new AnimationRipple("DATA/Image/lobby/yellow.png", 15, 0.1f);
+	IconRip[3] = new AnimationRipple("DATA/Image/lobby/green.png", 15, 0.1f);
+	IconRip[4] = new AnimationRipple("DATA/Image/lobby/purple.png", 15, 0.1f);
+	IconRip[5] = new AnimationRipple("DATA/Image/lobby/pink.png", 15, 0.1f);
+
 
 	// キャラクター
 	chara.pos = Vector3(20, -19, 0);
@@ -183,6 +201,11 @@ SceneSelect::~SceneSelect()
 		SAFE_DELETE(posterScreen[i]);
 		SAFE_DELETE(posterFrame[i]);
 	}
+
+	for (int i = 0; i < PLAYER_MAX; i++)
+	{
+		SAFE_DELETE(IconRip[i]);
+	}
 }
 
 //===================================================================================
@@ -280,6 +303,19 @@ void SceneSelect::Update()
 	chara.obj->SetAngle((chara.angle += work));// Angleに加算
 	//==============================================================
 
+	// 波紋　追加
+	for (int i = 0; i < PLAYER_MAX; i++)
+	{
+		IconRip[i]->Update();
+	}
+	if (KEY(KEY_SPACE) == 3)
+	{
+		for (int i = 0; i < PLAYER_MAX; i++)
+		{
+			IconRip[i]->Action();
+		}
+	}
+
 	//ナンバーエフェクト
 	Number_Effect::Update();
 
@@ -351,6 +387,9 @@ void SceneSelect::Update()
 
 		break;
 	}
+
+
+	
 }
 
 
@@ -398,20 +437,66 @@ void SceneSelect::Render()
 	}
 
 
+
 	for (int i = 0; i < PLAYER_MAX; i++)
 	{
-		
+		// 文字アニメスイッチ
+		if (isActivePlayer[i] == false)
+		{	// アクティブに初めてなったら
+			if (SOCKET_MANAGER->GetUser(i).com == UserData::ACTIVE_USER)
+			{
+				IconRip[i]->Action();		// 波紋■
+				isActivePlayer[i] = true;
+			}
+		}
+		//// 文字アニメスイッチ
+		//if (isActivePlayer[i] == true)
+		//{	// 出て行ったら・・
+		//	if (SOCKET_MANAGER->GetUser(i).com != UserData::ACTIVE_USER)
+		//	{
+		//		isActivePlayer[i] = false;
+		//	}
+		//}
+
+
+		// 文字アニメ更新
+		if (isActivePlayer[i] == true)
+		{
+			// 動く
+			moveX[i]-=24;
+			if (moveX[i]<=0)	moveX[i] = 0;
+			// 透明
+			alpha[i] += 8;
+			if (alpha[i] >= 255)alpha[i] = 255;
+			
+
+		}
+		else
+		{
+			// 初期値に戻す
+			moveX[i] = 0;
+			alpha[i] = 64;
+			//moveX[i] -= 6;
+			//if (moveX[i] <= 0)	moveX[i] = 0;
+		}
+
+
 		// アクティブなプレイヤー以外は描画しない
 		if (SOCKET_MANAGER->GetUser(i).com == UserData::ACTIVE_USER)
 		{
+
 			// 右のユーザーの■　ユーザーたち
 			image[IMAGE::P1 + i]->Render(104, 136 + i * 96, 64, 64, 0, 0, 64, 64);
+			// 追加　波紋■
+			IconRip[i]->Render(104, 136 + i * 96);
 
 			// 名前
-			Text::Draw(200, 154 + i * 96, 0xff000000, "%s", SOCKET_MANAGER->GetUser(i).name);
+			DWORD col = ARGB((BYTE)alpha[i], 0, 0, 0);
+			Text::Draw(180 + moveX[i], 154 + i * 96, col, "%s", SOCKET_MANAGER->GetUser(i).name);
 
 			// 準備中？準備OK
-			image[(!SOCKET_MANAGER->GetUser(i).isReady) ? IMAGE::WAIT : IMAGE::OK]->Render(456, 136 + i * 96, 128, 64, 0, 0, 128, 64);
+			image[(!SOCKET_MANAGER->GetUser(i).isReady) ? IMAGE::WAIT : IMAGE::OK]->SetARGB(alpha[i], 255, 255, 255);
+			image[(!SOCKET_MANAGER->GetUser(i).isReady) ? IMAGE::WAIT : IMAGE::OK]->Render(436 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64);
 
 		}
 		else // 参加していなかったら
@@ -422,7 +507,7 @@ void SceneSelect::Render()
 			image[IMAGE::WANTED]->Render(190, 138 + i * 96, 256, 128, 0, 0, 256, 128);
 			// 点
 			image[IMAGE::TEN]->SetARGB(100, 100, 100, 100);
-			image[IMAGE::TEN]->Render(440, 138 + i * 96, 64, 64, tenAnime * 64, 0, 64, 64);
+			image[IMAGE::TEN]->Render(430, 138 + i * 96, 64, 64, tenAnime * 64, 0, 64, 64);
 		}
 
 	}

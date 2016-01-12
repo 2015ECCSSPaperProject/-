@@ -5,6 +5,7 @@
 
 class PaperClient;
 class Thread;
+class AnimationRipple;
 
 class SceneSelect : public Scene
 {
@@ -28,6 +29,15 @@ private:
 
 	enum IMAGE{ BACK, P1, P2, P3, P4, P5, P6, WAIT, OK, LIST, ACTION,NOPLAYER,WANTED,TEN, MAX };
 	iex2DObj* image[IMAGE::MAX];
+	//---------------------------------------------------------------------
+	//   ImageAnimation
+	//---------------------------------------------------------------------
+	bool isActivePlayer[PLAYER_MAX];
+	int moveX[PLAYER_MAX];
+	int alpha[PLAYER_MAX];
+	AnimationRipple* IconRip[PLAYER_MAX];
+
+
 	struct
 	{
 		Vector3 pos;
