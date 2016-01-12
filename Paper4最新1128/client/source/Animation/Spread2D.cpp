@@ -63,6 +63,10 @@ void Spread2D::Render(float X, float Y, u32 dwFlag)
 {
 	if (isAction == false)return;//実行されてないなら出てけ！！
 
-	handle->Render_scale(scale, (int)X, (int)Y, SIZE, SIZE, 0, 0, SIZE, SIZE, dwFlag, col);
+	//handle->Render_scale(scale, (int)X, (int)Y, SIZE, SIZE, 0, 0, SIZE, SIZE, dwFlag, col);
+
+	// 変更
+	handle->SetScale(scale);
+	handle->Render((int)X, (int)Y, SIZE, SIZE, 0, 0, SIZE, SIZE, dwFlag);
 
 };

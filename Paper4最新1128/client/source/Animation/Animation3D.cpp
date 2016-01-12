@@ -77,10 +77,11 @@ void Animation3D::Render(Vector3 pos, float scale, u32 dwFlags)
 
 	Vector3 up = Vector3(0, 0, 1);
 	Vector3 right = Vector3(1, 0, 0);
-	//Billboard::Draw_VecBoard(up, right, pos, handle, scale, scale, tu, tv, dwFlags);
 
+	//Billboard::Draw_VecBoard(up, right, pos, handle, scale, scale, tu, tv, dwFlags);
 	//Billboard::Draw_MatBoard(matView, pos, handle, scale, scale, tu, tv, dwFlags);
 
+	// ポジション　と　画像　と　サイズ1.0f　と　0~1
 	Billboard::Draw3D(pos, handle, scale, scale, tu, tv, dwFlags);
 
 }

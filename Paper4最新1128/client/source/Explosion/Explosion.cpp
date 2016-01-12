@@ -4,13 +4,13 @@
 
 Explosion::Explosion()
 {
-	wave = new AnimationUV("DATA/uvAnim/wave.imo", 0.00f, 0.018f, 20 * 3, true, (int)(20 * 0.5f));
+	wave = new AnimationUV("DATA/uvAnim/wave.imo", 0.00f, 0.018, 60, false,1 ,55);
 
-	impact = new AnimationUV("DATA/uvAnim/impact.imo", 0.02f, 0.035f, 5 * 3, true, (int)(5 * 2.2f));
-	impactFar = new AnimationUV("DATA/uvAnim/impact.imo", 0.02f, 0.035f, 5 * 3, true, (int)(5 * 2.2f));
+	impact = new AnimationUV("DATA/uvAnim/impact.imo", 0.02f, 0.035, 40, false,1 ,38);
+	impactFar = new AnimationUV("DATA/uvAnim/impact.imo", 0.02f, 0.035, 40, false, 1, 38);
 	impactScale = 1.0f;
 
-	wind = new AnimationUV("DATA/uvAnim/wind2.imo", -0.07f, 0.009f, 15 * 3, true, (int)(15 * 2.2f));
+	wind = new AnimationUV("DATA/uvAnim/wind2.imo", -0.07f, 0.009, 45, false,1 ,40);
 	windScale = 1.0f;
 }
 
@@ -26,7 +26,7 @@ void Explosion::Update(Vector3 pos, Vector3 flontVec, float dist)
 {
 	// 拡大速度
 	impactScale += 0.02f;
-	windScale += 0.02f;
+	windScale += 0.02;
 
 	// エフェクト更新
 	wave->Update(pos + (flontVec * dist), VECTOR_ZERO, 0.5f);
