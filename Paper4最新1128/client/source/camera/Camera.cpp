@@ -32,6 +32,7 @@ Camera::~Camera()
 	}
 	delete collision_stage;
 	delete effect_camera;
+	delete target_mark;
 }
 
 void Camera::Initialize(BasePlayer *my)
@@ -42,6 +43,8 @@ void Camera::Initialize(BasePlayer *my)
 	ipos = Vector3(0, 10.0f, -20.0f);
 	itarget = Vector3(0, 0, 0);
 	angle = Vector3(-0.1f, 0, 0);
+
+	target_mark = new iex2DObj("DATA/Camera/mark.png");
 
 	// s“®ó‘Ô‰Šú‰»
 	mode[MODE::M_FIX] = new Mode::Fix(this);
@@ -92,6 +95,13 @@ void Camera::Render()
 	Text::Draw(32, 64, 0xff00ff33, "c.x:%.1f", pos.x);
 	Text::Draw(32, 96, 0xff00ff33, "c.y:%.1f", pos.y);
 	Text::Draw(32, 128, 0xff00ff33, "c.z:%.1f", pos.z);
+
+	if (my_player->Get_action() == BasePlayer::ACTION_PART::MOVE_TARGET)
+	{
+		float tu[2] = { 1, .5f };
+		float tv[2] = { 0, 1 };
+		Billboard::Draw3D(paper_obj_mng->Get_pos(my_player->Get_poster_num())+Vector3(0,5,0), target_mark, 4, 4, tu, tv, RS_COPY);
+	}
 }
 
 //*****************************************************************************
@@ -247,11 +257,11 @@ void Camera::Mode::TPS::Initialize(const Vector3 &pos, const Vector3 &target)
 
 void Camera::Mode::TPS::Update()
 {
-	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::REND||me->my_player->Get_action() == BasePlayer::ACTION_PART::MOVE_TARGET)
-	{
-		me->Change_mode(MODE::M_TARGET);
-		return;
-	}
+	//if (me->my_player->Get_action() == BasePlayer::ACTION_PART::MOVE_TARGET)
+	//{
+	//	me->Change_mode(MODE::M_TARGET);
+	//	return;
+	//}
 
 	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::SYURIKEN)
 	{
@@ -321,7 +331,7 @@ void Camera::Mode::TPS::Update()
 	me->pos = me->pos * .0f + me->ipos * 1.0f;
 	me->parth.fovY = me->parth.fovY * .8f + FOVY[(int)FOV_TYPE::DEFAULT] * .2f;
 
-	Collision();
+	if (me->my_player->isManhole)Collision();
 
 	me->Set(me->pos, me->target);
 }

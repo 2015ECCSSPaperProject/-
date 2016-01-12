@@ -168,7 +168,7 @@ void BasePlayer::Update()
 	for (int i = 0; i < (int)SKILL::MAX; i++)
 	{
 		if (!skill_data[i].unlock)break;
-		if (skill_data[i].do_action == action_part || action_part == ACTION_PART::TRANS_FORM) continue;
+		if (skill_data[i].do_action == action_part || action_part == ACTION_PART::TRANS_FORM || action_part == ACTION_PART::SYURIKEN) continue;
 		(skill_data[i].wait_time > 0) ? skill_data[i].wait_time-- : skill_data[i].wait_time &= 0x00000000;
 	}
 }
@@ -623,6 +623,9 @@ void BasePlayer::Action::Respawn::Initialize()
 
 void BasePlayer::Action::Respawn::Update()
 {
+	// ˆµ‚¢‚É’ˆÓ
+	me->Set_motion(me->motion_no);
+
 	Update_obj();
 }
 
