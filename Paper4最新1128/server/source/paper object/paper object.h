@@ -29,8 +29,8 @@ public:
 	virtual bool Can_rend() = 0;
 
 	virtual bool Can_dist(const Vector3 &pos, float dist) = 0;
-
-	virtual void Rend() = 0;
+	// 破る
+	virtual void Rend();
 
 	//**************************************************
 
@@ -38,9 +38,7 @@ public:
 
 	int Get_type();
 
-	int Get_number();
-
-	void Set_number(int in);
+	bool Is_broken();
 
 	virtual int Get_animation_frame() = 0;
 
@@ -49,6 +47,8 @@ public:
 	const Vector3& Get_pos();
 
 	virtual void Set_pose(const float angle, const Vector3& pos);
+	// オブジェクト復活
+	void Set_broken_true();
 
 	//**************************************************
 
@@ -59,9 +59,9 @@ public:
 	virtual KIND_PAPER_OBJECT Get_kind() = 0;
 
 protected:
-	int number;
+	bool broken; // 破られた
 
-	int model_type;
+	int model_type; // メッシュ,　3DObj の種類
 
 	Vector3 position; // 位置
 	Vector3 forward; // ポスターの向き<表>

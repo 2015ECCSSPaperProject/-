@@ -9,7 +9,7 @@ Event_list::Event_list() : root(nullptr)
 Event_list::~Event_list()
 {
 	if (root)
-		All_node_deleat(root);
+		Deleat_all_node( root );
 }
 
 void Event_list::push(Event *in)
@@ -49,10 +49,10 @@ void Event_list::Update()
 	}
 }
 
-void Event_list::All_node_deleat(Node *root)
+void Event_list::Deleat_all_node( Node *root )
 {
 	if (root->next)
-		All_node_deleat(root->next);
+		Deleat_all_node( root->next );
 	delete root;
 }
 

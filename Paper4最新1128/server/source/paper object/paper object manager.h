@@ -22,26 +22,26 @@ public:
 	/// プレイヤーからのアクション
 	//**************************************************
 
-	// 破れるオブジェクトの番号
+	// 破れるオブジェクトの番号を返す
 	int Can_do(BasePlayer *player);
-
-	void Can_dist(const Vector3 &pos, float dist, int out[]); // 範囲内全部返す
+	// 範囲内全部返す
+	void Can_dist(const Vector3 &pos, float dist, int out[]);
 
 	// Can_doの後で呼ぶ
-	bool Can_rend(int index);
+	bool Can_rend(int index); // オブジェクトの番号
 
 	// 破る
-	void Rend(int index);
+	void Rend(int index); // オブジェクトの番号
 
-	int Paper_obj_mng::Can_targeting(BasePlayer *player, float range_dist, int range_degree);
+	int Paper_obj_mng::Can_targeting(BasePlayer *player, float range_dist, int range_degree); // カメラ注目できるか
 
 	//**************************************************
 	/// Get Set
 	//**************************************************
 	
-	int Get_numof();
+	int Get_numof(); // オブジェクトの個数
 	
-	int Get_number(int index);
+	bool Is_broken( int index );
 
 	int Get_point(int index);
 
@@ -61,14 +61,14 @@ public:
 
 protected:
 	iex3DObj *original_model; // クローン関数使う用
-	int number_of_objects;
+	int number_of_objects; // オブジェクトの個数
 
-	std::vector<Paper_obj*> obj_array;
+	std::vector<Paper_obj*> obj_array; // オブジェクトの配列
 
-	void Load();
+	void Load(); // テキストファイルから配置を読み込む
 
-	void Load_flyer();
-	template<class POSTERCLASS>void Load_poster_tmp( char *filename );
+	void Load_flyer(); // フライヤーだけ処理が別
+	template<class POSTERCLASS>void Load_poster_tmp( char *filename ); // オブジェクトごとの読み込み
 };
 
 extern Paper_obj_mng *paper_obj_mng;

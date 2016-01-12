@@ -12,6 +12,7 @@ Paper_obj::~Paper_obj()
 
 void Paper_obj::Initialize(int model_type, int point)
 {
+	this->broken = false;
 	this->model_type = model_type;
 	this->point = point;
 }
@@ -26,14 +27,14 @@ int Paper_obj::Get_type()
 	return model_type;
 }
 
-int Paper_obj::Get_number()
+bool Paper_obj::Is_broken()
 {
-	return number;
+	return broken;
 }
 
-void Paper_obj::Set_number(int in)
+void Paper_obj::Rend()
 {
-	number = in;
+	broken = true;
 }
 
 float Paper_obj::Get_angle()
@@ -54,6 +55,11 @@ void Paper_obj::Set_pose(const float angle, const Vector3& pos)
 
 	this->angle = angle;
 	this->position = pos;
+}
+
+void Paper_obj::Set_broken_true()
+{
+	broken = true;
 }
 
 

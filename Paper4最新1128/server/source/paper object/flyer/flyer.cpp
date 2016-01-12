@@ -11,19 +11,23 @@ const float Flyer::DIST = 10.0f;
 
 
 Flyer::Flyer() : Paper_obj_3DObj()
-{
-	number = PLAYER_MAX;
-	high = 50;
-}
+{}
 
 Flyer::~Flyer()
 {}
+
+void Flyer::Initialize( int model_type, iex3DObj *model, int point )
+{
+	Paper_obj_3DObj::Initialize( model_type, model, point );
+	broken = true;
+	high = 50;
+}
 
 //**************************************************
 
 void Flyer::Update()
 {
-	if( number == PLAYER_MAX )
+	if( broken )
 		return;
 
 	high -= 0.1f;
@@ -42,7 +46,7 @@ void Flyer::Render()
 
 bool Flyer::Can_do(BasePlayer *player)
 {
-	if( number == PLAYER_MAX )
+	if( broken )
 		return false;
 
 	// ˆÊ’u‚ÆŒü‚«”»’è
@@ -63,12 +67,12 @@ bool Flyer::Can_do(BasePlayer *player)
 
 bool Flyer::Can_rend()
 {
-	return ( number != PLAYER_MAX );
+	return !broken;
 }
 
 bool Flyer::Can_dist(const Vector3 &pos, float dist)
 {
-	if( number == PLAYER_MAX )
+	if( broken )
 		return false;
 
 	if( ( pos - position ).LengthSq() > dist * dist )	// ‹——£”»’è
@@ -79,7 +83,7 @@ bool Flyer::Can_dist(const Vector3 &pos, float dist)
 
 void Flyer::Rend()
 {
-	number = PLAYER_MAX;
+	broken = true;
 }
 
 int Flyer::Get_animation_frame()
@@ -91,7 +95,7 @@ int Flyer::Get_animation_frame()
 
 struct Send_data
 {
-	BYTE number;
+	bool broken;
 	int anim_no;
 	Vector3 position;
 };
@@ -103,7 +107,7 @@ unsigned int Flyer::Get_send_data_size()
 
 void Flyer::Get_send_data ( char *out )
 {
-	Send_data data { number, model->GetFrame (), position };
+	Send_data data { broken, model->GetFrame (), position };
 	memcpy_s( out, Get_send_data_size(), &data, Get_send_data_size() );
 }
 

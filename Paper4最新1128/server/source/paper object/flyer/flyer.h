@@ -12,6 +12,8 @@ public:
 	Flyer();
 	~Flyer();
 
+	void Initialize( int model_type, iex3DObj *model, int point ) override;
+
 	void Update();
 
 	void Render();

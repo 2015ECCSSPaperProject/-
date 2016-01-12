@@ -68,27 +68,19 @@ public:
 	void Set_pose(const Vector3& forward, const Vector3& pos); // 姿勢を計算する
 	void Set_pose(const float angle, const Vector3& pos); // 姿勢を計算する
 
-	// プレイヤーからのアクション
-	void Do_playeraction(BasePlayer *player, int number); // 破る貼る
-	void Rend(int number); // 破る
-	void Rend();
-	void Paste(int number); // 貼る
+	/* プレイヤーからのアクション */
 
-	bool Can_do(BasePlayer *player, int number); // playerがポスターに何かできる状態
+	// playerがポスターに何かできる状態
 	bool Can_do(BasePlayer *player);
 
-	bool Can_rend(int number); // 破ける
+	// 破ける
 	bool Can_rend();
 
-	bool Can_paste(int number); // 貼れる
-
-	bool Can_dist(const Vector3 &pos, float dist, int number);	// vs紙鉄砲とかに使う
+	// vs紙鉄砲とかに使う
 	bool Can_dist(const Vector3 &pos, float dist);
 	bool Check_dist(const Vector3 &pos, float dist);
 
 	// テスト
-	void Change_user(int number);
-
 	int Get_animation_frame(){ return 0; }
 
 	//**************************************************

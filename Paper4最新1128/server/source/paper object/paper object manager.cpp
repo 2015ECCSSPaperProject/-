@@ -99,7 +99,7 @@ int Paper_obj_mng::Can_targeting(BasePlayer *player, float range_dist, int range
 
 	for (unsigned int i = 0; i < obj_array.size(); i++)
 	{
-		if (obj_array[i]->Get_number() == PLAYER_MAX) continue;
+		if (obj_array[i]->Is_broken()) continue;
 
 		//‡Cv1‚Æv2‚Ì‚È‚·Špi“xj‚ðŒvŽZ‚µA•Ï”angle‚É‘ã“ü‚·‚é
 		Vector3 player_front(sinf(player->Get_angleY()), 0, cosf(player->Get_angleY()));
@@ -127,9 +127,9 @@ int Paper_obj_mng::Get_numof()
 	return number_of_objects;
 }
 
-int Paper_obj_mng::Get_number(int index)
+bool Paper_obj_mng::Is_broken( int index )
 {
-	return obj_array[index]->Get_number();
+	return obj_array[index]->Is_broken();
 }
 
 int Paper_obj_mng::Get_point(int index)
@@ -193,7 +193,6 @@ void Paper_obj_mng::Get_send_data( char *out )
 //**************************************************
 
 #include "poster/Poster.h"
-#include "test_box/test box.h"
 #include "flyer/flyer.h"
 #include "../fstream/fstream_paper.h"
 #include "IEX_Math2.h"

@@ -9,10 +9,10 @@
 
 Event_advent_paper_obj::Event_advent_paper_obj(Paper_obj *obj) : Event(), obj(obj)
 {
-	obj->Set_number(PLAYER_MAX);
+	obj->Rend(); // ”j‚ê‚½ó‘Ô‚Å‘Ò‹@
 }
 
 void Event_advent_paper_obj::Start()
 {
-	obj->Set_number(0);
+	obj->Set_broken_true();
 }

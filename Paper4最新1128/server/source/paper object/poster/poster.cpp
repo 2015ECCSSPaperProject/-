@@ -65,7 +65,7 @@ void Poster::Initialize( int model_type, iexMesh *model, int point )
 
 void Poster::Release()
 {
-	number = PLAYER_MAX;
+	broken = false;
 	delete model;
 	model = nullptr;
 	position = Vector3(0, 0, 0);
@@ -75,14 +75,14 @@ void Poster::Release()
 
 void Poster::Update()
 {
-	if (number == PLAYER_MAX) return;
+	if (broken) return;
 
 	mode_list[(int)mode]->Update();
 }
 
 void Poster::Render()
 {
-	if (number == PLAYER_MAX) return;
+	if (broken) return;
 
 	mode_list[(int)mode]->Render();
 }
@@ -118,75 +118,9 @@ void Poster::Set_pose(float angle, const Vector3& pos)
 
 
 
-void Poster::Do_playeraction(BasePlayer *player, int number)
-{
-	assert(player != nullptr);
-
-	if (!Can_do(player, number)) return;
-
-	// 貼る
-	if (this->number == PLAYER_MAX)
-	{
-		this->number = number;
-		Change_mode(MODE::WAITE);
-	}
-	// 破れる
-	else
-	{
-		this->number = PLAYER_MAX;
-	}
-}
-
-void Poster::Rend(int number)
-{
-	this->number = PLAYER_MAX;
-}
-
-void Poster::Rend()
-{
-	this->number = PLAYER_MAX;
-}
-
-void Poster::Paste(int number)
-{
-	this->number = number;
-	Change_mode(MODE::WAITE);
-}
-
-bool Poster::Can_do(BasePlayer *player, int number)
-{
-	if (this->number == number) // 同じ色
-		return false;
-
-	if( this->number == PLAYER_MAX )
-		return false;
-
-	// 位置と向き判定
-	Vector3 ppos; // playerの位置
-
-	ppos = player->Get_pos();
-
-	Vector3 poster_player(ppos - position); // ポスターからプレイヤー
-	if (poster_player.y < range.min_y || range.max_y < poster_player.y) return false; // y軸
-
-	float length(0);
-	length = Vector3Dot(poster_player, forward);
-	if (length < 0 || length > range.forward) return false; // ポスターz軸
-
-	Vector3 right(forward.z, forward.y, -forward.x);
-	length = Vector3Dot(poster_player, right);
-	if (length < -range.wide || length > range.wide) return false; // ポスターx軸
-
-	// 向き
-	if (Vector3Dot(player->Get_forward(), poster_player) >= 0.0f) return false;
-	
-
-	return true;
-}
-
 bool Poster::Can_do(BasePlayer *player)
 {
-	if( this->number == PLAYER_MAX )
+	if( broken )
 		return false;
 
 	// 位置と向き判定
@@ -207,27 +141,13 @@ bool Poster::Can_do(BasePlayer *player)
 
 	// 向き
 	if (Vector3Dot(player->Get_forward(), poster_player) >= 0.0f) return false;
-
-	return true;
-}
-
-bool Poster::Can_dist(const Vector3 &pos, float dist, int number)
-{
-	if (this->number == PLAYER_MAX)
-		return false;
-
-	if (this->number == number) // 同じ色
-		return false;
-
-	if (!Check_dist(pos, dist))	// 距離判定
-		return false;
 
 	return true;
 }
 
 bool Poster::Can_dist(const Vector3 &pos, float dist)
 {
-	if( this->number == PLAYER_MAX ) // 破れてる途中
+	if( broken ) // 破れてる途中
 		return false;
 
 	if (!Check_dist(pos, dist))	// 距離判定
@@ -236,19 +156,9 @@ bool Poster::Can_dist(const Vector3 &pos, float dist)
 	return true;
 }
 
-bool Poster::Can_rend(int number)
-{
-	return (this->number != PLAYER_MAX && this->number != number);
-}
-
 bool Poster::Can_rend()
 {
-	return this->number != PLAYER_MAX;
-}
-
-bool Poster::Can_paste(int number)
-{
-	return (this->number == PLAYER_MAX);
+	return !broken;
 }
 
 bool Poster::Check_dist(const Vector3 &pos, float dist)
@@ -256,17 +166,11 @@ bool Poster::Check_dist(const Vector3 &pos, float dist)
 	return ((pos - position).Length() < dist);
 }
 
-void Poster::Change_user(int number)
-{
-	this->number = number;
-	Change_mode(MODE::WAITE);
-}
-
 //**************************************************
 
 struct Poster_send_data
 {
-	BYTE number;
+	bool broken;
 	int anim_no;
 };
 
@@ -278,7 +182,7 @@ unsigned int Poster::Get_send_data_size()
 void Poster::Get_send_data( char *out )
 {
 	Poster_send_data *data = ( Poster_send_data* ) out;
-	data->number = number;
+	data->broken = broken;
 	data->anim_no = 0;
 }
 

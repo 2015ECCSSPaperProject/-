@@ -24,7 +24,7 @@ private:
 		Node *back, *next;
 	}*root;
 
-	void All_node_deleat(Node *root);
+	void Deleat_all_node( Node *root );
 };
 
 extern Event_list *event_list;
