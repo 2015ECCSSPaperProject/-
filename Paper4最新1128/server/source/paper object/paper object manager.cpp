@@ -94,21 +94,20 @@ void Paper_obj_mng::Rend(int index)
 
 int Paper_obj_mng::Can_targeting(BasePlayer *player, float range_dist, int range_degree)
 {
-	float min_dist = range_dist;
+	float min_dist = range_dist*range_dist;	// LengthSq‚Ì•û‚ªˆ—Œy‚¢‚ç‚µ‚¢
 	int ret_num = -1;
 
 	for (unsigned int i = 0; i < obj_array.size(); i++)
 	{
 		if (obj_array[i]->Get_number() == PLAYER_MAX) continue;
 
-		//‡Cv1‚Æv2‚Ì‚È‚·Špi“xj‚ğŒvZ‚µA•Ï”angle‚É‘ã“ü‚·‚é
 		Vector3 player_front(sinf(player->Get_angleY()), 0, cosf(player->Get_angleY()));
 		Vector3 to_target_vec(obj_array[i]->Get_pos() - player->Get_pos());
 
-		const float to_target_len = to_target_vec.Length();
-		const int theta = (int)(acosf(Vector3Dot(player_front, to_target_vec) / (player_front.Length() * to_target_len)) / 0.01745f);
+		const float to_target_len = to_target_vec.LengthSq();
+		const int theta = (int)(acosf(Vector3Dot(player_front, to_target_vec) / to_target_len) / 0.01745f);
 
-		if (theta < range_degree && to_target_len < range_dist)	// ‹——£‚ÆŠp“x
+		if (theta < range_degree && to_target_len < range_dist*range_dist)	// ‹——£‚ÆŠp“x
 		{
 			if (to_target_len < min_dist)
 			{

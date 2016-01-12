@@ -19,7 +19,8 @@
 
 /*	ベースプレイヤー	*/
 
-const float CAN_TARGET_DIST = 90.0f;
+const float CAN_TARGET_DIST = 40.0f;
+const bool auto_target = false;
 
 
 //****************************************************************************************************************
@@ -378,22 +379,21 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	//	左クリック処理
 	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
 	{
-		//me->poster_num = paper_obj_mng->Can_do(me);
-		me->poster_num = paper_obj_mng->Can_targeting(me, CAN_TARGET_DIST, 45);
-
-		if (me->poster_num != -1)
+		if (!auto_target)
 		{
-			if(!trg_target)me->Change_action(ACTION_PART::MOVE_TARGET);
-			return;
-		}
-		trg_target = true;
+			me->poster_num = paper_obj_mng->Can_targeting(me, 10, 180);
 
+			if (me->poster_num != -1)
+			{
+				me->Change_action(ACTION_PART::MOVE_TARGET);
+				return;
+			}
+		}
 		if (manhole_mng->CheckManhole((me->isManhole) ? ManholeMng::LAND_TYPE::TIKA : ManholeMng::LAND_TYPE::TIJOU, 8, &me->pos, &me->angleY, &me->next_manhole_pos))
 		{
 			me->Change_action(ACTION_PART::MANHOLE);
 		}
 	}
-	else trg_target = false;
 
 	//===========================================================================
 	//	真ん中クリック処理
@@ -405,12 +405,18 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 			me->attackFlag = true;
 		}
 	}
-	//===========================================================================
-	//	Cトグル処理
-	//else if (!(_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::TRG_C))
-	//{
-	//	//me->Change_action(ACTION_PART::MOVE_FPS);
-	//}
+
+	//	自動ターゲッティング
+	if (auto_target)
+	{
+		me->poster_num = paper_obj_mng->Can_targeting(me, CAN_TARGET_DIST, 45);
+
+		if (me->poster_num != -1)
+		{
+			me->Change_action(ACTION_PART::MOVE_TARGET);
+			return;
+		}
+	}
 }
 
 
@@ -430,9 +436,10 @@ void BasePlayer::Action::MoveTarget::Initialize()
 
 void BasePlayer::Action::MoveTarget::Update(const CONTROL_DESC &_ControlDesc)
 {
-	// 距離範囲外または左クリック解除
+	// 距離範囲外
 	if ((paper_obj_mng->Get_pos(me->poster_num)-me->pos).Length() >CAN_TARGET_DIST * 1.5f
-	|| !(_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK))
+	//|| !(_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
+	)
 	{
 		me->Change_action(ACTION_PART::MOVE);
 		return;
@@ -446,11 +453,47 @@ void BasePlayer::Action::MoveTarget::Update(const CONTROL_DESC &_ControlDesc)
 	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY += 1;
 	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY += -1;
 
+	//アングル処理	角度補正
+	if (!(_ControlDesc.controlFlag & ((BYTE)PLAYER_CONTROL::LEFT_CLICK | (BYTE)PLAYER_CONTROL::RIGHT_CLICK))){
+		float	work;
+		work = _ControlDesc.mouseX *0.000001f;
+		if (work > 0.1f) work = 0.1f;
+		me->angleY += work;// Angleに加算
+	}
+
 	float pow = sqrtf(AxisX*AxisX + AxisY*AxisY);
 	if (pow)
 	{
 		AxisX *= 1 / pow;
 		AxisY *= 1 / pow;
+
+		if (auto_target)
+		{
+			//	角度補正
+			Vector3 v1, vn;
+			v1.x = paper_obj_mng->Get_pos(me->poster_num).x - me->pos.x;
+			v1.y = 0;
+			v1.z = paper_obj_mng->Get_pos(me->poster_num).z - me->pos.z;
+			vn = v1;
+			vn.Normalize();
+			float	x2 = sinf(me->angleY);
+			float	z2 = cosf(me->angleY);
+			//	内積による補正量調整
+			float	d = sqrtf(vn.x*x2 + vn.z*z2);
+			if (d == 0){ d = 0.1f; v1.z = 0.1f; }
+
+			if (d > 0)
+			{
+				//	内積
+				float n = (vn.x*x2 + vn.z*z2);
+				//	角度補正量
+				float adjust = (1 - n) * 2.0f;
+				if (adjust > 0.1f) adjust = 0.1f;
+				//	外積による左右回転
+				float	g = v1.x*z2 - x2*v1.z;
+				me->angleY += (g < 0) ? -adjust : adjust;
+			}
+		}
 	}
 
 	//// ジャンプ
@@ -467,27 +510,6 @@ void BasePlayer::Action::MoveTarget::Update(const CONTROL_DESC &_ControlDesc)
 	//	me->move.y = me->jump_pow;
 	//	me->jump_pow -= me->fallspeed;
 	//}
-
-	//	角度補正
-	float	x1 = paper_obj_mng->Get_pos(me->poster_num).x - me->pos.x;
-	float	z1 = paper_obj_mng->Get_pos(me->poster_num).z - me->pos.z;
-	float	x2 = sinf(me->angleY);
-	float	z2 = cosf(me->angleY);
-	//	内積による補正量調整
-	float	d = sqrtf(x1*x1 + z1*z1);
-	if (d == 0){ d = 0.1f; z1 = 0.1f; }
-
-	if (d > 0)
-	{
-		//	内積
-		float n = (x1*x2 + z1*z2) / d;
-		//	角度補正量
-		float adjust = (1 - n) * 2.0f;
-		if (adjust > 0.3f) adjust = 0.3f;
-		//	外積による左右回転
-		float	g = x1*z2 - x2*z1;
-		me->angleY += (g < 0) ? -adjust : adjust;
-	}
 
 	Vector3 front(sinf(me->angleY), 0, cosf(me->angleY));
 	Vector3 right(sinf(me->angleY + PI * .5f), 0, cosf(me->angleY + PI * .5f));
@@ -536,12 +558,26 @@ void BasePlayer::Action::MoveTarget::Update(const CONTROL_DESC &_ControlDesc)
 	//	左クリック処理
 	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
 	{
-		const int no = paper_obj_mng->Can_do(me);
-
-		// ポスターがあった
-		if (no != -1 && me->poster_num == no)
+		if (auto_target)
 		{
-			me->Change_action(ACTION_PART::REND);
+			const int no = paper_obj_mng->Can_do(me);
+
+			// ポスターがあった
+			if (no != -1 && me->poster_num == no)
+			{
+				me->Change_action(ACTION_PART::REND);
+			}
+		}
+		else
+		{
+			const int no = paper_obj_mng->Can_targeting(me, 10, 180);
+
+			// ポスターがあった
+			if (no != -1)
+			{
+				me->poster_num = no;
+				me->Change_action(ACTION_PART::REND);
+			}
 		}
 	}
 	//===========================================================================
@@ -677,10 +713,10 @@ void BasePlayer::Action::Rend::Initialize()
 	me->model_part = MODEL::NORMAL;
 
 	// ポスターに応じて座標と向きを変更
-	const static float dist = 5.0f;
-	me->pos = paper_obj_mng->Get_pos(me->poster_num);
-	me->angleY = paper_obj_mng->Get_angle(me->poster_num) + PI;
-	me->pos += (Vector3(-sinf(me->angleY), 0, -cosf(me->angleY)) * dist);
+	//const static float dist = 5.0f;
+	//me->pos = paper_obj_mng->Get_pos(me->poster_num);
+	//me->angleY = paper_obj_mng->Get_angle(me->poster_num) + PI;
+	//me->pos += (Vector3(-sinf(me->angleY), 0, -cosf(me->angleY)) * dist);
 
 	me->motion_no = 1;
 	me->Set_motion(1);
@@ -805,7 +841,7 @@ void BasePlayer::Action::Respawn::Initialize()
 	me->move = VECTOR_ZERO;
 	me->invincible = true;
 	invincible_time = 0;
-	me->pos.y += 80.0f;
+	me->pos.y = 80.0f;
 
 	me->model_part = MODEL::NORMAL;
 	me->Set_motion(8);
@@ -814,36 +850,50 @@ void BasePlayer::Action::Respawn::Initialize()
 
 void BasePlayer::Action::Respawn::Update(const CONTROL_DESC &_ControlDesc)
 {
-	float AxisX = .0f, AxisY = .0f;
-
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT) AxisX += -1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT) AxisX += 1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY += 1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY += -1;
-
-	//	移動ベクトル設定
-	Vector3 front(sinf(me->angleY), 0, cosf(me->angleY));
-	Vector3 right(sinf(me->angleY + PI * .5f), 0, cosf(me->angleY + PI * .5f));
-	front.Normalize();
-	right.Normalize();
-
-	//	移動量決定
-	me->move.x = (front.x*AxisY + right.x*AxisX) * (me->speed);
-	me->move.z = (front.z*AxisY + right.z*AxisX) * (me->speed);
-
-	// 重力による落下
-	me->move.y = -(me->fallspeed);
-
-	//if (invincible_time++ > 30)
-	//{
-	//	me->invincible = false;
-	//}
-
-	// 着地
-	if (me->isLand || _ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK || _ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::RIGHT_CLICK)
+	// 着地モーション中
+	if (me->motion_no == 9)
 	{
-		me->invincible = false;
-		me->Change_action(ACTION_PART::MOVE);
+		if (me->models[(int)me->model_part]->GetFrame() >= 495)
+		{
+			me->invincible = false;
+			me->Change_action(ACTION_PART::MOVE);
+		}
+	}
+
+	// 飛来中
+	else
+	{
+		float AxisX = .0f, AxisY = .0f;
+
+		if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT) AxisX += -1;
+		if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT) AxisX += 1;
+		if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY += 1;
+		if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY += -1;
+
+		//	移動ベクトル設定
+		Vector3 front(sinf(me->angleY), 0, cosf(me->angleY));
+		Vector3 right(sinf(me->angleY + PI * .5f), 0, cosf(me->angleY + PI * .5f));
+		front.Normalize();
+		right.Normalize();
+
+		//	移動量決定
+		me->move.x = (front.x*AxisY + right.x*AxisX) * (me->speed);
+		me->move.z = (front.z*AxisY + right.z*AxisX) * (me->speed);
+
+		// 重力による落下
+		me->move.y = -(me->fallspeed);
+
+		//if (invincible_time++ > 30)
+		//{
+		//	me->invincible = false;
+		//}
+
+		// 着地
+		if (me->isLand || _ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK || _ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::RIGHT_CLICK)
+		{
+			me->Set_motion(9);
+			me->motion_no = 9;
+		}
 	}
 }
 
@@ -920,8 +970,6 @@ void BasePlayer::Action::Hikouki::Update(const CONTROL_DESC &_ControlDesc)
 		// なうモーション
 		//Set_motion()
 	}
-
-
 	me->move += Vector3(0, me->move.y - me->fallspeed, 0);
 }
 
@@ -1006,6 +1054,7 @@ void BasePlayer::Action::Manhole::Update(const CONTROL_DESC &_ControlDesc)
 		me->pos = me->next_manhole_pos;
 		me->Set_motion(1);
 		me->Change_action(ACTION_PART::MOVE);
+		me->invincible = false;
 	}
 }
 
@@ -1085,9 +1134,18 @@ void BasePlayer::Action::Syuriken::Update(const CONTROL_DESC &_ControlDesc)
 	//{
 		if (_ControlDesc.controlFlag & (int)PLAYER_CONTROL::LEFT_CLICK ||
 			_ControlDesc.controlFlag & (int)PLAYER_CONTROL::RIGHT_CLICK ||
-			_ControlDesc.controlFlag & (int)PLAYER_CONTROL::ATTACK_BUTTON ||
-			syurikentaimaa - (int)timer->Get_second_limit() > 3) // 3秒後
+			_ControlDesc.controlFlag & (int)PLAYER_CONTROL::ATTACK_BUTTON
+			//syurikentaimaa - (int)timer->Get_second_limit() > 3 // 3秒後
+			)
 		{
+			me->invincible = false;
+			me->Change_action(ACTION_PART::MOVE);
+		}
+
+		if (_ControlDesc.controlFlag & (int)PLAYER_CONTROL::SPACE)
+		{
+			me->jump_pow = 2.0f;
+			me->isJump = true;
 			me->invincible = false;
 			me->Change_action(ACTION_PART::MOVE);
 		}
