@@ -12,7 +12,7 @@ void Text::Init(){
 	fd.Width = 0;
 	fd.Italic = 0;
 	fd.CharSet = SHIFTJIS_CHARSET;
-	strcpy(fd.FaceName, "HG‘n‰pŠpƒ|ƒbƒv‘Ì");
+	strcpy(fd.FaceName, "HGS‘n‰pŠpÎß¯Ìß‘Ì");
 
 	D3DXCreateFontIndirect(iexSystem::GetDevice(), &fd, &font);
 }

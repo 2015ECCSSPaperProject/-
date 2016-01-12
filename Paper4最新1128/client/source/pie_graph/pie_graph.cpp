@@ -57,7 +57,10 @@ void Pie_graph_content::Render(float percent, s32 DstX, s32 DstY, s32 DstW, s32 
 	if (percent >= 1.0f)
 	{
 		percent = 1.0f;
-		iex2DObj::Render(DstX, DstY, DstW, DstH, SrcX, SrcY, width, height, dwFlags, color, z);
+		//iex2DObj::Render(DstX, DstY, DstW, DstH, SrcX, SrcY, width, height, dwFlags, color, z);
+		// 2DObjâ¸ë¢Ç…ÇÊÇËïœçX
+		iex2DObj::SetARGB(color);
+		iex2DObj::Render(DstX, DstY, DstW, DstH, SrcX, SrcY, width, height, dwFlags);
 	}
 
 	float DstW_2(DstW*0.5f), DstH_2(DstH*0.5f), width_2(width*0.5f), height_2(height*0.5f);

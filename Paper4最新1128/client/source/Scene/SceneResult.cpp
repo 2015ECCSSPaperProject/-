@@ -173,8 +173,8 @@ void SceneResult::Render()
 
 	view->Clear();
 
-	// ”wŒi
-	image[IMAGE::BACK]->Render(0, 0, 1280, 720, 0, 0, 1280, 720, RS_COPY, 0xffffffff, 1.0f);
+	// ”wŒi ¼“c‘‚«Š·‚¦
+	image[IMAGE::BACK]->RenderBack(0, 0, 1280, 720, 0, 0, 1280, 720, RS_COPY);
 
 	// ƒLƒƒƒ‰ƒNƒ^[
 	chara.obj->Update();

@@ -57,6 +57,10 @@ bool SceneSelect::Initialize()
 	image[IMAGE::OK] = new iex2DObj("DATA/Image/lobby/junbi_ok.png");
 	image[IMAGE::LIST] = new iex2DObj("DATA/Image/lobby/list.png");
 	image[IMAGE::ACTION] = new iex2DObj("DATA/UI/action/1.png");
+	// 西田追加
+	image[IMAGE::NOPLAYER] = new iex2DObj("DATA/Image/lobby/noPlayer.png");
+	image[IMAGE::WANTED] = new iex2DObj("DATA/Image/lobby/Wanted.png");
+	image[IMAGE::TEN] = new iex2DObj("DATA/Image/lobby/ten.png");
 
 	// キャラクター
 	chara.pos = Vector3(20, -19, 0);
@@ -369,7 +373,7 @@ void SceneSelect::Render()
 	view->Clear();
 
 	// 背景
-	image[IMAGE::BACK]->Render(0, 0, 1280, 720, 0, 0, 1280, 720, RS_COPY, 0xffffffff, 1.0f);
+	image[IMAGE::BACK]->RenderBack(0, 0, 1280, 720, 0, 0, 1280, 720, RS_COPY);
 
 	// キャラクター
 	chara.obj->Update();
@@ -381,13 +385,46 @@ void SceneSelect::Render()
 	// アクションUI
 	image[IMAGE::ACTION]->Render(1060, 500, 256, 256, 0, 0, 256, 256);
 
+
+	// 点のアニメ用変数
+	static int tenFlame = 0;
+	static int tenAnime = 0;
+	tenFlame++;
+	if (tenFlame >= 24)
+	{
+		tenFlame = 0;
+		tenAnime++;
+		if (tenAnime >= 3){ tenAnime = 0; }
+	}
+
+
 	for (int i = 0; i < PLAYER_MAX; i++)
 	{
-		// ユーザーたち
-		image[IMAGE::P1 + i]->Render(104, 136 + i * 96, 64, 64, 0, 0, 64, 64);
-		Text::Draw(200, 154 + i * 96, 0xff000000, "%s", SOCKET_MANAGER->GetUser(i).name);
+		
+		// アクティブなプレイヤー以外は描画しない
+		if (SOCKET_MANAGER->GetUser(i).com == UserData::ACTIVE_USER)
+		{
+			// 右のユーザーの■　ユーザーたち
+			image[IMAGE::P1 + i]->Render(104, 136 + i * 96, 64, 64, 0, 0, 64, 64);
 
-		image[(!SOCKET_MANAGER->GetUser(i).isReady) ? IMAGE::WAIT : IMAGE::OK]->Render(456, 136 + i * 96, 128, 64, 0, 0, 128, 64);
+			// 名前
+			Text::Draw(200, 154 + i * 96, 0xff000000, "%s", SOCKET_MANAGER->GetUser(i).name);
+
+			// 準備中？準備OK
+			image[(!SOCKET_MANAGER->GetUser(i).isReady) ? IMAGE::WAIT : IMAGE::OK]->Render(456, 136 + i * 96, 128, 64, 0, 0, 128, 64);
+
+		}
+		else // 参加していなかったら
+		{
+			// 右のユーザーの■
+			image[IMAGE::NOPLAYER]->Render(104, 136 + i * 96, 64, 64, 0, 0, 64, 64);
+			// 通信待機中
+			image[IMAGE::WANTED]->Render(190, 138 + i * 96, 256, 128, 0, 0, 256, 128);
+			// 点
+			image[IMAGE::TEN]->SetARGB(100, 100, 100, 100);
+			image[IMAGE::TEN]->Render(440, 138 + i * 96, 64, 64, tenAnime * 64, 0, 64, 64);
+		}
+
 	}
 
 	//for (int i = 0; i < PLAYER_MAX; ++i)

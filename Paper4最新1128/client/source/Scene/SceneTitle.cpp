@@ -138,8 +138,10 @@ void SceneTitle::Render()
 {
 	view->Activate();
 	view->Clear();
-
-	images[IMAGE::BACK]->Render(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, 1280, 720, RS_COPY, 0xffffffff, 1.0f);
+	
+	// ¼“c‘‚«Š·‚¦
+	//images[IMAGE::BACK]->Render(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, 1280, 720, RS_COPY, 0xffffffff, 1.0f);
+	images[IMAGE::BACK]->RenderBack(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, 1280, 720, RS_COPY);
 
 	start_button.obj->Update();
 	start_button.obj->Render();

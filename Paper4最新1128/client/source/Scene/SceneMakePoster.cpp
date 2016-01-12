@@ -654,8 +654,9 @@ void SceneMakePoster::Render()
 			if (layer_data[i].isHold==true)//’Í‚ñ‚Å‚¢‚é•¨‚µ‚©•`‰æ‚µ‚È‚¢I
 			{
 			//@ŠG‚ğ•\¦
+				StampPicture[layer_data[i].kind][layer_data[i].num]->SetARGB(0x66ffffff);
 			StampPicture[layer_data[i].kind][layer_data[i].num]
-				->Render((int)layer_data[i].x - 256, (int)layer_data[i].y - 256, 512, 512, 0, 0, 512, 512, RS_COPY, 0x66ffffff);
+				->Render((int)layer_data[i].x - 256, (int)layer_data[i].y - 256, 512, 512, 0, 0, 512, 512);
 			}
 
 		}

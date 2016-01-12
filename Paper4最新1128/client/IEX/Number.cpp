@@ -131,38 +131,47 @@ iex2DObj* Number::handle=NULL;
 	 case Number::NORMAL:
 		 for (int i = 0; i < COUNT; i++)
 		 {
-			 handle->Render((int)x - (i * 32), (int)y, 64, 64, digit[i] * 64, 0, 64, 64, NULL, col);//
+			 handle->SetARGB(col);
+			 handle->Render((int)x - (i * 32), (int)y, 64, 64, digit[i] * 64, 0, 64, 64);//
 		 }
 		 break;
 	 case Number::PLUS:
 		 for (int i = 0; i < COUNT; i++)
 		 {
-			 handle->Render((int)x - (i * 26), (int)y, 64, 64, digit[i] * 64, 0, 64, 64, NULL, col);//
+			 handle->SetARGB(col);
+			 handle->Render((int)x - (i * 26), (int)y, 64, 64, digit[i] * 64, 0, 64, 64);//
 		 }
-		 handle->Render((int)x - (COUNT * 26), (int)y, 64, 64, 10 * 64, 0, 64, 64, NULL, col);//+
+		 handle->SetARGB(col);
+		 handle->Render((int)x - (COUNT * 26), (int)y, 64, 64, 10 * 64, 0, 64, 64l);//+
 		 break;
 	 case Number::POINT:
 
-		 handle->Render((int)x + 26, (int)y, 64, 64, 11 * 64, 0, 64, 64, NULL, col);//P
+		 handle->SetARGB(col);
+		 handle->Render((int)x + 26, (int)y, 64, 64, 11 * 64, 0, 64, 64);//P
 		 for (int i = 0; i < COUNT; i++)
 		 {
-			 handle->Render((int)x - (i * 26), (int)y, 64, 64, digit[i] * 64, 0, 64, 64, NULL, col);//
+			 handle->SetARGB(col);
+			 handle->Render((int)x - (i * 26), (int)y, 64, 64, digit[i] * 64, 0, 64, 64);//
 		 }
 		 break;
 	 case Number::MINUS:
 		 for (int i = 0; i < COUNT; i++)
 		 {
-			 handle->Render((int)x - (i * 32), (int)y, 64, 64, digit[i] * 64, 0, 64, 64, NULL, col);//
+			 handle->SetARGB(col);
+			 handle->Render((int)x - (i * 32), (int)y, 64, 64, digit[i] * 64, 0, 64, 64);//
 		 }
-		 handle->Render((int)x - (COUNT * 32), (int)y, 64, 64, 12 * 64, 0, 64, 64, NULL, col);//-
+		 handle->SetARGB(col);
+		 handle->Render((int)x - (COUNT * 32), (int)y, 64, 64, 12 * 64, 0, 64, 64);//-
 		 break;
 	 case Number::TIME:
 
 		 for (int i = 0; i < COUNT; i++)
 		 {
-			 handle->Render((int)x - (i * 30), (int)y, 64, 64, digit[i] * 64, 0, 64, 64, NULL, col);//
+			 handle->SetARGB(col);
+			 handle->Render((int)x - (i * 30), (int)y, 64, 64, digit[i] * 64, 0, 64, 64);//
 		 }
-		 handle->Render((int)x - (COUNT * 32), (int)y, 64, 64, 13 * 64, 0, 64, 64, NULL, col);//:
+		 handle->SetARGB(col);
+		 handle->Render((int)x - (COUNT * 32), (int)y, 64, 64, 13 * 64, 0, 64, 64);//:
 
 		 //for (int i = 0; i < COUNT; i++)
 		 //{
@@ -177,12 +186,16 @@ iex2DObj* Number::handle=NULL;
 
 		 break;
 	 case Number::SPIRIT:
-		 handle->Render((int)x + 32, (int)y+8, 64, 64, 14 * 64, 0, 64, 64, NULL, col);//ç∞
+
+		 handle->SetARGB(col);
+		 handle->Render((int)x + 32, (int)y+8, 64, 64, 14 * 64, 0, 64, 64);//ç∞
 		 for (int i = 0; i < COUNT; i++)
 		 {
-			 handle->Render((int)x - (i * 26), (int)y, 64, 64, digit[i] * 64, 0, 64, 64, NULL, col);//
+			 handle->SetARGB(col);
+			 handle->Render((int)x - (i * 26), (int)y, 64, 64, digit[i] * 64, 0, 64, 64);//
 		 }
-		 handle->Render((int)x - (COUNT * 26), (int)y, 64, 64, 10 * 64, 0, 64, 64, NULL, col);//+
+		 handle->SetARGB(col);
+		 handle->Render((int)x - (COUNT * 26), (int)y, 64, 64, 10 * 64, 0, 64, 64);//+
 		 break;
 
 	 default:

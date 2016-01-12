@@ -26,7 +26,7 @@ public:
 private:
 	iexView* view;
 
-	enum IMAGE{ BACK, P1, P2, P3, P4, P5, P6, WAIT, OK, LIST, ACTION, MAX };
+	enum IMAGE{ BACK, P1, P2, P3, P4, P5, P6, WAIT, OK, LIST, ACTION,NOPLAYER,WANTED,TEN, MAX };
 	iex2DObj* image[IMAGE::MAX];
 	struct
 	{

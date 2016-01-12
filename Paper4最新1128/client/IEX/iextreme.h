@@ -602,7 +602,6 @@ typedef struct tagLNVERTEX {
 #define	IEX2D_FLOAT			111
 #define	IEX2D_FLOAT2		110
 #define	IEX2D_HDR			200
-
 #define	IEX2D_HDR_SYSTEMMEM	201
 #define	IEX2D_R16			202
 #define	IEX2D_R16_SYSTEMMEM	203
@@ -620,25 +619,37 @@ protected:
 	u32			width;			//	幅
 	u32			height;			//	高さ
 
+	//テクスチャと画像情報
 	Surface*	lpSurface;
 	Texture2D*	lpTexture;		//	テクスチャ
+	//D3DXIMAGE_INFO	info;		//
+
+	// ステータス
+	float scale, angle;
+	DWORD color;
+	float centerX, centerY;
+	bool isTurnOver;
+	bool isShiftCenter;	//xyを画像の中心に
+
+
+
 public:
 	//------------------------------------------------------
 	//	作成・解放
 	//------------------------------------------------------
 	iex2DObj(){};
 	//	ファイルから作成
-	iex2DObj( char* filename );
+	iex2DObj(char* filename);
 	//	作成
-	iex2DObj( u32 width, u32 height, u8 flag );
+	iex2DObj(u32 width, u32 height, u8 flag);
 
 	//自作
-	iex2DObj::iex2DObj( char* filename, u8 flag );
+	iex2DObj::iex2DObj(char* filename, u8 flag);
 
 	//	解放
 	~iex2DObj(){
-		if (lpSurface){ 
-			lpSurface->Release(); 
+		if (lpSurface){
+			lpSurface->Release();
 		}
 		if (lpTexture){
 			iexTexture::Release(lpTexture);
@@ -648,7 +659,7 @@ public:
 	//------------------------------------------------------
 	//	設定・取得
 	//------------------------------------------------------
-	void RenderTarget( int index = 0 );
+	void RenderTarget(int index = 0);
 	Texture2D*	GetTexture(){ return lpTexture; }
 	Surface*	GetSurface(){ return lpSurface; }
 
@@ -656,20 +667,37 @@ public:
 	//	描画
 	//------------------------------------------------------
 	void Render();
-	void Render( iexShader* shader, char* tech );
-	void Render( s32 DstX, s32 DstY, s32 DstW, s32 DstH, s32 SrcX, s32 SrcY, s32 width, s32 height, u32 dwFlags=RS_COPY, COLOR color=0xFFFFFFFF, float z=.0f );
-	void Render( s32 DstX, s32 DstY, s32 DstW, s32 DstH, s32 SrcX, s32 SrcY, s32 width, s32 height, iexShader* shader, char* tech, COLOR color=0xFFFFFFFF, float z=.0f );
+	void Render(iexShader* shader, char* tech);
 
-	void Render_reverseX(s32 DstX, s32 DstY, s32 DstW, s32 DstH, s32 SrcX, s32 SrcY, s32 width, s32 height, u32 dwFlags, COLOR color, float z);
-	void Render_scale(float scale, s32 DstX, s32 DstY, s32 DstW, s32 DstH, s32 SrcX, s32 SrcY, s32 width, s32 height, u32 dwFlags = RS_COPY, COLOR color = 0xFFFFFFFF, float z = .0f);
+	void Render(int x, int y, u32 dwFlags = RS_COPY);
+	void Render(int x, int y, iexShader* shader, char* name);// shader適用
+	void Render(int x, int y, int w, int h, int tx, int ty, int tw, int th, u32 dwFlags = RS_COPY);
+	void Render(int x, int y, int w, int h, int tx, int ty, int tw, int th, iexShader* shader, char* name);
+	// 3Dより奥に表示したい場合
+	void RenderBack(int x, int y, int w, int h, int tx, int ty, int tw, int th, u32 dwFlags = RS_COPY);
+	// 3D描画
+	void Render3D(float x, float y, float z, u32 dwFlags = RS_COPY);
+	void Render3D(Vector3 pos, u32 dwFlags = RS_COPY);
 
-	void rot_render(float rad);
-	void rot_render(float rad, iexShader* shader, char* tech);
-	void rot_render(float rad, s32 DstX, s32 DstY, s32 DstW, s32 DstH, s32 SrcX, s32 SrcY, s32 width, s32 height, u32 dwFlags = RS_COPY, COLOR color = 0xFFFFFFFF, float z = .0f);
-	void rot_render(float rad, s32 DstX, s32 DstY, s32 DstW, s32 DstH, s32 SrcX, s32 SrcY, s32 width, s32 height, iexShader* shader, char* tech, COLOR color = 0xFFFFFFFF, float z = .0f);
+	void Render3D(float x, float y, float z, int w, int h, int tx, int ty, int tw, int th, u32 dwFlags = RS_COPY);
+	void Render3D(Vector3 pos, int w, int h, int tx, int ty, int tw, int th, u32 dwFlags = RS_COPY);
+
+
+
+
+	//--------------------------------------------------
+	///	情報更新
+	//--------------------------------------------------
+	void SetScale(float scale);
+	void SetAngle(float angle);
+	void SetARGB(BYTE A, BYTE R, BYTE G, BYTE B);
+	void SetARGB(int A, int R, int G, int B);
+	void SetARGB(DWORD ARGB);
+	void SetTurnOver(bool turnFlag);
+	void SetShiftCenter(bool ShiftFlag);
+	void SetCenter(float x, float y);
 
 };
-
 
 //	２Ｄオブジェクト
 typedef iex2DObj IEX2DOBJ, *LPIEX2DOBJ;

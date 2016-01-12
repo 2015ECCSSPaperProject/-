@@ -168,7 +168,9 @@ void UI::SkillGauge()
 			percent = 1;
 		}
 		gauge->Render(percent, 16+i*80, 200, 64, 64, 0, 0, 64, 64, RS_COPY, col);
-		image[IMAGE::SKILL_GUN + i]->Render(32 + i*80, 216, 32, 32, 0, 0, 32, 32, RS_COPY, col);
+
+		image[IMAGE::SKILL_GUN + i]->SetARGB(col);
+		image[IMAGE::SKILL_GUN + i]->Render(32 + i*80, 216, 32, 32, 0, 0, 32, 32);
 	}
 }
 
@@ -246,7 +248,8 @@ void UI::Mode::Start::YooiDon()
 	switch (step)
 	{
 	case 0:
-		yooi->Render(128, 182, 1024, 256, 0, 0, 1024, 256, RS_COPY, (0x00ffffff | (alpha << 24)));
+		yooi->SetARGB(256, 256, 256, (int)alpha);
+		yooi->Render(128, 182, 1024, 256, 0, 0, 1024, 256);
 		break;
 
 	case 1:
