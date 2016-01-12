@@ -363,6 +363,10 @@ void EventBGM::Initialize(char *mainBGMname)
 
 	isKouhan = false;
 	step = frame = mainVolume = 0;
+
+	bgm->Set_volume(mainBGM, mainVolume);
+	bgm->SetFX(DXA_FX::DXAFX_OFF);
+	se->SetFX(DXA_FX::DXAFX_OFF);
 }
 void EventBGM::Update()
 {

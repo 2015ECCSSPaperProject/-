@@ -44,17 +44,13 @@ void Paper_obj_mng::Update()
 	}
 }
 
-void Paper_obj_mng::Render(BasePlayer *player, iexShader *shader, char *name)
+void Paper_obj_mng::Render(iexShader *shader, char *name)
 {
-	int i = 0;
 	if (shader)
 	{
 		for (auto it : obj_array)
 		{
 			it->Render(shader, name);
-			bool isTarget = (player->Get_action() == BasePlayer::ACTION_PART::REND && player->Get_poster_num() == i);
-			if(mark)it->Render_mark(mark, isTarget);
-			i++;
 		}
 	}
 	else
@@ -62,10 +58,16 @@ void Paper_obj_mng::Render(BasePlayer *player, iexShader *shader, char *name)
 		for (auto it : obj_array)
 		{
 			it->Render();
-			bool isTarget = (player->Get_action() == BasePlayer::ACTION_PART::REND && player->Get_poster_num() == i);
-			if (mark)it->Render_mark(mark, isTarget);
-			i++;
 		}
+	}
+}
+
+void Paper_obj_mng::Render_mark(BasePlayer *player)
+{
+	for (auto it : obj_array)
+	{
+		//bool isTarget = (it->ca);
+		if (mark)it->Render_mark(mark, false);
 	}
 }
 

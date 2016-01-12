@@ -340,7 +340,7 @@ void SceneMain::Render()
 		stage->Render(shaderD, "G_Buffer");
 		sky->Render(shaderD, "G_Buffer");
 		player_mng->Render(shaderD, "G_Buffer");
-		paper_obj_mng->Render(player_mng->Get_player(SOCKET_MANAGER->GetID()), shaderD, "G_Buffer");
+		paper_obj_mng->Render(shaderD, "G_Buffer");
 
 		DeferredManager.G_End();// ‚±‚±‚Ü‚Å
 		/*¡¡¡¡¡¡¡¡G_BufferI—¹¡¡¡¡¡¡*/
@@ -368,6 +368,8 @@ void SceneMain::Render()
 
 		/*š‚±‚Ì’†‚É‚â‚¶‚é‚µ“ü‚ê‚Ä*/
 	
+		paper_obj_mng->Render_mark(player_mng->Get_player(SOCKET_MANAGER->GetID()));
+
 		iexSystem::Device->
 			SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 		iexSystem::Device->
@@ -423,7 +425,7 @@ void SceneMain::Render()
 		}
 		player_mng->Render();
 
-		paper_obj_mng->Render(player_mng->Get_player(SOCKET_MANAGER->GetID()), shaderD, "copy");
+		paper_obj_mng->Render(shaderD, "copy");
 
 
 

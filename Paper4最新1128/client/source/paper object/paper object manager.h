@@ -21,7 +21,8 @@ public:
 	void Initialize();
 	void Release();
 	void Update();
-	void Render(BasePlayer *player, iexShader *shader = nullptr, char *name = '\0');
+	void Render(iexShader *shader = nullptr, char *name = '\0');
+	void Render_mark(BasePlayer *player);
 
 	//**************************************************
 	/// プレイヤーからのアクション
