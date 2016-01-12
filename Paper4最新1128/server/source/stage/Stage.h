@@ -14,6 +14,11 @@ private:
 
 	Area_mng* area;
 
+	enum : int
+	{
+		COLLISION_UP_SHIFT = 4 // “–‚½‚è”»’è‚ÅŒ´“_‚ğã‚É‚¸‚ç‚·‹——£
+	};
+
 public:
 	Stage();
 	~Stage();
@@ -23,7 +28,9 @@ public:
 	void Update();
 	void Render();
 
-	bool Collision_rand(const Vector3 &pos, Vector3 *move, float up);
+	bool Collision_rand(const Vector3 &pos, Vector3 *move);
+
+	bool Collision_up( const Vector3 &pos, Vector3 *move, float high);
 
 	bool Collision(const Vector3 &pos, Vector3 *move, float radius, // ”¼Œa
 		int recursive_counter); // Ä‹A”

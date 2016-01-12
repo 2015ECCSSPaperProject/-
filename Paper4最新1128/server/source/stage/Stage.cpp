@@ -57,7 +57,7 @@ void Stage::Render()
 
 // 当たり判定
 
-bool Stage::Collision_rand(const Vector3 &pos, Vector3 *move, float up)
+bool Stage::Collision_rand(const Vector3 &pos, Vector3 *move)
 {
 	if (move->y >= 0)
 		return false;
@@ -66,7 +66,7 @@ bool Stage::Collision_rand(const Vector3 &pos, Vector3 *move, float up)
 	float dist(FLT_MAX);
 	// xzだけ移動
 	ray_pos += *move;
-	ray_pos.y = pos.y + 3.0f;
+	ray_pos.y = pos.y + COLLISION_UP_SHIFT;
 
 	if (collision_model->RayPickUD(&hit_pos, &ray_pos, &vec, &dist) == -1)
 		return false;
@@ -78,7 +78,28 @@ bool Stage::Collision_rand(const Vector3 &pos, Vector3 *move, float up)
 	return true;
 }
 
-// void→boolに変更しました
+bool Stage::Collision_up( const Vector3 &pos, Vector3 *move, float high)
+{
+	if( move->y <= 0 )
+		return false;
+
+	Vector3 hit_pos, ray_pos( pos ), vec( 0, 1, 0 );
+	float dist( FLT_MAX );
+	// xzだけ移動
+	ray_pos += *move;
+	ray_pos.y = pos.y + COLLISION_UP_SHIFT;
+
+	if( collision_model->RayPick( &hit_pos, &ray_pos, &vec, &dist ) == -1 )
+		return false;
+
+	if( pos.y + high + move->y <= hit_pos.y )
+		return false;
+
+	move->y = hit_pos.y - ( pos.y + high );
+	return true;
+}
+
+// 横
 bool Stage::Collision(const Vector3 &pos, Vector3 *move, float radius, int recursive_counter)
 {
 	if (recursive_counter <= 0)
@@ -92,7 +113,7 @@ bool Stage::Collision(const Vector3 &pos, Vector3 *move, float radius, int recur
 	float length(FLT_MAX);
 	// レイの始点を上げる
 	ray_pos = pos;
-	ray_pos.y += 4.0f;
+	ray_pos.y += COLLISION_UP_SHIFT;
 	// レイの方向を決める
 	vec = move_xz;
 	vec.y = 0;

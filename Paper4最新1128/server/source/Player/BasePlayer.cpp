@@ -201,7 +201,7 @@ void BasePlayer::Update()
 		if (action_part == ACTION_PART::SYURIKEN) 
 			Change_action(ACTION_PART::MOVE);
 	}
-	if (stage->Collision_rand(pos, &move, 0))
+	if (stage->Collision_rand(pos, &move))
 	{
 		// ”ò‚Î‚È‚­‚·‚é
 		pos.y += move.y, move.y = 0;
@@ -218,6 +218,7 @@ void BasePlayer::Update()
 	}
 	else
 	{
+		stage->Collision_up( pos, &move, 15 );
 		isLand = false;
 	}
 	// À•WXV
