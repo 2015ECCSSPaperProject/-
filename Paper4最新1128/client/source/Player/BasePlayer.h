@@ -3,6 +3,7 @@
 #include "../Explosion/Explosion.h"
 class AnimationUV;
 class Explosion;
+class Barrier;
 
 /*	ベースプレイヤー(クライアント)	*/
 
@@ -59,12 +60,12 @@ protected:
 	iex3DObj		*models[(int)MODEL::MAX];
 
 	POINT			mousePos;		//	マウス座標
-
 	int				motion_no;
 	int				god_gage;
 
 	bool			isMyNunber;
 	int kind_paper_obj;			// 破ってる小物の種類(-1が何も破っていない状態)ヘッダーのインクルードの問題があるのでint型にする
+	int				kabuto_timer;	// 兜(無敵)時間
 
 	//===============================================
 	//	スキルゲージ
@@ -301,7 +302,7 @@ protected:
 	//===============================================
 	Action::Base *action[(unsigned int)ACTION_PART::MAX];
 	ACTION_PART action_part;	// 現在のプレイヤーのモード
-
+	Barrier *barrier;			// バリアエフェクト
 	DO_FLAG do_flag;			// Zキー押したら何をするか
 
 
@@ -320,6 +321,7 @@ public:
 	//===============================================
 	virtual void Update();
 	virtual void Render(iexShader *shader = nullptr, char *name = '\0');
+	void Render_forword();
 	
 	//===============================================
 	//	エフェクトの更新と描画

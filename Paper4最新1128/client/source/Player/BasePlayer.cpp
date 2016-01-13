@@ -3,7 +3,7 @@
 #include	"BasePlayer.h"
 
 #include	"../../../share_data/Enum_public.h"
-//#include	"../Mouse/Mouse.h"
+#include	"../Barrier/Barrier.h"
 
 #include	"PlayerManager.h"
 #include	"../sound/SoundManager.h"
@@ -59,6 +59,8 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	manhole_no_haninai = false;
 	isMyNunber = false;
 	kind_paper_obj = -1;
+	kabuto_timer = 0;
+	barrier = new Barrier;
 
 	// 3D実体
 	models[(int)MODEL::NORMAL]	 = objs[(int)PlayerManager::CLONE_TYPE::NORMAL]->Clone();
@@ -136,6 +138,7 @@ void BasePlayer::Release()
 	{
 		SAFE_DELETE(action[i]);
 	}
+	delete barrier;
 }
 
 
@@ -156,11 +159,11 @@ void BasePlayer::Update()
 	// エフェクト更新
 	EffectUpdate();
 
-	if (KEY(KEY_B)==3)
-	{
-		ExplosionAction();
-		EffectFireFlour(pos + Get_Flont(), FIRE_COLOR::BLUE, 3);
-	}
+	//if (KEY(KEY_B)==3)
+	//{
+	//	ExplosionAction();
+	//	EffectFireFlour(pos + Get_Flont(), FIRE_COLOR::BLUE, 3);
+	//}
 
 	// スキルゲージ更新
 	for (int i = 0; i < (int)SKILL::MAX; i++)
@@ -169,6 +172,12 @@ void BasePlayer::Update()
 		if (skill_data[i].do_action == action_part || action_part == ACTION_PART::TRANS_FORM || action_part == ACTION_PART::SYURIKEN) continue;
 		(skill_data[i].wait_time > 0) ? skill_data[i].wait_time-- : skill_data[i].wait_time &= 0x00000000;
 	}
+
+	if (kabuto_timer & 0xffff)	// 1以上
+	{
+		(--kabuto_timer <= 0) ? barrier->Stop() : barrier->Update(pos+Vector3(0,5,0), Vector3(matView._13, matView._23, matView._33), .5f);
+	}
+
 }
 
 
@@ -184,6 +193,14 @@ void BasePlayer::Render(iexShader *shader, char *name)
 	else
 	{
 		action[(unsigned int)action_part]->Render();
+	}
+}
+
+void BasePlayer::Render_forword()
+{
+	if (kabuto_timer & 0xffff)
+	{
+		barrier->Render();
 	}
 }
 

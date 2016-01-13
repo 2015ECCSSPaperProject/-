@@ -357,6 +357,7 @@ void SceneMain::Render()
 		DeferredManager.ForwardBigin();
 		player_mng->EffectRender();
 		particle->Render();
+		player_mng->Render_forword();
 
 		// ƒ¿ƒeƒXƒg 
 		iexSystem::Device->
@@ -369,6 +370,7 @@ void SceneMain::Render()
 		/*š‚±‚Ì’†‚É‚â‚¶‚é‚µ“ü‚ê‚Ä*/
 	
 		camera->Render_mark();
+
 
 		iexSystem::Device->
 			SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);

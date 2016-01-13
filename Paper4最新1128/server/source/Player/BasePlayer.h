@@ -60,6 +60,7 @@ protected:
 	bool			attackFlag;	// 空中で撃てるのは1回だけ
 	float			jump_pow;
 	bool			invincible;
+	int				kabuto_timer;
 	Vector3			next_manhole_pos;	// 降りた先の、上がった先の座標
 
 	int				god_gage;	// 神ゲージ(これを紙を破った枚数にする)

@@ -105,10 +105,7 @@ void Camera::Render_mark()
 		float tu[2];
 		if (my_player->Get_poster_num() == i)
 		{
-			if (my_player->Get_action() == BasePlayer::ACTION_PART::REND)
-			{
-				tu[0] = 1, tu[1] = .5f;
-			}
+			tu[0] = 1, tu[1] = .5f;
 			if (my_player->Get_action() == BasePlayer::ACTION_PART::REND_OBJ)
 			{
 				continue;

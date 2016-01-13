@@ -50,6 +50,7 @@ void BasePlayer::Init_pos()
 	isJump = isLand = attackFlag = false;
 	jump_pow = 0;
 	invincible = false;
+	kabuto_timer = 0;
 	god_gage = 0;
 	mynumber = m_id;
 	isManhole = false;
@@ -186,15 +187,15 @@ void BasePlayer::Update()
 	// 必殺技No
 	controlDesc.skillFlag = ServerManager::GetDesc(m_id).skillFlag;
 
-	//	コントローラーに操作パラメータをパス
-	action[(int)action_part]->Update(controlDesc);
+	// 兜の無敵時間
+	if (kabuto_timer & 0xffff)
+	{
+		invincible = true;
+		if (--kabuto_timer <= 0) invincible = false;
+	}
 
-	// スキルゲージ更新
-	//for (int i = 0; i < (int)SKILL::MAX; i++)
-	//{
-	//	if (!skill_data[i].unlock)break;
-	//	(skill_data[i].wait_time > 0) ? skill_data[i].wait_time-- : skill_data[i].wait_time &= 0x00000000;
-	//}
+	// アップデート！！
+	action[(int)action_part]->Update(controlDesc);
 
 	if (stage->Collision(pos, &move, 5, 2))
 	{
@@ -277,7 +278,7 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT) AxisX += 1;
 	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY += 1;
 	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY += -1;
-	 
+
 	float pow = sqrtf(AxisX*AxisX + AxisY*AxisY);
 	if (pow)
 	{
@@ -359,20 +360,14 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 
 		// スキルアクション発動!!!
 		if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::GUN) me->select_skill = SKILL::GUN;
-		else if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::KABUTO) me->select_skill = SKILL::KABUTO;
+		else if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::KABUTO)
+		{
+			me->kabuto_timer = 20 * 60;
+			return;
+		}
 		else if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::SYURIKEN) me->select_skill = SKILL::SYURIKEN;
-		if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::ZENRYOKU) me->select_skill = SKILL::ZENRYOKU;
 		me->reserve_action = me->skill_data[(int)me->select_skill].do_action;
 		me->Change_action(ACTION_PART::TRANS_FORM);
-
-		//if (me->skill_data[(int)me->select_skill].unlock && me->skill_data[(int)me->select_skill].wait_time == 0)
-		//{
-		//	// スキルアクション発動
-		//	me->Change_action(me->skill_data[(int)me->select_skill].do_action);
-
-		//	// クールタイム設定
-		//	me->skill_data[(int)me->select_skill].wait_time = me->skill_data[(int)me->select_skill].cool_time;
-		//}
 	}
 
 	//===========================================================================
@@ -411,15 +406,11 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	}
 
 	//	自動ターゲッティング
-	if (auto_target)
+	me->poster_num = paper_obj_mng->Can_targeting(me, 10, 360);
+	if (me->poster_num != -1 && auto_target)
 	{
-		me->poster_num = paper_obj_mng->Can_targeting(me, CAN_TARGET_DIST, 45);
-
-		if (me->poster_num != -1)
-		{
-			me->Change_action(ACTION_PART::MOVE_TARGET);
-			return;
-		}
+		me->Change_action(ACTION_PART::MOVE_TARGET);
+		return;
 	}
 }
 
