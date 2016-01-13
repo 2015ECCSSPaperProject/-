@@ -34,7 +34,7 @@ void PlayerManager::Initialize()
 	// クローン
 	clone_model[(int)CLONE_TYPE::NORMAL]		 = new iex3DObj("DATA/CHR/player/run.IEM");
 	clone_model[(int)CLONE_TYPE::DIE]			 = new iex3DObj("DATA/CHR/player/die.IEM");
-	clone_model[(int)CLONE_TYPE::GUN]			 = new iex3DObj("DATA/CHR/player/gun.IEM");
+	clone_model[(int)CLONE_TYPE::GUN]			 = new iex3DObj("DATA/CHR/player/gun/gun.IEM");
 	clone_model[(int)CLONE_TYPE::SYURIKEN]		 = new iex3DObj("DATA/CHR/player/syuriken/syuriken.IEM");
 	clone_model[(int)CLONE_TYPE::REND_CALENDAR]	 = new iex3DObj("DATA/CHR/player/rend_motion/animation_calendar.IEM");
 	clone_model[(int)CLONE_TYPE::REND_MONEY]	 = new iex3DObj("DATA/CHR/player/rend_motion/animation_money.IEM");
@@ -60,12 +60,12 @@ void PlayerManager::Initialize()
 
 		// 鉄砲モデル用カラー
 		{
-			iexTexture::Load("DATA/CHR/player/teppou_red.png"),
-			iexTexture::Load("DATA/CHR/player/teppou_blue.png"),
-			iexTexture::Load("DATA/CHR/player/teppou_yellow.png"),
-			iexTexture::Load("DATA/CHR/player/teppou_green.png"),
-			iexTexture::Load("DATA/CHR/player/teppou_purple.png"),
-			iexTexture::Load("DATA/CHR/player/teppou_pink.png")
+			iexTexture::Load("DATA/CHR/player/gun/teppou_red.png"),
+			iexTexture::Load("DATA/CHR/player/gun/teppou_blue.png"),
+			iexTexture::Load("DATA/CHR/player/gun/teppou_yellow.png"),
+			iexTexture::Load("DATA/CHR/player/gun/teppou_green.png"),
+			iexTexture::Load("DATA/CHR/player/gun/teppou_purple.png"),
+			iexTexture::Load("DATA/CHR/player/gun/teppou_pink.png")
 		},
 
 		// 手裏剣モデル用カラー
