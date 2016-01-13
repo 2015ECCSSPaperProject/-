@@ -332,7 +332,7 @@ void SceneMain::Render()
 		//　描画クリア
 		DeferredManager.ClearBloom();
 		DeferredManager.ClearForward();
-
+		DeferredManager.ClearAllRender();
 
 		/*■■■■■■■G_Buffer開始■■■■■■■*/
 		DeferredManager.G_Bigin();
@@ -357,8 +357,7 @@ void SceneMain::Render()
 		DeferredManager.ForwardBigin();
 		player_mng->EffectRender();
 		particle->Render();
-		player_mng->Render_forword();
-
+	
 		// αテスト 
 		iexSystem::Device->
 			SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
@@ -378,7 +377,22 @@ void SceneMain::Render()
 			SetRenderState(D3DRS_ALPHAREF, 0);
 
 
+		DeferredManager.ForwardEnd();
+		/*■■■■■■■通常描画終り■■■■■■■*/
 
+
+		// 全部描画したスクリーンを作る
+		DeferredManager.AllBegin();
+		DeferredManager.GetTex(SURFACE_NAME::SCREEN)->Render(0, 0, 1280, 720, 0, 0, 1280, 720, RS_COPY_NOZ);
+		DeferredManager.GetTex(SURFACE_NAME::FORWARD)->Render(0, 0, 1280, 720, 0, 0, 1280, 720, RS_COPY_NOZ);
+		DeferredManager.AllEnd();
+		// バリアー用環境マップ
+		shaderD->SetValue("EnvFullBuf", DeferredManager.GetTex(SURFACE_NAME::ALLSCREEN));
+
+		/*■■■■■■バリアーや水用　通常描画(フォアード)開始■■*/
+		DeferredManager.ForwardBigin();
+		// 先頭へ
+		player_mng->Render_forword();	// バリアー
 		DeferredManager.ForwardEnd();
 		/*■■■■■■■通常描画終り■■■■■■■*/
 
@@ -394,6 +408,9 @@ void SceneMain::Render()
 
 
 		//BlurFilter::Start_Copy();
+
+	
+
 
 		/*描画*/
 		DeferredManager.RenderDeferred();
@@ -411,6 +428,8 @@ void SceneMain::Render()
 		DeferredManager.UpdateDownSample(0.9f, 0.75f);
 		// サーフェイス描画
 		//SurfaceRender();
+
+
 	}
 	else
 	{
@@ -426,7 +445,6 @@ void SceneMain::Render()
 			Text::Draw(950, 20 + (i * 32), 0xff00ffff, "名前：%s", SOCKET_MANAGER->GetUser(i).name);
 		}
 		player_mng->Render();
-
 		paper_obj_mng->Render(shaderD, "copy");
 
 
@@ -457,7 +475,7 @@ void SceneMain::Render()
 		}
 
 
-	//	SurfaceRender();
+		SurfaceRender();
 
 		//フェード処理
 		FadeControl::Render();
@@ -574,6 +592,8 @@ void SceneMain::SurfaceRender()
 	texX=0; texY++;
 	DeferredManager.GetTex(SURFACE_NAME::DOWNSAMPLE)->Render(X*texX, Y*texY, X, Y, 0, 0, 1280, 720);
 
+	texX=0; texY++;
+	DeferredManager.GetTex(SURFACE_NAME::ALLSCREEN)->Render(X*texX, Y*texY, X, Y, 0, 0, 1280, 720);
 
 
 
