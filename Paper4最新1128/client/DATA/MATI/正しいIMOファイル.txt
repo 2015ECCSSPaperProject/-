@@ -1,6 +1,7 @@
-無いやつ
-library
+テクスチャおかしい
+chika
 
+library
 bill1
 bill2
 bill3
