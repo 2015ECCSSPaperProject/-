@@ -94,7 +94,6 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	skill_data[(int)SKILL::GUN].do_action = ACTION_PART::GUN;
 	skill_data[(int)SKILL::SYURIKEN].do_action = ACTION_PART::SYURIKEN;
 	skill_data[(int)SKILL::KABUTO].do_action = ACTION_PART::GUN;
-	skill_data[(int)SKILL::ZENRYOKU].do_action = ACTION_PART::GUN;
 
 	// 絶対低い順に並べる
 	//skill_data[(int)SKILL::GUN].unlock_rend_count = 0;
@@ -406,7 +405,7 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	}
 
 	//	自動ターゲッティング
-	me->poster_num = paper_obj_mng->Can_targeting(me, 10, 360);
+	me->poster_num = paper_obj_mng->Can_targeting(me, 10, 180);
 	if (me->poster_num != -1 && auto_target)
 	{
 		me->Change_action(ACTION_PART::MOVE_TARGET);
@@ -432,14 +431,13 @@ void BasePlayer::Action::MoveTarget::Initialize()
 void BasePlayer::Action::MoveTarget::Update(const CONTROL_DESC &_ControlDesc)
 {
 	// 距離範囲外
-	if ((paper_obj_mng->Get_pos(me->poster_num)-me->pos).Length() >CAN_TARGET_DIST * 1.5f
+	if ((paper_obj_mng->Get_pos(me->poster_num) - me->pos).Length() > CAN_TARGET_DIST * 1.5f
 		|| (!auto_target && !(_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)))
 	{
-			me->Change_action(ACTION_PART::MOVE);
+		me->Change_action(ACTION_PART::MOVE);
 		return;
 	}
 	
-
 	float AxisX = 0, AxisY = 0;
 
 	// ADWS
@@ -674,6 +672,9 @@ void BasePlayer::Action::Rend::Initialize()
 	//me->pos = paper_obj_mng->Get_pos(me->poster_num);
 	//me->angleY = paper_obj_mng->Get_angle(me->poster_num) + PI;
 	//me->pos += (Vector3(-sinf(me->angleY), 0, -cosf(me->angleY)) * dist);
+	Vector3 v = paper_obj_mng->Get_pos(me->poster_num) - me->pos;
+	v.Normalize();
+	me->angleY = atan2(v.x,v.z);
 
 	me->motion_no = 1;
 	me->Set_motion(1);

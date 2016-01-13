@@ -78,22 +78,19 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	models[(int)MODEL::REND_SEISHO] = objs[(int)PlayerManager::CLONE_TYPE::REND_SEISHO]->Clone(2);
 
 	skill_data[(int)SKILL::GUN].do_action = ACTION_PART::GUN;
-	skill_data[(int)SKILL::SYURIKEN].do_action = ACTION_PART::GUN;
+	skill_data[(int)SKILL::SYURIKEN].do_action = ACTION_PART::SYURIKEN;
 	skill_data[(int)SKILL::KABUTO].do_action = ACTION_PART::GUN;
-	skill_data[(int)SKILL::ZENRYOKU].do_action = ACTION_PART::GUN;
 
 	// 絶対低い順に並べる
 	// 案ロックカウント
 	skill_data[(int)SKILL::GUN].unlock_rend_count = 0;
 	skill_data[(int)SKILL::SYURIKEN].unlock_rend_count = 1;
 	skill_data[(int)SKILL::KABUTO].unlock_rend_count = 10;
-	skill_data[(int)SKILL::ZENRYOKU].unlock_rend_count = 15;
 
 	// クールタイム
 	skill_data[(int)SKILL::GUN].cool_time = 600;
 	skill_data[(int)SKILL::SYURIKEN].cool_time = 100;
 	skill_data[(int)SKILL::KABUTO].cool_time = 150;
-	skill_data[(int)SKILL::ZENRYOKU].cool_time = 600;
 
 	// 全部ロックをかける
 	for (int i = 0; i < (int)SKILL::MAX; i++)
@@ -169,7 +166,7 @@ void BasePlayer::Update()
 	for (int i = 0; i < (int)SKILL::MAX; i++)
 	{
 		if (!skill_data[i].unlock)break;
-		if (skill_data[i].do_action == action_part || action_part == ACTION_PART::TRANS_FORM || action_part == ACTION_PART::SYURIKEN) continue;
+		if (skill_data[i].do_action == action_part || action_part == ACTION_PART::TRANS_FORM) continue;
 		(skill_data[i].wait_time > 0) ? skill_data[i].wait_time-- : skill_data[i].wait_time &= 0x00000000;
 	}
 

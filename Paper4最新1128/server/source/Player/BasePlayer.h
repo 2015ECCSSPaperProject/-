@@ -36,7 +36,7 @@ public:
 	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, REND, FREEZE, DIE, RESPAWN, GUN, MANHOLE, THROUGH, SYURIKEN, TRANS_FORM, REND_OBJ, MAX };
 	enum class DO_FLAG{ NONE, ATTACK, PASTE, REND, MAX };
 	enum class MODEL{ NORMAL, DIE, PLANE, GUN, SYURIKEN, MAX };
-	enum class SKILL{ GUN, SYURIKEN, KABUTO, ZENRYOKU, MAX };
+	enum class SKILL{ GUN, SYURIKEN, KABUTO, MAX };
 
 protected:
 	//===============================================

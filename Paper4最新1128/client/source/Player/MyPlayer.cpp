@@ -171,7 +171,6 @@ void MyPlayer::Control_all()
 				(int)PLAYER_SKILL::GUN,
 				(int)PLAYER_SKILL::SYURIKEN,
 				(int)PLAYER_SKILL::KABUTO,
-				(int)PLAYER_SKILL::ZENRYOKU
 			};
 
 			m_controlDesc.skillFlag |= FLAG[(int)select_skill];
