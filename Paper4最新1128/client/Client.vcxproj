@@ -136,6 +136,7 @@
     <ClCompile Include="source\bench\bench_mark.cpp" />
     <ClCompile Include="source\blur\blur.cpp" />
     <ClCompile Include="source\camera\Camera.cpp" />
+    <ClCompile Include="source\camera\EffectCamera.cpp" />
     <ClCompile Include="source\Deferred\Deferred.cpp" />
     <ClCompile Include="source\Effect\Effect.cpp" />
     <ClCompile Include="source\Effekseer\Effector.cpp" />
@@ -204,6 +205,7 @@
     <ClInclude Include="source\bench\Bench_mark.h" />
     <ClInclude Include="source\blur\blur.h" />
     <ClInclude Include="source\camera\Camera.h" />
+    <ClInclude Include="source\camera\EffectCamera.h" />
     <ClInclude Include="source\Deferred\Deferred.h" />
     <ClInclude Include="source\Effect\Effect.h" />
     <ClInclude Include="source\Effekseer\Effector.h" />

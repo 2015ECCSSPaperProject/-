@@ -220,7 +220,7 @@ public:
 	//===============================================
 	void Update();
 	void Render();
-	void Render_mark();	// マーク描画
+	void Render_mark();
 
 	//===============================================
 	//	ゲッター,セッター
@@ -232,6 +232,7 @@ public:
 	void Set_pos(const Vector3 &p){ pos = p; }
 
 	Vector3 Get_target(){ return target; }
+	void Set_target(const Vector3 &p){ target = p; }
 
 	// モード
 	MODE Get_mode(){ return mode_part; }
@@ -267,60 +268,5 @@ public:
 	}
 
 };
-
-#include	"../textLoader\textLoader.h"
-
-class EffectCamera : public textLoader
-{
-private:
-	enum class APPOINT
-	{
-		NONE,			// 座標そのまま
-		DIRECT,			// Pos直接指定型
-		SOME_ONE,		// 誰かのPos
-		SOME_ONE_COOD	// 誰かのPos＋Vector3
-	};
-
-	//------------------------------------------------------
-	//	スクリプト関係
-	//------------------------------------------------------
-	int wait_timer;		// コマンド待機時間
-	char message[256];	// コマンドの名前？
-	unsigned long ptr;	// 
-
-	bool In_event(char *command);
-	void Out_event();
-	bool Jump(char *label_name);
-	void Change_camera_mode();
-	void Setting_camera(Camera::MODE mode);
-	void Getting_targeter(Vector3 *out);
-	void Getting_targeter_coodinate(Vector3 *out);
-
-	//------------------------------------------------------
-	//	制御するカメラさん
-	//------------------------------------------------------
-	Camera *camera;
-
-
-public:
-
-	//------------------------------------------------------
-	//	初期化・解放
-	//------------------------------------------------------
-	EffectCamera();
-	~EffectCamera();
-	void Initialize(Camera *me);
-
-	//------------------------------------------------------
-	//	更新
-	//------------------------------------------------------
-	void Update();
-
-	//------------------------------------------------------
-	//	行動セット
-	//------------------------------------------------------
-	bool Set_pattern(int pat);
-};
-
 // 
 extern Camera *camera;

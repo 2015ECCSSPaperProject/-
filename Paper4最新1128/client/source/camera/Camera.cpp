@@ -1,5 +1,6 @@
-
+#include	"iextreme.h"
 #include	"Camera.h"
+#include	"EffectCamera.h"
 #include	"../system/system.h"
 #include	"../Player/BasePlayer.h"
 #include	"../Player/MyPlayer.h"
@@ -21,7 +22,7 @@ const float FOVY[2] =
 
 Camera::Camera() : iexView(), collision_stage(nullptr), scriptON(false)
 {
-	
+
 }
 
 Camera::~Camera()
@@ -59,8 +60,8 @@ void Camera::Initialize(BasePlayer *my)
 	mode[MODE::M_THROUGH] = new Camera::Mode::Through(this);
 	mode[MODE::M_SYURIKEN] = new Camera::Mode::Syuriken(this);
 
-	//Change_mode(MODE::M_TPS);	// 最初は三人称
-	Change_mode(MODE::M_DEBUG);	// デバッグカメラ
+	Change_mode(MODE::M_TPS);	// 最初は三人称
+	//Change_mode(MODE::M_DEBUG);	// デバッグカメラ
 	my_player = my;
 
 	collision_stage = new iexMesh("DATA/MATI/stage_atari.IMO");
@@ -72,16 +73,22 @@ void Camera::Initialize(BasePlayer *my)
 
 	// スクリプトカメラさん
 	effect_camera = new EffectCamera;
-	effect_camera->Initialize(this);
-	effect_camera->Set_pattern(3);
+	effect_camera->Initialize(this, "DATA/Camera/save_data.ecd");
+	effect_camera->Set_pattern(0);
 }
 
 void Camera::Update()
 {
-	if (scriptON) effect_camera->Update();
+	shaderD->SetValue("ViewPos", pos);
+
+	if (scriptON)
+	{
+		effect_camera->Update();
+		return;
+	}
 
 	mode[mode_part]->Update();
-	shaderD->SetValue("ViewPos", pos);
+
 
 	// 投影設定
 	SetProjection(parth.fovY, parth.Near, parth.Far);
@@ -95,6 +102,13 @@ void Camera::Render()
 	Text::Draw(32, 64, 0xff00ff33, "c.x:%.1f", pos.x);
 	Text::Draw(32, 96, 0xff00ff33, "c.y:%.1f", pos.y);
 	Text::Draw(32, 128, 0xff00ff33, "c.z:%.1f", pos.z);
+
+	if (my_player->Get_action() == BasePlayer::ACTION_PART::MOVE_TARGET)
+	{
+		float tu[2] = { 1, .5f };
+		float tv[2] = { 0, 1 };
+		Billboard::Draw3D(paper_obj_mng->Get_pos(my_player->Get_poster_num()) + Vector3(0, 5, 0), target_mark, 4, 4, tu, tv, RS_COPY);
+	}
 }
 
 void Camera::Render_mark()
@@ -273,9 +287,9 @@ void Camera::Mode::TPS::Initialize(const Vector3 &pos, const Vector3 &target)
 
 void Camera::Mode::TPS::Update()
 {
-	//if (me->my_player->Get_action() == BasePlayer::ACTION_PART::MOVE_TARGET)
+	//if (me->my_player->Get_action() == BasePlayer::ACTION_PART::REND_OBJ)
 	//{
-	//	me->Change_mode(MODE::M_TARGET);
+	//	me->effect_camera->Set_pattern(1);
 	//	return;
 	//}
 
@@ -725,328 +739,3 @@ void Camera::Mode::Syuriken::Update()
 }
 
 Camera *camera;
-
-
-
-
-//*****************************************************************************************************************************
-//
-//		超かっこいいカメラクラス
-//
-//*****************************************************************************************************************************
-
-//=============================================================================================
-//		初	期	化
-EffectCamera::EffectCamera() :wait_timer(0), ptr(0)
-{
-
-}
-
-void EffectCamera::Initialize(Camera *me)
-{
-	// スクリプトIN
-	textLoader::Open("DATA/Camera/camera_script.txt");
-
-	memset(message, 0, sizeof(message));
-
-	camera = me;
-}
-//
-//=============================================================================================
-
-
-//=============================================================================================
-//		開		放
-EffectCamera::~EffectCamera()
-{
-
-}
-//
-//=============================================================================================
-
-
-//=============================================================================================
-//		更		新
-void EffectCamera::Update()
-{
-	Out_event();
-}
-//
-//=============================================================================================
-
-//=============================================================================================
-//		内部コマンド実行
-bool EffectCamera::In_event(char *command)
-{
-	// ※true:まだ処理中だから何も読み込まないでね
-
-	if (--wait_timer > 0) return true;
-	wait_timer = 0;
-
-	while (EndCheck())
-	{
-		// コマンド読み込み
-		LoadString(command);
-
-		//================================================================
-		//	待機コマンド
-		if (lstrcmp(command, "WAIT") == 0)
-		{
-			wait_timer = LoadInt();	// 待機時間読み込み
-			return true;
-		}
-		break;
-	}
-	return false;
-}
-//
-//=============================================================================================
-
-//=============================================================================================
-//		外部コマンド実行
-void EffectCamera::Out_event()
-{
-	char com[256];
-	while (EndCheck())
-	{
-		//スプリクト実行
-		if (In_event(com))return;	// まだ内部処理中だから帰れ((((ﾉﾟ皿ﾟ)ﾉ
-
-		//----------------------------
-		// 外部用コマンド処理
-		//----------------------------
-		if (strcmp(com, "CHANGE") == 0)
-		{
-			Change_camera_mode();
-			break;
-		}
-		if (strcmp(com, "END") == 0)
-		{
-			// スクリプトOFFにして、読み込むファイルの一番先頭にポインタを戻す(Set_patternが呼び出されるまでスクリプト停止)
-			camera->scriptON = false;
-			Jump("START");
-			break;
-		}
-	}
-}
-//
-//=============================================================================================
-
-//=============================================================================================
-//		ラベルジャンプ
-bool EffectCamera::Jump(char *label_name)
-{
-	//ポインタを先頭に
-	ptr = GetPointer();
-	SetPointer(0);
-
-	//ラベル検索
-	if (Search(label_name))
-	{
-		return true;	// 見つかった場所にポインタが移動しているので何もしない
-	}
-
-	SetPointer(ptr);	// 見つからない場合戻す
-	return false;
-}
-//
-//=============================================================================================
-
-
-//=============================================================================================
-//		行	動	セ	ッ	ト
-bool EffectCamera::Set_pattern(int pat)
-{
-	// スクリプトエンジンON
-	camera->scriptON = true;
-
-	char str[16];
-	sprintf_s(str, "PAT%d", pat);
-
-	return Jump(str);	// 飛べたかどうかの判定を返す(本来true)
-}
-//
-//=============================================================================================
-
-
-//=============================================================================================
-//		カメラモード変更
-void EffectCamera::Change_camera_mode()
-{
-	// モード名読み込み
-	char str[16];
-	LoadString(str);
-
-	static const char *n_list[4] =
-	{
-		"FIX", "PAN", "SLERP", "TPS"
-	};
-
-	static const Camera::MODE m_list[4] =
-	{
-		Camera::MODE::M_FIX, Camera::MODE::M_PAN, Camera::MODE::M_SLERP, Camera::MODE::M_TPS
-	};
-
-	for (int i = 0; i < 4; i++)
-	{
-		//	文字判定
-		if (strcmp(str, n_list[i]) == 0)
-		{
-			Setting_camera(m_list[i]);
-			return;
-		}
-	}
-
-	MessageBox(0, "テキストのカメラモード名が間違っているよ", null, MB_OK);
-}
-//
-//=============================================================================================
-
-
-//=============================================================================================
-//		カメラ設定
-void EffectCamera::Setting_camera(Camera::MODE mode)
-{
-	Vector3 pos;
-	Vector3 target;
-
-	//================================================================
-	//	読み込む数値指定
-	int appoint[2];
-	appoint[0] = LoadInt();
-	appoint[1] = LoadInt();
-
-
-	//================================================================
-	//	位置読み込み
-	switch ((APPOINT)appoint[0])
-	{
-	case APPOINT::NONE:
-		pos = camera->Get_pos();
-		break;
-	case APPOINT::DIRECT:
-		pos.x = LoadFloat();
-		pos.y = LoadFloat();
-		pos.z = LoadFloat();
-		break;
-	case APPOINT::SOME_ONE:
-		Getting_targeter(&pos);
-		break;
-	case APPOINT::SOME_ONE_COOD:
-		Getting_targeter_coodinate(&pos);
-		break;
-	}
-
-	//================================================================
-	//	ターゲット読み込み
-	switch ((APPOINT)appoint[1])
-	{
-	case APPOINT::NONE:
-		target = camera->Get_target();
-		break;
-	case APPOINT::DIRECT:
-		target.x = LoadFloat();
-		target.y = LoadFloat();
-		target.z = LoadFloat();
-		break;
-	case APPOINT::SOME_ONE:
-		Getting_targeter(&target);
-		break;
-	case APPOINT::SOME_ONE_COOD:
-		Getting_targeter_coodinate(&target);
-		break;
-	}
-
-	//================================================================
-	//	位置・注視点の情報セット！！！
-	camera->Change_mode(mode, pos, target);
-
-
-	//================================================================
-	//	補正モードならさらに読み込む
-	if (mode == Camera::MODE::M_SLERP)
-	{
-
-		//================================================================
-		//	読み込む数値指定
-		appoint[0] = LoadInt();
-		appoint[1] = LoadInt();
-
-
-		//================================================================
-		//	「目標」位置読み込み
-		switch ((APPOINT)appoint[0])
-		{
-		case APPOINT::NONE:
-			pos = camera->Get_pos();
-			break;
-		case APPOINT::DIRECT:
-			pos.x = LoadFloat();
-			pos.y = LoadFloat();
-			pos.z = LoadFloat();
-			break;
-		case APPOINT::SOME_ONE:
-			Getting_targeter(&pos);
-			break;
-		case APPOINT::SOME_ONE_COOD:
-			Getting_targeter_coodinate(&pos);
-			break;
-		}
-
-		//================================================================
-		//	「目標」ターゲット読み込み
-		switch ((APPOINT)appoint[1])
-		{
-		case APPOINT::NONE:
-			target = camera->Get_pos();
-			break;
-		case APPOINT::DIRECT:
-			target.x = LoadFloat();
-			target.y = LoadFloat();
-			target.z = LoadFloat();
-			break;
-		case APPOINT::SOME_ONE:
-			Getting_targeter(&target);
-			break;
-		case APPOINT::SOME_ONE_COOD:
-			Getting_targeter_coodinate(&target);
-			break;
-		}
-
-		//================================================================
-		//	補完割合読み込み
-		const float p = LoadFloat();
-
-
-		//================================================================
-		//	目標座標セット
-		camera->Set_slerp(pos, target, p);
-	}
-}
-
-void EffectCamera::Getting_targeter(Vector3 *out)
-{
-	char targeter_name[16];
-	LoadString(targeter_name);
-	if (strcmp(targeter_name, "PLAYER") == 0)
-	{
-		*out = camera->Get_my_player()->Get_center_pos();
-	}
-}
-
-void EffectCamera::Getting_targeter_coodinate(Vector3 *out)
-{
-	char targeter_name[16];
-	LoadString(targeter_name);
-	if (strcmp(targeter_name, "PLAYER") == 0)
-	{
-		Vector3 set;
-		set = camera->Get_my_player()->Get_pos();
-		set.x += LoadFloat();
-		set.y += LoadFloat();
-		set.z += LoadFloat();
-		*out = set;
-	}
-}
-//
-//*****************************************************************************************************************************
