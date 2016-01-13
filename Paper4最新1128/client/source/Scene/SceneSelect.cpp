@@ -65,6 +65,8 @@ bool SceneSelect::Initialize()
 	image[IMAGE::WANTED] = new iex2DObj("DATA/Image/lobby/Wanted.png");
 	image[IMAGE::TEN] = new iex2DObj("DATA/Image/lobby/ten.png");
 	image[IMAGE::BACK2] = new iex2DObj("DATA/Image/lobby/背景.png");
+	image[IMAGE::INFO] = new iex2DObj("DATA/Image/lobby/info.png");
+
 
 	// 文字のアニメーション
 	for (int i = 0; i < PLAYER_MAX; i++)
@@ -80,6 +82,10 @@ bool SceneSelect::Initialize()
 	IconRip[3] = new AnimationRipple("DATA/Image/lobby/green.png", 15, 0.1f);
 	IconRip[4] = new AnimationRipple("DATA/Image/lobby/purple.png", 15, 0.1f);
 	IconRip[5] = new AnimationRipple("DATA/Image/lobby/pink.png", 15, 0.1f);
+	for (int i = 0; i < PLAYER_MAX; i++)
+	{
+		OKRip[i] = new AnimationRipple("DATA/Image/lobby/junbi_ok.png", 25, 0.05f);
+	}
 
 
 	// キャラクター
@@ -208,6 +214,13 @@ SceneSelect::~SceneSelect()
 	{
 		SAFE_DELETE(IconRip[i]);
 	}
+
+	for (int i = 0; i < PLAYER_MAX; i++)
+	{
+		SAFE_DELETE(OKRip[i]);
+	}
+
+
 }
 
 //===================================================================================
@@ -318,6 +331,12 @@ void SceneSelect::Update()
 		}
 	}
 
+	// OK波紋　追加
+	for (int i = 0; i < PLAYER_MAX; i++)
+	{
+		OKRip[i]->Update();
+	}
+
 	//ナンバーエフェクト
 	Number_Effect::Update();
 
@@ -330,6 +349,8 @@ void SceneSelect::Update()
 		//　Aボタン押したら
 		if (KEY_Get(KEY_ENTER) == 3)
 		{
+			//　自分の準備OKを光らす
+			OKRip[SOCKET_MANAGER->GetID()]->Action();
 			step = STEP::START_OK;
 		}
 
@@ -370,20 +391,29 @@ void SceneSelect::Update()
 				//MainFrame->ChangeScene(new SceneMain());	
 
 			   step = STEP::GAME;
-
+			   
 		   }
 
 	}
 		break;
 	case STEP::GAME:
 
+		FadeControl::Setting(FadeControl::FADE_OUT, 26);
+		step = STEP::GAME_FADE;
 		//if (KEY_Get(KEY_ENTER, 0) == 3)
+		//{
+		//	MainFrame->ChangeScene(new SceneMain());
+		//}
+
+		break;
+	case STEP::GAME_FADE: //　フェード作ります
+
+		if (FadeControl::isFadeOut == true)
 		{
 			MainFrame->ChangeScene(new SceneMain());
 		}
 
 		break;
-
 	default:
 
 
@@ -428,6 +458,7 @@ void SceneSelect::Render()
 
 	// アクションUI
 	image[IMAGE::ACTION]->Render(1060, 500, 256, 256, 0, 0, 256, 256);
+	image[IMAGE::INFO]->Render(600, 0);
 
 
 	// 点のアニメ用変数
@@ -440,7 +471,6 @@ void SceneSelect::Render()
 		tenAnime++;
 		if (tenAnime >= 3){ tenAnime = 0; }
 	}
-
 
 
 	for (int i = 0; i < PLAYER_MAX; i++)
@@ -456,7 +486,8 @@ void SceneSelect::Render()
 		}
 		// 文字アニメスイッチ
 		if (isActivePlayer[i] == true)
-		{	// 出て行ったら・・
+		{
+			// 出て行ったら・・
 			if (SOCKET_MANAGER->GetUser(i).com != UserData::ACTIVE_USER)
 			{
 				// 初期化
@@ -505,7 +536,10 @@ void SceneSelect::Render()
 			// 準備中？準備OK
 			image[(!SOCKET_MANAGER->GetUser(i).isReady) ? IMAGE::WAIT : IMAGE::OK]->SetARGB(alpha[i], 255, 255, 255);
 			image[(!SOCKET_MANAGER->GetUser(i).isReady) ? IMAGE::WAIT : IMAGE::OK]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64);
-
+		
+			// 準備OK波紋　追加
+			OKRip[i]->Render(396 + moveX[i], 136 + i * 96);
+			
 		}
 		else // 参加していなかったら
 		{
