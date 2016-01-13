@@ -64,6 +64,10 @@ SE_Manager::DATA all_dataS[] =
 	{ "¹‘”j‚è", "DATA/Sound/SE/rend/rend_seisho.wav", 1, false },
 	{ "¹‘”j‚è2", "DATA/Sound/SE/rend/rend_seisho2.wav", 1, false },
 	{ "¹‘”j‚è3", "DATA/Sound/SE/rend/rend_seisho3.wav", 1, false },
+	{ "ƒgƒCƒŒ”j‚è", "DATA/Sound/SE/rend/rend_wc_paper.wav", 1, false },
+	{ "ƒgƒCƒŒ”j‚è2", "DATA/Sound/SE/rend/rend_wc_paper2.wav", 1, false },
+	{ "‚¨‹à”j‚è", "DATA/Sound/SE/rend/rend_money.wav", 1, false },
+	{ "‚¨‹à”j‚è2", "DATA/Sound/SE/rend/rend_money2.wav", 1, false },
 	{ "END", nullptr }
 };
 

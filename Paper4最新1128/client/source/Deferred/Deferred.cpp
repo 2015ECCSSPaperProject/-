@@ -65,6 +65,10 @@ void Deferred::Init()
 	// 計算用PointLight
 	infoPointLight = new iex2DObj(InfoPL_X, InfoPL_Y, IEX2D_FLOAT4_SYSTEMMEM);
 
+	// 全部一括に保存　環境マップのために
+	all = new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_RENDERTARGET);
+
+
 	// 露光レベル
 	exposure = 0.0f;
 	// 輝度レベル
@@ -135,6 +139,9 @@ Deferred::~Deferred()
 
 	// infoPointLight
 	ReleaseSurface(infoPointLight);
+
+	// ollSurface
+	ReleaseSurface(all);
 
 	//BackBufferSurface
 	backbuffer->Release();
@@ -1257,14 +1264,17 @@ void Deferred::ShadowEndL()
 	
 	/*_____________________________________________________________________________*/
 
+
+	///ビューポートの復元
+	iexSystem::Device->SetViewport(&orgViewport);
+
+
 	// レンダーターゲットの復元
 	iexSystem::Device->SetRenderTarget(0, backbuffer);
 
 	// ステンシルバッファの復元
 	iexSystem::Device->SetDepthStencilSurface(backbufferZ);
 
-	///ビューポートの復元
-	iexSystem::Device->SetViewport(&orgViewport);
 }
 
 // シャドウの描画
@@ -1312,7 +1322,7 @@ void Deferred::ShadowSetting(const float ShadowStrength, const float AdjustValue
 
 
 //***********************************
-///				Rendering
+///				Render
 //***********************************
 
 // 最後のスクリーンを作る
@@ -1424,6 +1434,54 @@ void Deferred::DefaultRender()
 
 }
 
+/*****************************/
+//	OLLRender
+/*****************************/
+void Deferred::ClearAllRender()
+{
+
+	// まずは今のサーフェイスを保存
+	iexSystem::GetDevice()->GetRenderTarget(0, &savebackbuffer);
+	// フォワードをセット
+	all->RenderTarget(0);
+	// フォワード画面クリア
+	iexSystem::GetDevice()->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x00000000, 1.0f, 0);
+
+	iexSystem::GetDevice()->SetRenderTarget(0, savebackbuffer);
+
+
+}
+
+void Deferred::AllBegin()
+{
+	// まずは今のサーフェイスを保存
+	iexSystem::GetDevice()->GetRenderTarget(0, &savebackbuffer);
+	// forward用サーフェイスに変える
+	all->RenderTarget(0);
+
+
+
+}
+
+void Deferred::AllEnd()
+{
+	// ★今は　環境用に
+	//作った情報テクスチャを転送
+	//shaderD->SetValue("EnvFullBuf", all);
+
+	iexSystem::GetDevice()->SetRenderTarget(0, savebackbuffer);
+
+
+}
+
+void Deferred::AllRender()
+{
+
+
+
+}
+
+
 //******************************************
 ///				texture
 //******************************************
@@ -1492,6 +1550,9 @@ iex2DObj* Deferred::GetTex(const int type)
 		break;
 	case SCREEN:
 		ret = screen;
+		break;
+	case ALLSCREEN:
+		ret = all;
 		break;
 	}
 

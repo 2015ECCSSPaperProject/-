@@ -30,7 +30,7 @@ enum SURFACE_NAME{
 	DIFFUSE, NORMAL, SPECULAR, DEPTH,		//G-Buffer
 	LIGHT, SPEC, DOF, SHADOW, SHADOWMAP, SHADOWMAPL,
 	BLOOMSCREEN, BLOOM, GLOWSCREEN, GLOW, FORWARD, DOWNSAMPLE,INFOPL,
-	SCREEN
+	SCREEN, ALLSCREEN
 };
 
 class Deferred
@@ -148,6 +148,15 @@ public:
 	
 	void DefaultRender();// デフォルト
 
+
+	/********************/
+	// OllRender
+	/********************/
+	void ClearAllRender();
+	void AllBegin();
+	void AllEnd();
+	void AllRender();
+
 	//ゲッター・セッター
 	iex2DObj* GetTex(const int type); //テクスチャを取ってくる
 
@@ -181,6 +190,10 @@ private:
 
 	// PointLight
 	iex2DObj* infoPointLight;	// 情報用PointLight用
+
+	// AllEnv
+	iex2DObj* all;				// Deferred+Forward+Bloom
+
 
 	// 露光レベル
 	float exposure;
