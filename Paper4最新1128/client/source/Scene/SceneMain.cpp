@@ -475,7 +475,7 @@ void SceneMain::Render()
 		}
 
 
-		SurfaceRender();
+		//SurfaceRender();
 
 		//フェード処理
 		FadeControl::Render();

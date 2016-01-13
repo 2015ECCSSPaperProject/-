@@ -180,7 +180,8 @@ void MyPlayer::Control_all()
 
 			if (FLAG[(int)select_skill] == (int)PLAYER_SKILL::KABUTO)
 			{
-				kabuto_timer = 20 * 60;
+				kabuto_timer = 600;
+				m_controlDesc.rendFlag ^= (int)PLAYER_FLAG::BARRIER;
 				barrier->Action();
 			}
 		}

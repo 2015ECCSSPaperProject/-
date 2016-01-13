@@ -28,12 +28,13 @@ enum class PLAYER_SKILL
 };
 
 
-enum class REND_FLAG
+enum class PLAYER_FLAG	// フラグ全般にする
 {
-	RIGHT = 0x1,
-	DOWN = 0x2,
-	LEFT = 0x4,
-	UP = 0x8
+	// クライアントで使用するフラグ
+	REND = 0x1,
+
+	// サーバーで使用するフラグ
+	BARRIER = 0x1,
 };
 
 

@@ -461,7 +461,7 @@ void BasePlayer::Action::Rend::Update()
 	const float mouse_move = sqrtf(me->m_controlDesc.mouseX*me->m_controlDesc.mouseX + me->m_controlDesc.mouseY + me->m_controlDesc.mouseY);
 	if (mouse_move > 80000)
 	{
-		me->m_controlDesc.rendFlag |= (BYTE)REND_FLAG::RIGHT;
+		me->m_controlDesc.rendFlag |= (BYTE)PLAYER_FLAG::REND;
 	}
 
 	// 破くモーションのフレーム

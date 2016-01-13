@@ -9,7 +9,7 @@
 Barrier::Barrier()
 {
 	// ƒoƒŠƒA[
-	barrier = new AnimationUV("DATA/uvAnim/barrier.IMO", 0.0025f, -0.0075, 600, false, 10, 580);
+	barrier = new AnimationUV("DATA/uvAnim/barrier.IMO", 0.0025f, -0.0075f, 600, false, 10, 580);
 
 }
 

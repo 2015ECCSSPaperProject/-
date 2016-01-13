@@ -361,7 +361,7 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 		if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::GUN) me->select_skill = SKILL::GUN;
 		else if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::KABUTO)
 		{
-			me->kabuto_timer = 20 * 60;
+			me->kabuto_timer = 600;
 			return;
 		}
 		else if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::SYURIKEN) me->select_skill = SKILL::SYURIKEN;
@@ -703,7 +703,7 @@ void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
 	if (!rended)
 	{
 		// ”j‚¯ƒRƒ}ƒ“ƒh‚ªON‚È‚ç
-		if (_ControlDesc.rendFlag & (BYTE)REND_FLAG::RIGHT)
+		if (_ControlDesc.rendFlag & (BYTE)PLAYER_FLAG::REND)
 		{
 			me->motion_no = 2;
 			me->Set_motion(2);
