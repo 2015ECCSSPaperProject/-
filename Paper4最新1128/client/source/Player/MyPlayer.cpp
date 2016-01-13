@@ -307,7 +307,32 @@ void MyPlayer::RendMagazineSE()
 }
 void MyPlayer::RendMoneySE()
 {
-
+	switch (se_step)
+	{
+	case 0:
+		// 破き始め
+		if (models[(int)model_part]->GetParam(5) == 1)
+		{
+			se_receive = se->Play("お金破り", true);
+			se_step++;
+		}
+		break;
+	case 1:
+		// 破き終わり
+		if (models[(int)model_part]->GetParam(5) == 2)
+		{
+			se->Stop("お金破り", se_receive);
+			se_step++;
+		}
+		break;
+	case 2:
+		// 雄叫び
+		if (models[(int)model_part]->GetParam(5) == 3)
+		{
+			se->Play("サイン破り2");
+			se_step = 99;	// ステップ終わり
+		}
+	}
 }
 void MyPlayer::RendSeisyoSE()
 {
@@ -368,7 +393,6 @@ void MyPlayer::RendShinbunSE()
 	{
 	case 0:
 		// 紙の音的な
-
 		se_step++;
 		break;
 
@@ -392,11 +416,38 @@ void MyPlayer::RendShinbunSE()
 }
 void MyPlayer::RendToileSE()
 {
+	switch (se_step)
+	{
+	case 0:
+		// 最初から鳴らす
+		se_receive = se->Play("トイレ破り");
+		se_step++;
 
+		break;
+	case 1:
+		// 破き
+		if (models[(int)model_part]->GetParam(5) == 1)
+		{
+			se->Stop("トイレ破り", se_receive);
+			se->Play("トイレ破り2");
+			se_step = 99;	// ステップ終わり
+		}
+		break;
+	}
 }
 void MyPlayer::RendZasshiSE()
 {
-
+	switch (se_step)
+	{
+	case 0:
+		// 破き始め
+		if (models[(int)model_part]->GetParam(5) == 1)
+		{
+			se_receive = se->Play("短い破り");
+			se_step = 99;	// ステップ終わり
+		}
+		break;
+	}
 }
 
 void MyPlayer::Set_action(ACTION_PART part)
