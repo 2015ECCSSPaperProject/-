@@ -347,7 +347,7 @@ void SceneSelect::Update()
 	{
 	case STEP::START_NO:
 		//　Aボタン押したら
-		if (KEY_Get(KEY_ENTER) == 3)
+		if (KEY_Get(KEY_ENTER) == 3 || KeyBoardTRG(MOUSE_LEFT) || KeyBoardTRG(MOUSE_RIGHT))
 		{
 			//　自分の準備OKを光らす
 			OKRip[SOCKET_MANAGER->GetID()]->Action();
@@ -358,7 +358,7 @@ void SceneSelect::Update()
 	case STEP::START_OK:
 	{
 		   //　まだ準備できてないので戻ります
-		   if (KEY_Get(KEY_ENTER) == 3)
+		if (KEY_Get(KEY_ENTER) == 3 || KeyBoardTRG(MOUSE_LEFT) || KeyBoardTRG(MOUSE_RIGHT))
 		   {
 			   step = STEP::START_NO;
 		   }
@@ -446,7 +446,7 @@ void SceneSelect::Render()
 	// 背景
 	static float uvMove = 0;
 	uvMove += 0.2f;
-	image[IMAGE::BACK2]->RenderBack(0, 0, 1280, 720, uvMove, 0, 1280, 720);
+	image[IMAGE::BACK2]->RenderBack(0, 0, 1280, 720, (int)uvMove, 0, 1280, 720);
 
 	// キャラクター
 	chara.obj->Update();

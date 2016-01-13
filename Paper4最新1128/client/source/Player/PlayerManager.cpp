@@ -185,6 +185,14 @@ void PlayerManager::Render(iexShader *shader, char *name)
 	}
 }
 
+void PlayerManager::Render_forword()
+{
+	for (int i = 0; i < PLAYER_MAX; i++)
+	{
+		players[i]->Render_forword();
+	}
+}
+
 void PlayerManager::EffectRender()
 {
 	for (int i = 0; i < PLAYER_MAX; i++)

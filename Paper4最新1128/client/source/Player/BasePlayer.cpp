@@ -3,7 +3,7 @@
 #include	"BasePlayer.h"
 
 #include	"../../../share_data/Enum_public.h"
-//#include	"../Mouse/Mouse.h"
+#include	"../Barrier/Barrier.h"
 
 #include	"PlayerManager.h"
 #include	"../sound/SoundManager.h"
@@ -59,6 +59,8 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	manhole_no_haninai = false;
 	isMyNunber = false;
 	kind_paper_obj = -1;
+	kabuto_timer = 0;
+	barrier = new Barrier;
 
 	// 3D実体
 	models[(int)MODEL::NORMAL]	 = objs[(int)PlayerManager::CLONE_TYPE::NORMAL]->Clone();
@@ -108,12 +110,10 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	action[(int)ACTION_PART::MOVE]		 = new BasePlayer::Action::Move(this);
 	action[(int)ACTION_PART::MOVE_TARGET]= new BasePlayer::Action::MoveTarget(this);
 	action[(int)ACTION_PART::ATTACK]	 = new BasePlayer::Action::Attack(this);
-	action[(int)ACTION_PART::PASTE]		 = new BasePlayer::Action::Paste(this);
 	action[(int)ACTION_PART::REND]		 = new BasePlayer::Action::Rend(this);
 	action[(int)ACTION_PART::FREEZE]	 = new BasePlayer::Action::Die(this);
 	action[(int)ACTION_PART::DIE]		 = new BasePlayer::Action::Die(this);
 	action[(int)ACTION_PART::RESPAWN]	 = new BasePlayer::Action::Respawn(this);
-	action[(int)ACTION_PART::PLANE]		 = new BasePlayer::Action::Hikouki(this);
 	action[(int)ACTION_PART::GUN]		 = new BasePlayer::Action::Gun(this);
 	action[(int)ACTION_PART::MANHOLE] = new BasePlayer::Action::Manhole(this);
 	action[(int)ACTION_PART::THROUGH] = new BasePlayer::Action::Through(this);
@@ -138,6 +138,7 @@ void BasePlayer::Release()
 	{
 		SAFE_DELETE(action[i]);
 	}
+	delete barrier;
 }
 
 
@@ -158,11 +159,11 @@ void BasePlayer::Update()
 	// エフェクト更新
 	EffectUpdate();
 
-	if (KEY(KEY_B)==3)
-	{
-		ExplosionAction();
-		EffectFireFlour(pos + Get_Flont(), FIRE_COLOR::BLUE, 3);
-	}
+	//if (KEY(KEY_B)==3)
+	//{
+	//	ExplosionAction();
+	//	EffectFireFlour(pos + Get_Flont(), FIRE_COLOR::BLUE, 3);
+	//}
 
 	// スキルゲージ更新
 	for (int i = 0; i < (int)SKILL::MAX; i++)
@@ -171,6 +172,12 @@ void BasePlayer::Update()
 		if (skill_data[i].do_action == action_part || action_part == ACTION_PART::TRANS_FORM || action_part == ACTION_PART::SYURIKEN) continue;
 		(skill_data[i].wait_time > 0) ? skill_data[i].wait_time-- : skill_data[i].wait_time &= 0x00000000;
 	}
+
+	if (kabuto_timer & 0xffff)	// 1以上
+	{
+		(--kabuto_timer <= 0) ? barrier->Stop() : barrier->Update(pos+Vector3(0,5,0), Vector3(matView._13, matView._23, matView._33), .5f);
+	}
+
 }
 
 
@@ -186,6 +193,14 @@ void BasePlayer::Render(iexShader *shader, char *name)
 	else
 	{
 		action[(unsigned int)action_part]->Render();
+	}
+}
+
+void BasePlayer::Render_forword()
+{
+	if (kabuto_timer & 0xffff)
+	{
+		barrier->Render();
 	}
 }
 
@@ -419,46 +434,6 @@ void BasePlayer::Action::Attack::Render(iexShader *shader, char *name)
 	}
 }
 
-
-
-
-//*****************************************************************************
-//
-//		「ポスター貼り付け」状態処理
-//
-//*****************************************************************************
-
-void BasePlayer::Action::Paste::Initialize()
-{
-	// 入力情報初期化
-	me->m_controlDesc.controlFlag &= 0x00000000;
-	me->m_controlDesc.moveFlag &= 0x00000000;
-	me->m_controlDesc.rendFlag &= 0x00000000;
-
-	me->model_part = MODEL::NORMAL;
-
-	me->Set_motion(3);
-}
-
-void BasePlayer::Action::Paste::Update()
-{
-	Update_obj();
-}
-
-void BasePlayer::Action::Paste::Render(iexShader *shader, char *name)
-{
-	me->models[(int)me->model_part]->Update();
-	if (shader)
-	{
-		me->models[(int)me->model_part]->Render(shader, name);
-	}
-	else
-	{
-		me->models[(int)me->model_part]->Render();
-	}
-}
-
-
 //*****************************************************************************
 //
 //		「ポスター破る」状態処理
@@ -647,39 +622,6 @@ void BasePlayer::Action::Respawn::Render(iexShader *shader, char *name)
 		flashing = 0;
 	}
 }
-
-
-
-//*****************************************************************************
-//
-//		「紙ヒコーキ」状態処理
-//
-//*****************************************************************************
-
-void BasePlayer::Action::Hikouki::Initialize()
-{
-	me->model_part = MODEL::PLANE;
-}
-
-void BasePlayer::Action::Hikouki::Update()
-{
-	Update_obj();
-}
-
-void BasePlayer::Action::Hikouki::Render(iexShader *shader, char *name)
-{
-	me->models[(int)me->model_part]->Update();
-	if (shader)
-	{
-		me->models[(int)me->model_part]->Render(shader, name);
-	}
-	else
-	{
-		me->models[(int)me->model_part]->Render();
-	}
-}
-
-
 
 
 //*****************************************************************************

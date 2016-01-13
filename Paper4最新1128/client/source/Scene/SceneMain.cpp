@@ -357,6 +357,7 @@ void SceneMain::Render()
 		DeferredManager.ForwardBigin();
 		player_mng->EffectRender();
 		particle->Render();
+		player_mng->Render_forword();
 
 		// ƒ¿ƒeƒXƒg 
 		iexSystem::Device->
@@ -368,7 +369,8 @@ void SceneMain::Render()
 
 		/*š‚±‚Ì’†‚É‚â‚¶‚é‚µ“ü‚ê‚Ä*/
 	
-		paper_obj_mng->Render_mark(player_mng->Get_player(SOCKET_MANAGER->GetID()));
+		camera->Render_mark();
+
 
 		iexSystem::Device->
 			SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);

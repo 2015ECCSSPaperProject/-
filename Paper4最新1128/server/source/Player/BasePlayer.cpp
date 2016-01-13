@@ -21,6 +21,7 @@
 
 const float CAN_TARGET_DIST = 40.0f;
 const bool auto_target = false;
+const bool thrash_rend = true;
 
 
 //****************************************************************************************************************
@@ -49,6 +50,7 @@ void BasePlayer::Init_pos()
 	isJump = isLand = attackFlag = false;
 	jump_pow = 0;
 	invincible = false;
+	kabuto_timer = 0;
 	god_gage = 0;
 	mynumber = m_id;
 	isManhole = false;
@@ -87,6 +89,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	invincible = false;
 	god_gage = 0;
 	isManhole = false;
+	push_rend = false;
 
 	skill_data[(int)SKILL::GUN].do_action = ACTION_PART::GUN;
 	skill_data[(int)SKILL::SYURIKEN].do_action = ACTION_PART::SYURIKEN;
@@ -125,12 +128,10 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	action[(int)ACTION_PART::MOVE] = new BasePlayer::Action::Move(this);
 	action[(int)ACTION_PART::MOVE_TARGET] = new BasePlayer::Action::MoveTarget(this);
 	action[(int)ACTION_PART::ATTACK] = new BasePlayer::Action::Attack(this);
-	action[(int)ACTION_PART::PASTE] = new BasePlayer::Action::Paste(this);
 	action[(int)ACTION_PART::REND] = new BasePlayer::Action::Rend(this);
 	action[(int)ACTION_PART::FREEZE] = new BasePlayer::Action::Freeze(this);
 	action[(int)ACTION_PART::DIE] = new BasePlayer::Action::Die(this);
 	action[(int)ACTION_PART::RESPAWN] = new BasePlayer::Action::Respawn(this);
-	action[(int)ACTION_PART::PLANE] = new BasePlayer::Action::Hikouki(this);
 	action[(int)ACTION_PART::GUN] = new BasePlayer::Action::Gun(this);
 	action[(int)ACTION_PART::MANHOLE] = new BasePlayer::Action::Manhole(this);
 	action[(int)ACTION_PART::THROUGH] = new BasePlayer::Action::Through(this);
@@ -186,15 +187,15 @@ void BasePlayer::Update()
 	// 必殺技No
 	controlDesc.skillFlag = ServerManager::GetDesc(m_id).skillFlag;
 
-	//	コントローラーに操作パラメータをパス
-	action[(int)action_part]->Update(controlDesc);
+	// 兜の無敵時間
+	if (kabuto_timer & 0xffff)
+	{
+		invincible = true;
+		if (--kabuto_timer <= 0) invincible = false;
+	}
 
-	// スキルゲージ更新
-	//for (int i = 0; i < (int)SKILL::MAX; i++)
-	//{
-	//	if (!skill_data[i].unlock)break;
-	//	(skill_data[i].wait_time > 0) ? skill_data[i].wait_time-- : skill_data[i].wait_time &= 0x00000000;
-	//}
+	// アップデート！！
+	action[(int)action_part]->Update(controlDesc);
 
 	if (stage->Collision(pos, &move, 5, 2))
 	{
@@ -264,7 +265,6 @@ void BasePlayer::Action::Move::Initialize()
 
 	me->motion_no = 1;
 	me->Set_motion(1);
-	trg_target = true;
 
 	me->poster_num = -1;
 }
@@ -278,7 +278,7 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT) AxisX += 1;
 	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY += 1;
 	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY += -1;
-	 
+
 	float pow = sqrtf(AxisX*AxisX + AxisY*AxisY);
 	if (pow)
 	{
@@ -360,20 +360,14 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 
 		// スキルアクション発動!!!
 		if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::GUN) me->select_skill = SKILL::GUN;
-		else if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::KABUTO) me->select_skill = SKILL::KABUTO;
+		else if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::KABUTO)
+		{
+			me->kabuto_timer = 20 * 60;
+			return;
+		}
 		else if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::SYURIKEN) me->select_skill = SKILL::SYURIKEN;
-		if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::ZENRYOKU) me->select_skill = SKILL::ZENRYOKU;
 		me->reserve_action = me->skill_data[(int)me->select_skill].do_action;
 		me->Change_action(ACTION_PART::TRANS_FORM);
-
-		//if (me->skill_data[(int)me->select_skill].unlock && me->skill_data[(int)me->select_skill].wait_time == 0)
-		//{
-		//	// スキルアクション発動
-		//	me->Change_action(me->skill_data[(int)me->select_skill].do_action);
-
-		//	// クールタイム設定
-		//	me->skill_data[(int)me->select_skill].wait_time = me->skill_data[(int)me->select_skill].cool_time;
-		//}
 	}
 
 	//===========================================================================
@@ -395,6 +389,10 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 			me->Change_action(ACTION_PART::MANHOLE);
 		}
 	}
+	else
+	{
+		me->push_rend = false;
+	}
 
 	//===========================================================================
 	//	真ん中クリック処理
@@ -408,15 +406,11 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	}
 
 	//	自動ターゲッティング
-	if (auto_target)
+	me->poster_num = paper_obj_mng->Can_targeting(me, 10, 360);
+	if (me->poster_num != -1 && auto_target)
 	{
-		me->poster_num = paper_obj_mng->Can_targeting(me, CAN_TARGET_DIST, 45);
-
-		if (me->poster_num != -1)
-		{
-			me->Change_action(ACTION_PART::MOVE_TARGET);
-			return;
-		}
+		me->Change_action(ACTION_PART::MOVE_TARGET);
+		return;
 	}
 }
 
@@ -439,12 +433,12 @@ void BasePlayer::Action::MoveTarget::Update(const CONTROL_DESC &_ControlDesc)
 {
 	// 距離範囲外
 	if ((paper_obj_mng->Get_pos(me->poster_num)-me->pos).Length() >CAN_TARGET_DIST * 1.5f
-	//|| !(_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
-	)
+		|| (!auto_target && !(_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)))
 	{
-		me->Change_action(ACTION_PART::MOVE);
+			me->Change_action(ACTION_PART::MOVE);
 		return;
 	}
+	
 
 	float AxisX = 0, AxisY = 0;
 
@@ -557,7 +551,7 @@ void BasePlayer::Action::MoveTarget::Update(const CONTROL_DESC &_ControlDesc)
 
 	//===========================================================================
 	//	左クリック処理
-	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
+	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK && !me->push_rend)
 	{
 		if (auto_target)
 		{
@@ -662,44 +656,6 @@ void BasePlayer::Action::Attack::Update(const CONTROL_DESC &_ControlDesc)
 	
 }
 
-
-//*****************************************************************************
-//
-//		「ポスター貼り付け」状態処理
-//
-//*****************************************************************************
-
-void BasePlayer::Action::Paste::Initialize()
-{
-	timer = 0;
-	me->move = VECTOR_ZERO;
-
-	me->model_part = MODEL::NORMAL;
-	me->Set_motion(3);
-
-	// ポスターに応じて座標と向きを変更
-	const static float dist = 5.0f;
-	me->pos = paper_obj_mng->Get_pos(me->poster_num);
-	me->angleY = paper_obj_mng->Get_angle(me->poster_num) + PI;
-	me->pos += (Vector3(-sinf(me->angleY), 0, -cosf(me->angleY)) * dist);
-}
-
-void BasePlayer::Action::Paste::Update(const CONTROL_DESC &_ControlDesc)
-{
-	me->motion_no = 3;
-	if (timer++ > 60)
-	{
-		me->Change_action(ACTION_PART::MOVE);
-	}
-
-	if (timer == 45)
-	{
-		// 貼り付ける処理
-		//poster_mng->Paste_poster(me->mynumber, me->poster_num);
-	}
-}
-
-
 //*****************************************************************************
 //
 //		「ポスター破る」状態処理
@@ -722,19 +678,22 @@ void BasePlayer::Action::Rend::Initialize()
 	me->motion_no = 1;
 	me->Set_motion(1);
 
-	me->motion_no = 2;
-	me->Set_motion(2);
-	rended = true;
-
-	// 送信するデータプッシュ
-	for (int i = 0; i < PLAYER_MAX; i++)
+	if (!thrash_rend)
 	{
-		PaperData data;
-		data.from = me->mynumber;
-		data.ID = me->poster_num;
-		player_mng->Get_player(i)->paperqueue->Push(data);
+		me->motion_no = 2;
+		me->Set_motion(2);
+
+		// 送信するデータプッシュ
+		for (int i = 0; i < PLAYER_MAX; i++)
+		{
+			PaperData data;
+			data.from = me->mynumber;
+			data.ID = me->poster_num;
+			player_mng->Get_player(i)->paperqueue->Push(data);
+		}
+		me->Change_action(ACTION_PART::REND_OBJ);
+		me->push_rend = true;
 	}
-	me->Change_action(ACTION_PART::REND_OBJ);
 }
 
 void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
@@ -758,6 +717,7 @@ void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
 				player_mng->Get_player( i )->paperqueue->Push( data );
 			}
 			me->Change_action(ACTION_PART::REND_OBJ);
+			me->push_rend = true;
 		}
 		// マウス離したらモード戻す
 		else if ((_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK) == 0)
@@ -781,10 +741,9 @@ void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
 		else if (me->models[(int)me->model_part]->GetParam(0) == 1)
 		{
 			// 破く処理
+			score->Add(paper_obj_mng->Get_point(me->poster_num), me->mynumber);
 			paper_obj_mng->Rend(me->poster_num);
-			score->Add(1, me->mynumber);	// 仮で1点
 			me->god_gage++;
-			//me->Check_unlock(++me->god_gage);	// 神ゲージUP
 		}
 	}
 }
@@ -859,6 +818,9 @@ void BasePlayer::Action::Respawn::Update(const CONTROL_DESC &_ControlDesc)
 			me->invincible = false;
 			me->Change_action(ACTION_PART::MOVE);
 		}
+		me->move.x *= .5f;
+		me->move.z *= .5f;
+		me->move.y -= me->fallspeed;
 	}
 
 	// 飛来中
@@ -884,11 +846,6 @@ void BasePlayer::Action::Respawn::Update(const CONTROL_DESC &_ControlDesc)
 		// 重力による落下
 		me->move.y = -(me->fallspeed);
 
-		//if (invincible_time++ > 30)
-		//{
-		//	me->invincible = false;
-		//}
-
 		// 着地
 		if (me->isLand || _ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK || _ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::RIGHT_CLICK)
 		{
@@ -897,84 +854,6 @@ void BasePlayer::Action::Respawn::Update(const CONTROL_DESC &_ControlDesc)
 		}
 	}
 }
-
-
-//*****************************************************************************
-//
-//		「紙ヒコーキ」状態処理
-//
-//*****************************************************************************
-
-void BasePlayer::Action::Hikouki::Initialize()
-{
-	me->model_part = MODEL::PLANE;
-	// 0フレームにリセット
-	me->models[(int)me->model_part]->SetFrame(0);
-}
-
-void BasePlayer::Action::Hikouki::Update(const CONTROL_DESC &_ControlDesc)
-{
-	float AxisX = 0, AxisY = 0;
-
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT) AxisX = -1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT) AxisX = 1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY = 1;
-	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY = -1;
-
-	// ジャンプ
-	if (!me->isJump && me->isLand)
-	{
-		if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::SPACE)
-		{
-			me->jump_pow = 2.0f;
-			me->isJump = true;
-		}
-	}
-	if (me->isJump)
-	{
-		me->move.y = me->jump_pow;
-		me->jump_pow -= me->fallspeed;
-	}
-
-	//アングル処理	角度補正
-	float	work;
-	work = _ControlDesc.mouseX *0.000001f;
-	if (work > 0.1f) work = 0.1f;
-	me->angleY += work;// Angleに加算
-
-
-	Vector3 front(sinf(me->angleY), 0, cosf(me->angleY));
-	Vector3 right(sinf(me->angleY + PI * .5f), 0, cosf(me->angleY + PI * .5f));
-
-	//me->angle.y += Mouse::Get_axis_x() * .065f;
-
-
-	front.Normalize();
-	right.Normalize();
-	// 移動量決定
-	me->move.x = (front.x*AxisY + right.x*AxisX) * (me->speed);
-	me->move.z = (front.z*AxisY + right.z*AxisX) * (me->speed);
-
-	// 止まってる状態
-	if (me->move.Length() == 0)
-	{
-		// 待機モーション
-		//Set_motion(1);
-	}
-	// 何かしら動いてる状態
-	else
-	{
-		// 移動モーション
-		//Set_motion(0);
-
-
-		// なうモーション
-		//Set_motion()
-	}
-	me->move += Vector3(0, me->move.y - me->fallspeed, 0);
-}
-
-
 
 //*****************************************************************************
 //
@@ -1199,20 +1078,6 @@ void BasePlayer::Action::RendObj::Initialize()
 	me->Set_motion(1);
 
 	ServerManager::ResetControl(me->mynumber);
-
-	//enum class SOEJI
-	//{
-	//	VS_CALENDAR, VS_MONEY, VS_SIGN, VS_SHINBUN, VS_WC_PAPER, VS_ZASSHI, VS_MAGAZINE, MAX
-	//};
-	//// 各破るモーションが終わる時間
-	//int timer_list[(int)SOEJI::MAX];
-	//timer_list[(int)SOEJI::VS_CALENDAR] = 118;
-	//timer_list[(int)SOEJI::VS_MONEY] = 140;
-	//timer_list[(int)SOEJI::VS_MAGAZINE] = 53;
-	//timer_list[(int)SOEJI::VS_SHINBUN] = 99;
-	//timer_list[(int)SOEJI::VS_SIGN] = 58;
-	//timer_list[(int)SOEJI::VS_WC_PAPER] = 169;
-	//timer_list[(int)SOEJI::VS_ZASSHI] = 49;
 
 	rend_timer = 10;
 

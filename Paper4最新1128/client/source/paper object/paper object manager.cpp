@@ -18,13 +18,11 @@ Paper_obj_mng::~Paper_obj_mng()
 	delete original_flyer;
 	for (unsigned i = 0; i < obj_array.size(); i++)
 		delete obj_array[i];
-	SAFE_DELETE(mark);
 }
 
 void Paper_obj_mng::Initialize()
 {
 	Load();
-	mark = new iex2DObj("DATA/Camera/mark.png");
 }
 
 void Paper_obj_mng::Release()
@@ -62,15 +60,6 @@ void Paper_obj_mng::Render(iexShader *shader, char *name)
 	}
 }
 
-void Paper_obj_mng::Render_mark(BasePlayer *player)
-{
-	for (auto it : obj_array)
-	{
-		//bool isTarget = (it->ca);
-		if (mark)it->Render_mark(mark, false);
-	}
-}
-
 //**************************************************
 
 void Paper_obj_mng::Rend( int index )
@@ -78,6 +67,10 @@ void Paper_obj_mng::Rend( int index )
 	obj_array[index]->Rend();
 }
 
+bool Paper_obj_mng::Can_rend(int index)
+{
+	return obj_array[index]->Can_rend();
+}
 
 int Paper_obj_mng::Get_numof()
 {

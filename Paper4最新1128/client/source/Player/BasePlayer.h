@@ -3,6 +3,7 @@
 #include "../Explosion/Explosion.h"
 class AnimationUV;
 class Explosion;
+class Barrier;
 
 /*	ベースプレイヤー(クライアント)	*/
 
@@ -36,7 +37,7 @@ public:
 	//===============================================
 	//	定数
 	//===============================================
-	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, PASTE, REND, FREEZE, DIE, RESPAWN, PLANE, GUN, MANHOLE, THROUGH, SYURIKEN, TRANS_FORM, REND_OBJ, MAX };
+	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, REND, FREEZE, DIE, RESPAWN, GUN, MANHOLE, THROUGH, SYURIKEN, TRANS_FORM, REND_OBJ, MAX };
 	enum class DO_FLAG{ NONE, ATTACK, PASTE, REND, MAX };
 	enum class MODEL{ NORMAL, DIE, PLANE, GUN, SYURIKEN, REND_CALENDAR, REND_MONEY, REND_SIGN, REND_SHINBUN, REND_WC_PAPER, REND_ZASSHI, REND_MAGAZINE, REND_SEISHO, MAX };
 	enum class SKILL{ GUN, SYURIKEN, KABUTO, ZENRYOKU, MAX };
@@ -59,12 +60,12 @@ protected:
 	iex3DObj		*models[(int)MODEL::MAX];
 
 	POINT			mousePos;		//	マウス座標
-
 	int				motion_no;
 	int				god_gage;
 
 	bool			isMyNunber;
 	int kind_paper_obj;			// 破ってる小物の種類(-1が何も破っていない状態)ヘッダーのインクルードの問題があるのでint型にする
+	int				kabuto_timer;	// 兜(無敵)時間
 
 	//===============================================
 	//	スキルゲージ
@@ -165,20 +166,6 @@ protected:
 		};
 
 		//===========================================
-		//	ポスター貼り付け状態
-		class Paste : public Base
-		{
-		private:
-			int timer;
-		public:
-			Paste(BasePlayer*me) :Base(me){}
-
-			void Initialize();
-			void Update();
-			void Render(iexShader *shader = nullptr, char *name = '\0');
-		};
-
-		//===========================================
 		//	ポスター破り状態
 		class Rend : public Base
 		{
@@ -228,18 +215,6 @@ protected:
 
 		public:
 			Respawn(BasePlayer*me) :Base(me){}
-
-			void Initialize();
-			void Update();
-			void Render(iexShader *shader = nullptr, char *name = '\0');
-		};
-
-		//===========================================
-		//	紙ひこーき状態
-		class Hikouki : public Base
-		{
-		public:
-			Hikouki(BasePlayer*me) :Base(me){}
 
 			void Initialize();
 			void Update();
@@ -327,7 +302,7 @@ protected:
 	//===============================================
 	Action::Base *action[(unsigned int)ACTION_PART::MAX];
 	ACTION_PART action_part;	// 現在のプレイヤーのモード
-
+	Barrier *barrier;			// バリアエフェクト
 	DO_FLAG do_flag;			// Zキー押したら何をするか
 
 
@@ -346,6 +321,7 @@ public:
 	//===============================================
 	virtual void Update();
 	virtual void Render(iexShader *shader = nullptr, char *name = '\0');
+	void Render_forword();
 	
 	//===============================================
 	//	エフェクトの更新と描画

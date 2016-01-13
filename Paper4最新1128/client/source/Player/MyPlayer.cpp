@@ -10,6 +10,7 @@
 #include "../pie_graph/pie_graph.h"
 #include "../Animation/Spread2D.h"
 #include	"../Manhole/Manhole.h"
+#include	"../Barrier/Barrier.h"
 
 //****************************************************************************************************************
 //
@@ -177,6 +178,12 @@ void MyPlayer::Control_all()
 			// スキル撃ったのでクールタイム設定
 			skill_data[(int)select_skill].wait_time = skill_data[(int)select_skill].cool_time;
 			skill_wait = 3;	// 1フレームだけしか送らなかったらたまに反応しないので3フレームぐらい送る
+
+			if (FLAG[(int)select_skill] == (int)PLAYER_SKILL::KABUTO)
+			{
+				kabuto_timer = 20 * 60;
+				barrier->Action();
+			}
 		}
 		//SPI_GET_WHEELSCROLL
 	}

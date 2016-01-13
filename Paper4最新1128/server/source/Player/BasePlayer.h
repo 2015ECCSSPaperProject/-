@@ -33,7 +33,7 @@ public:
 	//===============================================
 	//	定数
 	//===============================================
-	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, PASTE, REND, FREEZE, DIE, RESPAWN, PLANE, GUN, MANHOLE, THROUGH, SYURIKEN, TRANS_FORM, REND_OBJ, MAX };
+	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, REND, FREEZE, DIE, RESPAWN, GUN, MANHOLE, THROUGH, SYURIKEN, TRANS_FORM, REND_OBJ, MAX };
 	enum class DO_FLAG{ NONE, ATTACK, PASTE, REND, MAX };
 	enum class MODEL{ NORMAL, DIE, PLANE, GUN, SYURIKEN, MAX };
 	enum class SKILL{ GUN, SYURIKEN, KABUTO, ZENRYOKU, MAX };
@@ -60,6 +60,7 @@ protected:
 	bool			attackFlag;	// 空中で撃てるのは1回だけ
 	float			jump_pow;
 	bool			invincible;
+	int				kabuto_timer;
 	Vector3			next_manhole_pos;	// 降りた先の、上がった先の座標
 
 	int				god_gage;	// 神ゲージ(これを紙を破った枚数にする)
@@ -95,6 +96,7 @@ protected:
 	MODEL			model_part;
 	bool			isManhole;
 	int mynumber;
+	bool			push_rend;	// 押しっぱ破り防止
 
 
 	//===============================================
@@ -124,8 +126,6 @@ protected:
 		//	移動状態(TPS)
 		class Move : public Base
 		{
-		private:
-			bool trg_target;
 		public:
 			Move(BasePlayer*me) :Base(me){}
 
@@ -153,19 +153,6 @@ protected:
 
 		public:
 			Attack(BasePlayer*me) :Base(me){}
-
-			void Initialize();
-			void Update(const CONTROL_DESC &_ControlDesc);
-		};
-
-		//===========================================
-		//	ポスター貼り付け状態
-		class Paste : public Base
-		{
-		private:
-			int timer;
-		public:
-			Paste(BasePlayer*me) :Base(me){}
 
 			void Initialize();
 			void Update(const CONTROL_DESC &_ControlDesc);
@@ -220,17 +207,6 @@ protected:
 
 		public:
 			Respawn(BasePlayer*me) :Base(me){}
-
-			void Initialize();
-			void Update(const CONTROL_DESC &_ControlDesc);
-		};
-
-		//===========================================
-		//	紙ひこーき状態
-		class Hikouki : public Base
-		{
-		public:
-			Hikouki(BasePlayer*me) :Base(me){}
 
 			void Initialize();
 			void Update(const CONTROL_DESC &_ControlDesc);
