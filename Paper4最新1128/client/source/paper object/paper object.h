@@ -28,7 +28,7 @@ public:
 
 	virtual KIND_PAPER_OBJECT Get_kind() = 0;
 
-	void Render_mark(iex2DObj *obj, bool target);	// ã‚Ì–îˆó
+	bool Can_rend();
 
 	void Rend(); // ”j‚é
 

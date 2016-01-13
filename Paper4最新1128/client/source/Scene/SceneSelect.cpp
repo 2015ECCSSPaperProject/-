@@ -416,7 +416,7 @@ void SceneSelect::Render()
 	// ”wŒi
 	static float uvMove = 0;
 	uvMove += 0.2f;
-	image[IMAGE::BACK2]->RenderBack(0, 0, 1280, 720, uvMove, 0, 1280, 720);
+	image[IMAGE::BACK2]->RenderBack(0, 0, 1280, 720, (int)uvMove, 0, 1280, 720);
 
 	// ƒLƒƒƒ‰ƒNƒ^[
 	chara.obj->Update();

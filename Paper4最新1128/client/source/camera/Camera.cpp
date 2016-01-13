@@ -95,12 +95,31 @@ void Camera::Render()
 	Text::Draw(32, 64, 0xff00ff33, "c.x:%.1f", pos.x);
 	Text::Draw(32, 96, 0xff00ff33, "c.y:%.1f", pos.y);
 	Text::Draw(32, 128, 0xff00ff33, "c.z:%.1f", pos.z);
+}
 
-	if (my_player->Get_action() == BasePlayer::ACTION_PART::MOVE_TARGET)
+void Camera::Render_mark()
+{
+	for (int i = 0; i < paper_obj_mng->Get_numof(); i++)
 	{
-		float tu[2] = { 1, .5f };
+		if (!paper_obj_mng->Can_rend(i))continue;
+		float tu[2];
+		if (my_player->Get_poster_num() == i)
+		{
+			if (my_player->Get_action() == BasePlayer::ACTION_PART::REND)
+			{
+				tu[0] = 1, tu[1] = .5f;
+			}
+			if (my_player->Get_action() == BasePlayer::ACTION_PART::REND_OBJ)
+			{
+				continue;
+			}
+		}
+		else
+		{
+			tu[0] = 0, tu[1] = .5f;
+		}
 		float tv[2] = { 0, 1 };
-		Billboard::Draw3D(paper_obj_mng->Get_pos(my_player->Get_poster_num())+Vector3(0,5,0), target_mark, 4, 4, tu, tv, RS_COPY);
+		Billboard::Draw3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0), target_mark, 4, 4, tu, tv, RS_COPY);
 	}
 }
 
@@ -473,7 +492,7 @@ void Camera::Mode::Zoom::Update()
 
 	me->Set(me->pos, me->target);
 
-	if (me->my_player->Get_action() != BasePlayer::ACTION_PART::REND && me->my_player->Get_action() != BasePlayer::ACTION_PART::PASTE)
+	if (me->my_player->Get_action() != BasePlayer::ACTION_PART::REND)
 	{
 		// プレイヤーモードがTPSならカメラ切り替え
 		if (me->my_player->Get_action() == BasePlayer::ACTION_PART::MOVE)

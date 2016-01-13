@@ -22,7 +22,6 @@ public:
 	void Release();
 	void Update();
 	void Render(iexShader *shader = nullptr, char *name = '\0');
-	void Render_mark(BasePlayer *player);
 
 	//**************************************************
 	/// プレイヤーからのアクション
@@ -69,9 +68,6 @@ protected:
 
 	void Load_flyer();
 	template<class POSTERCLASS>void Load_poster_tmp( char *filename, iexMesh *model );
-
-	// 矢印
-	iex2DObj *mark;
 };
 
 extern Paper_obj_mng *paper_obj_mng;

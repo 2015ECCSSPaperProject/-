@@ -33,7 +33,7 @@ public:
 	//===============================================
 	//	íËêî
 	//===============================================
-	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, PASTE, REND, FREEZE, DIE, RESPAWN, PLANE, GUN, MANHOLE, THROUGH, SYURIKEN, TRANS_FORM, REND_OBJ, MAX };
+	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, REND, FREEZE, DIE, RESPAWN, GUN, MANHOLE, THROUGH, SYURIKEN, TRANS_FORM, REND_OBJ, MAX };
 	enum class DO_FLAG{ NONE, ATTACK, PASTE, REND, MAX };
 	enum class MODEL{ NORMAL, DIE, PLANE, GUN, SYURIKEN, MAX };
 	enum class SKILL{ GUN, SYURIKEN, KABUTO, ZENRYOKU, MAX };
@@ -95,6 +95,7 @@ protected:
 	MODEL			model_part;
 	bool			isManhole;
 	int mynumber;
+	bool			push_rend;	// âüÇµÇ¡ÇœîjÇËñhé~
 
 
 	//===============================================
@@ -124,8 +125,6 @@ protected:
 		//	à⁄ìÆèÛë‘(TPS)
 		class Move : public Base
 		{
-		private:
-			bool trg_target;
 		public:
 			Move(BasePlayer*me) :Base(me){}
 
@@ -153,19 +152,6 @@ protected:
 
 		public:
 			Attack(BasePlayer*me) :Base(me){}
-
-			void Initialize();
-			void Update(const CONTROL_DESC &_ControlDesc);
-		};
-
-		//===========================================
-		//	É|ÉXÉ^Å[ì\ÇËïtÇØèÛë‘
-		class Paste : public Base
-		{
-		private:
-			int timer;
-		public:
-			Paste(BasePlayer*me) :Base(me){}
 
 			void Initialize();
 			void Update(const CONTROL_DESC &_ControlDesc);
@@ -220,17 +206,6 @@ protected:
 
 		public:
 			Respawn(BasePlayer*me) :Base(me){}
-
-			void Initialize();
-			void Update(const CONTROL_DESC &_ControlDesc);
-		};
-
-		//===========================================
-		//	éÜÇ–Ç±Å[Ç´èÛë‘
-		class Hikouki : public Base
-		{
-		public:
-			Hikouki(BasePlayer*me) :Base(me){}
 
 			void Initialize();
 			void Update(const CONTROL_DESC &_ControlDesc);
