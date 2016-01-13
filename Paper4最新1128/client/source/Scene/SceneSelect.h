@@ -37,7 +37,7 @@ private:
 	int alpha[PLAYER_MAX];
 	AnimationRipple* IconRip[PLAYER_MAX];
 	AnimationRipple* OKRip[PLAYER_MAX];
-
+	bool OKFlag[PLAYER_MAX];
 
 	struct
 	{

@@ -85,6 +85,7 @@ bool SceneSelect::Initialize()
 	for (int i = 0; i < PLAYER_MAX; i++)
 	{
 		OKRip[i] = new AnimationRipple("DATA/Image/lobby/junbi_ok.png", 25, 0.05f);
+		OKFlag[i] = false;
 	}
 
 
@@ -323,6 +324,9 @@ void SceneSelect::Update()
 	{
 		IconRip[i]->Update();
 	}
+
+
+
 	if (KEY(KEY_SPACE) == 3)
 	{
 		for (int i = 0; i < PLAYER_MAX; i++)
@@ -335,6 +339,25 @@ void SceneSelect::Update()
 	for (int i = 0; i < PLAYER_MAX; i++)
 	{
 		OKRip[i]->Update();
+
+		// アクション!!
+		if (OKFlag[i] == false)
+		{
+			if (SOCKET_MANAGER->GetUser(i).isReady)
+			{
+				OKFlag[i] = true;
+				OKRip[i]->Action();
+			}
+		}
+
+		// フラグ戻します
+		if (OKFlag[i] == true)
+		{
+			if (!SOCKET_MANAGER->GetUser(i).isReady)
+			{
+				OKFlag[i] = false;
+			}
+		}
 	}
 
 	//ナンバーエフェクト
@@ -350,7 +373,7 @@ void SceneSelect::Update()
 		if (KEY_Get(KEY_ENTER) == 3 || KeyBoardTRG(MOUSE_LEFT) || KeyBoardTRG(MOUSE_RIGHT))
 		{
 			//　自分の準備OKを光らす
-			OKRip[SOCKET_MANAGER->GetID()]->Action();
+			//OKRip[SOCKET_MANAGER->GetID()]->Action();
 			step = STEP::START_OK;
 		}
 

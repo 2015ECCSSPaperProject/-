@@ -175,7 +175,7 @@ void BasePlayer::Update()
 
 	if (kabuto_timer & 0xffff)	// 1à»è„
 	{
-		(--kabuto_timer <= 0) ? barrier->Stop() : barrier->Update(pos+Vector3(0,5,0), Vector3(matView._13, matView._23, matView._33), .5f);
+		(--kabuto_timer <= 0) ? barrier->Stop() : barrier->Update(pos+Vector3(0,5,0), Vector3(matView._13, matView._23, matView._33), .2f);
 	}
 
 }
