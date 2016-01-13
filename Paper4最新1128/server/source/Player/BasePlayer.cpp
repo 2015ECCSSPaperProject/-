@@ -54,6 +54,7 @@ void BasePlayer::Init_pos()
 	god_gage = 0;
 	mynumber = m_id;
 	isManhole = false;
+	stateFlag &= 0x00;
 	// モーション番号
 	motion_no = 0;
 
@@ -90,6 +91,8 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	god_gage = 0;
 	isManhole = false;
 	push_rend = false;
+	stateFlag &= 0x00;
+	kabuto_timer = 0;
 
 	skill_data[(int)SKILL::GUN].do_action = ACTION_PART::GUN;
 	skill_data[(int)SKILL::SYURIKEN].do_action = ACTION_PART::SYURIKEN;
@@ -190,7 +193,12 @@ void BasePlayer::Update()
 	if (kabuto_timer & 0xffff)
 	{
 		invincible = true;
-		if (--kabuto_timer <= 0) invincible = false;
+		if (--kabuto_timer <= 0)
+		{
+			kabuto_timer = 0;
+			invincible = false;
+			stateFlag &= (0xff ^ (int)PLAYER_FLAG::BARRIER);
+		}
 	}
 
 	// アップデート！！
@@ -361,7 +369,11 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 		if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::GUN) me->select_skill = SKILL::GUN;
 		else if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::KABUTO)
 		{
-			me->kabuto_timer = 600;
+			if (!(me->kabuto_timer & 0xffff))//無敵中じゃない
+			{
+				me->stateFlag ^= (int)PLAYER_FLAG::BARRIER;
+				me->kabuto_timer = 600;
+			}
 			return;
 		}
 		else if (_ControlDesc.skillFlag & (int)PLAYER_SKILL::SYURIKEN) me->select_skill = SKILL::SYURIKEN;

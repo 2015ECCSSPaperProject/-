@@ -27,7 +27,6 @@ public:
 		BYTE rendFlag;			// 破く時に送る
 		BYTE controlFlag;		// ボタン
 		BYTE skillFlag;			// スキル発動フラグ
-
 	};
 	CONTROL_DESC m_controlDesc;//　コントロール
 
@@ -65,7 +64,9 @@ protected:
 
 	bool			isMyNunber;
 	int kind_paper_obj;			// 破ってる小物の種類(-1が何も破っていない状態)ヘッダーのインクルードの問題があるのでint型にする
-	int				kabuto_timer;	// 兜(無敵)時間
+
+	BYTE			 stateFlag;	// 状態
+	bool			isBarrier;
 
 	//===============================================
 	//	スキルゲージ
@@ -402,7 +403,11 @@ public:
 	// モデル
 	iex3DObj* Get_Model(){ return models[(int)model_part]; }
 
-
+	// 状態フラグ
+	void Set_state_flag(BYTE flag)
+	{
+		stateFlag = flag;
+	}
 	// マンホール
 	bool			isManhole;
 	bool			manhole_no_haninai;

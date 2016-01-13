@@ -387,6 +387,7 @@ void ServerManager::UpdateUser(char* data, int client)
 		BYTE god_gage;
 		WORD timer;
 		int target_no;
+		BYTE stateFlag;
 	}send[PLAYER_MAX];
 
 
@@ -398,7 +399,7 @@ void ServerManager::UpdateUser(char* data, int client)
 		send[i].action_part = (BYTE)player_mng->Get_player(i)->Get_action();
 		send[i].god_gage = player_mng->Get_player(i)->Get_god_gage();
 		send[i].target_no = player_mng->Get_player(i)->Get_target_no();
-
+		send[i].stateFlag = player_mng->Get_player(i)->Get_state_flag();
 		int rcv, dammy;
 		(timer) ? timer->Get_second_limit(&rcv, &dammy) : rcv = -999;
 		send[i].timer = rcv;

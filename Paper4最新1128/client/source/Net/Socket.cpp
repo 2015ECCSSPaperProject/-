@@ -319,6 +319,7 @@ void SocketManager::UpdateUser()	/* プレイヤー更新 */
 		BYTE god_gage;
 		WORD timer;
 		int target_no;
+		BYTE stateFlag;			// 何らかの状態をビット演算で管理
 	}receive[PLAYER_MAX];
 
 	m_pClient->Receive((char*)&receive, sizeof(receive));
@@ -340,6 +341,7 @@ void SocketManager::UpdateUser()	/* プレイヤー更新 */
 		m_player[i].god_gage = receive[i].god_gage;
 		timer->Set_limit_time(receive[i].timer);
 		m_player[i].target_no = receive[i].target_no;
+		m_player[i].stateFlag = receive[i].stateFlag;
 	}
 
 

@@ -24,13 +24,14 @@ BasePlayer::BasePlayer():prev_pos(pos)
 	//ZeroMemory(models, sizeof(iex3DObj));
 	for (int i = 0; i < (int)MODEL::MAX; i++) models[i] = nullptr;
 
-	m_controlDesc.moveFlag &= 0x00000000;
+	m_controlDesc.moveFlag &= 0x00;
 	m_controlDesc.motion_no = 0;
 	m_controlDesc.mouseX = .0f;
 	m_controlDesc.mouseY = .0f;
-	m_controlDesc.rendFlag &= 0x00000000;
-	m_controlDesc.controlFlag &= 0x00000000;
-	m_controlDesc.skillFlag = 0x0;
+	m_controlDesc.rendFlag &= 0x00;
+	m_controlDesc.controlFlag &= 0x00;
+	m_controlDesc.skillFlag &= 0x00;
+	stateFlag &= 0x00;
 
 	// エフェクト初期化
 	EffectInit();
@@ -59,8 +60,8 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	manhole_no_haninai = false;
 	isMyNunber = false;
 	kind_paper_obj = -1;
-	kabuto_timer = 0;
 	barrier = new Barrier;
+	isBarrier = false;
 
 	// 3D実体
 	models[(int)MODEL::NORMAL]	 = objs[(int)PlayerManager::CLONE_TYPE::NORMAL]->Clone();
@@ -170,9 +171,18 @@ void BasePlayer::Update()
 		(skill_data[i].wait_time > 0) ? skill_data[i].wait_time-- : skill_data[i].wait_time &= 0x00000000;
 	}
 
-	if (kabuto_timer & 0xffff)	// 1以上
+	if (stateFlag & (int)PLAYER_FLAG::BARRIER)
 	{
-		(--kabuto_timer <= 0) ? barrier->Stop() : barrier->Update(pos+Vector3(0,8,0), Vector3(matView._13, matView._23, matView._33), .1f);
+		if (isBarrier) barrier->Update(pos+Vector3(0,8,0), Vector3(matView._13, matView._23, matView._33), .1f);
+		else
+		{
+			isBarrier = true;
+			barrier->Action();
+		}
+	}
+	else
+	{
+		if (isBarrier) barrier->Stop();
 	}
 
 }
@@ -195,7 +205,7 @@ void BasePlayer::Render(iexShader *shader, char *name)
 
 void BasePlayer::Render_forword()
 {
-	if (kabuto_timer & 0xffff)
+	if (stateFlag & (int)PLAYER_FLAG::BARRIER)
 	{
 		barrier->Render();
 	}

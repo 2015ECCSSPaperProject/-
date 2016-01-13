@@ -64,6 +64,7 @@ protected:
 	Vector3			next_manhole_pos;	// 降りた先の、上がった先の座標
 
 	int				god_gage;	// 神ゲージ(これを紙を破った枚数にする)
+	BYTE			stateFlag;
 
 
 	//===============================================
@@ -362,6 +363,6 @@ public:
 	bool isInvincible(){ return invincible; }
 
 	int Get_god_gage(){ return god_gage; }
-
+	BYTE Get_state_flag(){ return stateFlag; }
 	int Get_target_no(){return poster_num; }
 };
