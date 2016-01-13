@@ -182,6 +182,7 @@ void BasePlayer::Update()
 	}
 	else
 	{
+		isBarrier = false;
 		if (isBarrier) barrier->Stop();
 	}
 
