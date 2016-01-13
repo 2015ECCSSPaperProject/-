@@ -454,14 +454,17 @@ void SceneSelect::Render()
 				isActivePlayer[i] = true;
 			}
 		}
-		//// 文字アニメスイッチ
-		//if (isActivePlayer[i] == true)
-		//{	// 出て行ったら・・
-		//	if (SOCKET_MANAGER->GetUser(i).com != UserData::ACTIVE_USER)
-		//	{
-		//		isActivePlayer[i] = false;
-		//	}
-		//}
+		// 文字アニメスイッチ
+		if (isActivePlayer[i] == true)
+		{	// 出て行ったら・・
+			if (SOCKET_MANAGER->GetUser(i).com != UserData::ACTIVE_USER)
+			{
+				// 初期化
+				isActivePlayer[i] = false;
+				moveX[i] = 300;
+				alpha[i] = 64;
+			}
+		}
 
 
 		// 文字アニメ更新
@@ -479,7 +482,7 @@ void SceneSelect::Render()
 		else
 		{
 			// 初期値に戻す
-			moveX[i] = 0;
+			moveX[i] = 300;
 			alpha[i] = 32;
 			//moveX[i] -= 6;
 			//if (moveX[i] <= 0)	moveX[i] = 0;
