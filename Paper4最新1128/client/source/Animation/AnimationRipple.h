@@ -11,7 +11,8 @@ public:
 
 
 	void Update();
-	void Render(int x,int y);
+	void Render(int x,int y,DWORD dwFlag=RS_COPY);
+	void Render(int x, int y, int w, int h, int tx, int ty, int tw, int th, DWORD dwFlag = RS_COPY);
 
 	void Action();
 

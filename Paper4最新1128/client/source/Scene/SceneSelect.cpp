@@ -19,6 +19,7 @@
 /*	グローバル変数	　*/
 /**********************/
 
+
 //　スレッドを止める為に仮で作った
 //static int ThreadEND = false;
 
@@ -48,7 +49,7 @@ bool SceneSelect::Initialize()
 	view->Set(Vector3(0, 0, -90), Vector3(0, 0, 0));
 
 	// 2D画像初期化
-	image[IMAGE::BACK] = new iex2DObj("DATA/Image/lobby/back.png");
+	image[IMAGE::BACK] = new iex2DObj("DATA/Image/lobby/back2.png");
 	image[IMAGE::P1] = new iex2DObj("DATA/Image/lobby/red.png");
 	image[IMAGE::P2] = new iex2DObj("DATA/Image/lobby/blue.png");
 	image[IMAGE::P3] = new iex2DObj("DATA/Image/lobby/yellow.png");
@@ -63,6 +64,7 @@ bool SceneSelect::Initialize()
 	image[IMAGE::NOPLAYER] = new iex2DObj("DATA/Image/lobby/noPlayer.png");
 	image[IMAGE::WANTED] = new iex2DObj("DATA/Image/lobby/Wanted.png");
 	image[IMAGE::TEN] = new iex2DObj("DATA/Image/lobby/ten.png");
+	image[IMAGE::BACK2] = new iex2DObj("DATA/Image/lobby/背景.png");
 
 	// 文字のアニメーション
 	for (int i = 0; i < PLAYER_MAX; i++)
@@ -412,13 +414,16 @@ void SceneSelect::Render()
 	view->Clear();
 
 	// 背景
-	image[IMAGE::BACK]->RenderBack(0, 0, 1280, 720, 0, 0, 1280, 720, RS_COPY);
+	static float uvMove = 0;
+	uvMove += 0.2f;
+	image[IMAGE::BACK2]->RenderBack(0, 0, 1280, 720, uvMove, 0, 1280, 720);
 
 	// キャラクター
 	chara.obj->Update();
 	chara.obj->Render();
 
 	// 参加者リスト
+	image[IMAGE::BACK]->Render(0, 0, 1280, 720, 0, 0, 1280, 720, RS_COPY);
 	image[IMAGE::LIST]->Render(12, 28, 256, 64, 0, 0, 256, 64);
 
 	// アクションUI
@@ -475,7 +480,7 @@ void SceneSelect::Render()
 		{
 			// 初期値に戻す
 			moveX[i] = 0;
-			alpha[i] = 64;
+			alpha[i] = 32;
 			//moveX[i] -= 6;
 			//if (moveX[i] <= 0)	moveX[i] = 0;
 		}
@@ -486,17 +491,17 @@ void SceneSelect::Render()
 		{
 
 			// 右のユーザーの■　ユーザーたち
-			image[IMAGE::P1 + i]->Render(104, 136 + i * 96, 64, 64, 0, 0, 64, 64);
+			image[IMAGE::P1 + i]->Render(64, 136 + i * 96, 64, 64, 0, 0, 64, 64);
 			// 追加　波紋■
-			IconRip[i]->Render(104, 136 + i * 96);
+			IconRip[i]->Render(64, 136 + i * 96,RS_COPY);
 
 			// 名前
 			DWORD col = ARGB((BYTE)alpha[i], 0, 0, 0);
-			Text::Draw(180 + moveX[i], 154 + i * 96, col, "%s", SOCKET_MANAGER->GetUser(i).name);
+			Text::Draw(140 + moveX[i], 154 + i * 96, col, "%s", SOCKET_MANAGER->GetUser(i).name);
 
 			// 準備中？準備OK
 			image[(!SOCKET_MANAGER->GetUser(i).isReady) ? IMAGE::WAIT : IMAGE::OK]->SetARGB(alpha[i], 255, 255, 255);
-			image[(!SOCKET_MANAGER->GetUser(i).isReady) ? IMAGE::WAIT : IMAGE::OK]->Render(436 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64);
+			image[(!SOCKET_MANAGER->GetUser(i).isReady) ? IMAGE::WAIT : IMAGE::OK]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64);
 
 		}
 		else // 参加していなかったら
