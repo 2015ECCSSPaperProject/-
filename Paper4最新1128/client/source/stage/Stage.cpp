@@ -33,8 +33,7 @@ void Stage::Initialize()
 
 
 	area = new Area_mng;
-	area->Push("./DATA/MATI/area/test area 1.IMO", 40);
-	area->Push("./DATA/MATI/area/test area 2.IMO", 20);
+	area->Push("./DATA/AT//AT.IMO", 100);
 }
 
 void Stage::Release()
@@ -59,7 +58,6 @@ void Stage::Render(iexShader *shader, char *name)
 		{
 			show_model[i]->Render( shader, name );
 		}
-		area->Render(shader, name);
 	}
 	else
 	{
@@ -67,9 +65,18 @@ void Stage::Render(iexShader *shader, char *name)
 		{
 			show_model[i]->Render();
 		}
-		area->Render();
 	}
+	//area->Render();
 }
+
+// ƒGƒŠƒA‚ÍG‚Ì‘ÎÛŠO‚É
+void Stage::RenderForward()
+{
+
+	area->Render();
+
+}
+
 
 // “–‚½‚è”»’è
 

@@ -18,6 +18,8 @@ public:
 	void Release();
 	void Update();
 	void Render(iexShader *shader = nullptr, char *name = '\0');
+	void RenderForward();
+
 
 	bool Collision_rand(const Vector3 &pos, Vector3 *move, float up);
 

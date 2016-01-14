@@ -31,6 +31,10 @@ public:
 	void Update(Vector3 pos ,Vector3 angle , Vector3 scale);	// 更新スケールをvector型に変えたもの
 	void Render();	// 描画
 	void Render_Barrier();	// バリアー描画
+	void Render_AT();	// AT描画
+
+	// ゲッター・セッター
+	iexMesh* GetObj(){ return obj; }
 
 private:
 	iexMesh*	obj;

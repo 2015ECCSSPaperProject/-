@@ -2,6 +2,7 @@
 #include "Area.h"
 #include "../../IEX/iextreme.h"
 #include "../timer/Timer.h"
+#include "../Animation/AnimationUV.h"
 
 class Area
 {
@@ -25,7 +26,7 @@ public:
 
 protected:
 	bool is_work; // ”»’è‚ğ‚Æ‚é‚©
-	iexMesh *wall;
+	AnimationUV *wall;
 };
 
 Area::Area() : wall(nullptr), is_work(true)
@@ -45,14 +46,15 @@ Area::~Area()
 void Area::Set_mesh(char *filename)
 {
 	delete wall;
-	wall = new iexMesh(filename);
+	wall = new AnimationUV(filename, 0, 0.005, 100, true);
+	wall->Action();
 }
 
 int Area::RayPick(Vector3* out, Vector3* pos, Vector3* vec, float *Dist)
 {
 	if (!is_work || !wall)
 		return -1;
-	return wall->RayPick(out, pos, vec, Dist);
+	return wall->GetObj()->RayPick(out, pos, vec, Dist);
 }
 
 void Area::Close()
@@ -66,15 +68,9 @@ void Area::Open()
 
 void Area::Render(iexShader *shader, char *name)
 {
-	if (shader)
-	{
-		if (is_work && wall)
-			wall->Render(shader, name);
-	}
-	else
-	{
-		if (is_work && wall)
-			wall->Render();
+	if (is_work && wall){
+		wall->Update();
+		wall->Render_AT();
 	}
 }
 

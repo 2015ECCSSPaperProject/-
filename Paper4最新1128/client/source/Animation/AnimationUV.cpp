@@ -124,8 +124,8 @@ void AnimationUV::Update(Vector3 pos, Vector3 angle, float scale)
 		if (nowFlame >= alphaNear)
 		{
 		// 100-100=0  100-50=50   0/50
-		float A = (float)(endFlame - nowFlame);
-		float B =(float)(endFlame - alphaFar);
+		float A = (endFlame - nowFlame);
+		float B =(endFlame - alphaFar);
 		alpha = A / B;
 		alpha = Clamp(alpha, 0.0f, 1.0f);
 
@@ -179,8 +179,8 @@ void AnimationUV::Update(Vector3 pos, Vector3 angle, Vector3 scale)
 		};
 
 		// 0が透明　1が不透明にするように設定
-		float A = (float)(endFlame - nowFlame);
-		float B = (float)(endFlame - alphaNear);
+		float A = (endFlame - nowFlame);
+		float B = (endFlame - alphaNear);
 		alpha = A / B;
 		alpha = Clamp(alpha, 0.0f, 1.0f);
 
@@ -224,3 +224,19 @@ void AnimationUV::Render_Barrier()
 	obj->Render(shaderD, "uvAnime_barrier");
 
 }
+
+// AT
+void AnimationUV::Render_AT()
+{
+	if (isAction == false)return;//実行されてないなら出てけ！！
+
+	// 描画の前に情報を送る
+	//　シェーダーに描画毎UV座標を送る
+	shaderD->SetValue("tuAnime", tu);
+	shaderD->SetValue("tvAnime", tv);
+	shaderD->SetValue("alphaUV", alpha);// 透明度
+
+	// 描画
+	obj->Render(shaderD, "uvAnime_at");
+
+};

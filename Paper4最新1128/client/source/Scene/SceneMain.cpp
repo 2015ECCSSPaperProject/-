@@ -393,6 +393,8 @@ void SceneMain::Render()
 		DeferredManager.ForwardBigin();
 		// 先頭へ
 		player_mng->Render_forword();	// バリアー
+		
+		stage->RenderForward();			// エリア
 		DeferredManager.ForwardEnd();
 		/*■■■■■■■通常描画終り■■■■■■■*/
 
