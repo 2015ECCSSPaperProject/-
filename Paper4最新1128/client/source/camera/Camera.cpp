@@ -68,8 +68,8 @@ void Camera::Initialize(BasePlayer *my)
 
 	// パース
 	parth.fovY = FOVY[(int)FOV_TYPE::DEFAULT];
-	parth.Near = .1f;
-	parth.Far = 2000.0f;
+	parth.Near = 0.1f;
+	parth.Far = 2300.0f;
 
 	// スクリプトカメラさん
 	effect_camera = new EffectCamera;

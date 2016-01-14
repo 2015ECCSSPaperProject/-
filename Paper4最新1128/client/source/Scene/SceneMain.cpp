@@ -489,7 +489,7 @@ void SceneMain::RenderShadow()
 {
 	// 近距離
 	// 影用プロジェクションの更新
-	DeferredManager.CreateShadowMatrix(LightVec, player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_pos(), player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_Flont() * 80, 250);
+	DeferredManager.CreateShadowMatrix(LightVec, player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_pos(), player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_Flont() * 80, 350);
 	// near
 	DeferredManager.ShadowBegin();
 	
@@ -514,7 +514,7 @@ void SceneMain::RenderShadow()
 		//if (FarShadowFlag <= 600)
 		{
 			// 遠距離プロジェクションの更新
-			DeferredManager.CreateShadowMatrixL(LightVec, player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_pos(), player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_Flont() * 180, 400);
+			DeferredManager.CreateShadowMatrixL(LightVec, player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_pos(), player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_Flont() * 160, 500);
 
 			// far
 			DeferredManager.ShadowBeginL();
