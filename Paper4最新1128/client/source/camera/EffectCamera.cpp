@@ -59,17 +59,13 @@ void EffectCamera::Update()
 				data_cursor = i;
 				Vector3 pt[2];
 				Get_time_line_camera_pos(&pt[0], &pt[1]);
-				pt[0].x *= sinf(camera->Get_my_player()->Get_angleY());
-				pt[0].z *= cosf(camera->Get_my_player()->Get_angleY());
-				if (data_cursor != 0)
-				{
-					pt[0] += camera->Get_pos();
-					pt[1] += camera->Get_my_player()->Get_center_pos();
-				}
-				else
-				{
-					pt[1] += camera->Get_my_player()->Get_center_pos();
-				}
+
+				// プレイヤー座標系にする
+				//pt[0].x *= sinf(camera->Get_my_player()->Get_angleY());
+				//pt[0].z *= cosf(camera->Get_my_player()->Get_angleY());
+				pt[0] += camera->Get_pos();
+				pt[1] += camera->Get_my_player()->Get_center_pos();
+
 				camera->Set(pt[0], pt[1]);
 				break;
 			}
