@@ -183,7 +183,7 @@ void Stage::Load_area()
 	{
 		std::string str;
 		ifs >> str;
-		if( str.find( "IMO" ) )
+		if( str.find( "IMO" ) != std::string::npos )
 		{
 			area->Push( str.c_str() );
 			int time;
