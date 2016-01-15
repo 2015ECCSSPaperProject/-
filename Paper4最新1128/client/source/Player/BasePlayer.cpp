@@ -476,14 +476,6 @@ void BasePlayer::Action::Rend::Update()
 	}
 
 	// ”j‚­ƒ‚[ƒVƒ‡ƒ“‚ÌƒtƒŒ[ƒ€
-	if (me->models[(int)me->model_part]->GetParam(0) == 1)
-	{
-		// ”j‚­ˆ—
-		if (me->se_receive == -1)
-		{
-			me->se_receive = se->Play("”j‚é", me->pos);
-		}
-	}
 
 	Update_obj();
 }

@@ -61,6 +61,8 @@ private:
 	enum IMAGE{ BACK, CURSOR, CLICK1, CLICK2, CLICK3, GAME_START, MOUSE, TITLE, ARROW, MAX };
 	iex2DObj* images[MAX];
 
+	Vector2 move_mouse;
+
 	//---------------------------------------------------------------------
 	// ImageAnimation
 	//---------------------------------------------------------------------

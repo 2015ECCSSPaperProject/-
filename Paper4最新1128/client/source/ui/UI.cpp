@@ -416,6 +416,7 @@ void UI::fadeM_out()
 
 void UI::SetManholeFade(MANHOLE_FADE_TYPE type)
 {
+	if (m_fade_type == type) return;
 	m_fade_type = type;
 	switch (type)
 	{
@@ -427,7 +428,6 @@ void UI::SetManholeFade(MANHOLE_FADE_TYPE type)
 		break;
 	}
 }
-
 //
 //=============================================================================================
 
