@@ -142,7 +142,6 @@ bool SceneMain::Initialize()
 
 	FLAME = 0;
 
-
 	// deferredの初期設定　初期化　
 	DeferredManager;
 	DeferredManager.CreateShadowMap(1024);
@@ -150,20 +149,16 @@ bool SceneMain::Initialize()
 	DeferredManager.SetEmissiveRate(1000);// エミッシブレート
 	DeferredManager.SetExposure(-10);
 	
-
 	deferredFlag = true;// flag
 	DebugTex = nullptr;
 	LightVec = Vector3(1.0f, -1.0f, 1.0f);
 	exposure = -4.6f;
 	FarShadowFlag = 0;
 
-
 	//particle = new iexParticlePlus();
 	particle->Initialize("DATA/effect/particle.png",1024);
 
 	return true;
-
-
 }
 
 SceneMain::~SceneMain()
@@ -187,7 +182,6 @@ SceneMain::~SceneMain()
 	BlurFilter::CleanUp();
 
 	particle->Release();
-
 }
 
 //===================================================================================

@@ -20,6 +20,7 @@ public:
 		Vector3 *pos_array;		// 座標(開始と終わりだけでなく、中間とかも作るので可変長)
 		Vector3 *target_array;	// 注視点(同じく可変長)
 		int num_elements;		// 上記可変長の要素数
+		bool fix;
 	}*data;
 };
 

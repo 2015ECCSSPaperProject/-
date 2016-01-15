@@ -33,11 +33,11 @@ MyPlayer::MyPlayer() :BasePlayer()
 	RendSE[KIND_PAPER_OBJECT::SIGN] = &MyPlayer::RendSignSE;
 	RendSE[KIND_PAPER_OBJECT::TOILET_PAPER] = &MyPlayer::RendToileSE;
 	RendSE[KIND_PAPER_OBJECT::ZASSHI] = &MyPlayer::RendZasshiSE;
+	RendSE[KIND_PAPER_OBJECT::SHOJI] = &MyPlayer::RendShojiSE;
 }
 
 MyPlayer::~MyPlayer()
 {
-	//SAFE_DELETE(skillGage);
 
 }
 
@@ -258,11 +258,31 @@ void MyPlayer::Update_listener()
 
 void MyPlayer::RendPosterSE()
 {
-
+	switch (se_step)
+	{
+	case 0:
+		// 破き始め
+		if (models[(int)model_part]->GetParam(0) == 1)
+		{
+			se_receive = se->Play("破る");
+			se_step = 99;	// ステップ終わり
+		}
+		break;
+	}
 }
 void MyPlayer::RendFlyerSE()
 {
-
+	switch (se_step)
+	{
+	case 0:
+		// 破き始め
+		if (models[(int)model_part]->GetParam(0) == 1)
+		{
+			se_receive = se->Play("破る");
+			se_step = 99;	// ステップ終わり
+		}
+		break;
+	}
 }
 void MyPlayer::RendCalendarSE()
 {
@@ -416,7 +436,7 @@ void MyPlayer::RendShinbunSE()
 		// 破き終わり
 		if (models[(int)model_part]->GetParam(5) == 2)
 		{
-			se->Play("新聞破り2");
+			se->Play("サイン破り");
 			se_step = 99;	// ステップ終わり
 		}
 		break;
@@ -455,6 +475,36 @@ void MyPlayer::RendZasshiSE()
 			se_step = 99;	// ステップ終わり
 		}
 		break;
+	}
+}
+
+void MyPlayer::RendShojiSE()
+{
+	switch (se_step)
+	{
+	case 0:
+		// 破き始め
+		if (models[(int)model_part]->GetParam(5) == 1)
+		{
+			se_receive = se->Play("カレンダー破り", true);
+			se_step++;
+		}
+		break;
+	case 1:
+		// 破き終わり
+		if (models[(int)model_part]->GetParam(5) == 2)
+		{
+			se->Stop("カレンダー破り", se_receive);
+			se_step++;
+		}
+		break;
+	case 2:
+		// 蹴り
+		if (models[(int)model_part]->GetParam(5) == 3)
+		{
+			se->Play("サイン破り");
+			se_step = 99;	// ステップ終わり
+		}
 	}
 }
 

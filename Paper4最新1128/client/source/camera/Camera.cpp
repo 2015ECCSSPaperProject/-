@@ -287,11 +287,21 @@ void Camera::Mode::TPS::Initialize(const Vector3 &pos, const Vector3 &target)
 
 void Camera::Mode::TPS::Update()
 {
+	static int frame = 0;
+	static int k = -1;
 	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::REND_OBJ)
 	{
-		me->effect_camera->Set_pattern(paper_obj_mng->Get_kind(me->my_player->Get_poster_num()));
-		return;
+		int kind = paper_obj_mng->Get_kind(me->my_player->Get_poster_num());
+		if ((kind != 0 && kind != 1)
+			&& !(frame <= 180 && k == kind))
+		{
+			frame = 0;
+			k = kind;
+			me->effect_camera->Set_pattern(kind);
+			return;
+		}
 	}
+	else frame++;
 
 	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::SYURIKEN)
 	{

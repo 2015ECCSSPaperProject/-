@@ -96,7 +96,6 @@ void PlayerManager::Initialize()
 		assert(i < 6);
 		players[i]->Set_texture(BasePlayer::MODEL::NORMAL, textures[TEX_TYPE::NORMAL][i]);
 		players[i]->Set_texture(BasePlayer::MODEL::DIE, textures[TEX_TYPE::NORMAL][i]);
-		players[i]->Set_texture(BasePlayer::MODEL::PLANE, textures[TEX_TYPE::NORMAL][i]);
 		players[i]->Set_texture(BasePlayer::MODEL::GUN, textures[TEX_TYPE::GUN][i]);
 		players[i]->Set_texture(BasePlayer::MODEL::SYURIKEN, textures[TEX_TYPE::SYURIKEN][i]);
 		players[i]->Set_texture(BasePlayer::MODEL::REND_CALENDAR, textures[TEX_TYPE::NORMAL][i]);
@@ -107,6 +106,7 @@ void PlayerManager::Initialize()
 		players[i]->Set_texture(BasePlayer::MODEL::REND_WC_PAPER, textures[TEX_TYPE::NORMAL][i]);
 		players[i]->Set_texture(BasePlayer::MODEL::REND_ZASSHI, textures[TEX_TYPE::NORMAL][i]);
 		players[i]->Set_texture(BasePlayer::MODEL::REND_SEISHO, textures[TEX_TYPE::NORMAL][i]);
+		players[i]->Set_texture(BasePlayer::MODEL::REND_SHOJI, textures[TEX_TYPE::NORMAL][i]);
 	}
 }
 

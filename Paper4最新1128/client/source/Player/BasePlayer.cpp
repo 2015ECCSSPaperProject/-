@@ -66,7 +66,6 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	// 3DŽÀ‘Ì
 	models[(int)MODEL::NORMAL]	 = objs[(int)PlayerManager::CLONE_TYPE::NORMAL]->Clone();
 	models[(int)MODEL::DIE]		 = objs[(int)PlayerManager::CLONE_TYPE::DIE]->Clone();
-	models[(int)MODEL::PLANE]	 = objs[(int)PlayerManager::CLONE_TYPE::DIE]->Clone();
 	models[(int)MODEL::GUN]		 = objs[(int)PlayerManager::CLONE_TYPE::GUN]->Clone();
 	models[(int)MODEL::SYURIKEN] = objs[(int)PlayerManager::CLONE_TYPE::SYURIKEN]->Clone();
 	models[(int)MODEL::REND_CALENDAR] = objs[(int)PlayerManager::CLONE_TYPE::REND_CALENDAR]->Clone(2);
@@ -477,14 +476,6 @@ void BasePlayer::Action::Rend::Update()
 	}
 
 	// ”j‚­ƒ‚[ƒVƒ‡ƒ“‚ÌƒtƒŒ[ƒ€
-	if (me->models[(int)me->model_part]->GetParam(0) == 1)
-	{
-		// ”j‚­ˆ—
-		if (me->se_receive == -1)
-		{
-			me->se_receive = se->Play("”j‚é", me->pos);
-		}
-	}
 
 	Update_obj();
 }
@@ -889,9 +880,9 @@ void BasePlayer::Action::RendObj::Initialize()
 		me->model_part = MODEL::REND_ZASSHI;
 		break;
 
-	//case KIND_PAPER_OBJECT::SHOJI:
-	//	me->model_part = MODEL::REND_SHOJI;
-	//	break;
+	case KIND_PAPER_OBJECT::SHOJI:
+		me->model_part = MODEL::REND_SHOJI;
+		break;
 
 	case KIND_PAPER_OBJECT::POSTER:
 	case KIND_PAPER_OBJECT::FLYER:
