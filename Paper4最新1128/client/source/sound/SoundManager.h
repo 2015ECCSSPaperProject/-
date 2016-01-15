@@ -74,6 +74,7 @@ public:
 	bool isPlay(char *ID, int no);
 	void SetFX(DXA_FX flag){ play_manager->SetFX(flag); }
 
+	void Set_pos(LPSTR _ID, int no, const Vector3 &pos);
 	void Set_listener(const Vector3 &pos, const Vector3 &front, const Vector3 &up, const Vector3 &move);											// ƒŠƒXƒi[î•ñ
 };
 

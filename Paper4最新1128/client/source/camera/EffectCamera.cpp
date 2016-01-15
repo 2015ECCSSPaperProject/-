@@ -44,6 +44,22 @@ EffectCamera::~EffectCamera()
 
 //=============================================================================================
 //		更		新
+Vector3 operator * (const Vector3 &v, const Matrix &m)
+{
+	Vector3 ret;
+	ret.x = (v.x * m.m[0][0]) + (v.y * m.m[1][0]) + (v.z * m.m[2][0]);
+	ret.y = (v.x * m.m[0][1]) + (v.y * m.m[1][1]) + (v.z * m.m[2][1]);
+	ret.z = (v.x * m.m[0][2]) + (v.y * m.m[1][2]) + (v.z * m.m[2][2]);
+	return ret;
+}
+void Rot2D(float rad, float *x, float *y)
+{
+	float ret_x = (*x * cosf(rad)) - (*y * sinf(rad));
+	float ret_y = (*x * sinf(rad)) + (*y * cosf(rad));
+	*x = ret_x;
+	*y = ret_y;
+}
+
 void EffectCamera::Update()
 {
 	//Out_event();
@@ -61,11 +77,9 @@ void EffectCamera::Update()
 				Get_time_line_camera_pos(&pt[0], &pt[1]);
 
 				// プレイヤー座標系にする
-				//pt[0].x *= sinf(camera->Get_my_player()->Get_angleY());
-				//pt[0].z *= cosf(camera->Get_my_player()->Get_angleY());
+				Rot2D(camera->Get_my_player()->Get_angleY(), &pt[0].z, &pt[0].x);
 				pt[0] += camera->Get_pos();
-				pt[1] += camera->Get_my_player()->Get_center_pos();
-
+				pt[1] += camera->Get_my_player()->Get_pos();
 				camera->Set(pt[0], pt[1]);
 				break;
 			}
@@ -78,63 +92,6 @@ void EffectCamera::Update()
 			delete time_line_data, time_line_data = nullptr;
 		}
 	}
-}
-//
-//=============================================================================================
-
-//=============================================================================================
-//		内部コマンド実行
-bool EffectCamera::In_event(char *command)
-{
-	// ※true:まだ処理中だから何も読み込まないでね
-
-
-	while (EndCheck())
-	{
-		// コマンド読み込み
-		LoadString(command);
-
-		//================================================================
-		//	待機コマンド
-		if (lstrcmp(command, "WAIT") == 0)
-		{
-			//wait_timer = LoadInt();	// 待機時間読み込み
-			return true;
-		}
-		break;
-	}
-	return false;
-}
-//
-//=============================================================================================
-
-//=============================================================================================
-//		外部コマンド実行
-void EffectCamera::Out_event()
-{
-	char com[256];
-	while (EndCheck())
-	{
-		//スプリクト実行
-		if (In_event(com))return;	// まだ内部処理中だから帰れ((((ﾉﾟ皿ﾟ)ﾉ
-
-		//----------------------------
-		// 外部用コマンド処理
-		//----------------------------
-		if (strcmp(com, "CHANGE") == 0)
-		{
-			Change_camera_mode();
-			break;
-		}
-		if (strcmp(com, "END") == 0)
-		{
-			// スクリプトOFFにして、読み込むファイルの一番先頭にポインタを戻す(Set_patternが呼び出されるまでスクリプト停止)
-			camera->scriptON = false;
-			Jump("START");
-			break;
-		}
-	}
-
 }
 //
 //=============================================================================================
@@ -221,38 +178,130 @@ bool EffectCamera::Set_pattern(int pat)
 //=============================================================================================
 
 
-//=============================================================================================
-//		カメラモード変更
-void EffectCamera::Change_camera_mode()
+
+void EffectCamera::Get_time_line_camera_pos(Vector3 *out_pos, Vector3 *out_target)
 {
-	// モード名読み込み
-	char str[16];
-	LoadString(str);
+	if (data_cursor == -1) return;
+	// ベジエ計算関数に丸投げ
+	Bezier(
+		out_pos,																	// 受け皿
+		time_line_data->data[data_cursor].pos_array,								// 始点、中間、終点が入ってる座標配列
+		time_line_data->data[data_cursor].num_elements,								// の要素数
+		current_frame - time_line_data->data[data_cursor].start_frame,				// 今のフレーム
+		time_line_data->data[data_cursor].frame_len									// 終了フレーム
+		);
 
-	static const char *n_list[4] =
-	{
-		"FIX", "PAN", "SLERP", "TPS"
-	};
+	Bezier(
+		out_target,
+		time_line_data->data[data_cursor].target_array,								// 始点、中間、終点が入ってる座標配列
+		time_line_data->data[data_cursor].num_elements,								// の要素数
+		current_frame - time_line_data->data[data_cursor].start_frame,				// 今のフレーム
+		time_line_data->data[data_cursor].frame_len
+		);
+}
 
-	static const Camera::MODE m_list[4] =
-	{
-		Camera::MODE::M_FIX, Camera::MODE::M_PAN, Camera::MODE::M_SLERP, Camera::MODE::M_TPS
-	};
+void EffectCamera::Bezier(Vector3 *out, Vector3 pos_array[], int num_elements_array, int current_frame, int end_frame)
+{
+	assert(num_elements_array > 0);
 
-	for (int i = 0; i < 4; i++)
+	if (pos_array[0] == pos_array[1])
 	{
-		//	文字判定
-		if (strcmp(str, n_list[i]) == 0)
-		{
-			Setting_camera(m_list[i]);
-			return;
-		}
+		*out = pos_array[0];
+		return;
 	}
 
-	MessageBox(0, "テキストのカメラモード名が間違っているよ", null, MB_OK);
+	float b = current_frame / (float)end_frame;
+	float a = 1 - b;
+
+	/*				//		参考資料		//
+	//ベジェ曲線↓　まず　　最初と中間　　　　次に　　　　中間と最後
+	pos->x = a*a*a* p1.x + 3 * a*a*b*p2.x + 3 * a*b*b*p2.x + b*b*b*p3.x;
+	pos->y = a*a*a* p1.y + 3 * a*a*b*p2.y + 3 * a*b*b*p2.y + b*b*b*p3.y;
+	pos->z = a*a*a* p1.z + 3 * a*a*b*p2.z + 3 * a*b*b*p2.z + b*b*b*p3.z;
+	*/
+
+	// 始点
+	*out = pos_array[0] * (float)pow(a, num_elements_array);
+
+	// 中間
+	for (int i = 1; i < num_elements_array - 1; i++)	// -1なのは終点を省くから
+	{
+		float mult = b;
+		for (int j = 1; j < num_elements_array - 1; j++)
+		{
+			mult *= (j >= i) ? a : b;
+		}
+		*out += pos_array[i] * (num_elements_array * mult);
+	}
+
+	// 終点
+	*out += pos_array[num_elements_array - 1] * (float)pow(b, num_elements_array);
+}
+//
+//*****************************************************************************************************************************
+
+
+
+
+//=============================================================================================
+//		内部コマンド実行
+bool EffectCamera::In_event(char *command)
+{
+	// ※true:まだ処理中だから何も読み込まないでね
+
+
+	while (EndCheck())
+	{
+		// コマンド読み込み
+		LoadString(command);
+
+		//================================================================
+		//	待機コマンド
+		if (lstrcmp(command, "WAIT") == 0)
+		{
+			//wait_timer = LoadInt();	// 待機時間読み込み
+			return true;
+		}
+		break;
+	}
+	return false;
 }
 //
 //=============================================================================================
+
+//=============================================================================================
+//		外部コマンド実行
+void EffectCamera::Out_event()
+{
+	char com[256];
+	while (EndCheck())
+	{
+		//スプリクト実行
+		if (In_event(com))return;	// まだ内部処理中だから帰れ((((ﾉﾟ皿ﾟ)ﾉ
+
+		//----------------------------
+		// 外部用コマンド処理
+		//----------------------------
+		if (strcmp(com, "CHANGE") == 0)
+		{
+			Change_camera_mode();
+			break;
+		}
+		if (strcmp(com, "END") == 0)
+		{
+			// スクリプトOFFにして、読み込むファイルの一番先頭にポインタを戻す(Set_patternが呼び出されるまでスクリプト停止)
+			camera->scriptON = false;
+			Jump("START");
+			break;
+		}
+	}
+
+}
+//
+//=============================================================================================
+
+
+
 
 
 //=============================================================================================
@@ -402,57 +451,37 @@ void EffectCamera::Getting_targeter_coodinate(Vector3 *out)
 }
 
 
-void EffectCamera::Get_time_line_camera_pos(Vector3 *out_pos, Vector3 *out_target)
+
+//=============================================================================================
+//		カメラモード変更
+void EffectCamera::Change_camera_mode()
 {
-	if (data_cursor == -1) return;
-	// ベジエ計算関数に丸投げ
-	Bezier(
-		out_pos,																	// 受け皿
-		time_line_data->data[data_cursor].pos_array,								// 始点、中間、終点が入ってる座標配列
-		time_line_data->data[data_cursor].num_elements,								// の要素数
-		current_frame - time_line_data->data[data_cursor].start_frame,				// 今のフレーム
-		time_line_data->data[data_cursor].frame_len									// 終了フレーム
-		);
+	// モード名読み込み
+	char str[16];
+	LoadString(str);
 
-	Bezier(
-		out_target,
-		time_line_data->data[data_cursor].target_array,								// 始点、中間、終点が入ってる座標配列
-		time_line_data->data[data_cursor].num_elements,								// の要素数
-		current_frame - time_line_data->data[data_cursor].start_frame,				// 今のフレーム
-		time_line_data->data[data_cursor].frame_len
-		);
-}
-
-void EffectCamera::Bezier(Vector3 *out, Vector3 pos_array[], int num_elements_array, int current_frame, int end_frame)
-{
-	assert(num_elements_array > 0);
-
-	float b = current_frame / (float)end_frame;
-	float a = 1 - b;
-
-	/*				//		参考資料		//
-	//ベジェ曲線↓　まず　　最初と中間　　　　次に　　　　中間と最後
-	pos->x = a*a*a* p1.x + 3 * a*a*b*p2.x + 3 * a*b*b*p2.x + b*b*b*p3.x;
-	pos->y = a*a*a* p1.y + 3 * a*a*b*p2.y + 3 * a*b*b*p2.y + b*b*b*p3.y;
-	pos->z = a*a*a* p1.z + 3 * a*a*b*p2.z + 3 * a*b*b*p2.z + b*b*b*p3.z;
-	*/
-
-	// 始点
-	*out = pos_array[0] * (float)pow(a, num_elements_array);
-
-	// 中間
-	for (int i = 1; i < num_elements_array - 1; i++)	// -1なのは終点を省くから
+	static const char *n_list[4] =
 	{
-		float mult = b;
-		for (int j = 1; j < num_elements_array - 1; j++)
+		"FIX", "PAN", "SLERP", "TPS"
+	};
+
+	static const Camera::MODE m_list[4] =
+	{
+		Camera::MODE::M_FIX, Camera::MODE::M_PAN, Camera::MODE::M_SLERP, Camera::MODE::M_TPS
+	};
+
+	for (int i = 0; i < 4; i++)
+	{
+		//	文字判定
+		if (strcmp(str, n_list[i]) == 0)
 		{
-			mult *= (j >= i) ? a : b;
+			Setting_camera(m_list[i]);
+			return;
 		}
-		*out += pos_array[i] * (num_elements_array * mult);
 	}
 
-	// 終点
-	*out += pos_array[num_elements_array - 1] * (float)pow(b, num_elements_array);
+	MessageBox(0, "テキストのカメラモード名が間違っているよ", null, MB_OK);
 }
 //
-//*****************************************************************************************************************************
+//=============================================================================================
+

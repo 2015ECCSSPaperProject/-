@@ -12,10 +12,33 @@
 
 float UI::tape_len;
 
-UI::UI() :my_player(nullptr), graph(nullptr), gauge(nullptr), mode(nullptr), isYooiDon(false), telopID(-1), seted_ID(-1)
+void UI::Change_mode(int m)
+{
+	SAFE_DELETE(mode);
+	switch (m)
+	{
+	case (int)SceneMain::MODE::START:
+		mode = new Mode::Start(this);
+		break;
+
+	case (int)SceneMain::MODE::MAIN:
+		mode = new Mode::Main(this);
+		break;
+
+	case (int)SceneMain::MODE::END:
+		mode = new Mode::End(this);
+		break;
+	}
+	mode->Initialize();
+}
+
+UI::UI() :my_player(nullptr), graph(nullptr), gauge(nullptr), mode(nullptr), isYooiDon(false), telopID(-1), seted_ID(-1), m_fade_type(MANHOLE_FADE_TYPE::NONE), manhole_f_scale(1)
 {
 	tape_len = 0;
 	for (int i = 0; i < IMAGE::MAX; i++)image[i] = nullptr;
+	fadeM_funk[(int)MANHOLE_FADE_TYPE::NONE] = &UI::fadeM_none;
+	fadeM_funk[(int)MANHOLE_FADE_TYPE::F_IN] = &UI::fadeM_in;
+	fadeM_funk[(int)MANHOLE_FADE_TYPE::F_OUT] = &UI::fadeM_out;
 }
 
 void UI::Initialize(BasePlayer *my)
@@ -45,7 +68,7 @@ void UI::Initialize(BasePlayer *my)
 	image[IMAGE::SKILL_GUN] = new iex2DObj("DATA/UI/skill/skill1.png");
 	image[IMAGE::SKILL_SYURIKEN] = new iex2DObj("DATA/UI/skill/skill2.png");
 	image[IMAGE::SKILL_KABUTO] = new iex2DObj("DATA/UI/skill/skill3.png");
-	image[IMAGE::SKILL_ZENRYOKU] = new iex2DObj("DATA/UI/skill/skill4.png");
+	image[IMAGE::MANHOLE_FADE] = new iex2DObj("DATA/UI/manhole_fade.png");
 
 	Change_mode(SceneMain::MODE::START);
 }
@@ -88,6 +111,7 @@ void UI::Mode::Main::Render()
 	me->Action();
 	me->TimeLimit();
 	me->Telop_render();
+	me->Manhole_fade();
 }
 
 void UI::Telop_render()
@@ -230,7 +254,7 @@ void UI::Mode::Start::Update()
 		}
 		if (step >= 2)
 		{
-			me->Change_mode(SceneMain::MODE::MAIN);
+			me->Change_mode((int)SceneMain::MODE::MAIN);
 		}
 	}
 }
@@ -336,8 +360,73 @@ void Telop::Render()
 		moji->Render(378, 94, 1024, 128, 0, 0, 1024, 128);
 	}
 }
+//
+//=============================================================================================
 
 
+//*****************************************************************************************************************************
+//
+//		ƒ}ƒ“ƒz[ƒ‹ŠÖŒW
+void UI::Manhole_fade()
+{
+	(this->*fadeM_funk[(int)m_fade_type])();
+}
+void UI::fadeM_none()
+{
+	//if (KEY(KEY_R3) == 1)manhole_f_scale += .05f;
+	//if (KEY(KEY_L3) == 1)manhole_f_scale -= .05f;
+	//image[IMAGE::MANHOLE_FADE]->SetScale(manhole_f_scale);
+	//image[IMAGE::MANHOLE_FADE]->Render(0, 0, 1280, 720, 0, 0, 1280, 720);
+	//image[IMAGE::MANHOLE_FADE]->SetScale(1);
+	//image[IMAGE::MANHOLE_FADE]->Render(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, 1280, 720);
+	//Text::Draw(320, 320, 0xffffff00, "SCALE : %.3f", manhole_f_scale);
+}
+void UI::fadeM_in()
+{
+	if ((manhole_f_scale += .25f) > 15.0f) m_fade_type = MANHOLE_FADE_TYPE::NONE;
+	if (manhole_f_scale <= 1.0f)
+	{
+		iexPolygon::Rect(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, RS_COPY, 0xff000000);
+	}
+	image[IMAGE::MANHOLE_FADE]->SetScale(manhole_f_scale);
+	image[IMAGE::MANHOLE_FADE]->Render(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, 1280, 620);
+}
+void UI::fadeM_out()
+{
+	manhole_f_scale -= .4f;
+	if (manhole_f_scale <= 1.0f)
+	{
+		iexPolygon::Rect(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, RS_COPY, 0xff000000);
+	}
+	else
+	{
+		image[IMAGE::MANHOLE_FADE]->SetScale(manhole_f_scale);
+		image[IMAGE::MANHOLE_FADE]->Render(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, 1280, 620);
+	}
+	if (manhole_f_scale < .1f)
+	{
+		static int frame = 0;
+		if (++frame >= 25)
+		{
+			SetManholeFade(MANHOLE_FADE_TYPE::F_IN);
+			frame = 0;
+		}
+	}
+}
+
+void UI::SetManholeFade(MANHOLE_FADE_TYPE type)
+{
+	m_fade_type = type;
+	switch (type)
+	{
+	case MANHOLE_FADE_TYPE::F_IN:
+		manhole_f_scale = .25f;
+		break;
+	case MANHOLE_FADE_TYPE::F_OUT:
+		manhole_f_scale = 15.0f;
+		break;
+	}
+}
 
 //
 //=============================================================================================

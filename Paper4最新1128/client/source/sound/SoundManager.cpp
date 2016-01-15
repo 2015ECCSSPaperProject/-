@@ -68,6 +68,7 @@ SE_Manager::DATA all_dataS[] =
 	{ "ƒgƒCƒŒ”j‚è2", "DATA/Sound/SE/rend/rend_wc_paper2.wav", 1, false },
 	{ "‚¨‹à”j‚è", "DATA/Sound/SE/rend/rend_money.wav", 1, false },
 	{ "‚¨‹à”j‚è2", "DATA/Sound/SE/rend/rend_money2.wav", 1, false },
+	{ "AT", "DATA/Sound/SE/at.wav", 1, true },
 	{ "END", nullptr }
 };
 
@@ -88,8 +89,6 @@ void SE_Manager::Initialize()
 }
 //
 //=============================================================================================
-
-
 
 //=============================================================================================
 //		‰ð		•ú
@@ -174,6 +173,11 @@ void SE_Manager::Stop_all()
 bool SE_Manager::isPlay(char *_ID,int no)
 {
 	return play_manager->isPlay(ID[_ID], no);
+}
+
+void SE_Manager::Set_pos(LPSTR _ID, int no, const Vector3 &pos)
+{
+	play_manager->SetPos(ID[_ID], no, pos);
 }
 
 void SE_Manager::Set_listener(const Vector3 &pos, const Vector3 &front, const Vector3 &up, const Vector3 &move)

@@ -38,13 +38,25 @@ public:
 		SKILL_GUN,
 		SKILL_SYURIKEN,
 		SKILL_KABUTO,
-		SKILL_ZENRYOKU,
+		MANHOLE_FADE,
 		MAX
+	};
+	enum class MANHOLE_FADE_TYPE
+	{
+		NONE, F_IN, F_OUT, MAX
 	};
 
 private:
 	int telopID;
 	int seted_ID;
+
+
+	float manhole_f_scale;
+	MANHOLE_FADE_TYPE m_fade_type;
+	void fadeM_none();
+	void fadeM_in();
+	void fadeM_out();
+	void(UI::*fadeM_funk[(int)MANHOLE_FADE_TYPE::MAX])();
 
 	//===============================================
 	//	何かの実体
@@ -119,7 +131,7 @@ private:
 	void Action();		// 右下のアクションUI
 	void TimeLimit();	// タイムリミット
 	void Telop_render();// テロップ
-
+	void Manhole_fade();// マンホールのフェード
 
 	//===============================================
 	//	テロップリスト
@@ -159,30 +171,13 @@ public:
 	//　GetSet
 	//===============================================
 	bool isStart(){ return isYooiDon; }
-
+	void SetManholeFade(MANHOLE_FADE_TYPE type);
+	MANHOLE_FADE_TYPE GetManholeFade(){ return m_fade_type; }
 
 	//===============================================
 	//	モード変更
 	//===============================================
-	void Change_mode(SceneMain::MODE m)
-	{
-		SAFE_DELETE(mode);
-		switch (m)
-		{
-		case SceneMain::MODE::START:
-			mode = new Mode::Start(this);
-			break;
-
-		case SceneMain::MODE::MAIN:
-			mode = new Mode::Main(this);
-			break;
-
-		case SceneMain::MODE::END:
-			mode = new Mode::End(this);
-			break;
-		}
-		mode->Initialize();
-	}
+	void Change_mode(int m);
 };
 
 

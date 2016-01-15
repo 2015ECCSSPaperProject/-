@@ -3,7 +3,7 @@
 #include	"../system/system.h"
 #include	"BasePlayer.h"
 #include	"MyPlayer.h"
-
+#include	"../ui/UI.h"
 #include	"../../IEX/OKB.h"
 #include	"../../../share_data/Enum_public.h"
 #include	"../Sound/SoundManager.h"
@@ -46,6 +46,9 @@ void MyPlayer::Initialize(iex3DObj **obj)
 	BasePlayer::Initialize(obj);
 	isMyNunber = true;
 	se_step = 0;
+
+	// ATフィールド展開
+	se->Play("AT", true);
 }
 
 void MyPlayer::Release()
@@ -83,6 +86,7 @@ void MyPlayer::Update()
 void MyPlayer::Update_action()
 {
 	// 継承先のアクションクラスを使えないのでここで無理やり更新
+	static int fade_frame = 0;
 
 	switch (action_part)
 	{
@@ -98,7 +102,15 @@ void MyPlayer::Update_action()
 	case ACTION_PART::MANHOLE:
 		if (models[(int)model_part]->GetParam(0) == 1)
 		{
-			if (se_receive == -1)se_receive = se->Play((isManhole) ? "のぼる": "落ちる");
+			if (se_receive == -1)
+			{
+				se_receive = se->Play((isManhole) ? "のぼる" : "落ちる");
+			}
+		}
+		if (models[(int)model_part]->GetParam(0) == 2)
+		{
+			if (ui->GetManholeFade() != UI::MANHOLE_FADE_TYPE::F_OUT)ui->SetManholeFade(UI::MANHOLE_FADE_TYPE::F_OUT);
+			fade_frame++;
 		}
 		break;
 
@@ -122,63 +134,66 @@ void MyPlayer::Control_all()
 		if (--skill_wait <= 0){ skill_wait = 0; m_controlDesc.skillFlag &= 0x00000000; }
 	}
 
-	if (KEY_Get(KEY_UP) == 1)
+	if (ui->isStart())
 	{
-		m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::UP;
-	}
-	else if (KEY_Get(KEY_DOWN) == 1)
-	{
-		m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::DOWN;
-	}
-	if (KEY_Get(KEY_RIGHT) == 1)
-	{
-		m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::RIGHT;
-	}
-	else if (KEY_Get(KEY_LEFT) == 1)
-	{
-		m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::LEFT;
-	}
-
-	//if (GetAsyncKeyState(0x01) & 0x8000)
-	if (KeyBoard(MOUSE_LEFT))
-	{
-		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::LEFT_CLICK;
-	}
-
-	else if (KeyBoard(MOUSE_RIGHT))
-	{
-		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::RIGHT_CLICK;
-	}
-	else if (KeyBoard(MOUSE_CENTAR))
-	{
-		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::ATTACK_BUTTON;
-	}
-
-	if (KeyBoard(KB_SPACE))
-	{
-		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::SPACE;
-	}
-
-	// 右クリックで必殺技を発動させるか
-	if (m_controlDesc.controlFlag & (int)PLAYER_CONTROL::RIGHT_CLICK)
-	{
-		if (action_part != ACTION_PART::MOVE) return;
-		// ゲージが溜まってたら
-		if (skill_data[(int)select_skill].wait_time <= 0)
+		if (KEY_Get(KEY_UP) == 1)
 		{
-			const int FLAG[] =
-			{
-				(int)PLAYER_SKILL::GUN,
-				(int)PLAYER_SKILL::SYURIKEN,
-				(int)PLAYER_SKILL::KABUTO,
-			};
-
-			m_controlDesc.skillFlag |= FLAG[(int)select_skill];
-			// スキル撃ったのでクールタイム設定
-			skill_data[(int)select_skill].wait_time = skill_data[(int)select_skill].cool_time;
-			skill_wait = 3;	// 1フレームだけしか送らなかったらたまに反応しないので3フレームぐらい送る
+			m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::UP;
 		}
-		//SPI_GET_WHEELSCROLL
+		else if (KEY_Get(KEY_DOWN) == 1)
+		{
+			m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::DOWN;
+		}
+		if (KEY_Get(KEY_RIGHT) == 1)
+		{
+			m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::RIGHT;
+		}
+		else if (KEY_Get(KEY_LEFT) == 1)
+		{
+			m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::LEFT;
+		}
+
+		//if (GetAsyncKeyState(0x01) & 0x8000)
+		if (KeyBoard(MOUSE_LEFT))
+		{
+			m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::LEFT_CLICK;
+		}
+
+		else if (KeyBoard(MOUSE_RIGHT))
+		{
+			m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::RIGHT_CLICK;
+		}
+		else if (KeyBoard(MOUSE_CENTAR))
+		{
+			m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::ATTACK_BUTTON;
+		}
+
+		if (KeyBoard(KB_SPACE))
+		{
+			m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::SPACE;
+		}
+
+		// 右クリックで必殺技を発動させるか
+		if (m_controlDesc.controlFlag & (int)PLAYER_CONTROL::RIGHT_CLICK)
+		{
+			if (action_part != ACTION_PART::MOVE) return;
+			// ゲージが溜まってたら
+			if (skill_data[(int)select_skill].wait_time <= 0)
+			{
+				const int FLAG[] =
+				{
+					(int)PLAYER_SKILL::GUN,
+					(int)PLAYER_SKILL::SYURIKEN,
+					(int)PLAYER_SKILL::KABUTO,
+				};
+
+				m_controlDesc.skillFlag |= FLAG[(int)select_skill];
+				// スキル撃ったのでクールタイム設定
+				skill_data[(int)select_skill].wait_time = skill_data[(int)select_skill].cool_time;
+				skill_wait = 3;	// 1フレームだけしか送らなかったらたまに反応しないので3フレームぐらい送る
+			}
+			//SPI_GET_WHEELSCROLL
+		}
 	}
 }
 

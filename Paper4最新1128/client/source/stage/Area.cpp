@@ -48,7 +48,7 @@ void Area::Set_mesh(const char *filename)
 	delete wall;
 	char fn[128];
 	strcpy_s( fn, filename );
-	wall = new AnimationUV(fn, 0, 0.005, 100, true);
+	wall = new AnimationUV(fn, 0, 0.005f, 100, true);
 	wall->Action();
 }
 

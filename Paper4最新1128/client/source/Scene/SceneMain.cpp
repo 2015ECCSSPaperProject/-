@@ -278,7 +278,8 @@ void SceneMain::Main()
 	if (timer->Get_limit_time() == 0)
 	{
 		event_bgm->Set_mode(EventBGM::MODE::END);
-		ui->Change_mode(SceneMain::MODE::END);
+		ui->Change_mode((int)SceneMain::MODE::END);
+		se->Stop_all();
 		mode = MODE::END;
 		m_pThread->End();	// ここでEndすることによってフェードの間にスレッド終了の余裕を持たせる
 		

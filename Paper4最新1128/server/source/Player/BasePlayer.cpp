@@ -38,7 +38,7 @@ BasePlayer::BasePlayer(int id) :m_id(id)
 void BasePlayer::Init_pos()
 {
 	// 基本パラメータ初期化
-	pos.z = 18.0f;
+	pos.z = 0.0f;
 	pos.y = 1;
 	pos.x = (float)(m_id * 45);// 仮
 	angleY = 0.0f;
@@ -77,7 +77,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	paperqueue = new PaperQueue;
 
 	// 基本パラメータ初期化
-	pos.z = 18.0f;
+	pos.z = 0.0f;
 	pos.x = (float)(m_id * 45);// 仮
 	angleY = 0.0f;
 	scale = .5f;
@@ -409,6 +409,8 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	//	真ん中クリック処理
 	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::ATTACK_BUTTON)
 	{
+		me->Change_action(ACTION_PART::DIE);
+		return;
 		if (!me->attackFlag)
 		{
 			me->Change_action(ACTION_PART::ATTACK);
@@ -422,6 +424,11 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	{
 		me->Change_action(ACTION_PART::MOVE_TARGET);
 		return;
+	}
+
+	if (me->pos.y < -500)
+	{
+		me->Change_action(ACTION_PART::DIE);
 	}
 }
 
@@ -684,9 +691,9 @@ void BasePlayer::Action::Rend::Initialize()
 	//me->pos = paper_obj_mng->Get_pos(me->poster_num);
 	//me->angleY = paper_obj_mng->Get_angle(me->poster_num) + PI;
 	//me->pos += (Vector3(-sinf(me->angleY), 0, -cosf(me->angleY)) * dist);
-	Vector3 v = paper_obj_mng->Get_pos(me->poster_num) - me->pos;
-	v.Normalize();
-	me->angleY = atan2(v.x,v.z);
+	//Vector3 v = paper_obj_mng->Get_pos(me->poster_num) - me->pos;
+	//v.Normalize();
+	//me->angleY = atan2(v.x,v.z);
 
 	me->motion_no = 1;
 	me->Set_motion(1);
@@ -715,7 +722,24 @@ void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
 	if (!rended)
 	{
 		// 破けコマンドがONなら
-		if (_ControlDesc.rendFlag & (BYTE)PLAYER_FLAG::REND)
+		if (me->isJump && (_ControlDesc.controlFlag &(BYTE)PLAYER_CONTROL::LEFT_CLICK))
+		{
+			me->motion_no = 21;
+			me->Set_motion(21);
+			rended = true;
+
+			// 送信するデータプッシュ
+			for (int i = 0; i < PLAYER_MAX; i++)
+			{
+				PaperData data;
+				data.from = me->mynumber;
+				data.ID = me->poster_num;
+				player_mng->Get_player(i)->paperqueue->Push(data);
+			}
+			me->Change_action(ACTION_PART::REND_OBJ);
+			me->push_rend = true;
+		}
+		else if (_ControlDesc.rendFlag & (BYTE)PLAYER_FLAG::REND)
 		{
 			me->motion_no = 2;
 			me->Set_motion(2);
@@ -796,7 +820,7 @@ void BasePlayer::Action::Die::Initialize()
 
 void BasePlayer::Action::Die::Update(const CONTROL_DESC &_ControlDesc)
 {
-	if (die_frame++ > 60)
+	if (die_frame++ > 180)
 	{
 		me->Change_action(ACTION_PART::RESPAWN);
 	}
@@ -814,7 +838,7 @@ void BasePlayer::Action::Respawn::Initialize()
 	me->move = VECTOR_ZERO;
 	me->invincible = true;
 	invincible_time = 0;
-	me->pos.y = 80.0f;
+	me->pos.y = 150.0f;
 
 	me->model_part = MODEL::NORMAL;
 	me->Set_motion(8);
@@ -831,14 +855,21 @@ void BasePlayer::Action::Respawn::Update(const CONTROL_DESC &_ControlDesc)
 			me->invincible = false;
 			me->Change_action(ACTION_PART::MOVE);
 		}
-		me->move.x *= .5f;
-		me->move.z *= .5f;
+		me->move.x *= .1f;
+		me->move.z *= .1f;
 		me->move.y -= me->fallspeed;
+		if(me->isLand)me->models[(int)me->model_part]->Animation();
 	}
 
 	// 飛来中
 	else
 	{
+		//アングル処理	角度補正
+		float	work;
+		work = _ControlDesc.mouseX *0.000001f;
+		if (work > 0.1f) work = 0.1f;
+		me->angleY += work;// Angleに加算
+
 		float AxisX = .0f, AxisY = .0f;
 
 		if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT) AxisX += -1;

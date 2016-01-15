@@ -68,13 +68,13 @@ void Camera::Initialize(BasePlayer *my)
 
 	// パース
 	parth.fovY = FOVY[(int)FOV_TYPE::DEFAULT];
-	parth.Near = 0.1f;
-	parth.Far = 2300.0f;
+	parth.Near = .1f;
+	parth.Far = 2000.0f;
 
 	// スクリプトカメラさん
 	effect_camera = new EffectCamera;
 	effect_camera->Initialize(this, "DATA/Camera/save_data.ecd");
-	effect_camera->Set_pattern(0);
+	effect_camera->Set_pattern(114514);
 }
 
 void Camera::Update()
@@ -287,11 +287,11 @@ void Camera::Mode::TPS::Initialize(const Vector3 &pos, const Vector3 &target)
 
 void Camera::Mode::TPS::Update()
 {
-	//if (me->my_player->Get_action() == BasePlayer::ACTION_PART::REND_OBJ)
-	//{
-	//	me->effect_camera->Set_pattern(1);
-	//	return;
-	//}
+	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::REND_OBJ)
+	{
+		me->effect_camera->Set_pattern(paper_obj_mng->Get_kind(me->my_player->Get_poster_num()));
+		return;
+	}
 
 	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::SYURIKEN)
 	{
