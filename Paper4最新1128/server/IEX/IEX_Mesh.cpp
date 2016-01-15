@@ -868,3 +868,164 @@ int	IEX_RayPickMesh( iexMesh* lpMesh, Vector3* out, Vector3* pos, Vector3* vec, 
 	return	ret;
 }
 
+
+
+
+// 追加した関数
+void iexMesh::NearestPoint( NearestPointOut *out, const Vector3 &inPos )
+{
+	//	情報取得	
+	u32 fvf = lpMesh->GetFVF();
+	//	頂点サイズ計算
+	int vertexSize = D3DXGetFVFVertexSize( fvf ) / sizeof( float );
+	//	バッファロック
+	float	*pVertices;
+	u16		*pIndices;
+	u32 numIndices = lpMesh->GetNumFaces();
+	lpMesh->LockVertexBuffer( D3DLOCK_READONLY, ( void** ) &pVertices );
+	lpMesh->LockIndexBuffer( D3DLOCK_READONLY, ( void** ) &pIndices );
+
+	struct
+	{
+		Vector3 vertex1, vertex2, vertex3;
+		Vector3	normal;
+		Vector3 line1, line2, line3;
+
+		// 頂点情報から残りの情報を計算
+		void ComputeFromVertex()
+		{
+			line1 = vertex2 - vertex1;
+			line2 = vertex3 - vertex2;
+			line3 = vertex1 - vertex3;
+
+			Vector3Cross( normal, line1, line2 );
+			normal.Normalize();
+		}
+	}triangle; // 三角ポリゴン
+
+	for( u32 j = 0; j < numIndices; j++ )
+	{
+		//	面頂点取得
+		int a = pIndices[j * 3 + 0] * vertexSize;
+		triangle.vertex1.x = pVertices[a];	triangle.vertex1.y = pVertices[a + 1];	triangle.vertex1.z = pVertices[a + 2];
+
+		int b = pIndices[j * 3 + 1] * vertexSize;
+		triangle.vertex2.x = pVertices[b];	triangle.vertex2.y = pVertices[b + 1];	triangle.vertex2.z = pVertices[b + 2];
+
+		int c = pIndices[j * 3 + 2] * vertexSize;
+		triangle.vertex3.x = pVertices[c];	triangle.vertex3.y = pVertices[c + 1];	triangle.vertex3.z = pVertices[c + 2];
+
+		// 法線と辺計算
+		triangle.ComputeFromVertex();
+
+		// 距離計算
+		float length = min( length, Vector3Dot( inPos - triangle.vertex1, triangle.normal ) );
+		if( length < 0 ) continue; // 内積の結果がマイナスならポリゴンはinPosから見て裏向き
+
+
+	}
+
+	/*
+	int		ret = -1;
+
+	if( vec->x == .0f && vec->z == .0f ) return RayPickUD( out, pos, vec, Dist );
+
+	Vector3 p = *pos;
+	Vector3 vv = *vec;
+
+	float neart = *Dist;
+	float dist = *Dist;
+	dist = dist*dist;
+	*out = p;
+	//	情報取得	
+	u32 fvf = lpMesh->GetFVF();
+	//	頂点サイズ計算
+	int VertexSize = D3DXGetFVFVertexSize( fvf ) / sizeof( float );
+
+	//	バッファロック
+	float	*pVertices;
+	u16		*pIndices;
+	u32 NumIndices = lpMesh->GetNumFaces();
+	lpMesh->LockVertexBuffer( D3DLOCK_READONLY, ( void** ) &pVertices );
+	lpMesh->LockIndexBuffer( D3DLOCK_READONLY, ( void** ) &pIndices );
+
+	Vector3 v1, v2, v3;
+	Vector3	n;
+	Vector3	l1, l2, l3;
+	Vector3	temp;
+	Vector3	cp;
+
+	Vector3 p1, p2, p3;
+
+	for( u32 j = 0; j<NumIndices; j++ )
+	{
+		//	面頂点取得
+		int a = pIndices[j * 3 + 0] * VertexSize;
+		v1.x = pVertices[a];	v1.y = pVertices[a + 1];	v1.z = pVertices[a + 2];
+
+		int b = pIndices[j * 3 + 1] * VertexSize;
+		v2.x = pVertices[b];	v2.y = pVertices[b + 1];	v2.z = pVertices[b + 2];
+
+		int c = pIndices[j * 3 + 2] * VertexSize;
+		v3.x = pVertices[c];	v3.y = pVertices[c + 1];	v3.z = pVertices[c + 2];
+
+		//	距離判定
+		//Vector3	ss = (v1 + v2 + v3) / 3.0f - p;
+		//if( ss.LengthSq() > dist ) continue;
+		l1.x = v2.x - v1.x;
+		l1.y = v2.y - v1.y;
+		l1.z = v2.z - v1.z;
+		l2.x = v3.x - v2.x;
+		l2.y = v3.y - v2.y;
+		l2.z = v3.z - v2.z;
+
+		//	外積による法線算出		
+		Vector3Cross( n, l1, l2 );
+		//	内積の結果がプラスならば裏向き
+		float dot = Vector3Dot( vv, n );
+		if( dot >= 0 ) continue;
+		//	交点算出
+		p1.x = v1.x - p.x;
+		p1.y = v1.y - p.y;
+		p1.z = v1.z - p.z;
+		float t = Vector3Dot( n, p1 ) / dot;
+		if( t < .0f || t > neart ) continue;
+
+		cp.x = vv.x*t + p.x;
+		cp.y = vv.y*t + p.y;
+		cp.z = vv.z*t + p.z;
+		//	内点判定
+		p1.x = v1.x - cp.x;
+		p1.y = v1.y - cp.y;
+		p1.z = v1.z - cp.z;
+
+		Vector3Cross( temp, p1, l1 );
+		if( Vector3Dot( temp, n ) < .0f ) continue;
+
+		p2.x = v2.x - cp.x;
+		p2.y = v2.y - cp.y;
+		p2.z = v2.z - cp.z;
+		Vector3Cross( temp, p2, l2 );
+		if( Vector3Dot( temp, n ) < .0f ) continue;
+
+		l3.x = v1.x - v3.x;
+		l3.y = v1.y - v3.y;
+		l3.z = v1.z - v3.z;
+		p3.x = v3.x - cp.x;
+		p3.y = v3.y - cp.y;
+		p3.z = v3.z - cp.z;
+		Vector3Cross( temp, p3, l3 );
+		if( Vector3Dot( temp, n ) < .0f ) continue;
+
+		*out = cp;
+		*vec = n;
+		ret = j;
+		neart = t;
+	}
+	lpMesh->UnlockVertexBuffer();
+	lpMesh->UnlockIndexBuffer();
+	*Dist = neart;
+
+	return	ret;
+	*/
+}
