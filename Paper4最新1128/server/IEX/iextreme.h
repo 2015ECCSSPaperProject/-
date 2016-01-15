@@ -192,8 +192,9 @@ typedef struct Vector3 : public Vector
 public:
 	//	コンストラクタ
 	Vector3() {};
-	inline Vector3( float x, float y, float z ){ this->x=x, this->y=y, this->z=z; } 
-	inline Vector3( CONST Vector& v ){ this->x=v.x, this->y=v.y, this->z=v.z; } 
+	inline void Set( float x, float y, float z ){ this->x = x, this->y = y, this->z = z; }
+	inline Vector3( float x, float y, float z ){ Set( x, y, z ); }
+	inline Vector3( CONST Vector& v ){ Set( v.x, v.y, v.z ); }
 
 	//	距離計算
 	inline float Length(){ return sqrtf(x*x + y*y + z*z); }
@@ -226,9 +227,6 @@ public:
 
 	BOOL operator == ( CONST Vector3& v ) const { return (x==v.x) && (y==v.y) && (z==v.z); }
 	BOOL operator != ( CONST Vector3& v ) const { return (x!=v.x) || (y!=v.y) || (z!=v.z); }
-
-
-	inline void Set(float x, float y, float z){ this->x = x, this->y = y, this->z = z; }
 
 } Vector3, *LPVECTOR3;
 
@@ -768,6 +766,14 @@ public:
 	//------------------------------------------------------
 	int	RayPick( Vector3* out, Vector3* pos, Vector3* vec, float *Dist );
 	int	RayPickUD( Vector3* out, Vector3* pos, Vector3* vec, float *Dist );
+
+	struct NearestPointOut
+	{
+		float length;
+		Vector3 Pos;
+		Vector3 Normal;
+	};
+	void NearestPoint( NearestPointOut *out, const Vector3 &pos );
 
 	//------------------------------------------------------
 	//	情報設定・取得
