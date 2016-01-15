@@ -35,7 +35,16 @@ void EffectCamera::Initialize(Camera *me, LPSTR filename)
 //		ŠJ		•ú
 EffectCamera::~EffectCamera()
 {
-
+	if (time_line_data)
+	{
+		for (int i = 0; i < time_line_data->data_count; i++)
+		{
+			delete time_line_data->data[i].pos_array;
+			delete time_line_data->data[i].target_array;
+		}
+		delete time_line_data->data;
+		delete time_line_data;
+	}
 }
 //
 //=============================================================================================
@@ -88,6 +97,12 @@ void EffectCamera::Update()
 		{
 			current_frame = 0;
 			camera->scriptON = false;
+			for (int i = 0; i < time_line_data->data_count; i++)
+			{
+				delete time_line_data->data[i].pos_array;
+				delete time_line_data->data[i].target_array;
+			}
+			delete time_line_data->data;
 			delete time_line_data, time_line_data = nullptr;
 		}
 	}

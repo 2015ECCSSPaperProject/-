@@ -528,13 +528,13 @@ void MyPlayer::Set_action(ACTION_PART part)
 void MyPlayer::Render(iexShader *shader, char *name)
 {
 	BasePlayer::Render(shader, name); 
-	Text::Draw(32, 480, 0xff00ffff, "%.1f", angleY);
-	Text::Draw(32, 520, 0xff00ffff, "%.1f",pos.x);
-	Text::Draw(32, 560, 0xff00ffff, "%.1f",pos.y);
-	Text::Draw(32, 600, 0xff00ffff, "%.1f",pos.z);
+	//Text::Draw(32, 480, 0xff00ffff, "%.1f", angleY);
+	//Text::Draw(32, 520, 0xff00ffff, "%.1f",pos.x);
+	//Text::Draw(32, 560, 0xff00ffff, "%.1f",pos.y);
+	//Text::Draw(32, 600, 0xff00ffff, "%.1f",pos.z);
 	//DeferredManager.ForwardBigin();
-	if(manhole_no_haninai)
-		Text::Draw(320, 600, 0xffffffff, "マンホール範囲内");
+	//if(manhole_no_haninai)
+	//Text::Draw(320, 600, 0xffffffff, "マンホール範囲内");
 
 	//円ゲージ
 	//float persent =1.0f - ((float)skill_data[(int)SKILL::GUN].wait_time / (float)skill_data[(int)SKILL::GUN].cool_time);

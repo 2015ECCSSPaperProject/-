@@ -448,7 +448,7 @@ void SceneMain::Render()
 
 	}
 
-		Text::Draw(32, 60, 0xff00ffff, "受信時間%.2f", bench.Get_time());
+		//Text::Draw(32, 60, 0xff00ffff, "受信時間%.2f", bench.Get_time());
 
 		//Text::Draw(32, 360, 0xff00ffff, "x%.2f", ANGLE);
 		//Text::Draw(32, 390, 0xff00ffff, "x%.2f", bench.Get_time());
@@ -466,10 +466,10 @@ void SceneMain::Render()
 		//timer->Render();
 
 		//　プレイヤーの名前
-		for (int i = 0; i < PLAYER_MAX; ++i)
-		{
-			Text::Draw(950, 20 + (i * 32), 0xff00ffff, "名前：%s", SOCKET_MANAGER->GetUser(i).name);
-		}
+		//for (int i = 0; i < PLAYER_MAX; ++i)
+		//{
+		//	Text::Draw(950, 20 + (i * 32), 0xff00ffff, "名前：%s", SOCKET_MANAGER->GetUser(i).name);
+		//}
 
 
 		//SurfaceRender();

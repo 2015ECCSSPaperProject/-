@@ -184,7 +184,7 @@ void SceneResult::Render()
 	image[IMAGE::KEKKA]->Render(12, 28, 256, 64, 0, 0, 256, 64);
 
 	// ƒAƒNƒVƒ‡ƒ“UI
-	image[IMAGE::ACTION]->Render(1060, 500, 256, 256, 0, 0, 256, 256);
+	//image[IMAGE::ACTION]->Render(1060, 500, 256, 256, 0, 0, 256, 256);
 
 	for (int i = 0; i < PLAYER_MAX; ++i)
 	{

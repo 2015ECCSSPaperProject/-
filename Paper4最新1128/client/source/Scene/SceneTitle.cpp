@@ -9,7 +9,7 @@
 
 using namespace std;
 
-static const Vector2 MOUSE_POS(960, 454);
+static const Vector2 MOUSE_POS(960, 600);
 
 //******************************************************************
 //		‰Šú‰»E‰ğ•ú
@@ -134,7 +134,7 @@ void SceneTitle::Update()
 
 		{
 			float move_x, move_y;
-			Vector2 next_vec(1180 - move_mouse.x, 600 - move_mouse.y);
+			Vector2 next_vec(1180 - move_mouse.x, 454 - move_mouse.y);
 			if (next_vec.Length() < 4)
 			{
 				move_mouse = MOUSE_POS;
@@ -219,8 +219,8 @@ void SceneTitle::Render()
 
 	//if(start_button.pointing)iexPolygon::Rect(min_v.x, min_v.y, max_v.x-min_v.x, max_v.y-min_v.y, RS_COPY, 0x99fffff);
 
-	Text::Draw(32, 32, 0xff000000, "%d", mouse.pos_x);
-	Text::Draw(32, 64, 0xff000000, "%d", mouse.pos_y);
+	//Text::Draw(32, 32, 0xff000000, "%d", mouse.pos_x);
+	//Text::Draw(32, 64, 0xff000000, "%d", mouse.pos_y);
 	//Text::Draw(32, 96, 0xff000000, "%.1f", start_button.pos.z);
 }
 

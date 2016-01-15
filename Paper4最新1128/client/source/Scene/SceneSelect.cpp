@@ -480,7 +480,7 @@ void SceneSelect::Render()
 	image[IMAGE::LIST]->Render(12, 28, 256, 64, 0, 0, 256, 64);
 
 	// ƒAƒNƒVƒ‡ƒ“UI
-	image[IMAGE::ACTION]->Render(1060, 500, 256, 256, 0, 0, 256, 256);
+	//image[IMAGE::ACTION]->Render(1060, 500, 256, 256, 0, 0, 256, 256);
 	image[IMAGE::INFO]->Render(600, 0);
 
 
