@@ -109,3 +109,8 @@ KIND_PAPER_OBJECT Zasshi::Get_kind()
 {
 	return KIND_PAPER_OBJECT::ZASSHI;
 }
+
+KIND_PAPER_OBJECT Shoji::Get_kind()
+{
+	return KIND_PAPER_OBJECT::SHOJI;
+}

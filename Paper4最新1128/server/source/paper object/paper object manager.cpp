@@ -205,6 +205,7 @@ void Paper_obj_mng::Load()
 	original_model[0].LoadObject( "DATA//paper object/Poster/posuta-.IEM" );
 	original_model[1].LoadObject( "DATA/paper object/flyer/flyer.IEM" );
 
+	// à íuÉçÅ[Éh
 	number_of_objects = 0;
 
 	Load_flyer();
@@ -217,6 +218,7 @@ void Paper_obj_mng::Load()
 	Load_poster_tmp<Toilet_paper>( "DATA/MATI/position/toilet_paper_pos.txt" );
 	Load_poster_tmp<Zasshi>( "DATA/MATI/position/zasshi.txt" );
 	Load_poster_tmp<Shinbun>( "DATA/MATI/position/shinbun_pos.txt" );
+	Load_poster_tmp<Shoji>( "DATA/MATI/position/shoji_pos.txt" );
 }
 
 void Paper_obj_mng::Load_flyer()

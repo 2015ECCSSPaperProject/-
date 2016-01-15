@@ -60,5 +60,5 @@ enum KIND_PAPER_OBJECT
 	SIGN = 7,
 	TOILET_PAPER = 8,
 	ZASSHI = 9,
-
+	SHOJI = 10
 };

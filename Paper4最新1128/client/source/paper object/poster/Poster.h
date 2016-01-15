@@ -77,3 +77,9 @@ class Zasshi : public Poster
 public:
 	KIND_PAPER_OBJECT Get_kind();
 };
+
+class Shoji : public Poster
+{
+public:
+	KIND_PAPER_OBJECT Get_kind();
+};
