@@ -436,7 +436,7 @@ void MyPlayer::RendShinbunSE()
 		// 破き終わり
 		if (models[(int)model_part]->GetParam(5) == 2)
 		{
-			se->Play("サイン破り");
+			se->Play("新聞破り2");
 			se_step = 99;	// ステップ終わり
 		}
 		break;
