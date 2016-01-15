@@ -16,7 +16,6 @@
 //		‰	Šú	‰»
 EffectCamera::EffectCamera() :pattern_no(0), ptr(0), current_frame(0), time_line_data(nullptr), data_cursor(-1)
 {
-
 }
 
 void EffectCamera::Initialize(Camera *me, LPSTR filename)
@@ -170,6 +169,8 @@ bool EffectCamera::Set_pattern(int pat)
 				time_line_data->data[i].target_array[j].y = LoadFloat();
 				time_line_data->data[i].target_array[j].z = LoadFloat();
 			}
+
+			time_line_data->data[i].fix = (time_line_data->data[i].num_elements == 1);
 		}
 	}
 	return success;
@@ -182,6 +183,12 @@ bool EffectCamera::Set_pattern(int pat)
 void EffectCamera::Get_time_line_camera_pos(Vector3 *out_pos, Vector3 *out_target)
 {
 	if (data_cursor == -1) return;
+	if (time_line_data->data[data_cursor].fix)
+	{
+		*out_pos = time_line_data->data[data_cursor].pos_array[0];
+		*out_target = time_line_data->data[data_cursor].target_array[0];
+	}
+
 	// ƒxƒWƒGŒvZŠÖ”‚ÉŠÛ“Š‚°
 	Bezier(
 		out_pos,																	// ó‚¯M
@@ -203,12 +210,6 @@ void EffectCamera::Get_time_line_camera_pos(Vector3 *out_pos, Vector3 *out_targe
 void EffectCamera::Bezier(Vector3 *out, Vector3 pos_array[], int num_elements_array, int current_frame, int end_frame)
 {
 	assert(num_elements_array > 0);
-
-	if (pos_array[0] == pos_array[1])
-	{
-		*out = pos_array[0];
-		return;
-	}
 
 	float b = current_frame / (float)end_frame;
 	float a = 1 - b;
