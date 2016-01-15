@@ -36,6 +36,9 @@ public:
 	void Render_Barrier();	// バリアー描画
 	void Render_AT();		// AT描画
 
+	// ゲッター・セッター
+	iexMesh* GetObj(){ return obj; }
+
 private:
 	iexMesh*	obj;
 	float		tu, tv;			// 毎フレームの横縦のUVの座標
