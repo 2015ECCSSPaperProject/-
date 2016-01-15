@@ -216,7 +216,7 @@ void Paper_obj_mng::Load()
 	Load_poster_tmp<Sign>( "DATA/MATI/position/sign_pos.txt" );
 	Load_poster_tmp<Toilet_paper>( "DATA/MATI/position/toilet_paper_pos.txt" );
 	Load_poster_tmp<Zasshi>( "DATA/MATI/position/zasshi.txt" );
-
+	Load_poster_tmp<Shinbun>( "DATA/MATI/position/shinbun_pos.txt" );
 }
 
 void Paper_obj_mng::Load_flyer()
