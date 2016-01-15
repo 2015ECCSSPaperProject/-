@@ -45,13 +45,11 @@ SE_Manager::DATA all_dataS[] =
 {
 	{ "•às1", "DATA/Sound/SE/page03.wav", 12, true },
 	{ "•às2", "DATA/Sound/SE/page04.wav", 12, true },
-	{ "“\‚é", "DATA/Sound/SE/paper-haru.wav", 6, true },
 	{ "”j‚é", "DATA/Sound/SE/†‚ğ”j‚é‰¹.wav", 6, true },
 	{ "†“S–C", "DATA/Sound/SE/paper_gun.wav", 6, true },
 	{ "è— Œ•", "DATA/Sound/SE/syuriken.wav", 6, true },
 	{ "—‚¿‚é", "DATA/Sound/SE/fall.wav", 1, false },
 	{ "‚Ì‚Ú‚é", "DATA/Sound/SE/rise.wav", 1, false },
-	{ "”j‚é\‚¦", "DATA/Sound/SE/cursor3.wav", 1, false },
 	{ "ƒWƒƒƒ“ƒv", "DATA/Sound/SE/jump.wav", 6, true },
 	{ "’Z‚¢”j‚è", "DATA/Sound/SE/rend/rend_short.wav", 1, false },
 	{ "ƒJƒŒƒ“ƒ_[”j‚è", "DATA/Sound/SE/rend/rend_calendar.wav", 1, false },

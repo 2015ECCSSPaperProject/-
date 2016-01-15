@@ -77,6 +77,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	models[(int)MODEL::REND_WC_PAPER] = objs[(int)PlayerManager::CLONE_TYPE::REND_WC_PAPER]->Clone(3);
 	models[(int)MODEL::REND_ZASSHI] = objs[(int)PlayerManager::CLONE_TYPE::REND_ZASSHI]->Clone(2);
 	models[(int)MODEL::REND_SEISHO] = objs[(int)PlayerManager::CLONE_TYPE::REND_SEISHO]->Clone(2);
+	models[(int)MODEL::REND_SHOJI] = objs[(int)PlayerManager::CLONE_TYPE::REND_SHOJI]->Clone(2);
 
 	skill_data[(int)SKILL::GUN].do_action = ACTION_PART::GUN;
 	skill_data[(int)SKILL::SYURIKEN].do_action = ACTION_PART::SYURIKEN;
@@ -887,6 +888,10 @@ void BasePlayer::Action::RendObj::Initialize()
 	case KIND_PAPER_OBJECT::ZASSHI:
 		me->model_part = MODEL::REND_ZASSHI;
 		break;
+
+	//case KIND_PAPER_OBJECT::SHOJI:
+	//	me->model_part = MODEL::REND_SHOJI;
+	//	break;
 
 	case KIND_PAPER_OBJECT::POSTER:
 	case KIND_PAPER_OBJECT::FLYER:
