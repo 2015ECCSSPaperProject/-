@@ -6,7 +6,7 @@ class Area
 {
 public:
 	Area();
-	Area(char *filename);
+	Area(const char *filename);
 	~Area();
 
 	void Set_mesh(char *filename);
@@ -28,9 +28,11 @@ protected:
 Area::Area() : wall(nullptr), is_work(true)
 {}
 
-Area::Area(char *filename) : wall(nullptr), is_work(true)
+Area::Area( const char *filename ) : wall( nullptr ), is_work( true )
 {
-	Set_mesh(filename);
+	char fn[128];
+	strcpy_s( fn, filename );
+	Set_mesh( fn );
 }
 
 Area::~Area()
@@ -79,7 +81,7 @@ Area_mng::~Area_mng()
 		delete area_array[i];
 }
 
-void Area_mng::Push(char *filename)
+void Area_mng::Push(const char *filename)
 {
 	area_array.push_back(new Area(filename));
 }

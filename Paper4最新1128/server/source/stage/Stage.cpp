@@ -10,7 +10,7 @@
 #include "../event/Event.h"
 #include "../event/Event open area.h"
 //#include "../player/Player.h"
-#include <fstream>
+#include <string>
 
 Stage::Stage() : collision_model(nullptr), area(nullptr)
 {}
@@ -24,11 +24,7 @@ void Stage::Initialize()
 {
 	collision_model = new iexMesh("DATA/MATI/stage_atari.IMO");
 
-	if (area)delete area;
-	area = new Area_mng;
-	area->Push("DATA/MATI/area/AT/AT.IMO");
-
-	event_list->push(new Event_open_area(100 * 1000, area, 0));
+	Load_area();
 }
 
 void Stage::Release()
@@ -178,6 +174,23 @@ bool Stage::Area_Is_work(unsigned int index)
 
 void Stage::Load_area()
 {
+	if( area )delete area;
+	area = new Area_mng;
+
+	std::ifstream ifs( "DATA/MATI/area/data.txt" );
+
+	while( !ifs.eof() )
+	{
+		std::string str;
+		ifs >> str;
+		if( str.find( "IMO" ) )
+		{
+			area->Push( str.c_str() );
+			int time;
+			ifs >> time;
+			event_list->push( new Event_open_area( time * 1000, area, 0 ) );
+		}
+	}
 
 }
 

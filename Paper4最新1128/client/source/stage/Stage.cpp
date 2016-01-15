@@ -5,7 +5,7 @@
 #include <string>
 //#include "../player/Player.h"
 
-Stage::Stage()
+Stage::Stage() : area( nullptr )
 {}
 
 Stage::~Stage()
@@ -32,8 +32,7 @@ void Stage::Initialize()
 
 
 
-	area = new Area_mng;
-	area->Push("DATA/MATI/area/AT/AT.IMO", 100);
+	Load_area();
 }
 
 void Stage::Release()
@@ -211,7 +210,22 @@ void Stage::Load_mapdata()
 
 void Stage::Load_area()
 {
+	if( area )delete area;
+	area = new Area_mng;
 
+	std::ifstream ifs( "DATA/MATI/area/data.txt" );
+
+	while( !ifs.eof() )
+	{
+		std::string str;
+		ifs >> str;
+		if( str.find( "IMO" ) )
+		{
+			int time;
+			ifs >> time;
+			area->Push( str.c_str(), time );
+		}
+	}
 }
 
 Stage *stage = nullptr;
