@@ -29,6 +29,7 @@
 // 簡易ver
 AnimationUV::AnimationUV(char* name, float moveTU, float moveTV, int EndFlame, bool IsRoop )
 {
+
 	obj = new iexMesh(name);
 
 	tu = 0.0f; tv = 0.0f;
@@ -40,7 +41,7 @@ AnimationUV::AnimationUV(char* name, float moveTU, float moveTV, int EndFlame, b
 	// α
 	alphaFlag = false;
 	alphaNear = 0;
-	alphaFar = 0;
+	alphaFar = EndFlame; // 適当
 	alpha = 1.0f;
 
 	isRoop = IsRoop;
@@ -87,6 +88,20 @@ void AnimationUV::Stop()
 	nowFlame = 0;
 };
 
+void AnimationUV::ActionRoop()	// ループアニメ実行
+{
+	isAction = true;		// 起動
+	tu = 0.0f; tv = 0.0f;	// 初期のuvに戻す
+	nowFlame = 0;			// 最初のフレームへ
+	isRoop = true;			// ループ
+}
+
+// ループストップ
+void AnimationUV::StopRoop()	// ループアニメストップ
+{
+	isRoop = false;				// ループストップ
+	nowFlame = alphaFar + 1;	// 透明になる部分へワープ
+}
 
 void AnimationUV::Update(Vector3 pos, Vector3 angle, float scale)
 {
@@ -96,10 +111,18 @@ void AnimationUV::Update(Vector3 pos, Vector3 angle, float scale)
 	tu += moveTu;
 	tv += moveTv;
 
-	if (isRoop == false)//ループじゃなかったら
+	//if (isRoop == false)//ループじゃなかったら
 	{
 		// フレーム更新
 		nowFlame++;
+		if (isRoop == true)// ループだったらalphaFarの前のとこでループし続ける処理
+		{
+			if (nowFlame >= (alphaFar - 1))
+			{
+				nowFlame = (alphaFar-1);
+			}
+		}
+
 		if (nowFlame >= endFlame)
 		{
 			isAction = false;
@@ -122,12 +145,12 @@ void AnimationUV::Update(Vector3 pos, Vector3 angle, float scale)
 
 		// α二アーの前か後ろで判定を変える
 		if (nowFlame >= alphaNear)
-		{
+		{		
 		// 100-100=0  100-50=50   0/50
-		float A = (float)(endFlame - nowFlame);
-		float B =(float)(endFlame - alphaFar);
+		float A = (endFlame - nowFlame);
+		float B =(endFlame - alphaFar);
 		alpha = A / B;
-		alpha = Clamp(alpha, 0.0f, 1.0f);
+		//alpha = Clamp(alpha, 0.0f, 1.0f);
 
 		}
 		else
@@ -177,12 +200,26 @@ void AnimationUV::Update(Vector3 pos, Vector3 angle, Vector3 scale)
 		auto Clamp = [](float val, float Min, float Max){
 			return min(Max, max(val, Min));
 		};
+		// α二アーの前か後ろで判定を変える
+		if (nowFlame >= alphaNear)
+		{
+			// 100-100=0  100-50=50   0/50
+			float A = (endFlame - nowFlame);
+			float B = (endFlame - alphaFar);
+			alpha = A / B;
+			//alpha = Clamp(alpha, 0.0f, 1.0f);
 
-		// 0が透明　1が不透明にするように設定
-		float A = (float)(endFlame - nowFlame);
-		float B = (float)(endFlame - alphaNear);
-		alpha = A / B;
-		alpha = Clamp(alpha, 0.0f, 1.0f);
+		}
+		else
+		{
+			// 最初の
+			alpha = (float)nowFlame / (float)alphaNear;//   0/30=0   60/30=2   1-(0~1)  
+
+		}
+
+		//alpha = (alphaFar - nowFlame) / (alphaFar - alphaNear);
+		alpha = Clamp(alpha, 0.0f, 1.0f);//指定された値を 0 ～ 1 の範囲にクランプします
+
 
 	}
 
