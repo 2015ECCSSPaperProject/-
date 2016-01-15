@@ -8,10 +8,10 @@ class Area
 {
 public:
 	Area();
-	Area(char *filename, int time);
+	Area(const char *filename, int time);
 	~Area();
 
-	void Set_mesh(char *filename);
+	void Set_mesh(const char *filename);
 
 	int RayPick(Vector3* out, Vector3* pos, Vector3* vec, float *Dist);
 
@@ -32,7 +32,7 @@ protected:
 Area::Area() : wall(nullptr), is_work(true)
 {}
 
-Area::Area(char *filename, int time) : wall(nullptr), is_work(true)
+Area::Area(const char *filename, int time) : wall(nullptr), is_work(true)
 {
 	Set_mesh(filename);
 	time_to_break = time;
@@ -43,10 +43,12 @@ Area::~Area()
 	delete wall;
 }
 
-void Area::Set_mesh(char *filename)
+void Area::Set_mesh(const char *filename)
 {
 	delete wall;
-	wall = new AnimationUV(filename, 0, 0.005, 100, true);
+	char fn[128];
+	strcpy_s( fn, filename );
+	wall = new AnimationUV(fn, 0, 0.005, 100, true);
 	wall->Action();
 }
 
@@ -87,7 +89,7 @@ Area_mng::~Area_mng()
 		delete area_array[i];
 }
 
-void Area_mng::Push(char *filename, int time)
+void Area_mng::Push(const char *filename, int time)
 {
 	area_array.push_back(new Area(filename, time));
 }
