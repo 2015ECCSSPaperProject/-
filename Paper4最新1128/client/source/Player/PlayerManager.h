@@ -22,6 +22,7 @@ public:
 		REND_ZASSHI, 
 		REND_MAGAZINE,
 		REND_SEISHO,
+		REND_SHOJI,
 		MAX
 	};
 

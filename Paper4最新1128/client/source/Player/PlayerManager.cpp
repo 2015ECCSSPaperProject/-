@@ -44,6 +44,7 @@ void PlayerManager::Initialize()
 	clone_model[(int)CLONE_TYPE::REND_ZASSHI]	 = new iex3DObj("DATA/CHR/player/rend_motion/animation_zassi.IEM");
 	clone_model[(int)CLONE_TYPE::REND_MAGAZINE]	 = new iex3DObj("DATA/CHR/player/rend_motion/animation_magazin.IEM");
 	clone_model[(int)CLONE_TYPE::REND_SEISHO]	 = new iex3DObj("DATA/CHR/player/rend_motion/animation_seisyo.IEM");
+	clone_model[(int)CLONE_TYPE::REND_SHOJI]	 = new iex3DObj("DATA/CHR/player/rend_motion/animation_syoji.IEM");
 
 	// セットするテクスチャ
 	Texture2D *textures[3][6] =
@@ -79,24 +80,6 @@ void PlayerManager::Initialize()
 		}
 	};
 	enum TEX_TYPE{ NORMAL, GUN, SYURIKEN };
-
-	//iex3DObj *objs[(int)CLONE_TYPE::MAX] =
-	//{
-	//	clone_model[(int)CLONE_TYPE::NORMAL],	// 通常モデル
-	//	clone_model[(int)CLONE_TYPE::DIE],		// 死ぬ用モデル
-	//	clone_model[(int)CLONE_TYPE::GUN],		// 鉄砲モデル
-	//	clone_model[(int)CLONE_TYPE::SYURIKEN],	// 手裏剣モデル
-
-	//	// 各破るモーションのモデル
-	//	clone_model[(int)CLONE_TYPE::REND_CALENDAR],
-	//	clone_model[(int)CLONE_TYPE::REND_MAGAZINE],
-	//	clone_model[(int)CLONE_TYPE::REND_MONEY],
-	//	clone_model[(int)CLONE_TYPE::REND_SHINBUN],
-	//	clone_model[(int)CLONE_TYPE::REND_SIGN],
-	//	clone_model[(int)CLONE_TYPE::REND_WC_PAPER],
-	//	clone_model[(int)CLONE_TYPE::REND_ZASSHI],
-	//	clone_model[(int)CLONE_TYPE::REND_SEISHO],
-	//};
 
 	//■■■　相手と自分で分ける
 	for (int i = 0; i < PLAYER_MAX; ++i)
