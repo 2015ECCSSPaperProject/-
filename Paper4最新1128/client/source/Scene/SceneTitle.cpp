@@ -32,6 +32,14 @@ bool SceneTitle::Initialize()
 	images[IMAGE::MOUSE] = new iex2DObj("DATA/Image/title/mouse.png");
 	images[IMAGE::TITLE] = new iex2DObj("DATA/Image/title/title.png");
 	images[IMAGE::CURSOR] = new iex2DObj("DATA/makePoster/cursor4.png");
+	images[IMAGE::ARROW] = new iex2DObj("DATA/Image/title/Arrow.png");
+
+	//---------------------------------------------------------------------
+	// ImageAnimation
+	//---------------------------------------------------------------------
+	arrowPosY = 0;
+	arrowMoveY = 0;
+
 
 	start_button.pos = Vector3(42.7f, -13.4f, 0);
 	Texture2D *texture = iexTexture::Load("DATA/Image/title/gamestart.png");
@@ -67,6 +75,18 @@ SceneTitle::~SceneTitle()
 void SceneTitle::Update()
 {
 	mouse.Update();
+
+	// イメージのアニメーション
+	if (arrowPosY >= 0)
+	{
+		arrowMoveY = -1;
+	}
+	else if (arrowPosY <= -20)
+	{
+		arrowMoveY = 1;
+	}
+	// やじるし更新
+	arrowPosY += arrowMoveY;
 
 
 	//ナンバーエフェクト
@@ -126,6 +146,9 @@ void SceneTitle::Update()
 	{
 		MainFrame->ChangeScene(new SceneSelect());
 	}
+
+
+
 }
 
 
@@ -137,25 +160,26 @@ void SceneTitle::Update()
 void SceneTitle::Render()
 {
 	view->Activate();
-	view->Clear();
+	view->Clear(0xff666666);
 	
 	// 西田書き換え
 	//images[IMAGE::BACK]->Render(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, 1280, 720, RS_COPY, 0xffffffff, 1.0f);
-	images[IMAGE::BACK]->RenderBack(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, 1280, 720, RS_COPY);
+	//images[IMAGE::BACK]->RenderBack(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, 1280, 720, RS_COPY);
 
 	start_button.obj->Update();
 	start_button.obj->Render();
 	
+	images[IMAGE::ARROW]->Render(1025, 364 + arrowPosY);				//	やじるしぴょん
 	images[IMAGE::MOUSE]->Render(960, 464, 64, 64, 0, 0, 64, 64);
-	images[IMAGE::CLICK1]->Render(962, 620, 256, 64, 0, 0, 256, 64);
+	images[IMAGE::CLICK1]->Render(962, 520, 256, 64, 0, 0, 256, 64);
 
 	if ((int)step >= (int)STEP::CLICK)
 	{
-		images[IMAGE::CLICK2]->Render(962, 620, 256, 64, 0, 0, 256, 64);
+		images[IMAGE::CLICK2]->Render(962, 520, 256, 64, 0, 0, 256, 64);
 	}
 	if ((int)step >= (int)STEP::DRAG)
 	{
-		images[IMAGE::CLICK3]->Render(962, 620, 256, 64, 0, 0, 256, 64);
+		images[IMAGE::CLICK3]->Render(962, 520, 256, 64, 0, 0, 256, 64);
 	}
 	images[IMAGE::TITLE]->Render(128, 8, 1024, 512, 0, 0, 1024, 512);
 
@@ -167,7 +191,7 @@ void SceneTitle::Render()
 	//フェード処理
 	FadeControl::Render();
 
-	if(start_button.pointing)iexPolygon::Rect(min_v.x, min_v.y, max_v.x-min_v.x, max_v.y-min_v.y, RS_COPY, 0x99fffff);
+	//if(start_button.pointing)iexPolygon::Rect(min_v.x, min_v.y, max_v.x-min_v.x, max_v.y-min_v.y, RS_COPY, 0x99fffff);
 
 	//Text::Draw(32, 32, 0xff000000, "%.1f", start_button.pos.x);
 	//Text::Draw(32, 64, 0xff000000, "%.1f", start_button.pos.y);
