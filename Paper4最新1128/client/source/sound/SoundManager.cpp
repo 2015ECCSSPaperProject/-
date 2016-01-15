@@ -45,7 +45,7 @@ SE_Manager::DATA all_dataS[] =
 {
 	{ "•às1", "DATA/Sound/SE/page03.wav", 12, true },
 	{ "•às2", "DATA/Sound/SE/page04.wav", 12, true },
-	{ "”j‚é", "DATA/Sound/SE/†‚ğ”j‚é‰¹.wav", 6, true },
+	{ "”j‚é", "DATA/Sound/SE/†‚ğ”j‚é‰¹.wav", 1, false },
 	{ "†“S–C", "DATA/Sound/SE/paper_gun.wav", 6, true },
 	{ "è— Œ•", "DATA/Sound/SE/syuriken.wav", 6, true },
 	{ "—‚¿‚é", "DATA/Sound/SE/fall.wav", 1, false },

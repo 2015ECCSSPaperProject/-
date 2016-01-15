@@ -294,12 +294,13 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	}
 
 	// ジャンプ
-	if (!me->isJump && me->isLand)
+	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::SPACE)
 	{
-		if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::SPACE)
+		if (!me->isJump && me->isLand)
 		{
 			me->jump_pow = 2.0f;
 			me->isJump = true;
+			me->isLand = false;
 		}
 	}
 	if (me->isJump)
@@ -385,6 +386,10 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	//	左クリック処理
 	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
 	{
+		if (manhole_mng->CheckManhole((me->isManhole) ? ManholeMng::LAND_TYPE::TIKA : ManholeMng::LAND_TYPE::TIJOU, 8, &me->pos, &me->angleY, &me->next_manhole_pos))
+		{
+			me->Change_action(ACTION_PART::MANHOLE);
+		}
 		if (!auto_target)
 		{
 			me->poster_num = paper_obj_mng->Can_targeting(me, 10, 180);
@@ -392,12 +397,7 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 			if (me->poster_num != -1)
 			{
 				me->Change_action(ACTION_PART::MOVE_TARGET);
-				return;
 			}
-		}
-		if (manhole_mng->CheckManhole((me->isManhole) ? ManholeMng::LAND_TYPE::TIKA : ManholeMng::LAND_TYPE::TIJOU, 8, &me->pos, &me->angleY, &me->next_manhole_pos))
-		{
-			me->Change_action(ACTION_PART::MANHOLE);
 		}
 	}
 	else
@@ -409,8 +409,6 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	//	真ん中クリック処理
 	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::ATTACK_BUTTON)
 	{
-		me->Change_action(ACTION_PART::DIE);
-		return;
 		if (!me->attackFlag)
 		{
 			me->Change_action(ACTION_PART::ATTACK);
@@ -508,20 +506,20 @@ void BasePlayer::Action::MoveTarget::Update(const CONTROL_DESC &_ControlDesc)
 		}
 	}
 
-	//// ジャンプ
-	//if (!me->isJump && me->isLand)
-	//{
-	//	if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::SPACE)
-	//	{
-	//		me->jump_pow = 2.0f;
-	//		me->isJump = true;
-	//	}
-	//}
-	//if (me->isJump)
-	//{
-	//	me->move.y = me->jump_pow;
-	//	me->jump_pow -= me->fallspeed;
-	//}
+	// ジャンプ
+	if (!me->isJump && me->isLand)
+	{
+		if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::SPACE)
+		{
+			me->jump_pow = 2.0f;
+			me->isJump = true;
+		}
+	}
+	if (me->isJump)
+	{
+		me->move.y = me->jump_pow;
+		me->jump_pow -= me->fallspeed;
+	}
 
 	Vector3 front(sinf(me->angleY), 0, cosf(me->angleY));
 	Vector3 right(sinf(me->angleY + PI * .5f), 0, cosf(me->angleY + PI * .5f));
@@ -687,10 +685,13 @@ void BasePlayer::Action::Rend::Initialize()
 	me->model_part = MODEL::NORMAL;
 
 	// ポスターに応じて座標と向きを変更
-	//const static float dist = 5.0f;
-	//me->pos = paper_obj_mng->Get_pos(me->poster_num);
-	//me->angleY = paper_obj_mng->Get_angle(me->poster_num) + PI;
-	//me->pos += (Vector3(-sinf(me->angleY), 0, -cosf(me->angleY)) * dist);
+	//if (paper_obj_mng->Get_kind() == KIND_PAPER_OBJECT::SHOJI)
+	//{
+	//	const static float dist = 5.0f;
+	//	me->pos = paper_obj_mng->Get_pos(me->poster_num);
+	//	me->angleY = paper_obj_mng->Get_angle(me->poster_num) + PI;
+	//	me->pos += (Vector3(-sinf(me->angleY), 0, -cosf(me->angleY)) * dist);
+	//}
 	//Vector3 v = paper_obj_mng->Get_pos(me->poster_num) - me->pos;
 	//v.Normalize();
 	//me->angleY = atan2(v.x,v.z);

@@ -258,11 +258,31 @@ void MyPlayer::Update_listener()
 
 void MyPlayer::RendPosterSE()
 {
-
+	switch (se_step)
+	{
+	case 0:
+		// 破き始め
+		if (models[(int)model_part]->GetParam(0) == 1)
+		{
+			se_receive = se->Play("破る");
+			se_step = 99;	// ステップ終わり
+		}
+		break;
+	}
 }
 void MyPlayer::RendFlyerSE()
 {
-
+	switch (se_step)
+	{
+	case 0:
+		// 破き始め
+		if (models[(int)model_part]->GetParam(0) == 1)
+		{
+			se_receive = se->Play("破る");
+			se_step = 99;	// ステップ終わり
+		}
+		break;
+	}
 }
 void MyPlayer::RendCalendarSE()
 {

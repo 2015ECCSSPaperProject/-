@@ -147,8 +147,8 @@ void AnimationUV::Update(Vector3 pos, Vector3 angle, float scale)
 		if (nowFlame >= alphaNear)
 		{		
 		// 100-100=0  100-50=50   0/50
-		float A = (endFlame - nowFlame);
-		float B =(endFlame - alphaFar);
+		float A = (float)(endFlame - nowFlame);
+		float B = (float)(endFlame - alphaFar);
 		alpha = A / B;
 		//alpha = Clamp(alpha, 0.0f, 1.0f);
 
@@ -204,8 +204,8 @@ void AnimationUV::Update(Vector3 pos, Vector3 angle, Vector3 scale)
 		if (nowFlame >= alphaNear)
 		{
 			// 100-100=0  100-50=50   0/50
-			float A = (endFlame - nowFlame);
-			float B = (endFlame - alphaFar);
+			float A = (float)(endFlame - nowFlame);
+			float B = (float)(endFlame - alphaFar);
 			alpha = A / B;
 			//alpha = Clamp(alpha, 0.0f, 1.0f);
 
