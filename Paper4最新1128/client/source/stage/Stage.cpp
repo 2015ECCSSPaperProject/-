@@ -33,7 +33,7 @@ void Stage::Initialize()
 
 
 	area = new Area_mng;
-	area->Push("./DATA/AT//AT.IMO", 100);
+	area->Push("DATA/MATI/area/AT/AT.IMO", 100);
 }
 
 void Stage::Release()
@@ -207,6 +207,11 @@ void Stage::Load_mapdata()
 			show_model.push_back( m );
 		}
 	}
+}
+
+void Stage::Load_area()
+{
+
 }
 
 Stage *stage = nullptr;

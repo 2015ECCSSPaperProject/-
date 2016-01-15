@@ -37,6 +37,8 @@ private:
 	Area_mng *area;
 
 	void Load_mapdata();
+
+	void Load_area();
 };
 
 extern Stage *stage;

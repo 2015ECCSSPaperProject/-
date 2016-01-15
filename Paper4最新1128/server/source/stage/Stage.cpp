@@ -10,8 +10,9 @@
 #include "../event/Event.h"
 #include "../event/Event open area.h"
 //#include "../player/Player.h"
+#include <fstream>
 
-Stage::Stage() : show_model(nullptr), collision_model(nullptr), area(nullptr)
+Stage::Stage() : collision_model(nullptr), area(nullptr)
 {}
 
 Stage::~Stage()
@@ -21,21 +22,17 @@ Stage::~Stage()
 
 void Stage::Initialize()
 {
-	show_model = new iexMesh("DATA/MATI/stage_machi.IMO");
 	collision_model = new iexMesh("DATA/MATI/stage_atari.IMO");
-	//show_model = new iexMesh("../stage_machi.IMO");
-	//collision_model = new iexMesh("DATA/MATI/stage_machi.IMO");
 
 	if (area)delete area;
 	area = new Area_mng;
-	area->Push("./DATA/AT//AT.IMO");
+	area->Push("DATA/MATI/area/AT/AT.IMO");
 
 	event_list->push(new Event_open_area(100 * 1000, area, 0));
 }
 
 void Stage::Release()
 {
-	delete show_model; show_model = nullptr;
 	delete collision_model; collision_model = nullptr;
 	delete area; area = nullptr;
 }
@@ -47,10 +44,10 @@ void Stage::Update()
 
 void Stage::Render()
 {
-	if (show_model)
-		show_model->Render();
-
-	area->Render();
+	if( collision_model )
+		collision_model->Render();
+	if( area )
+		area->Render();
 }
 
 // “–‚½‚è”»’è
@@ -177,6 +174,11 @@ unsigned int Stage::Area_Get_numof()
 bool Stage::Area_Is_work(unsigned int index)
 {
 	return area->Is_work(index);
+}
+
+void Stage::Load_area()
+{
+
 }
 
 Stage *stage;

@@ -7,18 +7,6 @@ class Area_mng;
 
 class Stage
 {
-private:
-	iexMesh *show_model, *collision_model;
-
-	float Length(Vector3 &pos, Vector3 &v);
-
-	Area_mng* area;
-
-	enum : int
-	{
-		COLLISION_UP_SHIFT = 4 // “–‚½‚è”»’è‚ÅŒ´“_‚ğã‚É‚¸‚ç‚·‹——£
-	};
-
 public:
 	Stage();
 	~Stage();
@@ -37,6 +25,20 @@ public:
 
 	unsigned int Area_Get_numof();
 	bool Area_Is_work(unsigned int index);
+
+private:
+	iexMesh *collision_model;
+
+	float Length( Vector3 &pos, Vector3 &v );
+
+	Area_mng* area;
+
+	enum : int
+	{
+		COLLISION_UP_SHIFT = 4 // “–‚½‚è”»’è‚ÅŒ´“_‚ğã‚É‚¸‚ç‚·‹——£
+	};
+
+	void Load_area();
 };
 
 extern Stage *stage;
