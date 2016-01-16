@@ -223,12 +223,7 @@ LPBYTE fstSoundBuffer::LoadWAV(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx)
 	LPBYTE			buf = nullptr;			/*	読み込みバッファ	*/
 
 	/* オープン	*/
-	if ((hMMIO = mmioOpen(fname, nullptr, MMIO_ALLOCBUF | MMIO_READ)) == nullptr)
-	{
-		MessageBox(0, "wavファイルが入っていないか、wavファイル名が間違っているよ", nullptr, MB_OK);
-		assert(0);
-		return nullptr;
-	}
+	MyAssert((hMMIO = mmioOpen(fname, nullptr, MMIO_ALLOCBUF | MMIO_READ)), "エラーファイル名[%s]\n原因:wavファイルが入っていないか、wavファイル名が間違っているよ", fname);
 	if (mmioDescend(hMMIO, &ckparent, nullptr, 0) != 0) goto WAVE_LoadError;
 	/*	ＷＡＶ(RIFF)ファイルチェック		*/
 	if ((ckparent.ckid != FOURCC_RIFF) || (ckparent.fccType != mmioFOURCC('W', 'A', 'V', 'E'))) goto WAVE_LoadError;
