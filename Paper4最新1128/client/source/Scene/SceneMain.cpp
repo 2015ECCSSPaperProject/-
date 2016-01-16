@@ -230,6 +230,8 @@ void SceneMain::Update()
 	// ブラ―
 	BlurFilter::Update();
 
+	stage->Update();
+
 	//フェード処理
 	FadeControl::Update();
 	event_bgm->Update();

@@ -47,7 +47,9 @@ void Stage::Release()
 }
 
 void Stage::Update()
-{}
+{
+	area->Update();
+}
 
 void Stage::Render(iexShader *shader, char *name)
 {

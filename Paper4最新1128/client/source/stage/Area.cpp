@@ -18,21 +18,32 @@ public:
 	void Close(); // 壁設置
 	void Open(); // 壁解放
 
+	void Update();
+
 	void Render(iexShader *shader = nullptr, char *name = '\0');
 
-	bool Is_work();
-
-	int time_to_break; // 消える時間
+	inline bool Is_work()
+	{
+		return is_work;
+	};
 
 protected:
+	int time_to_break; // 消える時間
 	bool is_work; // 判定をとるか
 	AnimationUV *wall;
-};
 
-Area::Area() : wall(nullptr), is_work(true)
+	float positionY; // 位置Y座標
+
+	static const unsigned int TIME_TAKE_BREAK; // 壁を壊すのにかかる時間
+	static const float DOWN_SPEED; // 降りるスピード
+};
+const unsigned int Area::TIME_TAKE_BREAK = 3U;
+const float Area::DOWN_SPEED = -4.0f;
+
+Area::Area() : wall( nullptr ), is_work( true ), positionY( 0 )
 {}
 
-Area::Area(const char *filename, int time) : wall(nullptr), is_work(true)
+Area::Area(const char *filename, int time) : wall(nullptr), is_work(true), positionY(0)
 {
 	Set_mesh(filename);
 	time_to_break = time;
@@ -68,17 +79,27 @@ void Area::Open()
 	is_work = false;
 }
 
-void Area::Render(iexShader *shader, char *name)
+void Area::Update()
 {
-	if (is_work && wall){
-		wall->Update();
-		wall->Render_AT();
+	if( this->is_work )
+	{
+		if( time_to_break + TIME_TAKE_BREAK > timer->Get_limit_time() )
+		{
+			positionY += DOWN_SPEED;
+			if( time_to_break > timer->Get_limit_time() )
+			{
+				Open();
+			}
+		}
 	}
 }
 
-bool Area::Is_work()
+void Area::Render(iexShader *shader, char *name)
 {
-	return is_work;
+	if (is_work && wall){
+		wall->Update( Vector3( 0, positionY, 0 ), Vector3( 0, 0, 0 ), 1 );
+		wall->Render_AT();
+	}
 }
 
 
@@ -99,16 +120,16 @@ void Area_mng::Open(int index)
 	area_array[index]->Open();
 }
 
-void Area_mng::Render(iexShader *shader, char *name)
+void Area_mng::Update()
 {
 	for( unsigned int i = 0; i < area_array.size(); i++ )
 	{
-		if( area_array[i]->time_to_break > timer->Get_limit_time() )
-		{
-			area_array[i]->Open();
-		}
+		area_array[i]->Update();
 	}
+}
 
+void Area_mng::Render(iexShader *shader, char *name)
+{
 	if (shader)
 	{
 		for (unsigned int i = 0; i < area_array.size(); i++)

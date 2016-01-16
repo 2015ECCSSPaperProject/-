@@ -16,6 +16,8 @@ public:
 
 	void Open(int index);
 
+	void Update();
+
 	void Render(iexShader *shader = nullptr, char *name = '\0');
 
 	int RayPick(Vector3* out, Vector3* pos, Vector3* vec, float *Dist);
