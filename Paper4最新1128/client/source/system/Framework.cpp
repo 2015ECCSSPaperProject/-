@@ -104,9 +104,9 @@ void Framework::Render()
 	IEX_DrawText( str, 10,10,200,20, 0xFFFFFF00 );
 #endif
 
-	//static int BlackSize = 12;
-	//iexPolygon::Rect(0, 0, 1280, BlackSize, RS_COPY, 0xff000000);
-	//iexPolygon::Rect(0, iexSystem::ScreenHeight- BlackSize, 1280, BlackSize, RS_COPY, 0xff000000);
+	static int BlackSize = 12;
+	iexPolygon::Rect(0, 0, 1280, BlackSize, RS_COPY, 0xff000000);
+	iexPolygon::Rect(0, iexSystem::ScreenHeight- BlackSize, 1280, BlackSize, RS_COPY, 0xff000000);
 
 	// フェード
 	FadeControl::Render();

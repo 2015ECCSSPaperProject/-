@@ -10,7 +10,7 @@
 
 #include	"SceneSelect.h"
 #include	"SceneMain.h"
-
+#include	"../sound/SoundManager.h"
 #include	"../../IEX/OKB.h"
 #include	"../Animation/AnimationRipple.h"
 
@@ -347,6 +347,7 @@ void SceneSelect::Update()
 			{
 				OKFlag[i] = true;
 				OKRip[i]->Action();
+				if (SOCKET_MANAGER->GetID() != i) se->Play("エントリー");
 			}
 		}
 
@@ -375,6 +376,7 @@ void SceneSelect::Update()
 			//　自分の準備OKを光らす
 			//OKRip[SOCKET_MANAGER->GetID()]->Action();
 			step = STEP::START_OK;
+			se->Play("決定");
 		}
 
 		break;
@@ -384,6 +386,7 @@ void SceneSelect::Update()
 		if (KEY_Get(KEY_ENTER) == 3 || KeyBoardTRG(MOUSE_LEFT) || KeyBoardTRG(MOUSE_RIGHT))
 		   {
 			   step = STEP::START_NO;
+			   se->Play("キャンセル");
 		   }
 
 		   //　追記：同期して

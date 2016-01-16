@@ -7,7 +7,7 @@
 
 #include "../stage/Stage.h"
 
-
+#include	"../sound/SoundManager.h"
 #include	"../../IEX/OKB.h"
 
 #include "../Animation/AnimationRippleEx.h"
@@ -119,7 +119,7 @@ SceneTitle::~SceneTitle()
 	delete start_button.obj;
 }
 
-
+static float angle2 = .49f;
 //******************************************************************
 //		処理
 //******************************************************************
@@ -151,16 +151,20 @@ void SceneTitle::Update()
 	if (KEY_Get(KEY_UP)){
 		cameraPos.x += sinf(angle) * 2; cameraPos.z += cosf(angle) * 2;
 	}
-	if (KEY_Get(KEY_RIGHT))angle += 0.05f;
-	if (KEY_Get(KEY_LEFT))angle -= 0.05f;
+	if (KEY_Get(KEY_RIGHT))angle2 += 0.05f;
+	if (KEY_Get(KEY_LEFT))angle2 -= 0.05f;
 	if (KEY_Get(KEY_DOWN)){
 		cameraPos.x -= sinf(angle); cameraPos.z -= cosf(angle);
 	}
-	viewPos = cameraPos+ Vector3(0, 10, 0) - vecAngle * 90;
+	viewPos = cameraPos+ Vector3(0, 10, 0) -vecAngle * 70;
 	viewTarget = cameraPos + Vector3(0, 20, 0);
 
 	view->Set(viewPos, viewTarget);
 
+	vecAngle.x = sinf(angle+angle2);
+	vecAngle.z = cosf(angle+angle2);
+	start_button.pos = (viewPos + vecAngle * 70);
+	start_button.pos.y -= .5f;
 
 	mouse.Update();
 
@@ -195,7 +199,9 @@ void SceneTitle::Update()
 	//if (KeyBoard(KB_S)) start_button.pos.y -= .1f;
 	//if (KeyBoard(KB_D)) start_button.pos.x += .1f;
 
+	start_button.obj->SetAngle(0, angle, PI*.5f);
 	start_button.obj->SetPos(start_button.pos);
+	start_button.obj->Update();
 
 	start_button.pointing = (
 		mouse.pos_x >= min_v.x && mouse.pos_x <= max_v.x&&
@@ -208,6 +214,7 @@ void SceneTitle::Update()
 			step = STEP::CLICK;
 			start_button.obj->SetMotion(1);
 			start_button.rend = true;
+			se->Play("成功");
 		}
 		break;
 
@@ -221,6 +228,8 @@ void SceneTitle::Update()
 		{
 			move_mouse = MOUSE_POS;
 			step = STEP::DRAG;
+			se->Play("成功");
+			se->Play("破る");
 		}
 
 		{
@@ -233,8 +242,8 @@ void SceneTitle::Update()
 			else
 			{
 				next_vec.Normalize(move_x, move_y);
-				move_mouse.x += (int)(move_x * 4);
-				move_mouse.y += (int)(move_y * 4);
+				move_mouse.x += (int)(move_x * 8);
+				move_mouse.y += (int)(move_y * 8);
 			}
 		}
 		break;
@@ -288,6 +297,7 @@ void SceneTitle::Render()
 	// ステージ配置
 	stage->Render(shaderD, "G_Buffer");
 	sky->Render(shaderD, "G_Buffer");
+	start_button.obj->Render(shaderD, "G_Buffer");
 	DeferredManager.G_End();// ここまで
 
 	/*	G_bufferを利用した描画	*/
@@ -301,8 +311,6 @@ void SceneTitle::Render()
 
 	// フォアード
 	DeferredManager.ForwardBigin();
-	start_button.obj->Update();
-	start_button.obj->Render();
 	DeferredManager.ForwardEnd();
 	DeferredManager.ForwardRender();
 	
@@ -372,7 +380,7 @@ void SceneTitle::Render()
 
 	Text::Draw(32, 32, 0xff000000, "%d", mouse.pos_x);
 	Text::Draw(32, 64, 0xff000000, "%d", mouse.pos_y);
-	//Text::Draw(32, 96, 0xff000000, "%.1f", start_button.pos.z);
+	Text::Draw(32, 96, 0xff000000, "%.1f", angle2);
 }
 
 void SceneTitle::RenderShadow()

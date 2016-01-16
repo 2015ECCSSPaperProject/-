@@ -213,7 +213,7 @@ void BasePlayer::Update()
 	{
 		// 飛ばなくする
 		pos.y += move.y, move.y = 0;
-
+	
 		// 着地モーション
 		if (isJump)
 		{
@@ -230,8 +230,9 @@ void BasePlayer::Update()
 		isLand = false;
 	}
 	// 座標更新
-	pos += move;
-
+	pos.x += move.x;
+	pos.y += move.y;
+	pos.z += move.z;
 
 	//	デスク初期化
 	ServerManager::ResetDesc(m_id);

@@ -403,15 +403,6 @@ void UI::fadeM_out()
 		image[IMAGE::MANHOLE_FADE]->SetScale(manhole_f_scale);
 		image[IMAGE::MANHOLE_FADE]->Render(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, 1280, 620);
 	}
-	if (manhole_f_scale < .1f)
-	{
-		static int frame = 0;
-		if (++frame >= 25)
-		{
-			SetManholeFade(MANHOLE_FADE_TYPE::F_IN);
-			frame = 0;
-		}
-	}
 }
 
 void UI::SetManholeFade(MANHOLE_FADE_TYPE type)

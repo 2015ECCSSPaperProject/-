@@ -67,6 +67,10 @@ SE_Manager::DATA all_dataS[] =
 	{ "お金破り", "DATA/Sound/SE/rend/rend_money.wav", 1, false },
 	{ "お金破り2", "DATA/Sound/SE/rend/rend_money2.wav", 1, false },
 	{ "AT", "DATA/Sound/SE/at.wav", 1, true },
+	{ "成功", "DATA/Sound/SE/cursor3.wav", 6, false },
+	{ "エントリー", "DATA/Sound/SE/entry.wav", 6, false },
+	{ "決定", "DATA/Sound/SE/decision.wav", 2, false },
+	{ "キャンセル", "DATA/Sound/SE/cancel.wav", 2, false },
 	{ "END", nullptr }
 };
 

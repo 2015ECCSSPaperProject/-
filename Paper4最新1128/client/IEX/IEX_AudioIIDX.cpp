@@ -1076,7 +1076,10 @@ int fstSoundSE::Play(int ID, const Vector3 &pos, const Vector3 &front, const Vec
 		// Ä¶‚µ‚Ä‚È‚¢‚©‚ç‚¢‚Â‚Å‚à514ó‘Ô‚Ìl‚ðŒŸõ
 		if (!data[ID][play_no]->buffer->isPlay())
 		{	// Œ©‚Â‚©‚Á‚½I
-			data[ID][play_no]->buffer->SetAll3D(DS3D_DEFAULTMAXDISTANCE, DS3D_DEFAULTMINDISTANCE, pos, front, DS3D_DEFAULTCONEANGLE, DS3D_DEFAULTCONEOUTSIDEVOLUME, move);
+			data[ID][play_no]->buffer->SetPos(pos);
+			data[ID][play_no]->buffer->SetMove(move);
+			data[ID][play_no]->buffer->SetFront(front);
+			//data[ID][play_no]->buffer->SetAll3D(DS3D_DEFAULTMAXDISTANCE, DS3D_DEFAULTMINDISTANCE, pos, front, DS3D_DEFAULTCONEANGLE, DS3D_DEFAULTCONEOUTSIDEVOLUME, move);
 			data[ID][play_no]->buffer->Play(loop);
 			return play_no;
 		}

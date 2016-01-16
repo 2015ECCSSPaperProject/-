@@ -326,16 +326,18 @@ void BasePlayer::Action::Move::Update()
 	//}
 	if (me->models[(int)MODEL::NORMAL]->GetParam(1) == 1)
 	{
-		if(me->se_receive==-1)me->se_receive=se->Play("歩行1", me->pos, Vector3(me->models[(int)me->model_part]->TransMatrix._31, 0, me->models[(int)me->model_part]->TransMatrix._32));
+		if(me->se_receive==-1)me->se_receive=se->Play("歩行1", me->pos);
 	}
 	else if (me->models[(int)MODEL::NORMAL]->GetParam(1) == 2)
 	{
-		if(me->se_receive2==-1)me->se_receive2=se->Play("歩行2", me->pos, Vector3(me->models[(int)me->model_part]->TransMatrix._31, 0, me->models[(int)me->model_part]->TransMatrix._32));
+		if(me->se_receive2==-1)me->se_receive2=se->Play("歩行2", me->pos);
 	}
 	else if (me->models[(int)MODEL::NORMAL]->GetParam(1) == 0)
 	{
 		me->se_receive = me->se_receive2 = -1;
 	}
+	if (me->se_receive != -1) se->Set_pos("歩行1", me->se_receive, me->pos);
+	if (me->se_receive2 != -1) se->Set_pos("歩行2", me->se_receive2, me->pos);
 
 	if (me->models[(int)MODEL::NORMAL]->GetFrame() == 265) se->Play("ジャンプ", me->pos);
 
