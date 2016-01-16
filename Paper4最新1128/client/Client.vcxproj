@@ -130,6 +130,7 @@
     </ClCompile>
     <ClCompile Include="source\Animation\Animation3D.cpp" />
     <ClCompile Include="source\Animation\AnimationRipple.cpp" />
+    <ClCompile Include="source\Animation\AnimationRippleEx.cpp" />
     <ClCompile Include="source\Animation\AnimationUV.cpp" />
     <ClCompile Include="source\Animation\LOCUS.cpp" />
     <ClCompile Include="source\Barrier\Barrier.cpp" />
@@ -199,6 +200,7 @@
     <ClInclude Include="IEX\OKB.h" />
     <ClInclude Include="source\Animation\Animation3D.h" />
     <ClInclude Include="source\Animation\AnimationRipple.h" />
+    <ClInclude Include="source\Animation\AnimationRippleEx.h" />
     <ClInclude Include="source\Animation\AnimationUV.h" />
     <ClInclude Include="source\Animation\LOCUS.h" />
     <ClInclude Include="source\Barrier\Barrier.h" />

@@ -58,6 +58,14 @@ private:
 	// 影の描画フラグ
 	int FarShadowFlag;
 
+	// 地下用
+	void UG_Update();
+	void UG_Render_G();
+	void UG_Render_F();
+	iexMesh* water;
+	float uvWater;
+
+
 };
 
 #endif // !_SCENEMAIN_H_

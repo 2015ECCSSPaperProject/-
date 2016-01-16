@@ -996,7 +996,7 @@ void Deferred::UpdateDownSample(float maxLumi, float minLumi)
 	// ‰½ˆ‚Å–¾‚é‚­‚·‚é‚©
 	if (luminance <= minLumi)
 	{
-		//if (exposure <= -7.0f)
+		if (exposure <= -9.0f)
 		{
 			exposure += 0.004f;
 		}
@@ -1006,7 +1006,7 @@ void Deferred::UpdateDownSample(float maxLumi, float minLumi)
 	if (luminance >= maxLumi)
 	{
 
-	//if (exposure >= -10.0f)
+	if (exposure >= -11.0f)
 	{
 		exposure -= 0.007f;
 	}
@@ -1147,7 +1147,7 @@ void Deferred::CreateShadowMatrixL(Vector3 dir, Vector3 target, Vector3 playerVe
 	//up = Vector3(.0f, 1.0f, .0f);
 	D3DXMatrixIdentity(&ShadowMat);
 	D3DXMatrixIdentity(&work);
-	float MulPower = 3.0f; // š‰“‹——£‚Í‚­‚»L‚­‚Ä‚n‚jH
+	float MulPower = 2.0f; // š‰“‹——£‚Í‚­‚»L‚­‚Ä‚n‚jH
 	LookAtLH(ShadowMat, pos + (playerVec)*MulPower, target + (playerVec)*MulPower, up);
 	OlthoLH(work, width*MulPower, width*MulPower, 0.02f, width * 2.5f);
 	ShadowMat *= work;

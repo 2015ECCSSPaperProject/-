@@ -5,26 +5,62 @@
 #include	"SceneSelect.h"
 #include	"SceneMakePoster.h"
 
+#include "../stage/Stage.h"
+
+
 #include	"../../IEX/OKB.h"
+
+#include "../Animation/AnimationRippleEx.h"
+
 
 using namespace std;
 
-static const Vector2 MOUSE_POS(960, 600);
+static const Vector2 MOUSE_POS(960, 454);
 
 //******************************************************************
 //		初期化・解放
 //******************************************************************
 bool SceneTitle::Initialize()
 {
+	// ディファード
+	LightVec = Vector3(1, 1, 1);
+	FarShadowTimer = 0;
+	DeferredManager;
+	DeferredManager.CreateShadowMap(2048);
+	DeferredManager.CreateShadowMapL(1024);
+	DeferredManager.SetEmissiveRate(1000);// エミッシブレート
+	DeferredManager.SetExposure(-10);
+	// 目のシュミレート結果を送る
+	shaderD->SetValue("exposure", DeferredManager.GetExposure());
+
+	// 影
+	// 追加
+	float ShadowFar = 200.0f;	// 近距離の影を滑らかに入れ替える為
+	float ShadowNear = 150.0f;	// 近距離の影を滑らかに入れ替える為
+	shaderD->SetValue("ShadowFar", ShadowFar);
+	shaderD->SetValue("ShadowNear", ShadowNear);
+	float AdjustValue = -0.001f;
+	shaderD->SetValue("AdjustValue", AdjustValue);
+
+	stage = new Stage;
+	stage->Initialize();
+
+	sky = new iexMesh("DATA/Skydome/Skydome.IMO");
+	sky->SetScale(5.0f);
+	sky->SetPos(0, -100, 0);
+	sky->Update();
+
 	//	環境設定
 	iexLight::SetAmbient(0x808080);
 	iexLight::SetFog(800, 3000, 0);
 
 	// Fade処理
-	FadeControl::Setting(FadeControl::FADE_IN, 26);
+	FadeControl::Setting(FadeControl::FADE_IN_W, 22);
 
 	view = new iexView();
-	view->Set(Vector3(0, 0, -90), Vector3(0, 0, 0));
+	viewPos = Vector3(0, 10, -90);
+	viewTarget = Vector3(0, 20, 0);
+	view->Set(viewPos, viewTarget);
 
 	images[IMAGE::BACK] = new iex2DObj("DATA/Image/title/title_back.png");
 	images[IMAGE::CLICK1] = new iex2DObj("DATA/Image/title/click.png");
@@ -35,15 +71,19 @@ bool SceneTitle::Initialize()
 	images[IMAGE::TITLE] = new iex2DObj("DATA/Image/title/title.png");
 	images[IMAGE::CURSOR] = new iex2DObj("DATA/makePoster/cursor4.png");
 	images[IMAGE::ARROW] = new iex2DObj("DATA/Image/title/Arrow.png");
-
+	images[IMAGE::ICON] = new iex2DObj("DATA/Image/title/cursor_mini.png");
 	//---------------------------------------------------------------------
 	// ImageAnimation
 	//---------------------------------------------------------------------
 	arrowPosY = 0;
 	arrowMoveY = 0;
 
+	// タイトルの絵
+	titleEx = new AnimationRippleEx("DATA/Image/title/title.png",
+		12, 10, 12, 3.0f, -(2.5f / 12.0f), true);
+	titleEx->Action();
 
-	start_button.pos = Vector3(42.7f, -13.4f, 0);
+	start_button.pos = Vector3(42.7f, 13.4f, 0);
 	Texture2D *texture = iexTexture::Load("DATA/Image/title/gamestart.png");
 	start_button.obj = new iex3DObj("DATA/paper object/Poster/posuta-.IEM");
 	start_button.obj->SetTexture(texture, 0);
@@ -64,6 +104,13 @@ bool SceneTitle::Initialize()
 
 SceneTitle::~SceneTitle()
 {
+	// deferredの解除
+	DeferredManager.Release();
+
+	delete stage;
+	delete sky;
+	delete titleEx;
+
 	delete view;
 	for (int i = 0; i < IMAGE::MAX; i++)
 	{
@@ -76,8 +123,45 @@ SceneTitle::~SceneTitle()
 //******************************************************************
 //		処理
 //******************************************************************
+
 void SceneTitle::Update()
 {
+	static float ANGLE = 2.5f;
+	if ((GetKeyState('U') & 0x80))ANGLE += 0.05f;
+	if ((GetKeyState('I') & 0x80))ANGLE -= 0.05f;
+	LightVec = Vector3(sinf(ANGLE), -0.98f, cosf(ANGLE));
+	LightVec.Normalize();
+
+	//　空の処理
+	static float skyAngle = 0;
+	skyAngle += 0.0007f;
+	sky->SetAngle(skyAngle);
+	sky->Update();
+
+	// カメラ
+	static float angle = 0.0f;
+	angle += 0.001f;
+	Vector3 vecAngle;
+	vecAngle.x = sinf(angle);
+	vecAngle.z = cosf(angle);
+	vecAngle.y = .0;
+
+	static Vector3 cameraPos = VECTOR_ZERO;
+
+	if (KEY_Get(KEY_UP)){
+		cameraPos.x += sinf(angle) * 2; cameraPos.z += cosf(angle) * 2;
+	}
+	if (KEY_Get(KEY_RIGHT))angle += 0.05f;
+	if (KEY_Get(KEY_LEFT))angle -= 0.05f;
+	if (KEY_Get(KEY_DOWN)){
+		cameraPos.x -= sinf(angle); cameraPos.z -= cosf(angle);
+	}
+	viewPos = cameraPos+ Vector3(0, 10, 0) - vecAngle * 90;
+	viewTarget = cameraPos + Vector3(0, 20, 0);
+
+	view->Set(viewPos, viewTarget);
+
+
 	mouse.Update();
 
 	// イメージのアニメーション
@@ -98,6 +182,13 @@ void SceneTitle::Update()
 
 	//フェード処理
 	FadeControl::Update();
+
+
+	// タイトルEX
+	if (KEY_Get(KEY_SPACE) == 3){
+		titleEx->Action();
+	}
+	titleEx->Update();
 
 	//if (KeyBoard(KB_A)) start_button.pos.x -= .1f;
 	//if (KeyBoard(KB_W)) start_button.pos.y += .1f;
@@ -134,7 +225,7 @@ void SceneTitle::Update()
 
 		{
 			float move_x, move_y;
-			Vector2 next_vec(1180 - move_mouse.x, 454 - move_mouse.y);
+			Vector2 next_vec(1180 - move_mouse.x, 600 - move_mouse.y);
 			if (next_vec.Length() < 4)
 			{
 				move_mouse = MOUSE_POS;
@@ -158,17 +249,17 @@ void SceneTitle::Update()
 		start_button.obj->Animation();
 
 		if (start_button.obj->GetFrame() >= 47) MainFrame->ChangeScene(new SceneSelect());
+		return;
 		break;
 	}
+
 
 	//　debug
 	if (KEY(KEY_ENTER) == 3)
 	{
 		MainFrame->ChangeScene(new SceneSelect());
+		return;
 	}
-
-
-
 }
 
 
@@ -182,12 +273,52 @@ void SceneTitle::Render()
 	view->Activate();
 	view->Clear(0xff666666);
 	
+	// ディファードセットアップ
+	DeferredManager.Update(viewPos);
+
+	// 影描画
+	RenderShadow();
+
+	//　描画クリア
+	DeferredManager.ClearBloom();
+	DeferredManager.ClearForward();
+	DeferredManager.ClearAllRender();
+
+	DeferredManager.G_Bigin();
+	// ステージ配置
+	stage->Render(shaderD, "G_Buffer");
+	sky->Render(shaderD, "G_Buffer");
+	DeferredManager.G_End();// ここまで
+
+	/*	G_bufferを利用した描画	*/
+	DeferredManager.DirLight(LightVec, Vector3(642.5f, 640.0f, 640.0f));
+	DeferredManager.HemiLight(Vector3(310.5f, 300.0f, 300.0f), Vector3(320.5f, 300.0f, 300.0f));
+	DeferredManager.Fog(800, 2000, Vector3(200, 170, 200));
+	DeferredManager.FinalResultDeferred(); // 最後にまとめる
+
+	/*ファイナルリザルト*/
+	DeferredManager.RenderDeferred();
+
+	// フォアード
+	DeferredManager.ForwardBigin();
+	start_button.obj->Update();
+	start_button.obj->Render();
+	DeferredManager.ForwardEnd();
+	DeferredManager.ForwardRender();
+	
+	// ブルーム
+	DeferredManager.BeginDrawBloom();
+	DeferredManager.GetTex(SURFACE_NAME::SCREEN)->Render(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight,
+		0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight);
+	DeferredManager.EndDrawBloom();
+	DeferredManager.BloomRender();
+
+
+
 	// 西田書き換え
 	//images[IMAGE::BACK]->Render(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, 1280, 720, RS_COPY, 0xffffffff, 1.0f);
 	//images[IMAGE::BACK]->RenderBack(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, 1280, 720, RS_COPY);
 
-	start_button.obj->Update();
-	start_button.obj->Render();
 	
 	images[IMAGE::ARROW]->Render(1025, 364 + arrowPosY);				//	やじるしぴょん
 	images[IMAGE::CLICK1]->Render(962, 520, 256, 64, 0, 0, 256, 64);
@@ -209,22 +340,76 @@ void SceneTitle::Render()
 		images[IMAGE::MOUSE]->Render(move_mouse.x, move_mouse.y, 64, 64, 0, 0, 64, 64);
 	}
 
-	images[IMAGE::TITLE]->Render(128, 8, 1024, 512, 0, 0, 1024, 512);
+	// タイトル絵
+	//images[IMAGE::TITLE]->Render(128, 8, 1024, 512, 0, 0, 1024, 512);
+	// アニメーションタイトルEx
+	titleEx->Render(128, 8, RS_COPY);
+
+	// 手のアイコン
+	bool iconFlag = false;
+	if (KeyBoard(MOUSE_LEFT))iconFlag = true;	// マウス離す
+	images[IMAGE::ICON]->Render(mouse.pos_x - 32, mouse.pos_y - 32, 64, 64, iconFlag * 64, 0, 64, 64);
+
 
 	//ナンバーエフェクト
 	Number_Effect::Render();
 
 	//フェード処理
-	FadeControl::Render();
+	//FadeControl::Render();
 
 	//if(start_button.pointing)iexPolygon::Rect(min_v.x, min_v.y, max_v.x-min_v.x, max_v.y-min_v.y, RS_COPY, 0x99fffff);
 
-	//Text::Draw(32, 32, 0xff000000, "%d", mouse.pos_x);
-	//Text::Draw(32, 64, 0xff000000, "%d", mouse.pos_y);
+#ifdef _DEBUG
+
+	if ((GetKeyState('R') & 0x80))
+		DeferredManager.GetTex(SURFACE_NAME::SHADOWMAP)->Render(0, 0, 1024/2, 1024/2, 0, 0, 1024, 1024);
+	if ((GetKeyState('T') & 0x80))
+		DeferredManager.GetTex(SURFACE_NAME::SHADOWMAPL)->Render(0, 0, 2048/2, 2048/2, 0, 0, 2048, 2048);
+	//if ((GetKeyState('Y') & 0x80))DeferredManager.AddExposure(1.0f);
+	//if ((GetKeyState('U') & 0x80))DeferredManager.AddExposure(-1.0f);
+
+#endif
+
+	Text::Draw(32, 32, 0xff000000, "%d", mouse.pos_x);
+	Text::Draw(32, 64, 0xff000000, "%d", mouse.pos_y);
 	//Text::Draw(32, 96, 0xff000000, "%.1f", start_button.pos.z);
 }
 
+void SceneTitle::RenderShadow()
+{
+	// 近距離
+	// 影用プロジェクションの更新
+	Vector3 flontVec;
+	flontVec = viewTarget - viewPos;
+	flontVec.Normalize();
 
+	DeferredManager.CreateShadowMatrix(LightVec, viewPos, flontVec * 30 , 450);
+	// near
+	DeferredManager.ShadowBegin();
+
+	stage->Render(shaderD, "ShadowBuf");
+
+	DeferredManager.ShadowEnd();// end
+
+	// 遠距離
+	if (DeferredManager.GetCascadeFlag())
+	{
+		if (FarShadowTimer <= 600)
+		{
+			// 遠距離プロジェクションの更新
+			DeferredManager.CreateShadowMatrixL(LightVec, viewPos, flontVec * 10, 650);
+			// far
+			DeferredManager.ShadowBeginL();
+
+			stage->Render(shaderD, "ShadowBufL");
+
+			DeferredManager.ShadowEndL();// end
+
+			FarShadowTimer++;
+		}
+	}
+
+}
 
 
 

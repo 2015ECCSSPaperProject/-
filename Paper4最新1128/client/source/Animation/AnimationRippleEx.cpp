@@ -1,7 +1,7 @@
 
 #include "AnimationRippleEx.h"
 
-AnimationRippleEx::AnimationRippleEx(char* name, int EndFlame, int alphaNearFlame, int alphaFarFlame, float StartScale, float ScaleMove)
+AnimationRippleEx::AnimationRippleEx(char* name, int EndFlame, int alphaNearFlame, int alphaFarFlame, float StartScale, float ScaleMove, bool IsRoop)
 {
 	obj = new iex2DObj(name);
 
@@ -19,6 +19,7 @@ AnimationRippleEx::AnimationRippleEx(char* name, int EndFlame, int alphaNearFlam
 	startScale = StartScale;
 	scaleMove = ScaleMove;
 
+	isRoop = IsRoop; //ループするか
 }
 
 AnimationRippleEx::~AnimationRippleEx()
@@ -46,6 +47,15 @@ void AnimationRippleEx::Update()
 
 	// フレーム更新
 	nowFlame++;
+	if (isRoop == true)// ループだったらalphaFarの前のとこでループし続ける処理
+	{
+		if (nowFlame >= (alphaFar - 1))
+		{
+			nowFlame = (alphaFar - 1);
+			return;
+		}
+	}
+	// エンドフレームまで来たら終わる
 	if (nowFlame >= endFlame)
 	{
 		isAction = false;

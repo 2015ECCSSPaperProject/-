@@ -161,6 +161,7 @@ public:
 	iex2DObj* GetTex(const int type); //テクスチャを取ってくる
 
 	bool GetShadowFlag(){ return shadowFlag; }	//シャドウマップを採用しているのか
+	void SetShadowFlag(bool flag){ shadowFlag = flag; }	//
 	bool GetCascadeFlag(){ return cascadeFlag; }
 
 private:

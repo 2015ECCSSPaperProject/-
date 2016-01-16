@@ -158,6 +158,11 @@ bool SceneMain::Initialize()
 	//particle = new iexParticlePlus();
 	particle->Initialize("DATA/effect/particle.png",1024);
 
+
+	// 水
+	water = new iexMesh("DATA/water/water.x");
+	uvWater = 0.0f;
+
 	return true;
 }
 
@@ -178,6 +183,8 @@ SceneMain::~SceneMain()
 
 	// deferredの解除
 	DeferredManager.Release();
+
+	SAFE_DELETE(water);
 
 	BlurFilter::CleanUp();
 
@@ -229,8 +236,10 @@ void SceneMain::Update()
 {
 	// ブラ―
 	BlurFilter::Update();
-
+	
+	// stage更新
 	stage->Update();
+
 
 	//フェード処理
 	FadeControl::Update();
@@ -239,6 +248,13 @@ void SceneMain::Update()
 	// シェーダーのデバッグ
 	DebugShaderCtrl();
 	particle->Update();
+
+	// 地下用
+	// ★地下にいるかいないか
+	if (player_mng->Get_player(SOCKET_MANAGER->GetID())->isManhole == true)
+	{
+		UG_Update();
+	}
 
 	(this->*Mode_funk[mode])();
 }
@@ -300,7 +316,7 @@ void SceneMain::DebugShaderCtrl()
 	
 	if ((GetKeyState('U') & 0x80))ANGLE += 0.05f;
 	if ((GetKeyState('I') & 0x80))ANGLE -= 0.05f;
-	LightVec = Vector3(sinf(ANGLE), -0.98f, cosf(ANGLE));
+	LightVec = Vector3(sinf(ANGLE), -0.99f, cosf(ANGLE));
 	LightVec.Normalize();
 
 
@@ -323,8 +339,19 @@ void SceneMain::Render()
 	{
 		DeferredManager.Update(camera->Get_pos());
 
-		// 影描画
-		RenderShadow();
+		// ★地下にいるかいないか
+		if (player_mng->Get_player(SOCKET_MANAGER->GetID())->isManhole == false)
+		{
+			// 影描画
+			DeferredManager.SetShadowFlag(true);
+			RenderShadow();
+		}
+		else
+		{
+			// 影描画
+			DeferredManager.SetShadowFlag(false);
+		}
+	
 
 		//　描画クリア
 		DeferredManager.ClearBloom();
@@ -342,11 +369,25 @@ void SceneMain::Render()
 		DeferredManager.G_End();// ここまで
 		/*■■■■■■■■G_Buffer終了■■■■■■*/
 
-		/*	G_bufferを利用した描画	*/
-		DeferredManager.DirLight(LightVec, Vector3(642.5f, 640.0f, 640.0f));
-		DeferredManager.HemiLight(Vector3(310.5f, 300.0f, 300.0f), Vector3(320.5f, 300.0f, 300.0f));
+
+
+		// ★地下にいるかいないか
+		if (player_mng->Get_player(SOCKET_MANAGER->GetID())->isManhole == false)
+		{
+			/*	G_bufferを利用した描画	*/
+			DeferredManager.DirLight(LightVec, Vector3(642.5f, 640.0f, 640.0f));
+			DeferredManager.HemiLight(Vector3(310.5f, 300.0f, 300.0f), Vector3(320.5f, 300.0f, 300.0f));
+			DeferredManager.Fog(800, 2000, Vector3(200, 170, 200));
+
+		}
+		else
+		{
+			UG_Render_G();	//地下
+		}
+
+
 		DeferredManager.FinalResultDeferred(); // 最後にまとめる
-		DeferredManager.Fog(800, 2000, Vector3(200, 170, 200));
+
 
 
 
@@ -364,7 +405,6 @@ void SceneMain::Render()
 			SetRenderState(D3DRS_ALPHAREF, 230);
 
 		/*★この中にやじるし入れて*/
-	
 		camera->Render_mark();
 
 
@@ -386,12 +426,23 @@ void SceneMain::Render()
 		// バリアー用環境マップ
 		shaderD->SetValue("EnvFullBuf", DeferredManager.GetTex(SURFACE_NAME::ALLSCREEN));
 
-		/*■■■■■■バリアーや水用　通常描画(フォアード)開始■■*/
+		/*■■バリアーや水用　通常描画(フォアード)開始■■*/
 		DeferredManager.ForwardBigin();
-		// 先頭へ
-		player_mng->Render_forword();	// バリアー
-		
+		player_mng->Render_forword();	// バリアー	
 		stage->RenderForward();			// エリア
+
+		// ★地下にいるかいないか
+		if (player_mng->Get_player(SOCKET_MANAGER->GetID())->isManhole == true)
+		{
+			UG_Render_F();					// 水
+		}
+
+		// 水
+		//water->SetPos(Vector3(0, 10, 0));
+		//water->SetScale(0.5f);
+		//water->Update();
+		//water->Render(shaderD, "F_WATER");
+
 		DeferredManager.ForwardEnd();
 		/*■■■■■■■通常描画終り■■■■■■■*/
 
@@ -404,11 +455,7 @@ void SceneMain::Render()
 
 		// ブラ―
 		//BlurFilter::Render();		
-
-
 		//BlurFilter::Start_Copy();
-
-	
 
 
 		/*描画*/
@@ -423,8 +470,22 @@ void SceneMain::Render()
 		DeferredManager.BloomRender();
 		//BlurFilter::End_Copy();
 
-		// DownSample
-		DeferredManager.UpdateDownSample(0.9f, 0.75f);
+		// 地下いるかいないか
+		if (player_mng->Get_player(SOCKET_MANAGER->GetID())->isManhole == true)
+		{
+			// DownSample
+			DeferredManager.UpdateDownSample(0.98f, 0.77f);
+
+			//DeferredManager.SetExposure(-10);
+			//// 結果を送る
+			//shaderD->SetValue("exposure", DeferredManager.GetExposure());
+		}
+		else
+		{
+			// DownSample
+			DeferredManager.UpdateDownSample(0.88f, 0.77f);
+		}
+		
 		// サーフェイス描画
 		//SurfaceRender();
 
@@ -450,7 +511,7 @@ void SceneMain::Render()
 
 	}
 
-		//Text::Draw(32, 60, 0xff00ffff, "受信時間%.2f", bench.Get_time());
+		Text::Draw(32, 60, 0xff00ffff, "受信時間%.2f", bench.Get_time());
 
 		//Text::Draw(32, 360, 0xff00ffff, "x%.2f", ANGLE);
 		//Text::Draw(32, 390, 0xff00ffff, "x%.2f", bench.Get_time());
@@ -466,18 +527,26 @@ void SceneMain::Render()
 
 		// 退魔ー(UIで描画)
 		//timer->Render();
+#ifdef _DEBUG
 
-		//　プレイヤーの名前
+		////　プレイヤーの名前
 		//for (int i = 0; i < PLAYER_MAX; ++i)
 		//{
 		//	Text::Draw(950, 20 + (i * 32), 0xff00ffff, "名前：%s", SOCKET_MANAGER->GetUser(i).name);
 		//}
 
+		//Text::Draw(150, 500, 0xff00ffff, "マンホール→%d", player_mng->Get_player(SOCKET_MANAGER->GetID())->isManhole);
+		//Text::Draw(150, 600, 0xff00ffff, "輝度%.2f", DeferredManager.GetExposure());
+
+#endif
+
+
+
 
 		//SurfaceRender();
 
 		//フェード処理
-		FadeControl::Render();
+		//FadeControl::Render();
 
 
 
@@ -488,7 +557,10 @@ void SceneMain::RenderShadow()
 {
 	// 近距離
 	// 影用プロジェクションの更新
-	DeferredManager.CreateShadowMatrix(LightVec, player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_pos(), player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_Flont() * 80, 350);
+	DeferredManager.CreateShadowMatrix
+		(LightVec, player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_pos(),
+		player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_Flont() * 60, 450);
+	
 	// near
 	DeferredManager.ShadowBegin();
 	
@@ -513,7 +585,9 @@ void SceneMain::RenderShadow()
 		//if (FarShadowFlag <= 600)
 		{
 			// 遠距離プロジェクションの更新
-			DeferredManager.CreateShadowMatrixL(LightVec, player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_pos(), player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_Flont() * 160, 500);
+			DeferredManager.CreateShadowMatrixL
+			(LightVec, player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_pos(),
+			player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_Flont() * 120, 500);
 
 			// far
 			DeferredManager.ShadowBeginL();
@@ -596,4 +670,45 @@ void SceneMain::SurfaceRender()
 
 
 
+}
+
+// 地下用
+void SceneMain::UG_Update()
+{
+	// ポイントライト
+	DeferredManager.ClearPointLight();
+	DeferredManager.SetInfoPointLight(Vector3(190,-100,-600), Vector3(450, 250, 100), 150, 4);
+	DeferredManager.SetInfoPointLight(Vector3(280,-100,-540), Vector3(450, 250, 100), 150, 4);
+	DeferredManager.SetInfoPointLight(Vector3(350,-100,-500), Vector3(450, 320, 100), 150, 4);
+	DeferredManager.SetInfoPointLight(Vector3(439, -100, -460), Vector3(450, 200, 100), 150, 4);
+
+	DeferredManager.SetInfoPointLight(Vector3(-610, -100, 120), Vector3(150, 100, 250), 150, 4);
+	DeferredManager.SetInfoPointLight(Vector3(-615, -100, 20), Vector3(150, 100, 250), 150, 4);
+	DeferredManager.SetInfoPointLight(Vector3(-614, -100, -59), Vector3(150, 100, 250), 150, 4);
+	DeferredManager.SetInfoPointLight(Vector3(-613, -100, -142), Vector3(150, 100, 250), 150, 4);
+
+	DeferredManager.SetInfoPointLight(Vector3(-398, -100, 606), Vector3(50, 200, 450), 150, 4);
+	DeferredManager.SetInfoPointLight(Vector3(-333, -100, 573), Vector3(50, 200, 450), 150, 4);
+	DeferredManager.SetInfoPointLight(Vector3(-262, -100, 531), Vector3(50, 200, 450), 150, 4);
+	DeferredManager.SetInfoPointLight(Vector3(-178, -100, 485), Vector3(50, 200, 450), 150, 4);
+
+	// 水
+	uvWater += 0.001f;
+	shaderD->SetValue("uvWater", uvWater);
+	water->SetPos(Vector3(0, -125, 0));
+	water->SetScale(2.0f);
+	water->Update();
+
+}
+
+void SceneMain::UG_Render_G()
+{
+	// ポイントライト
+	DeferredManager.PointLightRender();
+}
+
+void SceneMain::UG_Render_F()
+{
+	// 水
+	water->Render(shaderD, "F_WATER");
 }

@@ -2,6 +2,7 @@
 #include	"../system/Scene.h"
 
 class PaperClient;
+class AnimationRippleEx;
 
 class Mouse
 {
@@ -35,10 +36,15 @@ public:
 	void Update();
 	//•`‰æ
 	void Render();
+	void RenderShadow();
 
 private:
+	int FarShadowTimer;
 	iexView* view;
-
+	iexMesh* sky;		
+	Vector3 LightVec;// Light 
+	Vector3 viewPos;
+	Vector3 viewTarget;
 	enum class STEP
 	{
 		WAIT,
@@ -58,7 +64,7 @@ private:
 
 	const Vector2 max_v = Vector2(1110, 645), min_v = Vector2(980, 460);
 
-	enum IMAGE{ BACK, CURSOR, CLICK1, CLICK2, CLICK3, GAME_START, MOUSE, TITLE, ARROW, MAX };
+	enum IMAGE{ BACK, CURSOR, CLICK1, CLICK2, CLICK3, GAME_START, MOUSE, TITLE, ARROW,ICON, MAX };
 	iex2DObj* images[MAX];
 
 	Vector2 move_mouse;
@@ -69,7 +75,7 @@ private:
 	int arrowPosY;
 	int arrowMoveY;
 
-
+	AnimationRippleEx* titleEx;
 
 
 	Mouse mouse;

@@ -5,7 +5,7 @@
 class AnimationRippleEx
 {
 public:
-	AnimationRippleEx(char* name, int endFlame, int alphaNearFlame, int alphaFarFlame, float StartScale, float ScaleMove);
+	AnimationRippleEx(char* name, int endFlame, int alphaNearFlame, int alphaFarFlame, float StartScale, float ScaleMove, bool isRoop = false);
 	~AnimationRippleEx();
 
 	void Action();
@@ -31,4 +31,5 @@ private:
 	float scaleMove;			// スケールをどう動かすか
 
 	bool isAction;
+	bool isRoop;				// ループするか
 };
