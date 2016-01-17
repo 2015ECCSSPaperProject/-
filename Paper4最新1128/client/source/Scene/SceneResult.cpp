@@ -243,12 +243,8 @@ void SceneResult::Set_ranking()
 	{
 		datas[i].p_num = i;
 		datas[i].score = score_mng->Get(i);
-		if (datas[i].score == 0)
-		{
-			RANK_MAX = i;
-		}
 	}
-	for (int i = 0; i < RANK_MAX; i++) for (int j = i + 1; j < RANK_MAX; j++)
+	for (int i = 0; i < PLAYER_MAX; i++) for (int j = i + 1; j < PLAYER_MAX; j++)
 	{
 		if (datas[i].score < datas[j].score)
 		{
@@ -266,9 +262,9 @@ void SceneResult::Set_ranking()
 	{
 		if (datas[i].p_num == result_my_number)
 		{
-			if (i == 0)chara.motion_no = 23;
-			else if (i == RANK_MAX)chara.motion_no = 24;
-			else chara.motion_no = 22;
+			if (i == 0)chara.motion_no = 23;				// 1ˆÊ
+			else if (i == RANK_MAX)chara.motion_no = 24;	// Å‰ºˆÊ
+			else chara.motion_no = 22;						// ’†ŠÔ
 			break;
 		}
 	}
