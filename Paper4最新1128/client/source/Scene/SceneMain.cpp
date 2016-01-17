@@ -559,26 +559,26 @@ void SceneMain::RenderShadow()
 	// 影用プロジェクションの更新
 	DeferredManager.CreateShadowMatrix
 		(LightVec, player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_pos(),
-		player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_Flont() * 60, 450);
-	
+		player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_Flont() * 60, 200);
+
 	// near
 	DeferredManager.ShadowBegin();
-	
-		stage->Render(shaderD, "ShadowBuf");
 
-		Vector3 flont;
-		flont.x = matView._13;
-		flont.y = matView._23;
-		flont.z = matView._33;
-		Vector3 savePos = player_mng->Get_player(0)->Get_pos();
-		player_mng->Get_player(0)->Set_pos(player_mng->Get_player(0)->Get_pos() + (flont * 35));
-		player_mng->Get_player(0)->Get_Model()->Update();
-		player_mng->Render(shaderD, "ShadowBuf");
-		player_mng->Get_player(0)->Set_pos(savePos);
-		player_mng->Get_player(0)->Get_Model()->Update();
+	stage->Render(shaderD, "ShadowBuf");
+
+	Vector3 flont;
+	flont.x = matView._13;
+	flont.y = matView._23;
+	flont.z = matView._33;
+	Vector3 savePos = player_mng->Get_player(0)->Get_pos();
+	player_mng->Get_player(0)->Set_pos(player_mng->Get_player(0)->Get_pos() + (flont * 35));
+	player_mng->Get_player(0)->Get_Model()->Update();
+	player_mng->Render(shaderD, "ShadowBuf");
+	player_mng->Get_player(0)->Set_pos(savePos);
+	player_mng->Get_player(0)->Get_Model()->Update();
 
 	DeferredManager.ShadowEnd();// end
-	
+
 	// 遠距離
 	if (DeferredManager.GetCascadeFlag())
 	{
@@ -600,7 +600,6 @@ void SceneMain::RenderShadow()
 			FarShadowFlag++;
 		}
 	}
-	
 }
 
 void SceneMain::SurfaceRender()

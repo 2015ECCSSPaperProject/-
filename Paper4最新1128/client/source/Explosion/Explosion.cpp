@@ -4,13 +4,13 @@
 
 Explosion::Explosion()
 {
-	wave = new AnimationUV("DATA/uvAnim/wave.imo", 0.00f, 0.018f, 60, false,1 ,55);
+	wave = new AnimationUV("DATA/uvAnim/wave.imo", 0.00f, 0.018f, 60, false,1 ,50);
 
-	impact = new AnimationUV("DATA/uvAnim/impact.imo", 0.02f, 0.035f, 40, false,1 ,38);
-	impactFar = new AnimationUV("DATA/uvAnim/impact.imo", 0.02f, 0.035f, 40, false, 1, 38);
+	impact = new AnimationUV("DATA/uvAnim/impact.imo", 0.02f, 0.035f, 15, false,1 ,12);
+	impactFar = new AnimationUV("DATA/uvAnim/impact.imo", 0.02f, 0.035f, 15, false, 1, 12);
 	impactScale = 1.0f;
 
-	wind = new AnimationUV("DATA/uvAnim/wind2.imo", -0.07f, 0.009f, 45, false,1 ,40);
+	wind = new AnimationUV("DATA/uvAnim/wind2.imo", -0.07f, 0.009f, 45, false,1 ,12);
 	windScale = 1.0f;
 }
 

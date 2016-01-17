@@ -4,7 +4,7 @@ class BasePlayer;
 class Pie_graph;
 class Pie_graph_content;
 class SceneMain;
-
+class AnimationRippleEx;
 #include<list>
 
 class Telop
@@ -32,12 +32,15 @@ public:
 	{
 		TELOP,
 		NUMBER,
+		NUMBER_BACK,
 		ACTION,
 		TAPE,
 		TAPE_BAR,
 		SKILL_GUN,
 		SKILL_SYURIKEN,
 		SKILL_KABUTO,
+		SKILL_FRAME,
+		SKILL_SELECT,
 		MANHOLE_FADE,
 		MAX
 	};
@@ -66,6 +69,28 @@ private:
 	Pie_graph *graph;
 	Pie_graph_content *gauge;
 
+
+	//===============================================
+	//	アニメーションUI
+	//===============================================
+	AnimationRippleEx* C_Five;
+	AnimationRippleEx* C_Four;
+	AnimationRippleEx* C_Three;
+	AnimationRippleEx* C_Two;
+	AnimationRippleEx* C_One;
+	int CountTimeNo;
+
+	int TimerX;			//Timerを動かす
+
+	// スキル溜まったら
+	static const int SKILL_MAX = 3;
+	AnimationRippleEx*  SkileSphere[SKILL_MAX];
+	AnimationRippleEx*  SkileRip[SKILL_MAX];
+	float savePercent[SKILL_MAX];// 過去のパーセントを持っている 0.0f~1.0fまで
+	//AnimationRippleEx*  SkileSphere_2;
+	//AnimationRippleEx*  SkileSphere_3;
+
+
 	//===============================================
 	//	委譲
 	//===============================================
@@ -90,6 +115,9 @@ private:
 			int frame;
 			int step;
 			iex2DObj *yooi, *don;
+			AnimationRippleEx* Ready;
+			AnimationRippleEx* GO;
+			AnimationRippleEx* GORip;
 		public:
 			Start(UI *me) :Base(me){}
 			~Start();
@@ -111,7 +139,9 @@ private:
 		class End :public Base
 		{
 		private:
-			iex2DObj *sokomade;
+			//iex2DObj *sokomade;
+			AnimationRippleEx* TimeUp;
+			AnimationRippleEx* TimeUpRip;
 		public:
 			End(UI *me) :Base(me){}
 			~End();
