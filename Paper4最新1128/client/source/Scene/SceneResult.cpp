@@ -32,17 +32,17 @@ using namespace std;
 //******************************************************************
 void SceneResult::Set_ranking()
 {
-	int MAX;
+	int RANK_MAX;
 	for (int i = 0; i < PLAYER_MAX; i++)
 	{
 		datas[i].p_num = i;
 		datas[i].score = score_mng->Get(i);
 		if (datas[i].score == 0)
 		{
-			MAX = i;
+			RANK_MAX = i;
 		}
 	}
-	for (int i = 0; i < MAX - 1; i++) for (int j = i + 1; j < MAX; j++)
+	for (int i = 0; i < RANK_MAX; i++) for (int j = i + 1; j < RANK_MAX; j++)
 	{
 		if (datas[i].score < datas[j].score)
 		{
@@ -56,12 +56,12 @@ void SceneResult::Set_ranking()
 	}
 
 	chara.motion_no = 0;
-	for (int i = 0; i < MAX; i++)
+	for (int i = 0; i < RANK_MAX; i++)
 	{
 		if (datas[i].p_num == result_my_number)
 		{
 			if (i == 0)chara.motion_no = 23;
-			else if (i == MAX - 1)chara.motion_no = 24;
+			else if (i == RANK_MAX)chara.motion_no = 24;
 			else chara.motion_no = 22;
 			break;
 		}

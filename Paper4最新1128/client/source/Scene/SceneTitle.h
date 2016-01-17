@@ -62,7 +62,7 @@ private:
 		bool rend;
 	}start_button;
 
-	const Vector2 max_v = Vector2(1110, 645), min_v = Vector2(980, 460);
+	const Vector2 max_v = Vector2(1245, 670), min_v = Vector2(950, 470);
 
 	enum IMAGE{ BACK, CURSOR, CLICK1, CLICK2, CLICK3, GAME_START, MOUSE, TITLE, ARROW,ICON, MAX };
 	iex2DObj* images[MAX];

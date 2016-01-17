@@ -203,9 +203,14 @@ void SceneTitle::Update()
 	start_button.obj->SetPos(start_button.pos);
 	start_button.obj->Update();
 
-	start_button.pointing = (
-		mouse.pos_x >= min_v.x && mouse.pos_x <= max_v.x&&
-		mouse.pos_y >= min_v.y && mouse.pos_y <= max_v.y);
+	if (mouse.pos_x >= min_v.x && mouse.pos_x <= max_v.x&&
+		mouse.pos_y >= min_v.y && mouse.pos_y <= max_v.y)
+	{
+		if (!start_button.pointing)se->Play("カーソル");
+		start_button.pointing = true;
+	}
+	else start_button.pointing = false;
+
 	switch (step)
 	{
 	case STEP::WAIT:
@@ -339,14 +344,6 @@ void SceneTitle::Render()
 	{
 		images[IMAGE::CLICK3]->Render(962, 520, 256, 64, 0, 0, 256, 64);
 	}
-	if ((int)step == (int)STEP::WAIT)
-	{
-		images[IMAGE::MOUSE]->Render(MOUSE_POS.x, MOUSE_POS.y + (int)(arrowPosY*.5f), 64, 64, 0, 0, 64, 64);
-	}
-	else if ((int)step < (int)STEP::DRAG)
-	{
-		images[IMAGE::MOUSE]->Render(move_mouse.x, move_mouse.y, 64, 64, 0, 0, 64, 64);
-	}
 
 	// タイトル絵
 	//images[IMAGE::TITLE]->Render(128, 8, 1024, 512, 0, 0, 1024, 512);
@@ -354,10 +351,21 @@ void SceneTitle::Render()
 	titleEx->Render(128, 8, RS_COPY);
 
 	// 手のアイコン
-	bool iconFlag = false;
-	if (KeyBoard(MOUSE_LEFT))iconFlag = true;	// マウス離す
-	images[IMAGE::ICON]->Render(mouse.pos_x - 32, mouse.pos_y - 32, 64, 64, iconFlag * 64, 0, 64, 64);
+	if (start_button.pointing)
+	{
+		if ((int)step == (int)STEP::WAIT)
+		{
+			images[IMAGE::MOUSE]->Render(MOUSE_POS.x, MOUSE_POS.y + (int)(arrowPosY*.5f), 64, 64, 0, 0, 64, 64);
+		}
+		else if ((int)step < (int)STEP::DRAG)
+		{
+			images[IMAGE::MOUSE]->Render(move_mouse.x, move_mouse.y, 64, 64, 0, 0, 64, 64);
+		}
 
+		bool iconFlag = false;
+		if (KeyBoard(MOUSE_LEFT))iconFlag = true;	// マウス離す
+		images[IMAGE::ICON]->Render(mouse.pos_x - 32, mouse.pos_y - 32, 64, 64, iconFlag * 64, 0, 64, 64);
+	}
 
 	//ナンバーエフェクト
 	Number_Effect::Render();
@@ -365,7 +373,8 @@ void SceneTitle::Render()
 	//フェード処理
 	//FadeControl::Render();
 
-	//if(start_button.pointing)iexPolygon::Rect(min_v.x, min_v.y, max_v.x-min_v.x, max_v.y-min_v.y, RS_COPY, 0x99fffff);
+	//if(start_button.pointing)
+		//iexPolygon::Rect(min_v.x, min_v.y, max_v.x-min_v.x, max_v.y-min_v.y, RS_COPY, 0x99000000);
 
 #ifdef _DEBUG
 
@@ -378,9 +387,9 @@ void SceneTitle::Render()
 
 #endif
 
-	Text::Draw(32, 32, 0xff000000, "%d", mouse.pos_x);
-	Text::Draw(32, 64, 0xff000000, "%d", mouse.pos_y);
-	Text::Draw(32, 96, 0xff000000, "%.1f", angle2);
+	//Text::Draw(32, 32, 0xff000000, "%d", mouse.pos_x);
+	//Text::Draw(32, 64, 0xff000000, "%d", mouse.pos_y);
+	//Text::Draw(32, 96, 0xff000000, "%.1f", angle2);
 }
 
 void SceneTitle::RenderShadow()

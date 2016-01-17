@@ -10,6 +10,8 @@
 #include "../skill_gauge/skill_gauge.h"
 #include <assert.h>
 
+#include "../Animation/AnimationRippleEx.h"
+
 float UI::tape_len;
 
 void UI::Change_mode(int m)
@@ -46,9 +48,25 @@ void UI::Initialize(BasePlayer *my)
 	// 自分のプレイヤーを指し示す
 	my_player = my;
 
-	// スキルゲージさん
-	gauge = new Pie_graph_content("DATA/UI/skill/skill_gage.png");	//	ゲージ
+	// スキルゲージさん 改
+	gauge = new Pie_graph_content("DATA/UI/skill/skill_gage_n.png");	//	Skileゲージ
 	//gauge->Initialize();
+	
+	// スキル溜まったらさん
+	for (int i = 0; i < SKILL_MAX; i++)
+	{
+		SkileSphere[i] = new AnimationRippleEx("DATA/UI/skill/sphere_n.png",
+			12, 1, 2, 0.5f, +(1.5f / 12.0f), false);
+
+		savePercent[i] = 1.0f;
+	}
+	SkileRip[0] = new AnimationRippleEx("DATA/UI/skill/skill_gage1.png",
+		18, 1, 6, 1.0f, +(1.5f / 18.0f), false);
+	SkileRip[1] = new AnimationRippleEx("DATA/UI/skill/skill_gage2.png",
+		18, 1, 6, 1.0f, +(1.5f / 18.0f), false);
+	SkileRip[2] = new AnimationRippleEx("DATA/UI/skill/skill_gage3.png",
+		18, 1, 6, 1.0f, +(1.5f / 18.0f), false);
+
 
 	// 円グラフさん
 	graph = new Pie_graph;
@@ -63,12 +81,32 @@ void UI::Initialize(BasePlayer *my)
 	//image[IMAGE::TEROP] = new iex2DObj("")
 	image[IMAGE::ACTION] = new iex2DObj("DATA/UI/action/anim.png");
 	image[IMAGE::NUMBER] = new iex2DObj("DATA/UI/Num.png");
+	image[IMAGE::NUMBER_BACK] = new iex2DObj("DATA/UI/NumBack.png");
 	image[IMAGE::TAPE] = new iex2DObj("DATA/UI/tape/tape.png");
 	image[IMAGE::TAPE_BAR] = new iex2DObj("DATA/UI/tape/tape2.png");
 	image[IMAGE::SKILL_GUN] = new iex2DObj("DATA/UI/skill/skill1.png");
 	image[IMAGE::SKILL_SYURIKEN] = new iex2DObj("DATA/UI/skill/skill2.png");
 	image[IMAGE::SKILL_KABUTO] = new iex2DObj("DATA/UI/skill/skill3.png");
+	image[IMAGE::SKILL_FRAME] = new iex2DObj("DATA/UI/skill/skill_gage_frame.png");		// スキルのフレーム
+	image[IMAGE::SKILL_SELECT] = new iex2DObj("DATA/UI/skill/skilieSelect2.png");		// skilieSelect
+
 	image[IMAGE::MANHOLE_FADE] = new iex2DObj("DATA/UI/manhole_fade.png");
+
+	// スーパー西田タイム
+	C_Five = new AnimationRippleEx("DATA/UI/call/five.png",
+		60, 24, 52, 1.2f, -(0.2f / 60.0f), false);
+	C_Four = new AnimationRippleEx("DATA/UI/call/four.png",
+		60, 24, 52, 1.2f, -(0.2f / 60.0f), false);
+	C_Three = new AnimationRippleEx("DATA/UI/call/three.png",
+		60, 24, 52, 1.2f, -(0.2f / 60.0f), false);
+	C_Two = new AnimationRippleEx("DATA/UI/call/two.png",
+		60, 24, 52, 1.2f, -(0.2f / 60.0f), false);
+	C_One = new AnimationRippleEx("DATA/UI/call/one.png",
+		60, 24, 52, 1.2f, -(0.2f / 60.0f), false);
+	CountTimeNo = -1;
+
+	TimerX = 1280;			//Timerを動かす
+	SkillX = -400;			//SKILLを動かす
 
 	Change_mode(SceneMain::MODE::START);
 }
@@ -81,6 +119,22 @@ UI::~UI()
 	SAFE_DELETE(mode);
 	for (auto it : List) delete it;
 	List.clear();
+
+	// スキル溜まったらさん
+	for (int i = 0; i < SKILL_MAX; i++)
+	{
+		delete	SkileSphere[i];
+		delete SkileRip[i];
+	}
+
+
+
+	// カウントダウン
+	delete	C_Five;
+	delete	C_Four;
+	delete	C_Three;
+	delete	C_Two;
+	delete	C_One;
 }
 
 void UI::Update()
@@ -91,6 +145,13 @@ void UI::Update()
 void UI::Render()
 {
 	mode->Render();
+
+#ifdef _DEBUG
+	Text::Draw(32, 480, 0xff00ffff, "%.1f", my_player->Get_angleY());
+	Text::Draw(32, 520, 0xff00ffff, "%.1f", my_player->Get_pos().x);
+	Text::Draw(32, 560, 0xff00ffff, "%.1f", my_player->Get_pos().y);
+	Text::Draw(32, 600, 0xff00ffff, "%.1f", my_player->Get_pos().z);
+#endif
 }
 
 
@@ -101,7 +162,55 @@ void UI::Render()
 
 void UI::Mode::Main::Update()
 {
+	const int second = timer->Get_limit_time() % 60, minutes = timer->Get_limit_time() / 60;
+	// 残り５秒前！
+	if (minutes == 0 && second == 5){
+		if (me->CountTimeNo != 5){
+			me->CountTimeNo = 5;	me->C_Five->Action();
+		}
+	}
+	// 残り4秒前！
+	if (minutes == 0 && second == 4)
+	{
+		if (me->CountTimeNo != 4){
+			me->CountTimeNo = 4;	me->C_Four->Action();
+		}
+	}
+	// 残り3秒前！
+	if (minutes == 0 && second == 3)
+	{
+		if (me->CountTimeNo != 3){
+			me->CountTimeNo = 3;	me->C_Three->Action();
+		}
+	}
+	// 残り2秒前！
+	if (minutes == 0 && second == 2)
+	{
+		if (me->CountTimeNo != 2){
+			me->CountTimeNo = 2;	me->C_Two->Action();
+		}
+	}
+	// 残り1秒前！
+	if (minutes == 0 && second == 1){
+		if (me->CountTimeNo != 1){
+			me->CountTimeNo = 1;	me->C_One->Action();
+		}
+	}
 
+
+	// カウントダウン更新
+	me->C_Five->Update();
+	me->C_Four->Update();
+	me->C_Three->Update();
+	me->C_Two->Update();
+	me->C_One->Update();
+
+
+	//// スキル溜まったら波紋の更新
+	//for (int i = 0; i < SKILL_MAX; i++)
+	//{
+	//	me->SkileSphere[i]->Update();
+	//}
 }
 
 void UI::Mode::Main::Render()
@@ -165,45 +274,109 @@ void UI::SkillGauge()
 	//int gage_val = my_player->Get_god_gage() / 10;	// スキルゲージ取得
 	//gauge->Render(gage_val, 10);
 
+	// 最初に画面外からでてくるぜぇぇぇええ！！！
+	const int kijun = 0;
+	if (SkillX <= kijun)
+	{
+		SkillX += 14;
+	}
+
+
 	//円ゲージ
 	for (int i = 0; i < (int)BasePlayer::SKILL::MAX; i++)
 	{
 		DWORD col;
 		float percent;
 
+		// スキルのフレーム追加
+		image[IMAGE::SKILL_FRAME]->Render(SkillX + (i * (80)), (200 - 32));
+
+		// ゲージのパーセンテージ取得！
+		percent = my_player->Get_skill_percentage(i);
+
+		// 解禁されていて 前の％が1.0fじゃなかったとき　初めてMAXになったら波紋
+		if (my_player->isUnlockSkill(i))
+		{
+			if (savePercent[i] != 1.0f)
+			{
+				if (percent >= 1.0f){
+					SkileSphere[i]->Action();
+					SkileRip[i]->Action();
+				}
+			}
+		}
+
+		savePercent[i] = percent;	// 前の％をを保存するぜ！！
+
 		// 自分が選択中のスキル
 		if (my_player->Get_select_skill() == i)
 		{
 			col = 0xffffffff;
-			percent = my_player->Get_skill_percentage(i);
+			//percent = my_player->Get_skill_percentage(i);
+			image[SKILL_SELECT]->Render(SkillX + (i * (80)), (200 - 32));
 		}
 
-		// 解禁したスキル
-		else if (my_player->isUnlockSkill(i))
+		// スキルがたまったら
+		if (percent >= 1.0f)
 		{
-			col = 0xcccccccc;
-			percent = my_player->Get_skill_percentage(i);
+			col = 0xffffffff;
+			//percent = my_player->Get_skill_percentage(i);
+		}
+		// スキルがたまっていない
+		else if (percent < 1.0f)
+		{
+			col = 0xaaaaaaaa;
+			//percent = my_player->Get_skill_percentage(i);
 		}
 
 		// まだ解禁してないスキル
-		else
+		if (!my_player->isUnlockSkill(i))
 		{
-			col = 0x55555555;
+			col = 0xaa111111;
 			percent = 1;
+			savePercent[i] = 0.99f;
 		}
-		gauge->Render(percent, 16+i*80, 200, 64, 64, 0, 0, 64, 64, RS_COPY, col);
+		gauge->Render(percent, SkillX + (i * (80)), (200 - 32), 128, 128, i * 128, 0, 128, 128, RS_COPY, col);
 
+		// ￥スキルアイコンや
 		image[IMAGE::SKILL_GUN + i]->SetARGB(col);
-		image[IMAGE::SKILL_GUN + i]->Render(32 + i*80, 216, 32, 32, 0, 0, 32, 32);
+		image[IMAGE::SKILL_GUN + i]->Render(SkillX + (48 + i * 80), 216, 32, 32, 0, 0, 32, 32);
+
+
+	}
+
+	// ↑にActionをしているためレンダーで更新UC
+	// スキル溜まったら波紋の更新
+	for (int i = 0; i < SKILL_MAX; i++)
+	{
+		SkileSphere[i]->Update();
+		SkileRip[i]->Update();
+	}
+
+	// スキル溜まったら
+	for (int i = 0; i < SKILL_MAX; i++)
+	{
+		SkileRip[i]->Render(SkillX + 80 * i, (200 - 32), RS_ADD);
+		SkileSphere[i]->Render(SkillX + 80 * i, (200 - 32), RS_ADD);
 	}
 }
 
 void UI::Action()
 {
 	Vector2 src;	// 取ってくる画像の位置
-	src.x = 0;
+	src.x = 256 * 3;
 	src.y = 0;
 
+	if (my_player->manhole_no_haninai)
+	{
+		src.x = 0;
+		src.y = 0;
+	}
+	else if (my_player->Get_poster_num() != -1)
+	{
+		src.x = 0;
+		src.y = 0;
+	}
 	image[IMAGE::ACTION]->Render(1032, 482, 256, 256, src.x, src.y, 256, 256);
 }
 
@@ -211,11 +384,27 @@ void UI::TimeLimit()
 {
 	const int second = timer->Get_limit_time() % 60, minutes = timer->Get_limit_time() / 60;
 	const int kijun = 1092;
-	// 64x64
-	image[IMAGE::NUMBER]->Render(kijun, 16, 64, 64, minutes * 64, 0, 64, 64);		// 分
-	image[IMAGE::NUMBER]->Render(kijun+36, 16, 64, 64, 13 * 64, 0, 64, 64);			// :
-	image[IMAGE::NUMBER]->Render(kijun+72, 16, 64, 64, second/10 * 64, 0, 64, 64);	// 秒(10の位)
-	image[IMAGE::NUMBER]->Render(kijun+108, 16, 64, 64, second%10 * 64, 0, 64, 64);	// 秒(1の位)
+	if (TimerX >= kijun)
+	{
+		TimerX -= 8;
+	}
+
+	// カウントダウンの前
+	if (CountTimeNo == -1)
+	{
+		// 64x64
+		//image[IMAGE::NUMBER_BACK]->Render(TimerX, 16);		// 背景
+		image[IMAGE::NUMBER]->Render(TimerX, 16, 64, 64, minutes * 64, 0, 64, 64);		// 分
+		image[IMAGE::NUMBER]->Render(TimerX + 36, 16, 64, 64, 13 * 64, 0, 64, 64);			// :
+		image[IMAGE::NUMBER]->Render(TimerX + 72, 16, 64, 64, second / 10 * 64, 0, 64, 64);	// 秒(10の位)
+		image[IMAGE::NUMBER]->Render(TimerX + 108, 16, 64, 64, second % 10 * 64, 0, 64, 64);	// 秒(1の位)
+	}
+	// カウントダウン描画
+	C_Five->Render(498, 182, RS_COPY);
+	C_Four->Render(498, 182, RS_COPY);
+	C_Three->Render(498, 182, RS_COPY);
+	C_Two->Render(498, 182, RS_COPY);
+	C_One->Render(498, 182, RS_COPY);
 }
 
 //
@@ -226,23 +415,39 @@ void UI::TimeLimit()
 
 
 //*****************************************************************************************************************************
-//
+//		「スタート」の時の委譲
 //		よーい…とかの雑用はここで処理
 
 void UI::Mode::Start::Initialize()
 {
 	step = 0;
 	frame = 0;
-	yooi = new iex2DObj("DATA/UI/call/yo-i.png");
-	don = new iex2DObj("DATA/UI/call/don.png");
+	//yooi = new iex2DObj("DATA/UI/call/yo-i.png");
+	//don = new iex2DObj("DATA/UI/call/don.png");
+
+	Ready = new AnimationRippleEx("DATA/UI/call/A_Ready.png",
+		12, 10, 12, 2.0f, -(1.5f / 12.0f), true);
+	Ready->Action();
+	GO = new AnimationRippleEx("DATA/UI/call/A_Go.png",
+		18, 4, 12, 1.0f, +(0.3f / 18.0f), true);
+	GORip = new AnimationRippleEx("DATA/UI/call/A_Go.png",
+		18, 1, 2, 1.0f, +(2.0f / 18.0f), false);
 }
 UI::Mode::Start::~Start()
 {
-	delete yooi;
-	delete don;
+	//delete yooi;
+	//delete don;
+	delete Ready;
+	delete GO;
+	delete GORip;
 }
 void UI::Mode::Start::Update()
 {
+	// アニメ更新
+	Ready->Update();
+	GO->Update();
+	GORip->Update();
+
 	if (++frame >= 150)
 	{
 		step++;
@@ -251,6 +456,11 @@ void UI::Mode::Start::Update()
 		if (step == 1)
 		{
 			me->isYooiDon = true;
+
+			// Go!開始　Readyストップ！
+			GO->Action();
+			GORip->Action();
+			Ready->Stop();
 		}
 		if (step >= 2)
 		{
@@ -268,27 +478,39 @@ void UI::Mode::Start::Render()
 }
 void UI::Mode::Start::YooiDon()
 {
-	BYTE alpha = (int)(((float)(180-frame) / 150) * 256);
+	//BYTE alpha = (int)(((float)(180-frame) / 150) * 256);
 	switch (step)
 	{
 	case 0:
-		yooi->SetARGB(256, 256, 256, (int)alpha);
-		yooi->Render(128, 182, 1024, 256, 0, 0, 1024, 256);
+		//yooi->SetARGB(256, 256, 256, (int)alpha);
+		//yooi->Render(128, 182, 1024, 256, 0, 0, 1024, 256);
+		Ready->Render(128, 182, RS_COPY);
 		break;
 
 	case 1:
-		don->Render(128, 182, 1024, 256, 0, 0, 1024, 256);
+		//don->Render(128, 182, 1024, 256, 0, 0, 1024, 256);
+		GO->Render(128, 182, RS_COPY);
+		GORip->Render(128, 182, RS_ADD);
 		break;
 	}
 }
 
 void UI::Mode::End::Initialize()
 {
-	sokomade = new iex2DObj("DATA/UI/call/sokomade.png");
+	//	sokomade = new iex2DObj("DATA/UI/call/sokomade.png");
+	TimeUp = new AnimationRippleEx("DATA/UI/call/A_TimeUp.png",
+		18, 4, 12, 0.8f, +(0.3f / 18.0f), true);
+	TimeUpRip = new AnimationRippleEx("DATA/UI/call/A_TimeUp.png",
+		18, 1, 2, 0.8f, +(1.3f / 18.0f), false);
+
+	TimeUp->Action();
+	TimeUpRip->Action();
 }
 UI::Mode::End::~End()
 {
-	delete sokomade;
+	//delete sokomade;
+	delete TimeUp;
+	delete TimeUpRip;
 }
 void UI::Mode::End::Update()
 {
@@ -296,10 +518,16 @@ void UI::Mode::End::Update()
 }
 void UI::Mode::End::Render()
 {
+	// とりあえずRenderで更新
+	TimeUp->Update();
+	TimeUpRip->Update();
+
 	me->Graph();
 	me->SkillGauge();
 	me->Action();
-	sokomade->Render(128, 182, 1024, 256, 0, 0, 1024, 256);
+	//sokomade->Render(128, 182, 1024, 256, 0, 0, 1024, 256);
+	TimeUp->Render(128, 182, RS_COPY);
+	TimeUpRip->Render(128, 182, RS_ADD);
 }
 //
 //=============================================================================================

@@ -75,8 +75,8 @@ void AnimationRippleEx::Update()
 	if (nowFlame >= alphaNear)
 	{
 		// 100-100=0  100-50=50   0/50
-		float A = (endFlame - nowFlame);
-		float B = (endFlame - alphaFar);
+		float A = (float)(endFlame - nowFlame);
+		float B = (float)(endFlame - alphaFar);
 		alpha = A / B;
 	}
 	else
@@ -103,5 +103,5 @@ void AnimationRippleEx::Render(float x, float y, DWORD dwFlag)
 {
 	if (isAction == false)return;//実行されてないなら出てけ！！
 
-	obj->Render(x, y, dwFlag);
+	obj->Render((int)x, (int)y, dwFlag);
 }

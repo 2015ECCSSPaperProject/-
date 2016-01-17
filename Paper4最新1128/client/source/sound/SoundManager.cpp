@@ -71,6 +71,8 @@ SE_Manager::DATA all_dataS[] =
 	{ "エントリー", "DATA/Sound/SE/entry.wav", 6, false },
 	{ "決定", "DATA/Sound/SE/decision.wav", 2, false },
 	{ "キャンセル", "DATA/Sound/SE/cancel.wav", 2, false },
+	{ "カーソル", "DATA/Sound/SE/cursor_point.wav", 3, false },
+	{ "水", "DATA/Sound/SE/water.wav", 6, false },
 	{ "END", nullptr }
 };
 
@@ -466,6 +468,7 @@ void EventBGM::End()
 
 void EventBGM::Set_manhole(bool in)
 {
+	static int se_receive = -1;
 	// マンホール内エフェクト
 	if (in)
 	{
@@ -473,6 +476,7 @@ void EventBGM::Set_manhole(bool in)
 		bgm->Set_volume(mainBGM, mainVolume);
 		bgm->SetFX(DXA_FX::DXAFX_DISTORTION);
 		se->SetFX(DXA_FX::DXAFX_ECHO);
+		se_receive = se->Play("水", true);
 	}
 
 	// マンホール外(通常)
@@ -482,6 +486,7 @@ void EventBGM::Set_manhole(bool in)
 		bgm->Set_volume(mainBGM, mainVolume);
 		bgm->SetFX(DXA_FX::DXAFX_OFF);
 		se->SetFX(DXA_FX::DXAFX_OFF);
+		se->Stop("水", se_receive);
 	}
 }
 
