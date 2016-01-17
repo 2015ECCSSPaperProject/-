@@ -116,7 +116,7 @@ bool SceneSelect::Initialize()
 	}
 
 	chara.obj = new iex3DObj("DATA/CHR/player/run.IEM");
-	//chara.obj->SetTexture(texture, 0);
+	chara.obj->SetTexture(texture, 0);
 	chara.obj->SetAngle(chara.angle);
 	chara.obj->SetScale(1.0f);
 	chara.obj->SetPos(chara.pos);

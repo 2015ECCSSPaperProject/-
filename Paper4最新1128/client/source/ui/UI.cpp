@@ -91,6 +91,13 @@ void UI::Update()
 void UI::Render()
 {
 	mode->Render();
+
+#ifdef _DEBUG
+	Text::Draw(32, 480, 0xff00ffff, "%.1f", my_player->Get_angleY());
+	Text::Draw(32, 520, 0xff00ffff, "%.1f", my_player->Get_pos().x);
+	Text::Draw(32, 560, 0xff00ffff, "%.1f", my_player->Get_pos().y);
+	Text::Draw(32, 600, 0xff00ffff, "%.1f", my_player->Get_pos().z);
+#endif
 }
 
 
@@ -201,9 +208,19 @@ void UI::SkillGauge()
 void UI::Action()
 {
 	Vector2 src;	// Žæ‚Á‚Ä‚­‚é‰æ‘œ‚ÌˆÊ’u
-	src.x = 0;
+	src.x = 256 * 3;
 	src.y = 0;
 
+	if (my_player->manhole_no_haninai)
+	{
+		src.x = 0;
+		src.y = 0;
+	}
+	else if (my_player->Get_poster_num() != -1)
+	{
+		src.x = 0;
+		src.y = 0;
+	}
 	image[IMAGE::ACTION]->Render(1032, 482, 256, 256, src.x, src.y, 256, 256);
 }
 
