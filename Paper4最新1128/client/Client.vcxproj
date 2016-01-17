@@ -128,6 +128,7 @@
     <ClCompile Include="IEX\TEXT.cpp">
       <DeploymentContent>true</DeploymentContent>
     </ClCompile>
+    <ClCompile Include="source\Ambulance\Ambulance.cpp" />
     <ClCompile Include="source\Animation\Animation3D.cpp" />
     <ClCompile Include="source\Animation\AnimationRipple.cpp" />
     <ClCompile Include="source\Animation\AnimationRippleEx.cpp" />
@@ -198,6 +199,7 @@
     <ClInclude Include="IEX\ogg\vorbisenc.h" />
     <ClInclude Include="IEX\ogg\vorbisfile.h" />
     <ClInclude Include="IEX\OKB.h" />
+    <ClInclude Include="source\Ambulance\Ambulance.h" />
     <ClInclude Include="source\Animation\Animation3D.h" />
     <ClInclude Include="source\Animation\AnimationRipple.h" />
     <ClInclude Include="source\Animation\AnimationRippleEx.h" />
