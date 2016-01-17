@@ -106,6 +106,7 @@ void UI::Initialize(BasePlayer *my)
 	CountTimeNo = -1;
 
 	TimerX = 1280;			//Timerを動かす
+	SkillX = -400;			//SKILLを動かす
 
 	Change_mode(SceneMain::MODE::START);
 }
@@ -273,6 +274,14 @@ void UI::SkillGauge()
 	//int gage_val = my_player->Get_god_gage() / 10;	// スキルゲージ取得
 	//gauge->Render(gage_val, 10);
 
+	// 最初に画面外からでてくるぜぇぇぇええ！！！
+	const int kijun = 0;
+	if (SkillX <= kijun)
+	{
+		SkillX += 14;
+	}
+
+
 	//円ゲージ
 	for (int i = 0; i < (int)BasePlayer::SKILL::MAX; i++)
 	{
@@ -280,7 +289,7 @@ void UI::SkillGauge()
 		float percent;
 
 		// スキルのフレーム追加
-		image[IMAGE::SKILL_FRAME]->Render((i * (80)), (200 - 32));
+		image[IMAGE::SKILL_FRAME]->Render(SkillX + (i * (80)), (200 - 32));
 
 		// ゲージのパーセンテージ取得！
 		percent = my_player->Get_skill_percentage(i);
@@ -304,7 +313,7 @@ void UI::SkillGauge()
 		{
 			col = 0xffffffff;
 			//percent = my_player->Get_skill_percentage(i);
-			image[SKILL_SELECT]->Render((i * (80)), (200 - 32));
+			image[SKILL_SELECT]->Render(SkillX + (i * (80)), (200 - 32));
 		}
 
 		// スキルがたまったら
@@ -327,11 +336,11 @@ void UI::SkillGauge()
 			percent = 1;
 			savePercent[i] = 0.99f;
 		}
-		gauge->Render(percent, (i * (80)), (200 - 32), 128, 128, i * 128, 0, 128, 128, RS_COPY, col);
+		gauge->Render(percent, SkillX + (i * (80)), (200 - 32), 128, 128, i * 128, 0, 128, 128, RS_COPY, col);
 
 		// ￥スキルアイコンや
 		image[IMAGE::SKILL_GUN + i]->SetARGB(col);
-		image[IMAGE::SKILL_GUN + i]->Render((48 + i * 80), 216, 32, 32, 0, 0, 32, 32);
+		image[IMAGE::SKILL_GUN + i]->Render(SkillX + (48 + i * 80), 216, 32, 32, 0, 0, 32, 32);
 
 
 	}
@@ -347,8 +356,8 @@ void UI::SkillGauge()
 	// スキル溜まったら
 	for (int i = 0; i < SKILL_MAX; i++)
 	{
-		SkileRip[i]->Render(80 * i, (200 - 32), RS_ADD);
-		SkileSphere[i]->Render(80 * i, (200 - 32), RS_ADD);
+		SkileRip[i]->Render(SkillX + 80 * i, (200 - 32), RS_ADD);
+		SkileSphere[i]->Render(SkillX + 80 * i, (200 - 32), RS_ADD);
 	}
 }
 

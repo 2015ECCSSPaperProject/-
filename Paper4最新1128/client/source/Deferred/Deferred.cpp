@@ -1092,7 +1092,7 @@ void Deferred::CreateShadowMatrix(Vector3 dir, Vector3 target, Vector3 playerVec
 	
 	//	シャドウ作成
 	dir.Normalize();
-	Vector3 pos = target - dir * dist;
+	Vector3 pos = target - dir * (dist*2);
 	Vector3 up(.0f, 1.0f, .0f);
 
 	//幅の指定

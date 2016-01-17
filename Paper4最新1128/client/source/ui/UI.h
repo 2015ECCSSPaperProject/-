@@ -81,6 +81,7 @@ private:
 	int CountTimeNo;
 
 	int TimerX;			//Timer‚ð“®‚©‚·
+	int SkillX;			//Skill‚ð“®‚©‚·
 
 	// ƒXƒLƒ‹—­‚Ü‚Á‚½‚ç
 	static const int SKILL_MAX = 3;
