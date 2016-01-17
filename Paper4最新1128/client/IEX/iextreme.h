@@ -848,6 +848,14 @@ public:
 	int	RayPick( Vector3* out, Vector3* pos, Vector3* vec, float *Dist );
 	int	RayPickUD( Vector3* out, Vector3* pos, Vector3* vec, float *Dist );
 
+	struct NearestPointOut
+	{
+		float length;
+		Vector3 Pos;
+		Vector3 Normal;
+	};
+	void NearestPoint( NearestPointOut *out, const Vector3 &pos );
+
 	//------------------------------------------------------
 	//	î•ñİ’èEæ“¾
 	//------------------------------------------------------

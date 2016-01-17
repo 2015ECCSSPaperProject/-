@@ -842,3 +842,107 @@ int	IEX_RayPickMesh( iexMesh* lpMesh, Vector3* out, Vector3* pos, Vector3* vec, 
 	return	ret;
 }
 
+
+
+// 追加した関数
+void iexMesh::NearestPoint( NearestPointOut *out, const Vector3 &inPos )
+{
+	//	情報取得	
+	u32 fvf = lpMesh->GetFVF();
+	//	頂点サイズ計算
+	int vertexSize = D3DXGetFVFVertexSize( fvf ) / sizeof( float );
+	//	バッファロック
+	float	*pVertices;
+	u16		*pIndices;
+	u32 numIndices = lpMesh->GetNumFaces();
+	lpMesh->LockVertexBuffer( D3DLOCK_READONLY, ( void** ) &pVertices );
+	lpMesh->LockIndexBuffer( D3DLOCK_READONLY, ( void** ) &pIndices );
+
+	struct
+	{
+		Vector3 vertex[3];
+		Vector3	normal;
+		Vector3 line[3];
+
+		// 頂点情報から残りの情報を計算
+		inline void ComputeFromVertex()
+		{
+			line[1] = vertex[2] - vertex[1];
+			line[2] = vertex[3] - vertex[2];
+			line[3] = vertex[1] - vertex[3];
+
+			Vector3Cross( normal, line[1], line[2] );
+			normal.Normalize();
+		}
+	}triangle; // 三角ポリゴン
+
+	out->length = FLT_MAX;
+
+	for( u32 j = 0; j < numIndices; j++ )
+	{
+		//	面頂点取得
+		{
+			int index = pIndices[j * 3 + 0] * vertexSize;
+			triangle.vertex[1].x = pVertices[index];	triangle.vertex[1].y = pVertices[index + 1];	triangle.vertex[1].z = pVertices[index + 2];
+
+			index = pIndices[j * 3 + 1] * vertexSize;
+			triangle.vertex[2].x = pVertices[index];	triangle.vertex[2].y = pVertices[index + 1];	triangle.vertex[2].z = pVertices[index + 2];
+
+			index = pIndices[j * 3 + 2] * vertexSize;
+			triangle.vertex[3].x = pVertices[index];	triangle.vertex[3].y = pVertices[index + 1];	triangle.vertex[3].z = pVertices[index + 2];
+		}
+
+		// 法線と辺計算
+		triangle.ComputeFromVertex();
+
+		// 法線方向に距離計算
+		FLOAT lengthNormal( 0 );
+		lengthNormal = Vector3Dot( ( inPos - triangle.vertex[1] ), triangle.normal );
+
+		// ポリゴンが裏向き
+		if( lengthNormal <= 0 )
+			continue;
+
+		// 遠い
+		if( lengthNormal > out->length )
+			continue;
+
+		Vector3 nearestPos( 0, 0, 0 );
+		// とりあえず無限平面上で
+		nearestPos = inPos - ( triangle.normal * lengthNormal );
+
+		Vector3 decisionVector( 0, 0, 0 );
+		// 内点判定
+		for( unsigned int i = 0; i < 3; i++ )
+		{
+			Vector3Cross( decisionVector, ( triangle.vertex[i] - nearestPos ), triangle.line[i] );
+			// 外にあった場合
+			if( Vector3Dot( decisionVector, triangle.normal ) < 0 )
+			{
+				// nearestPosを辺上の最接近点へ移動
+				float t = triangle.line[i].LengthSq();
+				if( t != 0 ) // 辺上へ
+					t = Vector3Dot( ( nearestPos - triangle.vertex[i] ), triangle.line[i] ) / t;
+				// 頂点へ
+				if( t < 0 ) t = 0;
+				else if( t > 1 )t = 1;
+				// 移動
+				nearestPos = triangle.vertex[i] + triangle.line[i] * t;
+			}
+		}
+
+		// 距離判定
+		float length = ( nearestPos - inPos ).Length();
+		if( length > out->length )
+			continue;
+
+
+		out->length = length;
+		out->Normal = triangle.normal;
+		out->Pos = nearestPos;
+	}
+
+	//	バッファアンロック
+	lpMesh->UnlockVertexBuffer();
+	lpMesh->UnlockIndexBuffer();
+}
