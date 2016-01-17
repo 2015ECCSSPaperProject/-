@@ -5,6 +5,7 @@
 
 class PaperClient;
 class Thread;
+class AnimationRippleEx;
 
 class SceneResult : public Scene
 {
@@ -24,10 +25,19 @@ public:
 	int step;//ステップ
 
 private:
+	// 画像
 	iexView* view;
 	enum IMAGE{ BACK, R1, R2, R3, R4, R5, R6, P1, P2, P3, P4, P5, P6, KEKKA, ACTION, NUMBER, MAX };
 	iex2DObj* image[IMAGE::MAX];
 
+	//===============================================
+	//	アニメーションUI
+	//===============================================
+	int MoveX[PLAYER_MAX];	// それぞれのランキング
+
+
+
+	// よろこんだりするキャラ
 	struct
 	{
 		Vector3 pos;
@@ -36,6 +46,7 @@ private:
 		int motion_no;
 	}chara;
 
+	// ランキングの順位
 	struct data
 	{
 		int score;
