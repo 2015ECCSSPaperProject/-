@@ -763,7 +763,7 @@ void BasePlayer::Action::Syuriken::Initialize()
 	me->Set_motion(1);
 	trg = false;
 
-	se->Play("Žè— Œ•", me->pos);
+	me->se_receive = se->Play("Žè— Œ•", me->pos);
 }
 
 void BasePlayer::Action::Syuriken::Update()
@@ -774,6 +774,7 @@ void BasePlayer::Action::Syuriken::Update()
 			trg = true;
 		me->m_controlDesc.controlFlag &= (0xff ^ (int)PLAYER_CONTROL::RIGHT_CLICK);
 	}
+	if (se->isPlay("Žè— Œ•", me->se_receive))se->Set_pos("Žè— Œ•", me->se_receive, me->pos);
 	Update_obj();
 }
 
