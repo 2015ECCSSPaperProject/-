@@ -3,6 +3,7 @@
 
 class Pie_graph_content;
 class Spread2D;
+class Rend_data;
 
 /*前方宣言*/
 //class BasePlayer;
@@ -12,21 +13,6 @@ class Spread2D;
 //****************************************************************************************************************
 class	MyPlayer : public	BasePlayer
 {
-private:
-	int se_step;
-	void (MyPlayer::*RendSE[11])();	// 小物破くSE
-	void RendPosterSE();
-	void RendFlyerSE();
-	void RendCalendarSE();
-	void RendMagazineSE();
-	void RendMoneySE();
-	void RendSeisyoSE();
-	void RendSignSE();
-	void RendShinbunSE();
-	void RendToileSE();
-	void RendZasshiSE();
-	void RendShojiSE();
-
 public:
 	//===============================================
 	//	初期化と解放
@@ -53,4 +39,25 @@ public:
 	//	ゲッター,セッター
 	//===============================================
 	void Set_action(ACTION_PART part);	// オーバーライド
+
+
+private:
+	//===============================================
+	//	破るマウスの動き
+	//===============================================
+	Rend_data *rend_data;
+
+	int se_step;
+	void (MyPlayer::*RendSE[11])();	// 小物破くSE
+	void RendPosterSE();
+	void RendFlyerSE();
+	void RendCalendarSE();
+	void RendMagazineSE();
+	void RendMoneySE();
+	void RendSeisyoSE();
+	void RendSignSE();
+	void RendShinbunSE();
+	void RendToileSE();
+	void RendZasshiSE();
+	void RendShojiSE();
 };

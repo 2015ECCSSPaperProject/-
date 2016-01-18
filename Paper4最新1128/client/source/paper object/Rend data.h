@@ -10,17 +10,21 @@ public:
 		float x, y;
 		inline Movedata() :x( 0 ), y( 0 )
 		{}
-		inline Movedata( float x, float y ) : x( 0 ), y( 0 )
+		inline Movedata( float x, float y ) : x( x ), y( y )
 		{}
 	};
 	// マウスの移動コマンド作成
-	Rend_data( int num_move, Movedata data[] ) :num_data( num_data ), index( 0 )
+	Rend_data( unsigned int num_move, Movedata data[] ) :num_data( num_move ), index( 0 )
 	{
 		this->data = new Movedata[num_data];
 		for( size_t i = 0; i < num_data; i++ )
 		{
 			this->data[i] = data[i];
 		}
+	}
+	~Rend_data()
+	{
+		delete[] data;
 	}
 
 	// マウスの移動コマンド判定
@@ -40,8 +44,9 @@ public:
 			return false;
 
 		// 次の移動値へ
-		if( index < num_data )
+		if( index < num_data-1 )
 		{
+			move.Reset();
 			index++;
 			return false;
 		}
@@ -51,6 +56,11 @@ public:
 		return true;
 	}
 
+	void Reset()
+	{
+		index = 0;
+		move.Reset();
+	}
 private:
 	struct Mouse_move : public Movedata
 	{
@@ -71,7 +81,7 @@ private:
 	};
 
 	Mouse_move move;
-	const int num_data;
-	int index;
+	const unsigned int num_data;
+	unsigned int index;
 	Movedata *data;
 };

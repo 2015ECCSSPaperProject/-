@@ -1,4 +1,3 @@
-
 #include	"iextreme.h"
 #include	"../system/system.h"
 #include	"BasePlayer.h"
@@ -11,7 +10,7 @@
 #include "../Animation/Spread2D.h"
 #include	"../Manhole/Manhole.h"
 #include	"../Barrier/Barrier.h"
-
+#include	"../paper object/Rend data.h"
 //****************************************************************************************************************
 //
 //  初期化
@@ -49,6 +48,18 @@ void MyPlayer::Initialize(iex3DObj **obj)
 
 	// ATフィールド展開
 	se->Play("AT", true);
+
+	// 破るマウスの動きの初期化
+	const int num = 4;
+	Rend_data::Movedata data[num]=
+	{
+		{ 80000, 0 },
+		{ -80000, 0 },
+		{ 80000, 0 },
+		{ -80000, 0 }
+	};
+		// 後々ここを可変長にする
+	rend_data = new Rend_data(num, data);
 }
 
 void MyPlayer::Release()
@@ -81,6 +92,12 @@ void MyPlayer::Update()
 
 	// リスナー情報
 	Update_listener();
+
+	//if (rend_data->Move_check(m_controlDesc.mouseX, m_controlDesc.mouseY))
+	//{
+	//	se->Play("手裏剣");
+	//	rend_data->Reset();
+	//}
 }
 
 void MyPlayer::Update_action()
@@ -529,8 +546,8 @@ void MyPlayer::Set_action(ACTION_PART part)
 void MyPlayer::Render(iexShader *shader, char *name)
 {
 	BasePlayer::Render(shader, name); 
-	//Text::Draw(32, 480, 0xff00ffff, "%.1f", angleY);
-	//Text::Draw(32, 520, 0xff00ffff, "%.1f",pos.x);
+	Text::Draw(320, 480, 0xff00ffff, "%.3f", m_controlDesc.mouseX);
+	Text::Draw(320, 520, 0xff00ffff, "%.3f", m_controlDesc.mouseY);
 	//Text::Draw(32, 560, 0xff00ffff, "%.1f",pos.y);
 	//Text::Draw(32, 600, 0xff00ffff, "%.1f",pos.z);
 	//DeferredManager.ForwardBigin();
