@@ -523,7 +523,6 @@ void SceneMain::Render()
 
 	}
 
-		Text::Draw(32, 60, 0xff00ffff, "受信時間%.2f", bench.Get_time());
 
 		//Text::Draw(32, 360, 0xff00ffff, "x%.2f", ANGLE);
 		//Text::Draw(32, 390, 0xff00ffff, "x%.2f", bench.Get_time());
@@ -540,6 +539,7 @@ void SceneMain::Render()
 		// 退魔ー(UIで描画)
 		//timer->Render();
 #ifdef _DEBUG
+		Text::Draw(32, 60, 0xff00ffff, "受信時間%.2f", bench.Get_time());
 
 		////　プレイヤーの名前
 		//for (int i = 0; i < PLAYER_MAX; ++i)

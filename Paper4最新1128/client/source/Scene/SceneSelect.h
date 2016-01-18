@@ -6,6 +6,8 @@
 class PaperClient;
 class Thread;
 class AnimationRipple;
+class Mouse;
+
 
 class SceneSelect : public Scene
 {
@@ -39,6 +41,24 @@ private:
 	AnimationRipple* OKRip[PLAYER_MAX];
 	bool OKFlag[PLAYER_MAX];
 
+	//================================
+	//		ボタン
+	struct Button
+	{
+		int dstX;
+		int dstY;
+		int dstW;
+		int dstH;
+		int srcX;
+		int srcY;
+		bool in;		// 画像範囲内
+		iex2DObj *lpButton;
+	};
+	Button modoru;
+	Button entry;
+	void Initialize_buttons();
+	void Update_buttons(const Vector2 &pos);
+
 	struct
 	{
 		Vector3 pos;
@@ -66,5 +86,5 @@ private:
 
 	//　スタンプの画像の2次元配列
 	iex2DObj* StampPicture[KIND_MAX][NO_MAX];
-
+	Mouse *mouse;
 };

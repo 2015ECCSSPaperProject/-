@@ -89,6 +89,8 @@ void UI::Initialize(BasePlayer *my)
 	image[IMAGE::SKILL_KABUTO] = new iex2DObj("DATA/UI/skill/skill3.png");
 	image[IMAGE::SKILL_FRAME] = new iex2DObj("DATA/UI/skill/skill_gage_frame.png");		// スキルのフレーム
 	image[IMAGE::SKILL_SELECT] = new iex2DObj("DATA/UI/skill/skilieSelect2.png");		// skilieSelect
+	image[IMAGE::SKILL_ROGO] = new iex2DObj("DATA/UI/skill/skill_rogo.png");		// skill_rogo
+	image[IMAGE::SCORE_FRAME] = new iex2DObj("DATA/UI/skill/scoreFrame.png");		// scoreFrame
 
 	image[IMAGE::MANHOLE_FADE] = new iex2DObj("DATA/UI/manhole_fade.png");
 
@@ -106,8 +108,8 @@ void UI::Initialize(BasePlayer *my)
 	CountTimeNo = -1;
 
 	TimerX = 1280;			//Timerを動かす
-	SkillX = -400;			//SKILLを動かす
-
+	SkillX = -600;			//SKILLを動かす
+	GraphX = -400;			//GRHPHを動かす
 	Change_mode(SceneMain::MODE::START);
 }
 
@@ -254,15 +256,27 @@ void UI::Telop_render()
 	}
 }
 
+// スコアフラグ
 void UI::Graph()
 {
+	// 最初に画面外からでてくるぜぇぇぇええ！！！
+	const int kijun = 0;
+	if (GraphX <= kijun)
+	{
+		GraphX += 14;
+	}
+
+	// 後ろのフレーム
+	image[IMAGE::SCORE_FRAME]->Render(5 + GraphX, 5);
+
 	for (int i = 0; i < PLAYER_MAX; i++)
 	{
 		graph->Set_percent(i, (float)score_mng->Get(i));
 	}
-	graph->Render(16, 16, 128, 128, 0, 0, 256, 256);
+	graph->Render(69 + GraphX, 68, 128, 128, 0, 0, 256, 256);
 }
 
+static int SKILL_Y = 32;
 void UI::SkillGauge()
 {
 	// スキルUI
@@ -281,6 +295,8 @@ void UI::SkillGauge()
 		SkillX += 14;
 	}
 
+	// SKILL_ロゴ
+	image[IMAGE::SKILL_ROGO]->Render(SkillX, (180 + SKILL_Y));
 
 	//円ゲージ
 	for (int i = 0; i < (int)BasePlayer::SKILL::MAX; i++)
@@ -289,7 +305,7 @@ void UI::SkillGauge()
 		float percent;
 
 		// スキルのフレーム追加
-		image[IMAGE::SKILL_FRAME]->Render(SkillX + (i * (80)), (200 - 32));
+		image[IMAGE::SKILL_FRAME]->Render(SkillX + (i * (80)), (200 + SKILL_Y));
 
 		// ゲージのパーセンテージ取得！
 		percent = my_player->Get_skill_percentage(i);
@@ -313,7 +329,7 @@ void UI::SkillGauge()
 		{
 			col = 0xffffffff;
 			//percent = my_player->Get_skill_percentage(i);
-			image[SKILL_SELECT]->Render(SkillX + (i * (80)), (200 - 32));
+			image[SKILL_SELECT]->Render(SkillX + (i * (80)), (200 + SKILL_Y));
 		}
 
 		// スキルがたまったら
@@ -336,11 +352,11 @@ void UI::SkillGauge()
 			percent = 1;
 			savePercent[i] = 0.99f;
 		}
-		gauge->Render(percent, SkillX + (i * (80)), (200 - 32), 128, 128, i * 128, 0, 128, 128, RS_COPY, col);
+		gauge->Render(percent, SkillX + (i * (80)), (200 + SKILL_Y), 128, 128, i * 128, 0, 128, 128, RS_COPY, col);
 
 		// ￥スキルアイコンや
 		image[IMAGE::SKILL_GUN + i]->SetARGB(col);
-		image[IMAGE::SKILL_GUN + i]->Render(SkillX + (48 + i * 80), 216, 32, 32, 0, 0, 32, 32);
+		image[IMAGE::SKILL_GUN + i]->Render(SkillX + (48 + i * 80), 216 + 32 + SKILL_Y, 32, 32, 0, 0, 32, 32);
 
 
 	}
@@ -356,8 +372,8 @@ void UI::SkillGauge()
 	// スキル溜まったら
 	for (int i = 0; i < SKILL_MAX; i++)
 	{
-		SkileRip[i]->Render(SkillX + 80 * i, (200 - 32), RS_ADD);
-		SkileSphere[i]->Render(SkillX + 80 * i, (200 - 32), RS_ADD);
+		SkileRip[i]->Render(SkillX + 80 * i, (200 + SKILL_Y), RS_ADD);
+		SkileSphere[i]->Render(SkillX + 80 * i, (200 + SKILL_Y), RS_ADD);
 	}
 }
 
