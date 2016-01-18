@@ -15,7 +15,7 @@
 //
 //*****************************************************************************************************************************
 
-char*	AppTitle = "クライアント";
+char*	AppTitle = "ペーパーボーズ クライアント";
 
 BOOL	bFullScreen = FALSE;
 DWORD	ScreenMode = SCREEN720p;
@@ -118,9 +118,9 @@ HWND InitWindow( HINSTANCE hInstance, int nCmdShow )
 	RegisterClass(&wc);
 
 	//	ウィンドウ作成
-	if( !bFullScreen ){
-		AdjustWindowRect( &WindowSize, WS_OVERLAPPEDWINDOW, FALSE );
-		hWnd = CreateWindow( "IEX2010", AppTitle, WS_OVERLAPPEDWINDOW, 
+	if (!bFullScreen){
+		AdjustWindowRect(&WindowSize, WS_OVERLAPPEDWINDOW, FALSE);
+		hWnd = CreateWindow("IEX2010", AppTitle, WS_SYSMENU,
 								0, 0, WindowSize.right-WindowSize.left, WindowSize.bottom-WindowSize.top,
 								NULL, NULL, hInstance, NULL);
 	} else {
