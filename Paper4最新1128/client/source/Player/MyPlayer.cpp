@@ -10,7 +10,11 @@
 #include "../Animation/Spread2D.h"
 #include	"../Manhole/Manhole.h"
 #include	"../Barrier/Barrier.h"
+#include	"../paper object/paper object manager.h"
 #include	"../paper object/Rend data.h"
+
+static const int KASAMASHI = 10;
+
 //****************************************************************************************************************
 //
 //  初期化
@@ -103,7 +107,6 @@ void MyPlayer::Update()
 void MyPlayer::Update_action()
 {
 	// 継承先のアクションクラスを使えないのでここで無理やり更新
-	static int fade_frame = 0;
 
 	switch (action_part)
 	{
@@ -127,7 +130,6 @@ void MyPlayer::Update_action()
 		if (models[(int)model_part]->GetParam(0) == 2)
 		{
 			if (ui->GetManholeFade() != UI::MANHOLE_FADE_TYPE::F_OUT)ui->SetManholeFade(UI::MANHOLE_FADE_TYPE::F_OUT);
-			fade_frame++;
 		}
 		break;
 
@@ -273,6 +275,65 @@ void MyPlayer::Update_listener()
 	se->Set_listener(pos, front, up, move);
 }
 
+
+void Get_2dpos(Vector3 *out, const Vector3 &pos)
+{
+	Matrix m = matView * matProjection;
+
+	out->x =
+		pos.x * m._11 +
+		pos.y * m._21 +
+		pos.z * m._31 +
+		1 * m._41;
+
+	out->y =
+		pos.x * m._12 +
+		pos.y * m._22 +
+		pos.z * m._32 +
+		1 * m._42;
+
+	float w =
+		pos.x * m._14 +
+		pos.y * m._24 +
+		pos.z * m._34 +
+		1 * m._44;
+
+	if (w == 0)
+	{
+		out->x = 0;
+		out->y = 0;
+	}
+	else
+	{
+		out->x /= w;
+		out->y /= w;
+	}
+}
+
+
+Vector3 Get2Dpos1280x720(const Vector3 &pos)
+{
+	//ラムダ式Min~Maxの範囲に抑える　
+	auto Clamp = [](float val, float Min, float Max){
+		return min(Max, max(val, Min));
+	};
+
+	Vector3 out;
+
+	Get_2dpos(&out, pos);//日高君の作ったやつを使用
+
+	out.x = Clamp(out.x, -1.0f, 1.0f);
+	out.y = Clamp(out.y, -1.0f, 1.0f);
+
+	//1280　720　のとり方
+	out.x = (out.x + 1) * 640;
+	out.y = (((out.y*-1) + 1) * 360);
+
+	out.z = 0.0f;
+
+	return out;
+}
+
 void MyPlayer::RendPosterSE()
 {
 	switch (se_step)
@@ -281,6 +342,11 @@ void MyPlayer::RendPosterSE()
 		// 破き始め
 		if (models[(int)model_part]->GetParam(0) == 1)
 		{
+			if (poster_num != -1)
+			{
+				const Vector3 pos2D = Get2Dpos1280x720(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 20, 0));
+				Number_Effect::SetNum(pos2D.x, pos2D.y, 1 * KASAMASHI, 4);
+			}
 			se_receive = se->Play("破る");
 			se_step = 99;	// ステップ終わり
 		}
@@ -295,6 +361,11 @@ void MyPlayer::RendFlyerSE()
 		// 破き始め
 		if (models[(int)model_part]->GetParam(0) == 1)
 		{
+			if (poster_num != -1)
+			{
+				const Vector3 pos2D = Get2Dpos1280x720(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 20, 0));
+				Number_Effect::SetNum(pos2D.x, pos2D.y, 5 * KASAMASHI, 2);
+			}
 			se_receive = se->Play("破る");
 			se_step = 99;	// ステップ終わり
 		}
@@ -325,6 +396,11 @@ void MyPlayer::RendCalendarSE()
 		// 雄叫び
 		if (models[(int)model_part]->GetParam(5) == 3)
 		{
+			if (poster_num != -1)
+			{
+				const Vector3 pos2D = Get2Dpos1280x720(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0));
+				Number_Effect::SetNum(pos2D.x, pos2D.y, 5 * KASAMASHI, 3);
+			}
 			se_step = 99;	// ステップ終わり
 		}
 	}
@@ -343,6 +419,11 @@ void MyPlayer::RendMagazineSE()
 		// 破き
 		if (models[(int)model_part]->GetParam(5) == 1)
 		{
+			if (poster_num != -1)
+			{
+				const Vector3 pos2D = Get2Dpos1280x720(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0));
+				Number_Effect::SetNum(pos2D.x, pos2D.y, 2 * KASAMASHI, 1);
+			}
 			se->Stop("マガジン破り", se_receive);
 			se->Play("マガジン破り2");
 			se_step = 99;	// ステップ終わり
@@ -371,9 +452,14 @@ void MyPlayer::RendMoneySE()
 		}
 		break;
 	case 2:
-		// 雄叫び
+		// 投げ捨て
 		if (models[(int)model_part]->GetParam(5) == 3)
 		{
+			if (poster_num != -1)
+			{
+				const Vector3 pos2D = Get2Dpos1280x720(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0));
+				Number_Effect::SetNum(pos2D.x, pos2D.y, 3 * KASAMASHI, 1);
+			}
 			se->Play("サイン破り2");
 			se_step = 99;	// ステップ終わり
 		}
@@ -402,6 +488,11 @@ void MyPlayer::RendSeisyoSE()
 		// 破き
 		if (models[(int)model_part]->GetParam(5) == 2)
 		{
+			if (poster_num != -1)
+			{
+				const Vector3 pos2D = Get2Dpos1280x720(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0));
+				Number_Effect::SetNum(pos2D.x, pos2D.y, 3 * KASAMASHI, 1);
+			}
 			se->Stop("聖書破り", se_receive);
 			se->Play("聖書破り3");
 			se_step = 99;	// ステップ終わり
@@ -417,6 +508,11 @@ void MyPlayer::RendSignSE()
 		// 破き始め
 		if (models[(int)model_part]->GetParam(5) == 1)
 		{
+			if (poster_num != -1)
+			{
+				const Vector3 pos2D = Get2Dpos1280x720(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0));
+				Number_Effect::SetNum(pos2D.x, pos2D.y, 3 * KASAMASHI, 1);
+			}
 			se->Play("サイン破り");
 			se_step++;
 		}
@@ -445,6 +541,11 @@ void MyPlayer::RendShinbunSE()
 		// 破き始め
 		if (models[(int)model_part]->GetParam(5) == 1)
 		{
+			if (poster_num != -1)
+			{
+				const Vector3 pos2D = Get2Dpos1280x720(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0));
+				Number_Effect::SetNum(pos2D.x, pos2D.y, 4 * KASAMASHI, 1);
+			}
 			se->Play("新聞破り");
 			se_step++;
 		}
@@ -473,6 +574,11 @@ void MyPlayer::RendToileSE()
 		// 破き
 		if (models[(int)model_part]->GetParam(5) == 1)
 		{
+			if (poster_num != -1)
+			{
+				const Vector3 pos2D = Get2Dpos1280x720(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0));
+				Number_Effect::SetNum(pos2D.x, pos2D.y, 3 * KASAMASHI, 1);
+			}
 			se->Stop("トイレ破り", se_receive);
 			se->Play("トイレ破り2");
 			se_step = 99;	// ステップ終わり
@@ -488,6 +594,11 @@ void MyPlayer::RendZasshiSE()
 		// 破き始め
 		if (models[(int)model_part]->GetParam(5) == 1)
 		{
+			if (poster_num != -1)
+			{
+				const Vector3 pos2D = Get2Dpos1280x720(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0));
+				Number_Effect::SetNum(pos2D.x, pos2D.y, 3 * KASAMASHI, 1);
+			}
 			se_receive = se->Play("短い破り");
 			se_step = 99;	// ステップ終わり
 		}
@@ -519,6 +630,11 @@ void MyPlayer::RendShojiSE()
 		// 蹴り
 		if (models[(int)model_part]->GetParam(5) == 3)
 		{
+			if (poster_num != -1)
+			{
+				const Vector3 pos2D = Get2Dpos1280x720(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0));
+				Number_Effect::SetNum(pos2D.x, pos2D.y, 3 * KASAMASHI, 1);
+			}
 			se->Play("サイン破り");
 			se_step = 99;	// ステップ終わり
 		}

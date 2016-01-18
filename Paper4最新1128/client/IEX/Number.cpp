@@ -51,6 +51,11 @@ void Number_Effect::Update()
 			//色
 			Color[i] = D3DCOLOR_ARGB(Alpha[i], 255, 255, 155);
 		}
+		else if (kind[i] == 4)
+		{
+			//色
+			Color[i] = D3DCOLOR_ARGB(Alpha[i], 255, 255, 255);
+		}
 		else
 		//色
 		Color[i] = D3DCOLOR_ARGB(Alpha[i], 0, 200, 255);//水色　魂
@@ -80,9 +85,9 @@ void Number_Effect::Render()
 	//if (isAlive == false)return;
 	for (int i = 0; i < NUM_MAX; i++)
 	{
-		if (kind[i] == NOM_COLOR::SPIRIT)//　魂マークありかなしか
-			Number::Render(x[i], y[i], Num[i], Color[i], Number::SPIRIT);
-		else
+		//if (kind[i] == NOM_COLOR::SPIRIT)//　魂マークありかなしか
+		//	Number::Render(x[i], y[i], Num[i], Color[i], Number::SPIRIT);
+		//else
 			Number::Render(x[i], y[i], Num[i], Color[i], Number::PLUS);
 		
 	}
