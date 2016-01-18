@@ -41,6 +41,24 @@ private:
 	AnimationRipple* OKRip[PLAYER_MAX];
 	bool OKFlag[PLAYER_MAX];
 
+	//================================
+	//		ƒ{ƒ^ƒ“
+	struct Button
+	{
+		int dstX;
+		int dstY;
+		int dstW;
+		int dstH;
+		int srcX;
+		int srcY;
+		bool in;		// ‰æ‘œ”ÍˆÍ“à
+		iex2DObj *lpButton;
+	};
+	Button modoru;
+	Button entry;
+	void Initialize_buttons();
+	void Update_buttons(const Vector2 &pos);
+
 	struct
 	{
 		Vector3 pos;

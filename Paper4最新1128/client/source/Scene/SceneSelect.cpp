@@ -13,7 +13,7 @@
 #include	"../sound/SoundManager.h"
 #include	"../../IEX/OKB.h"
 #include	"../Animation/AnimationRipple.h"
-
+#include	"SceneTitle.h"
 
 /**********************/
 /*	グローバル変数	　*/
@@ -140,8 +140,57 @@ bool SceneSelect::Initialize()
 
 	mouse = new Mouse;
 
+	Initialize_buttons();
+
 	return true;
 }
+
+
+//*************************************************************************************************
+// マウスでクリックするアイコン
+void SceneSelect::Initialize_buttons()
+{
+	modoru.lpButton = new iex2DObj("DATA/Image/lobby/もどる.png");
+	modoru.dstX = 1100;
+	modoru.dstY = 520;
+	modoru.dstW = 128;
+	modoru.dstH = 128;
+	modoru.srcX = 256;
+	modoru.srcY = 256;
+	modoru.in = false;
+
+	entry.lpButton = image[IMAGE::WAIT];
+	entry.dstX = 396;
+	entry.dstY = 136 + SOCKET_MANAGER->GetID() * 96;
+	entry.dstW = 128;
+	entry.dstH = 64;
+	entry.srcX = 128;
+	entry.srcY = 64;
+	entry.in = false;
+}
+void SceneSelect::Update_buttons(const Vector2 &pos)
+{
+	if (pos.x > modoru.dstX && pos.x  < modoru.dstX + modoru.dstW &&
+		pos.y > modoru.dstY && pos.y < modoru.dstY + modoru.dstH)
+	{
+		if (!modoru.in){
+			se->Play("カーソル");
+			modoru.in = true;
+		}
+	}
+	else modoru.in = false;
+
+	if (pos.x > entry.dstX && pos.x  < entry.dstX + entry.dstW &&
+		pos.y > entry.dstY && pos.y < entry.dstY + entry.dstH)
+	{
+		if (!entry.in){
+			se->Play("カーソル");
+			entry.in = true;
+		}
+	}
+	else entry.in = false;
+}
+//*************************************************************************************************
 
 void SceneSelect::PosterInit()
 {
@@ -190,6 +239,8 @@ void SceneSelect::PosterInit()
 
 SceneSelect::~SceneSelect()
 {
+	delete modoru.lpButton;
+
 	//ThreadEND = true;
 
 	delete view;
@@ -353,11 +404,25 @@ void SceneSelect::Update()
 	//フェード処理
 	FadeControl::Update();
 
+	// ボタン更新
+	Update_buttons(mouse->pos);
+
+	// 戻るボタン範囲内
+	if (modoru.in)
+	{
+		if (KeyBoardTRG(MOUSE_LEFT))
+		{
+			// シーンもドル
+			MainFrame->ChangeScene(new SceneTitle());
+			return;
+		}
+	}
+
 	switch (step)
 	{
 	case STEP::START_NO:
 		//　Aボタン押したら
-		if (KEY_Get(KEY_ENTER) == 3 || KeyBoardTRG(MOUSE_LEFT) || KeyBoardTRG(MOUSE_RIGHT))
+		if (KeyBoardTRG(MOUSE_LEFT)&&entry.in)
 		{
 			//　自分の準備OKを光らす
 			//OKRip[SOCKET_MANAGER->GetID()]->Action();
@@ -369,7 +434,7 @@ void SceneSelect::Update()
 	case STEP::START_OK:
 	{
 		   //　まだ準備できてないので戻ります
-		if (KEY_Get(KEY_ENTER) == 3 || KeyBoardTRG(MOUSE_LEFT) || KeyBoardTRG(MOUSE_RIGHT))
+		if (KeyBoardTRG(MOUSE_LEFT) && entry.in)
 		   {
 			   step = STEP::START_NO;
 			   se->Play("キャンセル");
@@ -472,6 +537,10 @@ void SceneSelect::Render()
 	//image[IMAGE::ACTION]->Render(1060, 500, 256, 256, 0, 0, 256, 256);
 	image[IMAGE::INFO]->Render(600, 0);
 
+	// 戻るボタン
+	modoru.lpButton->Render(modoru.dstX, modoru.dstY, modoru.dstW, modoru.dstH, 0, 0, modoru.srcX, modoru.srcY);
+	if (modoru.in)modoru.lpButton->Render(modoru.dstX, modoru.dstY, modoru.dstW, modoru.dstH, 0, 0, modoru.srcX, modoru.srcY, RS_ADD);
+
 
 	// 点のアニメ用変数
 	static int tenFlame = 0;
@@ -514,12 +583,12 @@ void SceneSelect::Render()
 		if (isActivePlayer[i] == true)
 		{
 			// 動く
-			moveX[i]-=24;
-			if (moveX[i]<=0)	moveX[i] = 0;
+			moveX[i] -= 24;
+			if (moveX[i] <= 0)	moveX[i] = 0;
 			// 透明
 			alpha[i] += 8;
 			if (alpha[i] >= 255)alpha[i] = 255;
-			
+
 
 		}
 		else
@@ -539,7 +608,7 @@ void SceneSelect::Render()
 			// 右のユーザーの■　ユーザーたち
 			image[IMAGE::P1 + i]->Render(64, 136 + i * 96, 64, 64, 0, 0, 64, 64);
 			// 追加　波紋■
-			IconRip[i]->Render(64, 136 + i * 96,RS_COPY);
+			IconRip[i]->Render(64, 136 + i * 96, RS_COPY);
 
 			// 自分の名前or相手	
 			if (SOCKET_MANAGER->GetID() == i)
@@ -554,12 +623,24 @@ void SceneSelect::Render()
 			}
 
 			// 準備中？準備OK
-			image[(!SOCKET_MANAGER->GetUser(i).isReady) ? IMAGE::WAIT : IMAGE::OK]->SetARGB(alpha[i], 255, 255, 255);
-			image[(!SOCKET_MANAGER->GetUser(i).isReady) ? IMAGE::WAIT : IMAGE::OK]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64);
-		
+			if (SOCKET_MANAGER->GetUser(i).isReady)
+			{
+				image[IMAGE::OK]->SetARGB(alpha[i], 255, 255, 255);
+				image[IMAGE::OK]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64);
+				if (entry.in&&SOCKET_MANAGER->GetID() == i)
+					image[IMAGE::OK]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64, RS_ADD);
+			}
+			else
+			{
+				image[IMAGE::WAIT]->SetARGB(alpha[i], 255, 255, 255);
+				image[IMAGE::WAIT]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64);
+				if (entry.in&&SOCKET_MANAGER->GetID() == i)
+					image[IMAGE::WAIT]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64, RS_ADD);
+			}
+
 			// 準備OK波紋　追加
 			OKRip[i]->Render(396 + moveX[i], 136 + i * 96);
-			
+
 		}
 		else // 参加していなかったら
 		{
@@ -586,7 +667,7 @@ void SceneSelect::Render()
 	{
 	case STEP::GAME:
 
-		Text::Draw(10, 620 , 0xff00ffff, "ENTERで進む");
+		Text::Draw(10, 620, 0xff00ffff, "ENTERで進む");
 
 		break;
 	}
