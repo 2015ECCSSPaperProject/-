@@ -6,6 +6,8 @@
 class PaperClient;
 class Thread;
 class AnimationRipple;
+class Mouse;
+
 
 class SceneSelect : public Scene
 {
@@ -66,5 +68,5 @@ private:
 
 	//　スタンプの画像の2次元配列
 	iex2DObj* StampPicture[KIND_MAX][NO_MAX];
-
+	Mouse *mouse;
 };

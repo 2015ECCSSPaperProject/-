@@ -1,8 +1,9 @@
 #include	"iextreme.h"
 
 #include	"../system/Framework.h"
-#include	"SceneTitle.h"
 #include	"SceneSelect.h"
+#include	"../Mouse/Mouse.h"
+#include	"SceneTitle.h"
 #include	"SceneMakePoster.h"
 
 #include "../stage/Stage.h"
@@ -98,6 +99,7 @@ bool SceneTitle::Initialize()
 	step = STEP::WAIT;
 
 	move_mouse = MOUSE_POS;
+	mouse = new Mouse;
 
 	return true;
 }
@@ -117,6 +119,7 @@ SceneTitle::~SceneTitle()
 		delete images[i];
 	}
 	delete start_button.obj;
+	delete mouse;
 }
 
 static float angle2 = .49f;
@@ -166,7 +169,7 @@ void SceneTitle::Update()
 	start_button.pos = (viewPos + vecAngle * 70);
 	start_button.pos.y -= .5f;
 
-	mouse.Update();
+	mouse->Update();
 
 	// イメージのアニメーション
 	if (arrowPosY >= 0)
@@ -203,8 +206,8 @@ void SceneTitle::Update()
 	start_button.obj->SetPos(start_button.pos);
 	start_button.obj->Update();
 
-	if (mouse.pos_x >= min_v.x && mouse.pos_x <= max_v.x&&
-		mouse.pos_y >= min_v.y && mouse.pos_y <= max_v.y)
+	if (mouse->pos.x >= min_v.x && mouse->pos.x <= max_v.x&&
+		mouse->pos.y >= min_v.y && mouse->pos.y <= max_v.y)
 	{
 		if (!start_button.pointing)se->Play("カーソル");
 		start_button.pointing = true;
@@ -229,7 +232,7 @@ void SceneTitle::Update()
 			move_mouse = MOUSE_POS;
 			step = STEP::WAIT;
 		}
-		else if (mouse.Get_move_dist() > 20)
+		else if (mouse->Get_move_dist() > 20)
 		{
 			move_mouse = MOUSE_POS;
 			step = STEP::DRAG;
@@ -364,7 +367,7 @@ void SceneTitle::Render()
 
 		bool iconFlag = false;
 		if (KeyBoard(MOUSE_LEFT))iconFlag = true;	// マウス離す
-		images[IMAGE::ICON]->Render(mouse.pos_x - 32, mouse.pos_y - 32, 64, 64, iconFlag * 64, 0, 64, 64);
+		images[IMAGE::ICON]->Render(mouse->pos.x - 32, mouse->pos.y - 32, 64, 64, iconFlag * 64, 0, 64, 64);
 	}
 
 	//ナンバーエフェクト
@@ -426,38 +429,4 @@ void SceneTitle::RenderShadow()
 		}
 	}
 
-}
-
-
-
-//=============================================================================================
-//		マ	ウ	ス	更		新
-void Mouse::Update()
-{
-	static const float Max = 0.6f;
-	static const float Min = 0.25f;
-
-	// 前回座標保存
-	prev_point = current_point;
-
-	// 取得
-	GetCursorPos(&current_point);
-	GetWindowRect(iexSystem::Window, &rc);
-	// 窓位置と縁による調整
-	pos_x = current_point.x - rc.left - 8;
-	pos_y = current_point.y - rc.top - 29;
-	////中央オフセット＆正規化
-	axis_x = ((float)pos_x - (iexSystem::ScreenWidth / 2)) / (iexSystem::ScreenWidth / 2);
-	axis_y = -((float)pos_y - (iexSystem::ScreenHeight / 2)) / (iexSystem::ScreenHeight / 2);
-
-	// 最大値制御
-	if (axis_x > Max)axis_x = Max;
-	else if (axis_x < -Max)axis_x = -Max;
-	if (axis_y > Max)axis_y = Max;
-	else if (axis_y < -Max)axis_y = -Max;
-
-	// 最小値なら0
-	float val_x = sqrtf(axis_x * axis_x), val_y = sqrtf(axis_y * axis_y);
-	if (val_x < Min) axis_x = 0;
-	if (val_y < Min * 1.5f) axis_y = 0;
 }

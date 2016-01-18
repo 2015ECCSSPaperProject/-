@@ -7,7 +7,7 @@
 
 #include	"../system/Framework.h"
 #include	"../system/Thread.h"
-
+#include	"../Mouse/Mouse.h"
 #include	"SceneSelect.h"
 #include	"SceneMain.h"
 #include	"../sound/SoundManager.h"
@@ -138,6 +138,8 @@ bool SceneSelect::Initialize()
 	m_pThread = new Thread(ThreadFunc, this);
 	m_pThread->Run();
 
+	mouse = new Mouse;
+
 	return true;
 }
 
@@ -220,7 +222,7 @@ SceneSelect::~SceneSelect()
 	{
 		SAFE_DELETE(OKRip[i]);
 	}
-
+	delete mouse;
 
 }
 
@@ -300,23 +302,7 @@ void SceneSelect::Update()
 
 	//=============================================================
 	//	マウス更新
-	POINT p;
-	GetCursorPos(&p);
-
-	//　画面の真ん中へ移動
-	RECT rc;
-	GetWindowRect(iexSystem::Window, &rc);
-	p.x -= rc.left + iexSystem::ScreenWidth / 2;
-	p.x = (LONG)((float)p.x * .8f);
-	if (GetActiveWindow() == IEX_GetWindow())
-	{
-		ShowCursor(FALSE);
-		SetCursorPos(rc.left + iexSystem::ScreenWidth / 2, rc.top + iexSystem::ScreenHeight / 2);
-	}
-	float	work;
-	work = (float)p.x *0.001f;
-	if (work > 0.1f) work = 0.1f;
-	chara.obj->SetAngle((chara.angle += work));// Angleに加算
+	mouse->Update();
 	//==============================================================
 
 	// 波紋　追加
