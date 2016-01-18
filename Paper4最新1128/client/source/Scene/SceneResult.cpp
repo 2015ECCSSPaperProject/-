@@ -70,9 +70,9 @@ bool SceneResult::Initialize()
 	}
 
 	// ‰¼
-	score_mng->Add(114, 1);
-	score_mng->Add(51, 3);
-	score_mng->Add(4, 5);
+	//score_mng->Add(114, 1);
+	//score_mng->Add(51, 3);
+	//score_mng->Add(4, 5);
 
 	Set_ranking();
 

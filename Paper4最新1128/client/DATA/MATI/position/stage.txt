@@ -398,7 +398,7 @@ DATA/MATI/hasira.IMO 3
 0
 348
 
-DATA/MATI/library.IMO 3
+DATA/MATI/library.IMO 0
 
 0
 0

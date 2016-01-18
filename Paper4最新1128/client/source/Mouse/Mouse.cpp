@@ -23,7 +23,7 @@ void Mouse::Update()
 
 	// ‘O‰ñÀ•W•Û‘¶
 	prev_point = current_point;
-
+	ShowCursor(TRUE);
 	// æ“¾
 	GetCursorPos(&current_point);
 	GetWindowRect(iexSystem::Window, &rc);

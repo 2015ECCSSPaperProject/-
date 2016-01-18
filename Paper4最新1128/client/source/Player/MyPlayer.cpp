@@ -662,8 +662,8 @@ void MyPlayer::Set_action(ACTION_PART part)
 void MyPlayer::Render(iexShader *shader, char *name)
 {
 	BasePlayer::Render(shader, name); 
-	Text::Draw(320, 480, 0xff00ffff, "%.3f", m_controlDesc.mouseX);
-	Text::Draw(320, 520, 0xff00ffff, "%.3f", m_controlDesc.mouseY);
+	//Text::Draw(320, 480, 0xff00ffff, "%.3f", m_controlDesc.mouseX);
+	//Text::Draw(320, 520, 0xff00ffff, "%.3f", m_controlDesc.mouseY);
 	//Text::Draw(32, 560, 0xff00ffff, "%.1f",pos.y);
 	//Text::Draw(32, 600, 0xff00ffff, "%.1f",pos.z);
 	//DeferredManager.ForwardBigin();

@@ -571,7 +571,7 @@ void SceneMain::RenderShadow()
 	// 影用プロジェクションの更新
 	DeferredManager.CreateShadowMatrix
 		(LightVec, player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_pos(),
-		player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_Flont() * 60, 200);
+		player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_Flont() * 60, 150);
 
 	// near
 	DeferredManager.ShadowBegin();
