@@ -555,9 +555,17 @@ void SceneSelect::Render()
 			// 追加　波紋■
 			IconRip[i]->Render(64, 136 + i * 96,RS_COPY);
 
-			// 名前
-			DWORD col = ARGB((BYTE)alpha[i], 0, 0, 0);
-			Text::Draw(140 + moveX[i], 154 + i * 96, col, "%s", SOCKET_MANAGER->GetUser(i).name);
+			// 自分の名前or相手	
+			if (SOCKET_MANAGER->GetID() == i)
+			{
+				DWORD col = ARGB((BYTE)alpha[i], 0, 0, 0);
+				Text::Draw(130 + moveX[i], 154 + i * 96, col, "%s", SOCKET_MANAGER->GetUser(i).name);
+			}
+			else
+			{
+				DWORD col = ARGB((BYTE)alpha[i], 127, 127, 127);
+				Text::Draw(130 + moveX[i], 154 + i * 96, col, "%s", SOCKET_MANAGER->GetUser(i).name);
+			}
 
 			// 準備中？準備OK
 			image[(!SOCKET_MANAGER->GetUser(i).isReady) ? IMAGE::WAIT : IMAGE::OK]->SetARGB(alpha[i], 255, 255, 255);

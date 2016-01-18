@@ -5,7 +5,7 @@
 #include	"../Player/BasePlayer.h"
 #include	"../Player/MyPlayer.h"
 #include	"../paper object/paper object manager.h"
-
+#include	"../Ambulance/Ambulance.h"
 #include	"../stage/Stage.h"
 
 #include	"../../../share_data/Enum_public.h"
@@ -350,6 +350,7 @@ void Camera::Mode::TPS::Update()
 	// プレイヤー座標取得
 	Vector3 p_pos;
 	me->my_player->Get_pos(p_pos);
+	//p_pos = ambulance_mng->GetAmbulance(2)->GetPos();
 
 	p_pos.y += 5.0f;	// 少し上に
 

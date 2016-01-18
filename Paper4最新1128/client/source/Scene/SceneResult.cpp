@@ -4,6 +4,8 @@
 //netは一番初めにインクルードしないとエラーが起こる
 #include	"../Net/Socket.h"
 //#include	"../Net/net_config_loader.h"
+#include "../Animation/AnimationRippleEx.h"
+
 
 #include	"../system/Framework.h"
 #include	"../system/Thread.h"
@@ -30,43 +32,6 @@ using namespace std;
 //******************************************************************
 //		初期化・解放
 //******************************************************************
-void SceneResult::Set_ranking()
-{
-	int RANK_MAX;
-	for (int i = 0; i < PLAYER_MAX; i++)
-	{
-		datas[i].p_num = i;
-		datas[i].score = score_mng->Get(i);
-		if (datas[i].score == 0)
-		{
-			RANK_MAX = i;
-		}
-	}
-	for (int i = 0; i < RANK_MAX; i++) for (int j = i + 1; j < RANK_MAX; j++)
-	{
-		if (datas[i].score < datas[j].score)
-		{
-			int temp = datas[i].score;
-			datas[i].score = datas[j].score;
-			datas[j].score = temp;
-			temp = datas[i].p_num;
-			datas[i].p_num = datas[j].p_num;
-			datas[j].p_num = temp;
-		}
-	}
-
-	chara.motion_no = 0;
-	for (int i = 0; i < RANK_MAX; i++)
-	{
-		if (datas[i].p_num == result_my_number)
-		{
-			if (i == 0)chara.motion_no = 23;
-			else if (i == RANK_MAX)chara.motion_no = 24;
-			else chara.motion_no = 22;
-			break;
-		}
-	}
-}
 
 bool SceneResult::Initialize()
 {
@@ -97,6 +62,17 @@ bool SceneResult::Initialize()
 	image[IMAGE::ACTION] = new iex2DObj("DATA/UI/action/1.png");
 	image[IMAGE::KEKKA] = new iex2DObj("DATA/Image/result/result.png");
 	image[IMAGE::NUMBER] = new iex2DObj("DATA/UI/Num.png");
+	
+	// Move値を
+	for (int i = 0; i < PLAYER_MAX; i++)
+	{
+		MoveX[i] = 1280;
+	}
+
+	// 仮
+	score_mng->Add(114, 1);
+	score_mng->Add(51, 3);
+	score_mng->Add(4, 5);
 
 	Set_ranking();
 
@@ -155,9 +131,20 @@ void SceneResult::Update()
 
 	chara.obj->Animation();
 
+	// ランキングのイラストのスライド
+	for (int i = (PLAYER_MAX-1); i >= 0; --i)
+	{
+		if (MoveX[i] >= 0){
+			MoveX[i] -= 48;
+			break;				// 一人づつ移動や
+		}
+	}
+
+	// 戻る
 	if (KEY_Get(KEY_ENTER) == 3)
 	{
 		   MainFrame->ChangeScene(new SceneSelect());
+		   return;
 	}
 
 }
@@ -170,7 +157,6 @@ void SceneResult::Update()
 void SceneResult::Render()
 {
 	view->Activate();
-
 	view->Clear();
 
 	// 背景 西田書き換え
@@ -188,7 +174,7 @@ void SceneResult::Render()
 
 	for (int i = 0; i < PLAYER_MAX; ++i)
 	{
-		image[IMAGE::P1 + datas[i].p_num]->Render(104, 136 + i * 96, 64, 64, 0, 0, 64, 64);
+		image[IMAGE::P1 + datas[i].p_num]->Render(MoveX[i]+64, 136 + i * 96, 64, 64, 0, 0, 64, 64);
 
 		int iti, juu, hyaku, sen, man;
 		int s = datas[i].score * 10;
@@ -202,12 +188,27 @@ void SceneResult::Render()
 		s %= 10;
 		iti = s;
 
-		image[IMAGE::NUMBER]->Render(392, 136 + i * 96, 64, 64, 64 * man, 0, 64, 64);
-		image[IMAGE::NUMBER]->Render(424, 136 + i * 96, 64, 64, 64 * sen, 0, 64, 64);
-		image[IMAGE::NUMBER]->Render(456, 136 + i * 96, 64, 64, 64 * hyaku, 0, 64, 64);
-		image[IMAGE::NUMBER]->Render(488, 136 + i * 96, 64, 64, 64 * juu, 0, 64, 64);
-		image[IMAGE::NUMBER]->Render(520, 136 + i * 96, 64, 64, 64 * iti, 0, 64, 64);
-		image[IMAGE::NUMBER]->Render(568, 136 + i * 96, 64, 64, 64 * 11, 0, 64, 64);
+		image[IMAGE::NUMBER]->Render(MoveX[i]+392, 138 + i * 96, 64, 64, 64 * man, 0, 64, 64);
+		image[IMAGE::NUMBER]->Render(MoveX[i]+424, 138 + i * 96, 64, 64, 64 * sen, 0, 64, 64);
+		image[IMAGE::NUMBER]->Render(MoveX[i]+456, 138 + i * 96, 64, 64, 64 * hyaku, 0, 64, 64);
+		image[IMAGE::NUMBER]->Render(MoveX[i]+488, 138 + i * 96, 64, 64, 64 * juu, 0, 64, 64);
+		image[IMAGE::NUMBER]->Render(MoveX[i]+520, 138 + i * 96, 64, 64, 64 * iti, 0, 64, 64);
+		image[IMAGE::NUMBER]->Render(MoveX[i]+568, 138 + i * 96, 64, 64, 64 * 11, 0, 64, 64);
+	
+		// 自分の名前or相手	
+		if (SOCKET_MANAGER->GetID() == i)
+		{
+			DWORD col = ARGB((BYTE)255, 0, 0, 0);
+			// 名前
+			Text::Draw(MoveX[i] + 124, 156 + i * 96, 0xff000000, "%s", SOCKET_MANAGER->GetUser(datas[i].p_num).name);
+		}
+		else
+		{
+			DWORD col = ARGB((BYTE)255, 120, 120, 120);
+			// 名前
+			Text::Draw(MoveX[i] + 124, 156 + i * 96, 0xff000000, "%s", SOCKET_MANAGER->GetUser(datas[i].p_num).name);
+		}
+	
 	}
 
 	// ランク表示
@@ -232,4 +233,39 @@ void SceneResult::Render()
 	//フェード処理
 	FadeControl::Render();
 
+}
+
+// ランキング調査
+void SceneResult::Set_ranking()
+{
+	int RANK_MAX;
+	for (int i = 0; i < PLAYER_MAX; i++)
+	{
+		datas[i].p_num = i;
+		datas[i].score = score_mng->Get(i);
+	}
+	for (int i = 0; i < PLAYER_MAX; i++) for (int j = i + 1; j < PLAYER_MAX; j++)
+	{
+		if (datas[i].score < datas[j].score)
+		{
+			int temp = datas[i].score;
+			datas[i].score = datas[j].score;
+			datas[j].score = temp;
+			temp = datas[i].p_num;
+			datas[i].p_num = datas[j].p_num;
+			datas[j].p_num = temp;
+		}
+	}
+
+	chara.motion_no = 0;
+	for (int i = 0; i < RANK_MAX; i++)
+	{
+		if (datas[i].p_num == result_my_number)
+		{
+			if (i == 0)chara.motion_no = 23;				// 1位
+			else if (i == RANK_MAX)chara.motion_no = 24;	// 最下位
+			else chara.motion_no = 22;						// 中間
+			break;
+		}
+	}
 }

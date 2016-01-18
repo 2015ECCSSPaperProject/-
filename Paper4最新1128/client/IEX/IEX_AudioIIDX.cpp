@@ -1231,7 +1231,7 @@ void fstSoundBase::SetListenerAll(const Vector3 &pos, const Vector3 &front, cons
 	// サウンド計算情報設定(デフォルト値)
 	set.flDistanceFactor = DS3D_DEFAULTDISTANCEFACTOR;	// ベクトル単位におけるメートル数
 	set.flDopplerFactor = DS3D_DEFAULTDOPPLERFACTOR;	// ドップラー効果についての値
-	set.flRolloffFactor = 0.01f;	// 距離による減衰についての値
+	set.flRolloffFactor = 0.05f;	// 距離による減衰についての値
 
 	lp3DListener->SetAllParameters(&set, DS3D_DEFERRED);
 }

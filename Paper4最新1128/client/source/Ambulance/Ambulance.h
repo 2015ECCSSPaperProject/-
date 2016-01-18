@@ -28,12 +28,19 @@ public:
 	//===============================================
 	//	ゲッター,セッター
 	//===============================================
+	Vector3 GetPos();
+
 
 private:
 	Vector3 pos;
+	Vector3 start_pos;
 	Vector3 goal_pos;	// この座標まで来たら方向を変える
+	Vector3 move;
 	float angle;
 	float speed;
+	float MOVE_LENGTH;
+	float scale;
+	int se_receive;
 	MOVE_TYPE move_type;
 
 	void MoveRoundTrip();
@@ -65,7 +72,18 @@ public:
 	//===============================================
 	void Append(Ambulance::MOVE_TYPE type, const Vector3 &start, const Vector3 &goal, float speed);
 
+
+	//===============================================
+	//	判定
+	//===============================================
+	int CheckDist(const Vector3 &pos, float dist);
+	Ambulance *GetAmbulance(int no);
+
 private:
 	std::vector<Ambulance*> List;
 	iex3DObj *clone;
+
+	void Load(LPSTR filename);
 };
+
+extern AmbulanceMng *ambulance_mng;

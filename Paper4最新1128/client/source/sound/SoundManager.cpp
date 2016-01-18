@@ -73,6 +73,7 @@ SE_Manager::DATA all_dataS[] =
 	{ "キャンセル", "DATA/Sound/SE/cancel.wav", 2, false },
 	{ "カーソル", "DATA/Sound/SE/cursor_point.wav", 3, false },
 	{ "水", "DATA/Sound/SE/water.wav", 6, false },
+	{ "救急車", "DATA/Sound/SE/pi-po-.wav", 6, true },
 	{ "END", nullptr }
 };
 
@@ -182,6 +183,12 @@ bool SE_Manager::isPlay(char *_ID,int no)
 void SE_Manager::Set_pos(LPSTR _ID, int no, const Vector3 &pos)
 {
 	play_manager->SetPos(ID[_ID], no, pos);
+}
+
+void SE_Manager::Set_param(LPSTR _ID, int no, const Vector3 &pos, const Vector3 &move)
+{
+	play_manager->SetPos(ID[_ID], no, pos);
+	play_manager->SetMove(ID[_ID], no, move);
 }
 
 void SE_Manager::Set_listener(const Vector3 &pos, const Vector3 &front, const Vector3 &up, const Vector3 &move)
@@ -435,7 +442,7 @@ void EventBGM::Kouhan()
 	strcat(mainBGM, "2");
 
 	bgm->Cross_fade(mainBGM, str, .01f);
-
+	bgm->Set_speed(str, 1.1f);
 	bgm->Set_speed(mainBGM, 1.1f);
 	step = 0;
 	mode = MODE::NONE;

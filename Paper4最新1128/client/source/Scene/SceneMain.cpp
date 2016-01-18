@@ -17,6 +17,7 @@
 //#include	"../data/LimitedData.h"
 #include	"../ui/UI.h"
 #include	"../blur/blur.h"
+#include	"../Ambulance/Ambulance.h"
 
 #include	"../Effect/Effect.h"
 
@@ -158,6 +159,9 @@ bool SceneMain::Initialize()
 	//particle = new iexParticlePlus();
 	particle->Initialize("DATA/effect/particle.png",1024);
 
+	// 救急車
+	ambulance_mng = new AmbulanceMng;
+	ambulance_mng->Initialize();
 
 	// 水
 	water = new iexMesh("DATA/water/water.x");
@@ -173,7 +177,7 @@ SceneMain::~SceneMain()
 	delete stage;
 	delete sky;
 	delete m_pThread;//　なんかスレッド消さないとエラー起こる
-
+	delete ambulance_mng;
 	SAFE_DELETE(player_mng);
 
 	// 今だけコメントアウト！あとで直す
@@ -265,6 +269,8 @@ void SceneMain::Start()
 	player_mng->Update();
 	// カメラ
 	camera->Update();
+	// 救急車
+	ambulance_mng->Update();
 
 	if (ui->isStart())mode = MODE::MAIN;
 }
@@ -277,6 +283,9 @@ void SceneMain::Main()
 
 	// カメラ
 	camera->Update();
+
+	// 救急車
+	ambulance_mng->Update();
 
 	//ナンバーエフェクト
 	Number_Effect::Update();
@@ -302,6 +311,8 @@ void SceneMain::End()
 {
 	if (event_bgm->Get_mode() == EventBGM::MODE::NONE && FadeControl::isFadeOut_W)
 	{
+		if (player_mng->Get_player(SOCKET_MANAGER->GetID())->isManhole == true)
+			event_bgm->Set_manhole(false);
 		se->Stop_all();
 		// シーン登録
 		MainFrame->ChangeScene(new SceneResult());
@@ -365,6 +376,7 @@ void SceneMain::Render()
 		sky->Render(shaderD, "G_Buffer");
 		player_mng->Render(shaderD, "G_Buffer");
 		paper_obj_mng->Render(shaderD, "G_Buffer");
+		ambulance_mng->Render(shaderD, "G_Buffer");
 
 		DeferredManager.G_End();// ここまで
 		/*■■■■■■■■G_Buffer終了■■■■■■*/
