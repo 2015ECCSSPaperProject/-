@@ -41,7 +41,9 @@ public:
 		SKILL_KABUTO,
 		SKILL_FRAME,
 		SKILL_SELECT,
+		SKILL_ROGO,
 		MANHOLE_FADE,
+		SCORE_FRAME,
 		MAX
 	};
 	enum class MANHOLE_FADE_TYPE
@@ -82,7 +84,7 @@ private:
 
 	int TimerX;			//Timer‚ð“®‚©‚·
 	int SkillX;			//Skill‚ð“®‚©‚·
-
+	int GraphX;			//Skill‚ð“®‚©‚·
 	// ƒXƒLƒ‹—­‚Ü‚Á‚½‚ç
 	static const int SKILL_MAX = 3;
 	AnimationRippleEx*  SkileSphere[SKILL_MAX];
