@@ -11,6 +11,7 @@ public:
 	float axis_x, axis_y;
 	Vector2 pos;
 
+	void Initialize(BOOL show);
 	void Update();
 	bool isPushLeft(){ return ((GetKeyState(0x01) & 0x80) != 0); }
 	bool isPushRight(){ return ((GetKeyState(0x02) & 0x80) != 0); }

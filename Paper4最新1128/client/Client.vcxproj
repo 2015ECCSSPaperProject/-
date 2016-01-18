@@ -226,7 +226,6 @@
     <ClInclude Include="source\paper object\paper object manager.h" />
     <ClInclude Include="source\paper object\paper object.h" />
     <ClInclude Include="source\paper object\poster\Poster.h" />
-    <ClInclude Include="source\paper object\Rend data.h" />
     <ClInclude Include="source\pie_graph\pie_graph.h" />
     <ClInclude Include="source\Player\BasePlayer.h" />
     <ClInclude Include="source\Player\MyPlayer.h" />

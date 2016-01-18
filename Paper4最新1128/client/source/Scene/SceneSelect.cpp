@@ -139,6 +139,7 @@ bool SceneSelect::Initialize()
 	m_pThread->Run();
 
 	mouse = new Mouse;
+	mouse->Initialize(TRUE);
 
 	Initialize_buttons();
 

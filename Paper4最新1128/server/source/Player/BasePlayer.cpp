@@ -206,8 +206,8 @@ void BasePlayer::Update()
 
 	if (stage->Collision(pos, &move, 5, 2))
 	{
-		if (action_part == ACTION_PART::SYURIKEN) 
-			Change_action(ACTION_PART::MOVE);
+		//if (action_part == ACTION_PART::SYURIKEN) 
+			//Change_action(ACTION_PART::MOVE);
 	}
 	if (stage->Collision_rand(pos, &move))
 	{
@@ -1045,37 +1045,42 @@ void BasePlayer::Action::Syuriken::Update(const CONTROL_DESC &_ControlDesc)
 	me->move = move_vec * accel;
 	if ((accel -= kasoku) < max_speed * .5f)
 		accel = max_speed * .5f;
-	//if (!r)
-	//{
-	//	if (_ControlDesc.controlFlag & (int)PLAYER_CONTROL::LEFT_CLICK ||
-	//		_ControlDesc.controlFlag & (int)PLAYER_CONTROL::ATTACK_BUTTON)
-	//	{
-	//		me->invincible = false;
-	//		me->Change_action(ACTION_PART::MOVE);
-	//	}
+	if (_ControlDesc.controlFlag & (int)PLAYER_CONTROL::LEFT_CLICK ||
+		_ControlDesc.controlFlag & (int)PLAYER_CONTROL::RIGHT_CLICK ||
+		_ControlDesc.controlFlag & (int)PLAYER_CONTROL::ATTACK_BUTTON
+		//syurikentaimaa - (int)timer->Get_second_limit() > 3 // 3秒後
+		)
+	{
+		me->invincible = false;
+		me->Change_action(ACTION_PART::MOVE);
+	}
 
-	//	if ((float)syurikentaimaa - timer->Get_second_limit() > .1f)r = true;
-	//}
-	//else
-	//{
-		if (_ControlDesc.controlFlag & (int)PLAYER_CONTROL::LEFT_CLICK ||
-			_ControlDesc.controlFlag & (int)PLAYER_CONTROL::RIGHT_CLICK ||
-			_ControlDesc.controlFlag & (int)PLAYER_CONTROL::ATTACK_BUTTON
-			//syurikentaimaa - (int)timer->Get_second_limit() > 3 // 3秒後
-			)
-		{
-			me->invincible = false;
-			me->Change_action(ACTION_PART::MOVE);
-		}
+	// Vs Poster
+	int rend_no = paper_obj_mng->Can_targeting(me, 10, 360);
 
-		if (_ControlDesc.controlFlag & (int)PLAYER_CONTROL::SPACE)
+	if (rend_no != -1)
+	{
+		paper_obj_mng->Rend(rend_no);
+		score->Add(paper_obj_mng->Get_point(rend_no), me->mynumber);
+		me->god_gage++;
+
+		// 送信するデータプッシュ
+		for (int n = 0; n < PLAYER_MAX; n++)
 		{
-			me->jump_pow = 2.0f;
-			me->isJump = true;
-			me->invincible = false;
-			me->Change_action(ACTION_PART::MOVE);
+			PaperData data;
+			data.from = me->mynumber;
+			data.ID = rend_no;
+			player_mng->Get_player(n)->paperqueue->Push(data);
 		}
-	//}
+	}
+
+	if (_ControlDesc.controlFlag & (int)PLAYER_CONTROL::SPACE)
+	{
+		me->jump_pow = 2.0f;
+		me->isJump = true;
+		me->invincible = false;
+		me->Change_action(ACTION_PART::MOVE);
+	}
 }
 
 //*****************************************************************************

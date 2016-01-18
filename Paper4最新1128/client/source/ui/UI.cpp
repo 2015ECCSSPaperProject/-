@@ -372,8 +372,8 @@ void UI::SkillGauge()
 	// ƒXƒLƒ‹—­‚Ü‚Á‚½‚ç
 	for (int i = 0; i < SKILL_MAX; i++)
 	{
-		SkileRip[i]->Render(SkillX + 80 * i, (200 + SKILL_Y), RS_ADD);
-		SkileSphere[i]->Render(SkillX + 80 * i, (200 + SKILL_Y), RS_ADD);
+		SkileRip[i]->Render(SkillX + 80 * (float)i, (float)(200 + SKILL_Y), RS_ADD);
+		SkileSphere[i]->Render(SkillX + 80 * (float)i, (float)(200 + SKILL_Y), RS_ADD);
 	}
 }
 
