@@ -153,6 +153,7 @@
     <ClCompile Include="source\paper object\paper object manager.cpp" />
     <ClCompile Include="source\paper object\paper object.cpp" />
     <ClCompile Include="source\paper object\poster\poster.cpp" />
+    <ClCompile Include="source\paper object\Rend data.cpp" />
     <ClCompile Include="source\pie_graph\pie_graph.cpp" />
     <ClCompile Include="source\Player\BasePlayer.cpp" />
     <ClCompile Include="source\Player\MyPlayer.cpp" />

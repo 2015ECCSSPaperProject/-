@@ -13,7 +13,6 @@
 #include	"../paper object/paper object manager.h"
 #include	"../paper object/Rend data.h"
 #include	"../Rush/Rush.h"
-static const int KASAMASHI = 10;
 
 //****************************************************************************************************************
 //
@@ -41,7 +40,11 @@ MyPlayer::MyPlayer() :BasePlayer()
 
 MyPlayer::~MyPlayer()
 {
-	delete rend_data;
+	for (int i = 0; i < KIND_PAPER_OBJECT::KIND_MAX_PAPER_OBJ; i++)
+	{
+		delete command_data[i];
+	}
+	delete[] command_data;
 }
 
 void MyPlayer::Initialize(iex3DObj **obj)
@@ -59,8 +62,20 @@ void MyPlayer::Initialize(iex3DObj **obj)
 		{ 80000, 0 },
 		{ -80000, 0 }
 	};
-		// 後々ここを可変長にする
-	rend_data = new Rend_data(num, data);
+
+	// commandデータ
+	command_data = new Rend_data*[KIND_PAPER_OBJECT::KIND_MAX_PAPER_OBJ];
+	Rend_data::Load(command_data[KIND_PAPER_OBJECT::CALENDAR],	"DATA/paper object/calendar/rend command.txt");
+	Rend_data::Load(command_data[KIND_PAPER_OBJECT::FLYER],		"DATA/paper object/flyer/rend command.txt");
+	Rend_data::Load(command_data[KIND_PAPER_OBJECT::MAGAZIN],	"DATA/paper object/magazin/rend command.txt");
+	Rend_data::Load(command_data[KIND_PAPER_OBJECT::MONEY],		"DATA/paper object/money/rend command.txt");
+	Rend_data::Load(command_data[KIND_PAPER_OBJECT::POSTER],	"DATA/paper object/Poster/rend command.txt");
+	Rend_data::Load(command_data[KIND_PAPER_OBJECT::SEISHO],	"DATA/paper object/seisho/rend command.txt");
+	Rend_data::Load(command_data[KIND_PAPER_OBJECT::SHINBUN],	"DATA/paper object/shinbun/rend command.txt");
+	Rend_data::Load(command_data[KIND_PAPER_OBJECT::SHOJI],		"DATA/paper object/shoji/rend command.txt");
+	Rend_data::Load(command_data[KIND_PAPER_OBJECT::SIGN],		"DATA/paper object/sign/rend command.txt");
+	Rend_data::Load(command_data[KIND_PAPER_OBJECT::TOILET_PAPER], "DATA/paper object/toilet_paper/rend command.txt");
+	Rend_data::Load(command_data[KIND_PAPER_OBJECT::ZASSHI],	"DATA/paper object/zasshi/rend command.txt");
 }
 
 void MyPlayer::Release()
@@ -103,20 +118,72 @@ void MyPlayer::Update()
 	//}
 }
 
+
+//*************************************************************************************************************************
+//		描画
+//*************************************************************************************************************************
+void MyPlayer::Render(iexShader *shader, char *name)
+{
+	BasePlayer::Render(shader, name);
+	//Text::Draw(320, 480, 0xff00ffff, "%.3f", m_controlDesc.mouseX);
+	//Text::Draw(320, 520, 0xff00ffff, "%.3f", m_controlDesc.mouseY);
+	//Text::Draw(32, 560, 0xff00ffff, "%.1f",pos.y);
+	//Text::Draw(32, 600, 0xff00ffff, "%.1f",pos.z);
+	//DeferredManager.ForwardBigin();
+
+	//円ゲージ
+	//float persent =1.0f - ((float)skill_data[(int)SKILL::GUN].wait_time / (float)skill_data[(int)SKILL::GUN].cool_time);
+	//Text::Draw(32, 420, 0xff00ffff, "aaa%f", persent);
+	//skillGage->Render(persent, 0, 300, 128, 128, 0, 0, 128, 128);
+	//DeferredManager.ForwardEnd();
+}
+
 void MyPlayer::Update_action()
 {
 	// 継承先のアクションクラスを使えないのでここで無理やり更新
+	ui->Set_rend_command(UI::REND_COMMAND::NONE);
 
 	switch (action_part)
 	{
 	case ACTION_PART::REND:
-		// 破くモーションのフレーム
-		if (models[(int)model_part]->GetParam(0) == 1)
-		{
-			// ここでキューにプッシュ
+		//// マウス離したらリセット
+		//if (!(m_controlDesc.controlFlag&(BYTE)PLAYER_CONTROL::LEFT_CLICK))
+		//{
+		//	command_data[paper_obj_mng->Get_kind(poster_num)]->Reset();
+		//	return;
+		//}
+		//
+		///* コマンドマークをUIクラスに送る */
+		//float move_x, move_y;
+		//command_data[paper_obj_mng->Get_kind(poster_num)]->Get_commnand(&move_x, &move_y);
+		//Vector2 com_move((int)move_x, (int)move_y);
+		//com_move.Normalize(move_x, move_y);
+		//UI::REND_COMMAND com;
+		//if (move_x == 0)
+		//{
+		//	com = (move_y < 0) ? UI::REND_COMMAND::DOWN : UI::REND_COMMAND::UP;
+		//}
+		//else if (move_y == 0)
+		//{
+		//	com = (move_x < 0) ? UI::REND_COMMAND::LEFT : UI::REND_COMMAND::RIGHT;
+		//}
+		//else
+		//{
+		//	int i = 0;
+		//}
+		//ui->Set_rend_command(com);
+		//
+		//// マウススライドコマンド入力しきったら
+		//if (command_data[paper_obj_mng->Get_kind(poster_num)]->Move_check(m_controlDesc.mouseX, m_controlDesc.mouseY))
+		//{
+		//	m_controlDesc.rendFlag |= (BYTE)PLAYER_FLAG::REND;
+		//	command_data[paper_obj_mng->Get_kind(poster_num)]->Reset();
+		//}
 
-		}
+		if (m_controlDesc.mouseX*m_controlDesc.mouseX + m_controlDesc.mouseY*m_controlDesc.mouseY > 80000 * 80000) m_controlDesc.rendFlag |= (BYTE)PLAYER_FLAG::REND;
+
 		break;
+
 
 	case ACTION_PART::MANHOLE:
 		if (models[(int)model_part]->GetParam(0) == 1)
@@ -585,25 +652,4 @@ void MyPlayer::Set_action(ACTION_PART part)
 		if (part == ACTION_PART::REND_OBJ) se_step = 0;
 		Change_action(part);
 	}
-}
-
-//*************************************************************************************************************************
-//		描画
-//*************************************************************************************************************************
-void MyPlayer::Render(iexShader *shader, char *name)
-{
-	BasePlayer::Render(shader, name); 
-	//Text::Draw(320, 480, 0xff00ffff, "%.3f", m_controlDesc.mouseX);
-	//Text::Draw(320, 520, 0xff00ffff, "%.3f", m_controlDesc.mouseY);
-	//Text::Draw(32, 560, 0xff00ffff, "%.1f",pos.y);
-	//Text::Draw(32, 600, 0xff00ffff, "%.1f",pos.z);
-	//DeferredManager.ForwardBigin();
-	//if(manhole_no_haninai)
-	//Text::Draw(320, 600, 0xffffffff, "マンホール範囲内");
-
-	//円ゲージ
-	//float persent =1.0f - ((float)skill_data[(int)SKILL::GUN].wait_time / (float)skill_data[(int)SKILL::GUN].cool_time);
-	//Text::Draw(32, 420, 0xff00ffff, "aaa%f", persent);
-	//skillGage->Render(persent, 0, 300, 128, 128, 0, 0, 128, 128);
-	//DeferredManager.ForwardEnd();
 }

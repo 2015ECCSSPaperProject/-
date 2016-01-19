@@ -443,25 +443,24 @@ void SceneSelect::Update()
 
 		   //　追記：同期して
 		   // 皆isResdy==2だったらゲーム画面へ！！
-		 //  enum { READY = 2 };
-		   //int count(0);
-		   //int active(0);
-		   //for (int i = 0; i < PLAYER_MAX; ++i)
-		   //{
-			  // if (SOCKET_MANAGER->GetUser(i).com == UserData::ACTIVE_USER)
-				 //  ++active;
-
-			  // // isReadyが全員OKになってたら　カウントするよ
-			  // if (SOCKET_MANAGER->GetUser(i).isReady == UserData::READY_MUTCH_ALL)
-				 //  ++count;
-		   //}
-		   ////　全員OKだったら飛ぶ
-		   //if (active == count)
-		   //{
-			  // MainFrame->ChangeScene(new SceneMain());
-		   //}
-
 		   enum { READY = 2 };
+		   int count(0);
+		   int active(0);
+		   for (int i = 0; i < PLAYER_MAX; ++i)
+		   {
+			   if (SOCKET_MANAGER->GetUser(i).com == UserData::ACTIVE_USER)
+				   ++active;
+
+			   // isReadyが全員OKになってたら　カウントするよ
+			   if (SOCKET_MANAGER->GetUser(i).isReady == UserData::READY_MUTCH_ALL)
+				   ++count;
+		   }
+		   //　全員OKだったら飛ぶ
+		   if (active == count)
+		   {
+			   MainFrame->ChangeScene(new SceneMain());
+		   }
+
 		   if (SOCKET_MANAGER->GetUser(SOCKET_MANAGER->GetID()).isReady == READY)
 		   {
 		   		//	初期シーン登録
