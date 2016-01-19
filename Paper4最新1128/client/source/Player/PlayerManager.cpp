@@ -177,6 +177,14 @@ void PlayerManager::Render_forword()
 	}
 }
 
+void PlayerManager::Render_rush()
+{
+	for (int i = 0; i < PLAYER_MAX; i++)
+	{
+		players[i]->Render_rush();
+	}
+}
+
 void PlayerManager::EffectRender()
 {
 	for (int i = 0; i < PLAYER_MAX; i++)

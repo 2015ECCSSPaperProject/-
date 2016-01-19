@@ -360,8 +360,8 @@ void UI::SkillGauge()
 		gauge->Render(percent, SkillX + (i * (80)), (200 + SKILL_Y), 128, 128, i * 128, 0, 128, 128, RS_COPY, col);
 
 		// ￥スキルアイコンや
-		image[IMAGE::SKILL_GUN + i]->SetARGB(col);
-		image[IMAGE::SKILL_GUN + i]->Render(SkillX + (48 + i * 80), 216 + 32 + SKILL_Y, 32, 32, 0, 0, 32, 32);
+		image[IMAGE::SKILL_SYURIKEN + i]->SetARGB(col);
+		image[IMAGE::SKILL_SYURIKEN + i]->Render(SkillX + (48 + i * 80), 216 + 32 + SKILL_Y, 32, 32, 0, 0, 32, 32);
 
 
 	}

@@ -56,7 +56,7 @@ public:
 		REND_SHOJI,
 		MAX
 	};
-	enum class SKILL{ GUN, SYURIKEN, KABUTO, MAX };
+	enum class SKILL{ SYURIKEN, GUN, KABUTO, MAX };
 
 protected:
 	//===============================================
@@ -341,6 +341,7 @@ public:
 	virtual void Update();
 	virtual void Render(iexShader *shader = nullptr, char *name = '\0');
 	void Render_forword();
+	void Render_rush();
 	
 	//===============================================
 	//	エフェクトの更新と描画
