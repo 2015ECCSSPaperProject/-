@@ -14,7 +14,7 @@ void Flyer::Initialize( iex3DObj *model, int start_time )
 	this->start_time = start_time;
 }
 
-void Flyer::Update()
+void Flyer::Subclass_update()
 {
 	if( broken )
 	{

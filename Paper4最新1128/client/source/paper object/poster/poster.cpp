@@ -19,7 +19,7 @@ void Poster::Initialize(iexMesh *model)
 	Paper_obj_Mesh::Initialize(model);
 }
 
-void Poster::Update()
+void Poster::Subclass_update()
 {
 	if (broken) return;
 

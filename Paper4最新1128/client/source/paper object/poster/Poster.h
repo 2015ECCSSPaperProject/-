@@ -13,7 +13,7 @@ public:
 	~Poster();
 
 	void Initialize(iexMesh *model) override;
-	void Update() override;
+	void Subclass_update() override;
 	void Subclass_render( iexShader *shader = nullptr, char *name = '\0' ) override;
 
 	virtual	KIND_PAPER_OBJECT Get_kind();

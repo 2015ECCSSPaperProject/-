@@ -15,7 +15,8 @@ Paper_obj::~Paper_obj()
 
 void Paper_obj::Update()
 {
-	hiteffect->Update( this->position );
+	Subclass_update();
+	hiteffect->Update(this->position);
 }
 
 void Paper_obj::Render( iexShader *shader, char *name)

@@ -1064,7 +1064,7 @@ void BasePlayer::Action::Syuriken::Update(const CONTROL_DESC &_ControlDesc)
 	}
 
 	// Vs Poster
-	int rend_no = paper_obj_mng->Can_targeting(me, 10, 360);
+	int rend_no = paper_obj_mng->Can_targeting(me, 13, 360);
 
 	if (rend_no != -1)
 	{

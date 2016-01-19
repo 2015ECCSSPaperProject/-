@@ -17,7 +17,7 @@ public:
 	Paper_obj();
 	virtual ~Paper_obj();
 
-	virtual void Update();
+	void Update();
 
 	void Render(iexShader *shader = nullptr, char *name = '\0');
 
@@ -49,6 +49,7 @@ protected:
 
 	HitEffect *hiteffect;
 
+	virtual void Subclass_update() = 0;
 	virtual void Subclass_render( iexShader *shader = nullptr, char *name = '\0' ) = 0;
 };
 
