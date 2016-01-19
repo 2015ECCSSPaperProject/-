@@ -67,6 +67,8 @@ bool SceneSelect::Initialize()
 	image[IMAGE::BACK2] = new iex2DObj("DATA/Image/lobby/背景.png");
 	image[IMAGE::INFO] = new iex2DObj("DATA/Image/lobby/info.png");
 	image[IMAGE::CURSOR] = new iex2DObj("DATA/Image/lobby/cursor4.png");
+	image[IMAGE::JOIN] = new iex2DObj("DATA/Image/lobby/不参加.png");
+	image[IMAGE::NOT_JOIN] = new iex2DObj("DATA/Image/lobby/参加.png");
 
 	// 文字のアニメーション
 	for (int i = 0; i < PLAYER_MAX; i++)
@@ -139,7 +141,7 @@ bool SceneSelect::Initialize()
 	m_pThread->Run();
 
 	mouse = new Mouse;
-	mouse->Initialize(TRUE);
+	mouse->Initialize(FALSE);
 
 	Initialize_buttons();
 
@@ -168,6 +170,16 @@ void SceneSelect::Initialize_buttons()
 	entry.srcX = 128;
 	entry.srcY = 64;
 	entry.in = false;
+
+
+	entry2.lpButton = image[IMAGE::JOIN];
+	entry2.dstX = 920;
+	entry2.dstY = 560;
+	entry2.dstW = 128;
+	entry2.dstH = 128;
+	entry2.srcX = 256;
+	entry2.srcY = 256;
+	entry2.in = false;
 }
 void SceneSelect::Update_buttons(const Vector2 &pos)
 {
@@ -190,6 +202,16 @@ void SceneSelect::Update_buttons(const Vector2 &pos)
 		}
 	}
 	else entry.in = false;
+
+	if (pos.x > entry2.dstX && pos.x  < entry2.dstX + entry2.dstW &&
+		pos.y > entry2.dstY && pos.y < entry2.dstY + entry2.dstH)
+	{
+		if (!entry2.in){
+			se->Play("カーソル");
+			entry2.in = true;
+		}
+	}
+	else entry2.in = false;
 }
 //*************************************************************************************************
 
@@ -431,6 +453,15 @@ void SceneSelect::Update()
 			se->Play("決定");
 		}
 
+		//　Aボタン押したら(Botton)
+		if (KeyBoardTRG(MOUSE_LEFT) && entry2.in)
+		{
+			//　自分の準備OKを光らす
+			//OKRip[SOCKET_MANAGER->GetID()]->Action();
+			step = STEP::START_OK;
+			se->Play("決定");
+		}
+
 		break;
 	case STEP::START_OK:
 	{
@@ -441,7 +472,14 @@ void SceneSelect::Update()
 			   se->Play("キャンセル");
 		   }
 
-		   //　追記：同期して
+		   //　まだ準備できてないので戻ります(bottonver)
+		if (KeyBoardTRG(MOUSE_LEFT) && entry2.in)
+		   {
+			   step = STEP::START_NO;
+			   se->Play("キャンセル");
+		   }
+		 
+		//　追記：同期して
 		   // 皆isResdy==2だったらゲーム画面へ！！
 		   enum { READY = 2 };
 		   int count(0);
@@ -644,6 +682,23 @@ void SceneSelect::Render()
 				{
 					image[IMAGE::OK]->SetScale(1.0f);
 				}
+
+				//ボタンバージョン
+				image[IMAGE::JOIN]->Render(entry2.dstX, entry2.dstY, entry2.dstW, entry2.dstH, 0, 0,
+					entry2.srcX, entry2.srcY, RS_COPY);
+				// 振れていたら
+				if (entry2.in){
+					//image[IMAGE::OK]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64, RS_ADD);
+					image[IMAGE::JOIN]->SetARGB(127, 127, 127, 127);
+					image[IMAGE::JOIN]->Render(entry2.dstX, entry2.dstY, entry2.dstW, entry2.dstH, 0, 0, 
+						entry2.srcX, entry2.srcY, RS_ADD);
+					image[IMAGE::JOIN]->SetARGB(255, 255, 255, 255);
+					image[IMAGE::JOIN]->SetScale(1.2f);	// 大きく
+				}
+				else
+				{
+					image[IMAGE::JOIN]->SetScale(1.0f);
+				}
 			}
 			else
 			{
@@ -659,6 +714,24 @@ void SceneSelect::Render()
 				else
 				{
 					image[IMAGE::WAIT]->SetScale(1.0f);
+				}
+
+
+				//ボタンバージョン
+				image[IMAGE::NOT_JOIN]->Render(entry2.dstX, entry2.dstY, entry2.dstW, entry2.dstH, 0, 0,
+					entry2.srcX, entry2.srcY, RS_COPY);
+				// 振れていたら
+				if (entry2.in){
+					//image[IMAGE::OK]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64, RS_ADD);
+					image[IMAGE::NOT_JOIN]->SetARGB(127, 127, 127, 127);
+					image[IMAGE::NOT_JOIN]->Render(entry2.dstX, entry2.dstY, entry2.dstW, entry2.dstH, 0, 0,
+						entry2.srcX, entry2.srcY, RS_ADD);
+					image[IMAGE::NOT_JOIN]->SetARGB(255, 255, 255, 255);
+					image[IMAGE::NOT_JOIN]->SetScale(1.2f);	// 大きく
+				}
+				else
+				{
+					image[IMAGE::NOT_JOIN]->SetScale(1.0f);
 				}
 			}
 
@@ -682,7 +755,7 @@ void SceneSelect::Render()
 	// カーソル
 	bool iconFlag = false;
 	if (KeyBoard(MOUSE_LEFT))iconFlag = true;	// マウス離す
-	image[IMAGE::CURSOR]->Render(mouse->pos.x - 32, mouse->pos.y - 32, 64, 64, iconFlag * 64 , 64, 64, 64);
+	image[IMAGE::CURSOR]->Render(mouse->pos.x - 32, mouse->pos.y - 24, 64, 64, iconFlag * 64 , 64, 64, 64);
 
 	//for (int i = 0; i < PLAYER_MAX; ++i)
 	//{

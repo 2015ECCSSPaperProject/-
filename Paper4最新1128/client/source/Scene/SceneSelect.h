@@ -29,7 +29,7 @@ public:
 private:
 	iexView* view;
 
-	enum IMAGE{ BACK, P1, P2, P3, P4, P5, P6, WAIT, OK, LIST, ACTION,NOPLAYER,WANTED,TEN,BACK2,INFO,CURSOR, MAX };
+	enum IMAGE{ BACK, P1, P2, P3, P4, P5, P6, WAIT, OK, LIST, ACTION,NOPLAYER,WANTED,TEN,BACK2,INFO,CURSOR,JOIN,NOT_JOIN, MAX };
 	iex2DObj* image[IMAGE::MAX];
 	//---------------------------------------------------------------------
 	//   ImageAnimation
@@ -56,6 +56,8 @@ private:
 	};
 	Button modoru;
 	Button entry;
+	Button entry2;
+
 	void Initialize_buttons();
 	void Update_buttons(const Vector2 &pos);
 

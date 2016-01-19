@@ -23,7 +23,7 @@ void Mouse::Update()
 
 	// 前回座標保存
 	prev_point = current_point;
-	ShowCursor(TRUE);
+	//ShowCursor(TRUE);			// 勝手にファルスに
 	// 取得
 	GetCursorPos(&current_point);
 	GetWindowRect(iexSystem::Window, &rc);
