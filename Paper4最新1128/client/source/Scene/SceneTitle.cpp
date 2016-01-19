@@ -16,7 +16,9 @@
 
 using namespace std;
 
-static const Vector2 MOUSE_POS(960, 454);
+static const Vector2 MOUSE_POS[2] = { Vector2(960, 454), Vector2(136, 454) };
+const Vector2 max_v[2] = { Vector2(1245, 670), Vector2(410, 670) };
+const Vector2 min_v[2] = { Vector2(950, 470), Vector2(145, 480) };
 
 //******************************************************************
 //		初期化・解放
@@ -71,7 +73,8 @@ bool SceneTitle::Initialize()
 	images[IMAGE::MOUSE] = new iex2DObj("DATA/Image/title/mouse.png");
 	images[IMAGE::TITLE] = new iex2DObj("DATA/Image/title/title.png");
 	images[IMAGE::CURSOR] = new iex2DObj("DATA/makePoster/cursor4.png");
-	images[IMAGE::ARROW] = new iex2DObj("DATA/Image/title/Arrow.png");
+	images[IMAGE::ARROW] = new iex2DObj("DATA/Image/title/start2.png");
+	images[IMAGE::ARROW2] = new iex2DObj("DATA/Image/title/exit.png");
 	images[IMAGE::ICON] = new iex2DObj("DATA/Image/title/cursor_mini.png");
 	//---------------------------------------------------------------------
 	// ImageAnimation
@@ -84,21 +87,22 @@ bool SceneTitle::Initialize()
 		12, 10, 12, 3.0f, -(2.5f / 12.0f), true);
 	titleEx->Action();
 
-	start_button.pos = Vector3(42.7f, 13.4f, 0);
-	Texture2D *texture = iexTexture::Load("DATA/Image/title/gamestart.png");
-	start_button.obj = new iex3DObj("DATA/paper object/Poster/posuta-.IEM");
-	start_button.obj->SetTexture(texture, 0);
-	start_button.obj->SetAngle(0,PI,PI*-.5f);
-	start_button.obj->SetScale(1.0f);
-	start_button.obj->SetPos(start_button.pos);
-	start_button.obj->SetMotion(0);
-
-	start_button.rend = false;
-	start_button.pointing = false;
+	for (int i = 0; i < 2; i++)
+	{
+		start_button[i].pos = Vector3(42.7f, 13.4f, 0);
+		Texture2D *texture = iexTexture::Load("DATA/Image/title/gamestart.png");
+		start_button[i].obj = new iex3DObj("DATA/paper object/Poster/posuta-.IEM");
+		start_button[i].obj->SetTexture(texture, 0);
+		start_button[i].obj->SetAngle(0, PI, PI*-.5f);
+		start_button[i].obj->SetScale(1.0f);
+		start_button[i].obj->SetPos(start_button[0].pos);
+		start_button[i].obj->SetMotion(0);
+		start_button[i].rend = false;
+		start_button[i].pointing = false;
+	}
 
 	step = STEP::WAIT;
 
-	move_mouse = MOUSE_POS;
 	mouse = new Mouse;
 	mouse->Initialize(FALSE);
 
@@ -119,7 +123,8 @@ SceneTitle::~SceneTitle()
 	{
 		delete images[i];
 	}
-	delete start_button.obj;
+	delete start_button[0].obj;
+	delete start_button[1].obj;
 	delete mouse;
 }
 
@@ -167,8 +172,13 @@ void SceneTitle::Update()
 
 	vecAngle.x = sinf(angle+angle2);
 	vecAngle.z = cosf(angle+angle2);
-	start_button.pos = (viewPos + vecAngle * 70);
-	start_button.pos.y -= .5f;
+	start_button[0].pos = (viewPos + vecAngle * 70);
+	start_button[0].pos.y -= .5f;
+
+	vecAngle.x = sinf(angle - 0.070f);
+	vecAngle.z = cosf(angle - 0.070f);
+	start_button[1].pos = (viewPos + vecAngle * 61);
+	start_button[1].pos.y -= .5f;
 
 	mouse->Update();
 
@@ -198,44 +208,63 @@ void SceneTitle::Update()
 	}
 	titleEx->Update();
 
-	//if (KeyBoard(KB_A)) start_button.pos.x -= .1f;
-	//if (KeyBoard(KB_W)) start_button.pos.y += .1f;
-	//if (KeyBoard(KB_S)) start_button.pos.y -= .1f;
-	//if (KeyBoard(KB_D)) start_button.pos.x += .1f;
+	//if (KeyBoard(KB_A)) start_button[0].pos.x -= .1f;
+	//if (KeyBoard(KB_W)) start_button[0].pos.y += .1f;
+	//if (KeyBoard(KB_S)) start_button[0].pos.y -= .1f;
+	//if (KeyBoard(KB_D)) start_button[0].pos.x += .1f;
 
-	start_button.obj->SetAngle(0, angle, PI*.5f);
-	start_button.obj->SetPos(start_button.pos);
-	start_button.obj->Update();
+	start_button[0].obj->SetAngle(0, angle, PI*.5f);
+	start_button[0].obj->SetPos(start_button[0].pos);
+	start_button[0].obj->Update();
 
-	if (mouse->pos.x >= min_v.x && mouse->pos.x <= max_v.x&&
-		mouse->pos.y >= min_v.y && mouse->pos.y <= max_v.y)
+	start_button[1].obj->SetAngle(0, angle, PI*.5f);
+	start_button[1].obj->SetPos(start_button[1].pos);
+	start_button[1].obj->Update();
+
+	static int no = -1;
+
+	if (mouse->pos.x >= min_v[0].x && mouse->pos.x <= max_v[0].x&&
+		mouse->pos.y >= min_v[0].y && mouse->pos.y <= max_v[0].y)
 	{
-		if (!start_button.pointing)se->Play("カーソル");
-		start_button.pointing = true;
+		if (!start_button[0].pointing)se->Play("カーソル");
+		start_button[0].pointing = true;
+		no = 0;
 	}
-	else start_button.pointing = false;
+	else start_button[0].pointing = false;
+	if (mouse->pos.x >= min_v[1].x && mouse->pos.x <= max_v[1].x&&
+		mouse->pos.y >= min_v[1].y && mouse->pos.y <= max_v[1].y)
+	{
+		if (!start_button[1].pointing)se->Play("カーソル");
+		start_button[1].pointing = true;
+		no = 1;
+	}
+	else start_button[1].pointing = false;
 
 	switch (step)
 	{
 	case STEP::WAIT:
-		if ((KeyBoard(MOUSE_LEFT) && start_button.pointing))
+		if (KeyBoard(MOUSE_LEFT))
 		{
-			step = STEP::CLICK;
-			start_button.obj->SetMotion(1);
-			start_button.rend = true;
-			se->Play("成功");
+			if (start_button[no].pointing)
+			{
+				step = STEP::CLICK;
+				start_button[no].obj->SetMotion(1);
+				start_button[no].rend = true;
+				se->Play("成功");
+				move_mouse = MOUSE_POS[no];
+			}
 		}
 		break;
 
 	case STEP::CLICK:
 		if (!KeyBoard(MOUSE_LEFT))	// マウス離す
 		{
-			move_mouse = MOUSE_POS;
+			move_mouse = MOUSE_POS[no];
 			step = STEP::WAIT;
 		}
 		else if (mouse->Get_move_dist() > 20)
 		{
-			move_mouse = MOUSE_POS;
+			move_mouse = MOUSE_POS[no];
 			step = STEP::DRAG;
 			se->Play("成功");
 			se->Play("破る");
@@ -243,10 +272,11 @@ void SceneTitle::Update()
 
 		{
 			float move_x, move_y;
-			Vector2 next_vec(1180 - move_mouse.x, 600 - move_mouse.y);
+			Vector2 next_vec;
+			next_vec = (no == 0) ? Vector2(1180 - move_mouse.x, 600 - move_mouse.y) : Vector2(360 - move_mouse.x, 600 - move_mouse.y);
 			if (next_vec.Length() < 4)
 			{
-				move_mouse = MOUSE_POS;
+				move_mouse = MOUSE_POS[no];
 			}
 			else
 			{
@@ -256,18 +286,22 @@ void SceneTitle::Update()
 			}
 		}
 		break;
-		
+
 	case STEP::DRAG:
-		start_button.obj->SetMotion(1);
-		start_button.rend = true;
+		start_button[no].obj->SetMotion(1);
+		start_button[no].rend = true;
 		step = STEP::REND_PAPER;
 		break;
 
 	case STEP::REND_PAPER:
-		start_button.obj->Animation();
+		start_button[no].obj->Animation();
 
-		if (start_button.obj->GetFrame() >= 47) MainFrame->ChangeScene(new SceneSelect());
-		return;
+		if (start_button[no].obj->GetFrame() >= 47)
+		{
+			if (no == 0)MainFrame->ChangeScene(new SceneSelect());
+			else if (no == 1)PostQuitMessage(0);
+			return;
+		}
 		break;
 	}
 
@@ -306,7 +340,8 @@ void SceneTitle::Render()
 	// ステージ配置
 	stage->Render(shaderD, "G_Buffer");
 	sky->Render(shaderD, "G_Buffer");
-	start_button.obj->Render(shaderD, "G_Buffer");
+	start_button[0].obj->Render(shaderD, "G_Buffer");
+	start_button[1].obj->Render(shaderD, "G_Buffer");
 	DeferredManager.G_End();// ここまで
 
 	/*	G_bufferを利用した描画	*/
@@ -337,16 +372,32 @@ void SceneTitle::Render()
 	//images[IMAGE::BACK]->RenderBack(0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight, 0, 0, 1280, 720, RS_COPY);
 
 	
-	images[IMAGE::ARROW]->Render(1025, 364 + arrowPosY);				//	やじるしぴょん
+	images[IMAGE::ARROW]->Render(960, 320 + arrowPosY);				//	やじるしぴょん
+	images[IMAGE::ARROW2]->Render(140, 320 + arrowPosY);				//	やじるしぴょん
 	images[IMAGE::CLICK1]->Render(962, 520, 256, 64, 0, 0, 256, 64);
+	images[IMAGE::CLICK1]->Render(138, 520, 256, 64, 0, 0, 256, 64);
 
 	if ((int)step >= (int)STEP::CLICK)
 	{
-		images[IMAGE::CLICK2]->Render(962, 520, 256, 64, 0, 0, 256, 64);
+		if (start_button[0].pointing)
+		{
+			images[IMAGE::CLICK2]->Render(962, 520, 256, 64, 0, 0, 256, 64);
+		}
+		else
+		{
+			images[IMAGE::CLICK2]->Render(138, 520, 256, 64, 0, 0, 256, 64);
+		}
 	}
 	if ((int)step >= (int)STEP::DRAG)
 	{
-		images[IMAGE::CLICK3]->Render(962, 520, 256, 64, 0, 0, 256, 64);
+		if (start_button[0].pointing)
+		{
+			images[IMAGE::CLICK3]->Render(962, 520, 256, 64, 0, 0, 256, 64);
+		}
+		else
+		{
+			images[IMAGE::CLICK3]->Render(138, 520, 256, 64, 0, 0, 256, 64);
+		}
 	}
 
 	// タイトル絵
@@ -355,11 +406,27 @@ void SceneTitle::Render()
 	titleEx->Render(128, 8, RS_COPY);
 
 	// 手のアイコン
-	if (start_button.pointing)
+	if (start_button[0].pointing)
 	{
 		if ((int)step == (int)STEP::WAIT)
 		{
-			images[IMAGE::MOUSE]->Render(MOUSE_POS.x, MOUSE_POS.y + (int)(arrowPosY*.5f), 64, 64, 0, 0, 64, 64);
+			images[IMAGE::MOUSE]->Render(MOUSE_POS[0].x, MOUSE_POS[0].y + (int)(arrowPosY*.5f), 64, 64, 0, 0, 64, 64);
+		}
+		else if ((int)step < (int)STEP::DRAG)
+		{
+			images[IMAGE::MOUSE]->Render(move_mouse.x, move_mouse.y, 64, 64, 0, 0, 64, 64);
+		}
+
+
+		bool iconFlag = false;
+		if (KeyBoard(MOUSE_LEFT))iconFlag = true;	// マウス離す
+		images[IMAGE::ICON]->Render(mouse->pos.x - 32, mouse->pos.y - 32, 64, 64, iconFlag * 64, 0, 64, 64);
+	}
+	else if (start_button[1].pointing)
+	{
+		if ((int)step == (int)STEP::WAIT)
+		{
+			images[IMAGE::MOUSE]->Render(MOUSE_POS[1].x, MOUSE_POS[1].y + (int)(arrowPosY*.5f), 64, 64, 0, 0, 64, 64);
 		}
 		else if ((int)step < (int)STEP::DRAG)
 		{
@@ -375,7 +442,6 @@ void SceneTitle::Render()
 	{
 		//	わっしょい
 		images[IMAGE::ICON]->Render(mouse->pos.x - 32, mouse->pos.y - 32, 64, 64, 0, 64, 64, 64);
-
 	}
 
 	//ナンバーエフェクト
@@ -384,7 +450,7 @@ void SceneTitle::Render()
 	//フェード処理
 	//FadeControl::Render();
 
-	//if(start_button.pointing)
+	//if(start_button[0].pointing)
 		//iexPolygon::Rect(min_v.x, min_v.y, max_v.x-min_v.x, max_v.y-min_v.y, RS_COPY, 0x99000000);
 
 #ifdef _DEBUG
@@ -398,11 +464,10 @@ void SceneTitle::Render()
 
 #endif
 
-	//Text::Draw(32, 32, 0xff000000, "%d", mouse.pos_x);
-	//Text::Draw(32, 64, 0xff000000, "%d", mouse.pos_y);
-	//Text::Draw(32, 96, 0xff000000, "%.1f", angle2);
+	Text::Draw(32, 32, 0xff000000, "%d", mouse->pos.x);
+	Text::Draw(32, 64, 0xff000000, "%d", mouse->pos.y);
+	Text::Draw(32, 96, 0xff000000, "%.1f", angle2);
 }
-
 void SceneTitle::RenderShadow()
 {
 	// 近距離

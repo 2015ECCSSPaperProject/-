@@ -40,11 +40,9 @@ private:
 		iex3DObj *obj;
 		bool pointing;
 		bool rend;
-	}start_button;
+	}start_button[2];
 
-	const Vector2 max_v = Vector2(1245, 670), min_v = Vector2(950, 470);
-
-	enum IMAGE{ BACK, CURSOR, CLICK1, CLICK2, CLICK3, GAME_START, MOUSE, TITLE, ARROW,ICON, MAX };
+	enum IMAGE{ BACK, CURSOR, CLICK1, CLICK2, CLICK3, GAME_START, MOUSE, TITLE, ARROW,ICON, ARROW2, MAX };
 	iex2DObj* images[MAX];
 
 	Vector2 move_mouse;
