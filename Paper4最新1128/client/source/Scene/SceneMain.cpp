@@ -355,7 +355,8 @@ void SceneMain::Render()
 	camera->Render();
 	if (deferredFlag)
 	{
-		DeferredManager.Update(camera->Get_pos());
+		// ここでしぇーだの行列更新
+		DeferredManager.Update(camera->shaderViewPos);
 
 		// ★地下にいるかいないか
 		if (player_mng->Get_player(SOCKET_MANAGER->GetID())->isManhole == false)
@@ -507,7 +508,7 @@ void SceneMain::Render()
 		else
 		{
 			// DownSample
-			DeferredManager.UpdateDownSample(0.88f, 0.77f);
+			//DeferredManager.UpdateDownSample(0.88f, 0.77f);
 		}
 		
 		// サーフェイス描画
@@ -583,7 +584,7 @@ void SceneMain::RenderShadow()
 	// 影用プロジェクションの更新
 	DeferredManager.CreateShadowMatrix
 		(LightVec, player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_pos(),
-		player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_Flont() * 60, 150);
+		player_mng->Get_player(SOCKET_MANAGER->GetID())->Get_Flont() * 60, 250);
 
 	// near
 	DeferredManager.ShadowBegin();

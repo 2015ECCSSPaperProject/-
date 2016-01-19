@@ -46,6 +46,8 @@ void Camera::Initialize(BasePlayer *my)
 	angle = Vector3(-0.1f, 0, 0);
 
 	target_mark = new iex2DObj("DATA/Camera/mark.png");
+	
+	shaderViewPos = VECTOR_ZERO;
 
 	// s“®ó‘Ô‰Šú‰»
 	mode[MODE::M_FIX] = new Mode::Fix(this);
@@ -79,7 +81,7 @@ void Camera::Initialize(BasePlayer *my)
 
 void Camera::Update()
 {
-	shaderD->SetValue("ViewPos", pos);
+	//shaderD->SetValue("ViewPos", pos);
 
 	if (scriptON)
 	{
@@ -89,6 +91,7 @@ void Camera::Update()
 
 	mode[mode_part]->Update();
 
+	shaderViewPos = pos;
 
 	// “Š‰eİ’è
 	SetProjection(parth.fovY, parth.Near, parth.Far);

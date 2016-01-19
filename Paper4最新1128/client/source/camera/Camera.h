@@ -15,6 +15,8 @@ public:
 	enum MODE{ M_FIX, M_PAN, M_SLERP, M_DEBUG, M_TPS, M_FPS, M_RESPAWN, M_ZOOM, M_TARGET, M_THROUGH, M_SYURIKEN, M_MAX };
 	enum class FOV_TYPE{ DEFAULT, HARD };
 
+
+	Vector3 shaderViewPos;	//shader—p
 private:
 
 	//===============================================

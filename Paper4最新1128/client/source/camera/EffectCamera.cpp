@@ -89,6 +89,7 @@ void EffectCamera::Update()
 				pt[0] += camera->Get_pos();
 				pt[1] += camera->Get_my_player()->Get_pos();
 				camera->Set(pt[0], pt[1]);
+				camera->shaderViewPos = pt[0];
 				break;
 			}
 		}
