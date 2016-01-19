@@ -91,7 +91,7 @@ bool Stage::Collision_up( const Vector3 &pos, Vector3 *move, float high)
 }
 
 // ‰¡
-bool Stage::Collision(const Vector3 &pos, Vector3 *move, float radius, int recursive_counter)
+bool Stage::Collision(const Vector3 &pos, Vector3 *move, float radius, int recursive_counter, Vector3 *n)
 {
 	if (recursive_counter <= 0)
 		return false;
@@ -147,6 +147,10 @@ bool Stage::Collision(const Vector3 &pos, Vector3 *move, float radius, int recur
 	float sink_nl;
 	normal.y = 0;
 	normal.Normalize();
+
+	/* ’Ç‰Á‚µ‚Ü‚µ‚½ */
+	*n = normal;
+
 	sink_nl = -Vector3Dot(sink, normal);
 
 	if (sink_nl + radius <= 0)
@@ -157,7 +161,7 @@ bool Stage::Collision(const Vector3 &pos, Vector3 *move, float radius, int recur
 
 	return true;
 
-	return Collision(pos, move, radius, recursive_counter - 1);
+	return Collision(pos, move, radius, recursive_counter - 1, n);
 }
 
 

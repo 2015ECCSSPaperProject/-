@@ -4,6 +4,7 @@
 class AnimationUV;
 class Explosion;
 class Barrier;
+class Rush;
 
 /*	ベースプレイヤー(クライアント)	*/
 
@@ -320,6 +321,7 @@ protected:
 	Action::Base *action[(unsigned int)ACTION_PART::MAX];
 	ACTION_PART action_part;	// 現在のプレイヤーのモード
 	Barrier *barrier;			// バリアエフェクト
+	Rush *rush;
 	DO_FLAG do_flag;			// Zキー押したら何をするか
 
 

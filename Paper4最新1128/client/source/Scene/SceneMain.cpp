@@ -272,7 +272,14 @@ void SceneMain::Start()
 	// 救急車
 	ambulance_mng->Update();
 
-	if (ui->isStart())mode = MODE::MAIN;
+	if (ui->isStart())
+	{
+		mode = MODE::MAIN;
+		// ATフィールド展開
+		se->Play("AT", true);
+		// ピーポーならす
+		ambulance_mng->PlayAmbulanceSE();
+	}
 }
 void SceneMain::Main()
 {

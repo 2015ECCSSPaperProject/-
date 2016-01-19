@@ -81,15 +81,6 @@ protected:
 
 	SKILL select_skill;
 
-	//void Check_unlock(int rend_count)
-	//{
-	//	for (int i = (int)ACTION_PART::MAX - 1; i >= 0; i--)
-	//	{
-	//		if (skill_data[i].unlock) break;
-	//		if (rend_count >= skill_data[i].unlock_rend_count) skill_data[i].unlock = true;
-	//	}
-	//}
-
 	//===============================================
 	//	‚»‚Ì‘¼
 	//===============================================
@@ -256,7 +247,6 @@ protected:
 			float accel;
 			float kasoku;
 			bool r;
-			Vector3 move_vec;
 		public:
 			Syuriken(BasePlayer*me) : Base(me){}
 
@@ -291,6 +281,11 @@ protected:
 			void Update(const CONTROL_DESC &_ControlDesc);
 		};
 	};
+
+	//===============================================
+	//	è— Œ•ê—p‚Ì‚ ‚½‚è”»’è
+	//===============================================
+	void Collision_syuriken();
 
 
 	//===============================================

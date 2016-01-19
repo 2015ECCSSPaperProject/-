@@ -12,7 +12,7 @@
 #include	"../Barrier/Barrier.h"
 #include	"../paper object/paper object manager.h"
 #include	"../paper object/Rend data.h"
-
+#include	"../Rush/Rush.h"
 static const int KASAMASHI = 10;
 
 //****************************************************************************************************************
@@ -41,7 +41,7 @@ MyPlayer::MyPlayer() :BasePlayer()
 
 MyPlayer::~MyPlayer()
 {
-
+	delete rend_data;
 }
 
 void MyPlayer::Initialize(iex3DObj **obj)
@@ -49,9 +49,6 @@ void MyPlayer::Initialize(iex3DObj **obj)
 	BasePlayer::Initialize(obj);
 	isMyNunber = true;
 	se_step = 0;
-
-	// ATフィールド展開
-	se->Play("AT", true);
 
 	// 破るマウスの動きの初期化
 	const int num = 4;
@@ -80,16 +77,18 @@ void MyPlayer::Release()
 
 void MyPlayer::Update()
 {
-	/*入力受付処理*/
-	Control_all();
-
 	// Cキーのトグル
 	//m_controlDesc.controlFlag &= ((BYTE)PLAYER_CONTROL::TRG_C ^ 0xff);
 	//if (toggle_c)
 	//	m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::TRG_C;
 
-	/*マウスの処理*/
-	if (ui->isStart())Mouse_Update();
+	if (ui->isStart())
+	{
+		/*入力受付処理*/
+		Control_all();
+		/*マウスの処理*/
+		Mouse_Update();
+	}
 
 	BasePlayer::Update();
 	Update_action();
@@ -153,66 +152,63 @@ void MyPlayer::Control_all()
 		if (--skill_wait <= 0){ skill_wait = 0; m_controlDesc.skillFlag &= 0x00000000; }
 	}
 
-	if (ui->isStart())
+	if (KEY_Get(KEY_UP) == 1)
 	{
-		if (KEY_Get(KEY_UP) == 1)
-		{
-			m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::UP;
-		}
-		else if (KEY_Get(KEY_DOWN) == 1)
-		{
-			m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::DOWN;
-		}
-		if (KEY_Get(KEY_RIGHT) == 1)
-		{
-			m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::RIGHT;
-		}
-		else if (KEY_Get(KEY_LEFT) == 1)
-		{
-			m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::LEFT;
-		}
+		m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::UP;
+	}
+	else if (KEY_Get(KEY_DOWN) == 1)
+	{
+		m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::DOWN;
+	}
+	if (KEY_Get(KEY_RIGHT) == 1)
+	{
+		m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::RIGHT;
+	}
+	else if (KEY_Get(KEY_LEFT) == 1)
+	{
+		m_controlDesc.moveFlag |= (BYTE)PLAYER_IMPUT::LEFT;
+	}
 
-		//if (GetAsyncKeyState(0x01) & 0x8000)
-		if (KeyBoard(MOUSE_LEFT))
-		{
-			m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::LEFT_CLICK;
-		}
+	//if (GetAsyncKeyState(0x01) & 0x8000)
+	if (KeyBoard(MOUSE_LEFT))
+	{
+		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::LEFT_CLICK;
+	}
 
-		else if (KeyBoard(MOUSE_RIGHT))
-		{
-			m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::RIGHT_CLICK;
-		}
-		else if (KeyBoard(MOUSE_CENTAR))
-		{
-			m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::ATTACK_BUTTON;
-		}
+	else if (KeyBoard(MOUSE_RIGHT))
+	{
+		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::RIGHT_CLICK;
+	}
+	else if (KeyBoard(MOUSE_CENTAR))
+	{
+		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::ATTACK_BUTTON;
+	}
 
-		if (KeyBoard(KB_SPACE))
-		{
-			m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::SPACE;
-		}
+	if (KeyBoard(KB_SPACE))
+	{
+		m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::SPACE;
+	}
 
-		// 右クリックで必殺技を発動させるか
-		if (m_controlDesc.controlFlag & (int)PLAYER_CONTROL::RIGHT_CLICK)
+	// 右クリックで必殺技を発動させるか
+	if (m_controlDesc.controlFlag & (int)PLAYER_CONTROL::RIGHT_CLICK)
+	{
+		if (action_part != ACTION_PART::MOVE) return;
+		// ゲージが溜まってたら
+		if (skill_data[(int)select_skill].wait_time <= 0)
 		{
-			if (action_part != ACTION_PART::MOVE) return;
-			// ゲージが溜まってたら
-			if (skill_data[(int)select_skill].wait_time <= 0)
+			const int FLAG[] =
 			{
-				const int FLAG[] =
-				{
-					(int)PLAYER_SKILL::GUN,
-					(int)PLAYER_SKILL::SYURIKEN,
-					(int)PLAYER_SKILL::KABUTO,
-				};
+				(int)PLAYER_SKILL::GUN,
+				(int)PLAYER_SKILL::SYURIKEN,
+				(int)PLAYER_SKILL::KABUTO,
+			};
 
-				m_controlDesc.skillFlag |= FLAG[(int)select_skill];
-				// スキル撃ったのでクールタイム設定
-				skill_data[(int)select_skill].wait_time = skill_data[(int)select_skill].cool_time;
-				skill_wait = 3;	// 1フレームだけしか送らなかったらたまに反応しないので3フレームぐらい送る
-			}
-			//SPI_GET_WHEELSCROLL
+			m_controlDesc.skillFlag |= FLAG[(int)select_skill];
+			// スキル撃ったのでクールタイム設定
+			skill_data[(int)select_skill].wait_time = skill_data[(int)select_skill].cool_time;
+			skill_wait = 3;	// 1フレームだけしか送らなかったらたまに反応しないので3フレームぐらい送る
 		}
+		//SPI_GET_WHEELSCROLL
 	}
 }
 
@@ -645,6 +641,11 @@ void MyPlayer::Set_action(ACTION_PART part)
 {
 	if (action_part != part)
 	{
+		if (action_part == ACTION_PART::SYURIKEN && part == ACTION_PART::MOVE)
+		{
+			// 手裏剣エフェクトストップ
+			rush->Stop();
+		}
 		if (action_part == ACTION_PART::MANHOLE && part == ACTION_PART::MOVE)
 		{
 			isManhole ^= 1;

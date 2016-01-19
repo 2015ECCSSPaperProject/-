@@ -4,7 +4,7 @@
 
 #include	"../../../share_data/Enum_public.h"
 #include	"../Barrier/Barrier.h"
-
+#include	"../Rush/Rush.h"
 #include	"PlayerManager.h"
 #include	"../sound/SoundManager.h"
 #include	"../blur/blur.h"
@@ -62,6 +62,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	kind_paper_obj = -1;
 	barrier = new Barrier;
 	isBarrier = false;
+	rush = new Rush;
 
 	// 3D実体
 	models[(int)MODEL::NORMAL]	 = objs[(int)PlayerManager::CLONE_TYPE::NORMAL]->Clone();
@@ -137,6 +138,7 @@ void BasePlayer::Release()
 		SAFE_DELETE(action[i]);
 	}
 	delete barrier;
+	delete rush;
 }
 
 
@@ -185,7 +187,7 @@ void BasePlayer::Update()
 		isBarrier = false;
 		if (isBarrier) barrier->Stop();
 	}
-
+	rush->Update(pos, Vector3(models[(int)model_part]->TransMatrix._31, models[(int)model_part]->TransMatrix._32, models[(int)model_part]->TransMatrix._33), 25.0f, Vector3(0, angleY, 0));
 }
 
 
@@ -210,6 +212,7 @@ void BasePlayer::Render_forword()
 	{
 		barrier->Render();
 	}
+	rush->Render();
 }
 
 //*************************************************************************************************************************
@@ -277,6 +280,11 @@ void BasePlayer::Set_action(ACTION_PART part)
 		if (action_part == ACTION_PART::MANHOLE && part == ACTION_PART::MOVE)
 		{
 			isManhole ^= 1;
+		}
+		if (action_part == ACTION_PART::SYURIKEN && part == ACTION_PART::MOVE)
+		{
+			// 手裏剣エフェクトストップ
+			rush->Stop();
 		}
 		Change_action(part);
 	}
@@ -764,6 +772,7 @@ void BasePlayer::Action::Syuriken::Initialize()
 	trg = false;
 
 	me->se_receive = se->Play("手裏剣", me->pos);
+	me->rush->Action();
 }
 
 void BasePlayer::Action::Syuriken::Update()

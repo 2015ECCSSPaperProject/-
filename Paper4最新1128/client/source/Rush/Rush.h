@@ -12,7 +12,7 @@ public:
 	Rush();
 	~Rush();
 
-	void Update(Vector3 pos, Vector3 flontVec = Vector3(0.0f, 0.0f, 0.0f), float dist = 25.0f, Vector3 objVec = Vector3(0.0f, 0.0f, 0.0f));
+	void Update(Vector3 pos, Vector3 flontVec = Vector3(0.0f, 0.0f, 0.0f), float dist = 25.0f, Vector3 objAngle = Vector3(0.0f, 0.0f, 0.0f));
 	void Render();
 
 	void Action();

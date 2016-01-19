@@ -238,7 +238,6 @@ void SceneResult::Render()
 // ƒ‰ƒ“ƒLƒ“ƒO’²¸
 void SceneResult::Set_ranking()
 {
-	int RANK_MAX;
 	for (int i = 0; i < PLAYER_MAX; i++)
 	{
 		datas[i].p_num = i;
@@ -258,12 +257,12 @@ void SceneResult::Set_ranking()
 	}
 
 	chara.motion_no = 0;
-	for (int i = 0; i < RANK_MAX; i++)
+	for (int i = 0; i < PLAYER_MAX; i++)
 	{
 		if (datas[i].p_num == result_my_number)
 		{
 			if (i == 0)chara.motion_no = 23;				// 1ˆÊ
-			else if (i == RANK_MAX)chara.motion_no = 24;	// Å‰ºˆÊ
+			else if (i == PLAYER_MAX-1)chara.motion_no = 24;	// Å‰ºˆÊ
 			else chara.motion_no = 22;						// ’†ŠÔ
 			break;
 		}

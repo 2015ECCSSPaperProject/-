@@ -204,11 +204,18 @@ void BasePlayer::Update()
 	// アップデート！！
 	action[(int)action_part]->Update(controlDesc);
 
-	if (stage->Collision(pos, &move, 5, 2))
+
+	// 壁判定
+	if (action_part == ACTION_PART::SYURIKEN)
 	{
-		//if (action_part == ACTION_PART::SYURIKEN) 
-			//Change_action(ACTION_PART::MOVE);
+		Collision_syuriken();	// 手裏剣専用壁判定
 	}
+	else
+	{
+		Vector3 n;	// 受け取るけど使わない
+		stage->Collision(pos, &move, 5, 2, &n);
+	}
+
 	if (stage->Collision_rand(pos, &move))
 	{
 		// 飛ばなくする
@@ -1033,7 +1040,7 @@ void BasePlayer::Action::Syuriken::Initialize()
 	max_speed = 6.0f;
 	accel = max_speed;
 	kasoku = .25f;
-	move_vec = Vector3(sinf(me->angleY), 0, cosf(me->angleY));
+
 	syurikentaimaa = (int)timer->Get_second_limit();
 	r = false;
 
@@ -1042,6 +1049,7 @@ void BasePlayer::Action::Syuriken::Initialize()
 
 void BasePlayer::Action::Syuriken::Update(const CONTROL_DESC &_ControlDesc)
 {
+	const Vector3 move_vec = Vector3(sinf(me->angleY), 0, cosf(me->angleY));
 	me->move = move_vec * accel;
 	if ((accel -= kasoku) < max_speed * .5f)
 		accel = max_speed * .5f;
@@ -1080,6 +1088,26 @@ void BasePlayer::Action::Syuriken::Update(const CONTROL_DESC &_ControlDesc)
 		me->isJump = true;
 		me->invincible = false;
 		me->Change_action(ACTION_PART::MOVE);
+	}
+}
+
+void BasePlayer::Collision_syuriken()
+{
+	// レイピックでmove値が変わるので保存しておく
+	Vector3 prev_move = move;
+	Vector3 n;
+
+	if (stage->Collision(pos, &move, 5, 2, &n))		// 壁にぶつかっていたら(true)
+	{
+		prev_move.Normalize();
+		if (n.x*prev_move.x + n.z*prev_move.z < -0.9f)	// 壁に対してほぼ垂直にヒット
+		{
+			Change_action(ACTION_PART::MOVE);	// 手裏剣解除
+		}
+		else
+		{
+			angleY = atan2(move.x, move.z);	// 方向転換
+		}
 	}
 }
 

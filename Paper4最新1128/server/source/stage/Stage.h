@@ -21,7 +21,9 @@ public:
 	bool Collision_up( const Vector3 &pos, Vector3 *move, float high);
 
 	bool Collision(const Vector3 &pos, Vector3 *move, float radius, // ”¼Œa
-		int recursive_counter); // Ä‹A”
+		int recursive_counter, // Ä‹A”
+		Vector3 *n	// “–‚½‚Á‚½•Ç‚Ì–@ü		’Ç‰Á‚µ‚Ü‚µ‚½
+		);
 
 	unsigned int Area_Get_numof();
 	bool Area_Is_work(unsigned int index);

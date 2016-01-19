@@ -29,7 +29,7 @@ public:
 	//	ゲッター,セッター
 	//===============================================
 	Vector3 GetPos();
-
+	void PlaySE();				// ピーポーを鳴らす
 
 private:
 	Vector3 pos;
@@ -72,12 +72,16 @@ public:
 	//===============================================
 	void Append(Ambulance::MOVE_TYPE type, const Vector3 &start, const Vector3 &goal, float speed);
 
-
 	//===============================================
 	//	判定
 	//===============================================
 	int CheckDist(const Vector3 &pos, float dist);
 	Ambulance *GetAmbulance(int no);
+
+
+	//===============================================
+	//	音再生
+	void PlayAmbulanceSE();				// ピーポーを鳴らす
 
 private:
 	std::vector<Ambulance*> List;

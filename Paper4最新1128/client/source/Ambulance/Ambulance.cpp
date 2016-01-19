@@ -11,7 +11,7 @@
 
 //=============================================================================================
 //		‰	Šú	‰»
-Ambulance::Ambulance() :pos(Vector3(0, 0, 0)), goal_pos(Vector3(0, 0, 0)), angle(0), obj(nullptr), se_receive(0), move(Vector3(0, 0, 0)), scale(1.0f)
+Ambulance::Ambulance() :pos(Vector3(0, 0, 0)), goal_pos(Vector3(0, 0, 0)), angle(0), obj(nullptr), se_receive(-1), move(Vector3(0, 0, 0)), scale(1.0f)
 {
 	MoveFunk[(int)MOVE_TYPE::ROUND_TRIP] = &Ambulance::MoveRoundTrip;
 	MoveFunk[(int)MOVE_TYPE::AROUND_OUTER] = &Ambulance::MoveAroundOuter;
@@ -25,8 +25,6 @@ void Ambulance::Initialize(iex3DObj *clone, Ambulance::MOVE_TYPE type, const Vec
 	move_type = type;
 	MOVE_LENGTH = (pos - goal_pos).Length();
 	this->speed = speed;
-
-	se_receive = se->Play("‹~‹}ŽÔ", pos, Vector3(sinf(angle), 0, cosf(angle)), Vector3(0, 0, 0), true);
 }
 
 //=============================================================================================
@@ -49,7 +47,7 @@ void Ambulance::Update()
 	obj->SetScale(scale);
 
 	// ‰¹Œ¹î•ñXV(ƒhƒbƒvƒ‰[‚ÌŠÌ)
-	se->Set_param("‹~‹}ŽÔ", se_receive, pos, move);
+	if (se_receive != -1)se->Set_param("‹~‹}ŽÔ", se_receive, pos, move);
 }
 
 
@@ -112,7 +110,10 @@ Vector3 Ambulance::GetPos()
 {
 	return pos;
 }
-
+void Ambulance::PlaySE()
+{
+	se_receive = se->Play("‹~‹}ŽÔ", pos, Vector3(sinf(angle), 0, cosf(angle)), move, true);
+}
 
 //**************************************************************************************************************
 //
@@ -184,8 +185,6 @@ void AmbulanceMng::Append(Ambulance::MOVE_TYPE type, const Vector3 &start, const
 	List.push_back(set);
 }
 
-
-
 //=============================================================================================
 //		”»’èŒn
 int AmbulanceMng::CheckDist(const Vector3 &pos, float dist)
@@ -202,6 +201,14 @@ Ambulance *AmbulanceMng::GetAmbulance(int no)
 {
 	assert((UINT)no < List.size() || (UINT)no >= 0);
 	return List[no];
+}
+
+
+//=============================================================================================
+//		‰¹Ý’è
+void AmbulanceMng::PlayAmbulanceSE()
+{
+	for (auto it : List)it->PlaySE();
 }
 
 AmbulanceMng *ambulance_mng;

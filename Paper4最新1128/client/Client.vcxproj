@@ -144,6 +144,7 @@
     <ClCompile Include="source\Effekseer\Effector.cpp" />
     <ClCompile Include="source\Explosion\Explosion.cpp" />
     <ClCompile Include="source\fstream\fstream_paper.cpp" />
+    <ClCompile Include="source\HitEffect\HitEffect.cpp" />
     <ClCompile Include="source\Manhole\Manhole.cpp" />
     <ClCompile Include="source\Mouse\Mouse.cpp" />
     <ClCompile Include="source\Net\Socket.cpp" />
@@ -158,6 +159,7 @@
     <ClCompile Include="source\Player\NetPlayer.cpp" />
     <ClCompile Include="source\Player\PlayerManager.cpp" />
     <ClCompile Include="source\Random\Random_mt.cpp" />
+    <ClCompile Include="source\Rush\Rush.cpp" />
     <ClCompile Include="source\Scene\SceneMain.cpp" />
     <ClCompile Include="source\Scene\SceneMakePoster.cpp" />
     <ClCompile Include="source\Scene\SceneResult.cpp" />
@@ -218,6 +220,7 @@
     <ClInclude Include="source\Effekseer\EffekseerRendererDX9.h" />
     <ClInclude Include="source\Explosion\Explosion.h" />
     <ClInclude Include="source\fstream\fstream_paper.h" />
+    <ClInclude Include="source\HitEffect\HitEffect.h" />
     <ClInclude Include="source\Manhole\Manhole.h" />
     <ClInclude Include="source\Mouse\Mouse.h" />
     <ClInclude Include="source\Net\Socket.h" />
@@ -236,6 +239,7 @@
     <ClInclude Include="source\poster\Poster_frame.h" />
     <ClInclude Include="source\poster\Poster_manager.h" />
     <ClInclude Include="source\Random\Random_mt.h" />
+    <ClInclude Include="source\Rush\Rush.h" />
     <ClInclude Include="source\Scene\SceneMain.h" />
     <ClInclude Include="source\Scene\SceneMakePoster.h" />
     <ClInclude Include="source\Scene\SceneResult.h" />
