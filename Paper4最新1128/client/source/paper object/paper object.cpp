@@ -46,6 +46,11 @@ void Paper_obj::Rend()
 	broken = true;
 }
 
+int Paper_obj::Get_point()
+{
+	return point;
+};
+
 bool Paper_obj::Can_rend()
 {
 	return (!broken);

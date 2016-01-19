@@ -100,6 +100,11 @@ KIND_PAPER_OBJECT Paper_obj_mng::Get_kind( int index )
 	return obj_array[index]->Get_kind();
 }
 
+int Paper_obj_mng::Get_point(int index)
+{
+	return obj_array[index]->Get_point();
+}
+
 //**************************************************
 
 unsigned int Paper_obj_mng::Get_receive_data_size()

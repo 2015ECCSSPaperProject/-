@@ -21,6 +21,7 @@
 /*	グローバル変数	　*/
 /**********************/
 
+// リザルト中はサーバーきってるのでどこかネットがつながってる時に値を入れておく
 int result_my_number;
 
 //　スレッドを止める為に仮で作った
@@ -174,6 +175,7 @@ void SceneResult::Render()
 
 	for (int i = 0; i < PLAYER_MAX; ++i)
 	{
+		if (datas[i].p_num == -114514) continue;
 		image[IMAGE::P1 + datas[i].p_num]->Render(MoveX[i]+64, 136 + i * 96, 64, 64, 0, 0, 64, 64);
 
 		int iti, juu, hyaku, sen, man;
@@ -227,8 +229,8 @@ void SceneResult::Render()
 		break;
 	}
 
-	//ナンバーエフェクト
-	Number_Effect::Render();
+	//ナンバーエフェクト　※sceneMainで出したエフェクトが残って描画されるので消しておく
+	//Number_Effect::Render();
 
 	//フェード処理
 	FadeControl::Render();
@@ -238,13 +240,25 @@ void SceneResult::Render()
 // ランキング調査
 void SceneResult::Set_ranking()
 {
+	active_num = 0;
+
 	for (int i = 0; i < PLAYER_MAX; i++)
 	{
-		datas[i].p_num = i;
-		datas[i].score = score_mng->Get(i);
+		// アクティブだったら
+		if (SOCKET_MANAGER->GetUser(i).com == UserData::ACTIVE_USER)
+		{
+			datas[i].p_num = i;
+			datas[i].score = score_mng->Get(i);
+			active_num++;
+		}
+		else
+		{
+			datas[i].p_num = datas[i].score = -114514;
+		}
 	}
-	for (int i = 0; i < PLAYER_MAX; i++) for (int j = i + 1; j < PLAYER_MAX; j++)
+	for (int i = 0; i < active_num; i++) for (int j = i + 1; j < active_num; j++)
 	{
+		// スコア比較して入れ替え
 		if (datas[i].score < datas[j].score)
 		{
 			int temp = datas[i].score;
@@ -257,12 +271,12 @@ void SceneResult::Set_ranking()
 	}
 
 	chara.motion_no = 0;
-	for (int i = 0; i < PLAYER_MAX; i++)
+	for (int i = 0; i < active_num; i++)
 	{
 		if (datas[i].p_num == result_my_number)
 		{
 			if (i == 0)chara.motion_no = 23;				// 1位
-			else if (i == PLAYER_MAX-1)chara.motion_no = 24;	// 最下位
+			else if (i == active_num-1)chara.motion_no = 24;	// 最下位
 			else chara.motion_no = 22;						// 中間
 			break;
 		}

@@ -1790,7 +1790,7 @@ public:
 	static void Update();
 	static void Render();
 	static void SetNum(float X, float Y, int NUM, int KIND);
-
+	static void SetNum(const Vector3 &pos3d, int NUM, int KIND);
 private:
 
 	static float x[NUM_MAX], y[NUM_MAX];

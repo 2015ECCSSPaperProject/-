@@ -51,6 +51,8 @@ public:
 
 	KIND_PAPER_OBJECT Get_kind( int index );
 
+	int Get_point(int inedex);
+
 	//**************************************************
 
 	unsigned int Get_receive_data_size();

@@ -80,6 +80,47 @@ void Number_Effect::SetNum(float X, float Y, int NUM, int KIND)
 	}
 }
 
+void Number_Effect::SetNum(const Vector3 &pos3d, int NUM, int KIND)
+{
+	for (int i = 0; i < NUM_MAX; i++)
+	{
+		if (isAlive[i] == true)continue;
+
+		// 3Dを2D座標にする
+		{
+			//ラムダ式Min~Maxの範囲に抑える　
+			auto Clamp = [](float val, float Min, float Max){
+				return min(Max, max(val, Min));
+			};
+			Matrix m = matView * matProjection;
+			x[i] = pos3d.x * m._11 + pos3d.y * m._21 + pos3d.z * m._31 + 1 * m._41;
+			y[i] = pos3d.x * m._12 + pos3d.y * m._22 + pos3d.z * m._32 + 1 * m._42;
+			float w = pos3d.x * m._14 + pos3d.y * m._24 + pos3d.z * m._34 + 1 * m._44;
+			if (w == 0){
+				x[i] = 0;
+				y[i] = 0;
+			}
+			else{
+				x[i] /= w;
+				y[i] /= w;
+			}
+			x[i] = Clamp(x[i], -1.0f, 1.0f);
+			y[i] = Clamp(y[i], -1.0f, 1.0f);
+			//1280　720　のとり方
+			x[i] = (x[i] + 1) * 640;
+			y[i] = (((y[i] * -1) + 1) * 360);
+		}
+
+		Num[i] = NUM;
+		kind[i] = KIND;
+
+		Alpha[i] = 0;
+		isAlive[i] = true;
+
+		break;
+	}
+}
+
 void Number_Effect::Render()
 {
 	//if (isAlive == false)return;
