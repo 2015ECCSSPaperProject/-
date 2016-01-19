@@ -26,6 +26,8 @@ public:
 	{
 		delete[] data;
 	}
+	// out : new して返します
+	static void Load( Rend_data *&out, const char *filename );
 
 	// マウスの移動コマンド判定
 	bool Move_check( float x, float y )
