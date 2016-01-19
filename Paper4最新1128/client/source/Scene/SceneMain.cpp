@@ -476,9 +476,8 @@ void SceneMain::Render()
 
 	
 
-		// ブラ―
-		//BlurFilter::Render();		
-		//BlurFilter::Start_Copy();
+
+		BlurFilter::Start_Copy();
 
 
 		/*描画*/
@@ -493,7 +492,11 @@ void SceneMain::Render()
 			0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight);
 		DeferredManager.EndDrawBloom();
 		DeferredManager.BloomRender();
-		//BlurFilter::End_Copy();
+		
+		BlurFilter::End_Copy();
+
+		// ブラ―
+		BlurFilter::Render();		
 
 		// 地下いるかいないか
 		if (player_mng->Get_player(SOCKET_MANAGER->GetID())->isManhole == true)
@@ -589,6 +592,7 @@ void SceneMain::RenderShadow()
 	// near
 	DeferredManager.ShadowBegin();
 
+	// これ当たり判定にしてね！！！！！！！！！！！！！！！！！！！！！！！！！
 	stage->Render(shaderD, "ShadowBuf");
 
 	Vector3 flont;

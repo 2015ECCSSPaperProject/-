@@ -764,6 +764,7 @@ void BasePlayer::Action::Syuriken::Initialize()
 	me->Set_motion(1);
 	trg = false;
 
+	BlurFilter::Set(18, 0, 0);
 	me->se_receive = se->Play("Žè— Œ•", me->pos);
 	me->rush->Action();
 }
