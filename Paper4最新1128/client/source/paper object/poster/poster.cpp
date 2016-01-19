@@ -14,9 +14,9 @@ Poster::Poster()
 Poster::~Poster()
 {}
 
-void Poster::Initialize(iexMesh *model)
+void Poster::Initialize( iexMesh *model, int point )
 {
-	Paper_obj_Mesh::Initialize(model);
+	Paper_obj_Mesh::Initialize( model, point );
 }
 
 void Poster::Subclass_update()

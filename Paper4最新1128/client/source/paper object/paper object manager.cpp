@@ -191,12 +191,12 @@ void Paper_obj_mng::Load_flyer()
 			infs >> pos.x;
 			infs >> pos.y;
 			infs >> pos.z;
-			// ポイント (読むだけ)
+			// ポイント
 			int point;
 			infs >> point;
 			// フライヤー作成
 			Flyer *p = new Flyer;
-			p->Initialize( original_flyer, time );
+			p->Initialize( original_flyer, point, time );
 			p->Set_pose( angle, pos );
 			obj_array.push_back( p );
 			this->number_of_objects++;
@@ -219,12 +219,12 @@ template<class POSTERCLASS>void Paper_obj_mng::Load_poster_tmp( char *filename, 
 		infs >> angle;
 		angle = Degree_to_radian( angle );
 		infs >> pos;
-		// ポイント (読むだけ)
+		// ポイント
 		int point;
 		infs >> point;
 		// 作成
 		p = new POSTERCLASS;
-		p->Initialize( model );
+		p->Initialize( model, point );
 		p->Set_pose( angle, pos );
 		obj_array.push_back( p );
 		this->number_of_objects++;

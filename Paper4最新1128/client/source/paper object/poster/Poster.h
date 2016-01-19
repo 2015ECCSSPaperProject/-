@@ -12,7 +12,7 @@ public:
 	Poster();
 	~Poster();
 
-	void Initialize(iexMesh *model) override;
+	void Initialize( iexMesh *model, int point ) override;
 	void Subclass_update() override;
 	void Subclass_render( iexShader *shader = nullptr, char *name = '\0' ) override;
 

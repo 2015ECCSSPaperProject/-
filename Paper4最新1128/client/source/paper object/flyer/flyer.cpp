@@ -6,9 +6,9 @@
 #include "../../timer/Timer.h"
 #include "../../../../share_data/Enum_public.h"
 
-void Flyer::Initialize( iex3DObj *model, int start_time )
+void Flyer::Initialize( iex3DObj *model, int point, int start_time )
 {
-	Paper_obj_3DObj::Initialize( model );
+	Paper_obj_3DObj::Initialize( model, point );
 	broken = true;
 	high = 50;
 	this->start_time = start_time;

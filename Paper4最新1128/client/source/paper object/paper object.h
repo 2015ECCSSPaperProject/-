@@ -38,6 +38,13 @@ public:
 
 	//**************************************************
 
+	int Get_point()
+	{
+		return point;
+	};
+
+	//**************************************************
+
 	virtual unsigned int Get_receive_data_size() = 0;
 
 	virtual void Set_receive_data( char *in ) = 0;
@@ -49,6 +56,8 @@ protected:
 
 	HitEffect *hiteffect;
 
+	int point;
+
 	virtual void Subclass_update() = 0;
 	virtual void Subclass_render( iexShader *shader = nullptr, char *name = '\0' ) = 0;
 };
@@ -58,7 +67,7 @@ class Paper_obj_Mesh : public Paper_obj
 public:
 	Paper_obj_Mesh();
 	~Paper_obj_Mesh();
-	virtual void Initialize( iexMesh *model );
+	virtual void Initialize( iexMesh *model, int point );
 
 	void Set_pose( const float angle, const Vector3& pos );
 
@@ -71,7 +80,7 @@ class Paper_obj_3DObj : public Paper_obj
 public:
 	Paper_obj_3DObj();
 	~Paper_obj_3DObj();
-	virtual void Initialize( iex3DObj *model );
+	virtual void Initialize( iex3DObj *model, int point );
 
 	void Set_pose( const float angle, const Vector3& pos );
 

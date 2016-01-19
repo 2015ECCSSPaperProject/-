@@ -59,9 +59,10 @@ Paper_obj_Mesh::~Paper_obj_Mesh()
 	delete model;
 }
 
-void Paper_obj_Mesh::Initialize( iexMesh *model )
+void Paper_obj_Mesh::Initialize( iexMesh *model, int point )
 {
 	this->model = model->Clone();
+	this->point = point;
 }
 
 void Paper_obj_Mesh::Set_pose( const float angle, const Vector3& pos )
@@ -81,9 +82,10 @@ Paper_obj_3DObj::~Paper_obj_3DObj()
 	delete model;
 }
 
-void Paper_obj_3DObj::Initialize( iex3DObj *model )
+void Paper_obj_3DObj::Initialize( iex3DObj *model, int point )
 {
 	this->model = model->Clone();
+	this->point = point;
 }
 
 void Paper_obj_3DObj::Set_pose( const float angle, const Vector3& pos )

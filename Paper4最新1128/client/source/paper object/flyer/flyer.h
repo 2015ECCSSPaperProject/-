@@ -9,7 +9,7 @@ enum KIND_PAPER_OBJECT;
 class Flyer : public Paper_obj_3DObj
 {
 public:
-	void Initialize( iex3DObj *model, int start_time );
+	void Initialize( iex3DObj *model, int point, int start_time );
 	void Subclass_update() override;
 	void Subclass_render( iexShader *shader = nullptr, char *name = '\0' ) override;
 
