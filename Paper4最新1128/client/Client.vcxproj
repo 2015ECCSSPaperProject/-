@@ -170,6 +170,7 @@
     <ClCompile Include="source\skill_gauge\skill_gauge.cpp" />
     <ClCompile Include="source\sound\SoundManager.cpp" />
     <ClCompile Include="source\stage\Area.cpp" />
+    <ClCompile Include="source\stage\Inhabitant.cpp" />
     <ClCompile Include="source\stage\Stage.cpp" />
     <ClCompile Include="source\system\Framework.cpp" />
     <ClCompile Include="source\system\System.cpp" />
@@ -251,6 +252,7 @@
     <ClInclude Include="source\skill_gauge\skill_gauge.h" />
     <ClInclude Include="source\sound\SoundManager.h" />
     <ClInclude Include="source\stage\Area.h" />
+    <ClInclude Include="source\stage\Inhabitant.h" />
     <ClInclude Include="source\stage\Stage.h" />
     <ClInclude Include="source\system\DebugDrawManager.h" />
     <ClInclude Include="source\system\Framework.h" />

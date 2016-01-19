@@ -7,6 +7,7 @@
 class iexMesh;
 class BasePlayer;
 class Area_mng;
+class Inhabitants;
 
 class Stage
 {
@@ -39,6 +40,8 @@ private:
 	void Load_mapdata();
 
 	void Load_area();
+
+	Inhabitants *inhabitants;
 };
 
 extern Stage *stage;

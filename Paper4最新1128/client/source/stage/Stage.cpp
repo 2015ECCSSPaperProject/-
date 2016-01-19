@@ -3,6 +3,7 @@
 #include "Area.h"
 #include "../fstream/fstream_paper.h"
 #include <string>
+#include "Inhabitant.h"
 //#include "../player/Player.h"
 
 Stage::Stage() : area( nullptr )
@@ -30,7 +31,7 @@ void Stage::Initialize()
 		show_model[i]->Update();
 	}
 
-
+	inhabitants = new Inhabitants( "DATA/MATI/position/zattou.txt" );
 
 	Load_area();
 }
@@ -44,11 +45,13 @@ void Stage::Release()
 		delete collision_model[i];
 	collision_model.clear();
 	delete area; area = nullptr;
+	delete inhabitants; inhabitants = nullptr;
 }
 
 void Stage::Update()
 {
 	area->Update();
+	inhabitants->Update();
 }
 
 void Stage::Render(iexShader *shader, char *name)
@@ -59,6 +62,7 @@ void Stage::Render(iexShader *shader, char *name)
 		{
 			show_model[i]->Render( shader, name );
 		}
+		inhabitants->Render( shader, name );
 	}
 	else
 	{
@@ -67,7 +71,6 @@ void Stage::Render(iexShader *shader, char *name)
 			show_model[i]->Render();
 		}
 	}
-	//area->Render();
 }
 
 // ƒGƒŠƒA‚ÍG‚Ì‘ÎÛŠO‚É
