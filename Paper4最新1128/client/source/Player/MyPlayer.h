@@ -45,7 +45,7 @@ private:
 	//===============================================
 	//	”j‚éƒ}ƒEƒX‚Ì“®‚«
 	//===============================================
-	Rend_data *rend_data;
+	Rend_data **command_data;
 
 	int se_step;
 	void (MyPlayer::*RendSE[11])();	// ¬•¨”j‚­SE

@@ -44,11 +44,25 @@ public:
 		SKILL_ROGO,
 		MANHOLE_FADE,
 		SCORE_FRAME,
+		ARROW_LEFT,
+		ARROW_RIGHT,
+		ARROW_UP,
+		ARROW_DOWN,
+		ARROW_ROLL,
 		MAX
 	};
 	enum class MANHOLE_FADE_TYPE
 	{
 		NONE, F_IN, F_OUT, MAX
+	};
+	enum class REND_COMMAND
+	{
+		NONE, LEFT, RIGHT, UP, DOWN,
+		RU,	// 右上
+		RD,	// 右下
+		LU,	// 左上
+		LD,	// 左下
+		ROLL	// 回転
 	};
 
 private:
@@ -62,6 +76,11 @@ private:
 	void fadeM_in();
 	void fadeM_out();
 	void(UI::*fadeM_funk[(int)MANHOLE_FADE_TYPE::MAX])();
+
+
+	// コマンド矢印
+	REND_COMMAND command;
+
 
 	//===============================================
 	//	何かの実体
@@ -165,6 +184,7 @@ private:
 	void TimeLimit();	// タイムリミット
 	void Telop_render();// テロップ
 	void Manhole_fade();// マンホールのフェード
+	void Command();
 
 	//===============================================
 	//	テロップリスト
@@ -206,6 +226,7 @@ public:
 	bool isStart(){ return isYooiDon; }
 	void SetManholeFade(MANHOLE_FADE_TYPE type);
 	MANHOLE_FADE_TYPE GetManholeFade(){ return m_fade_type; }
+	void Set_rend_command(REND_COMMAND com){ command = com; }
 
 	//===============================================
 	//	モード変更

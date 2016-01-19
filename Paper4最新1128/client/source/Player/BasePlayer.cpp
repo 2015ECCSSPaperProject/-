@@ -478,13 +478,6 @@ void BasePlayer::Action::Rend::Update()
 	// 扱いに注意
 	me->Set_motion(me->motion_no);
 
-	// マウススラッシュ
-	const float mouse_move = sqrtf(me->m_controlDesc.mouseX*me->m_controlDesc.mouseX + me->m_controlDesc.mouseY + me->m_controlDesc.mouseY);
-	if (mouse_move > 80000)
-	{
-		me->m_controlDesc.rendFlag |= (BYTE)PLAYER_FLAG::REND;
-	}
-
 	// 破くモーションのフレーム
 
 	Update_obj();

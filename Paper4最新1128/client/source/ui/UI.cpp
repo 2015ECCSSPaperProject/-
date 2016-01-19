@@ -91,8 +91,12 @@ void UI::Initialize(BasePlayer *my)
 	image[IMAGE::SKILL_SELECT] = new iex2DObj("DATA/UI/skill/skilieSelect2.png");		// skilieSelect
 	image[IMAGE::SKILL_ROGO] = new iex2DObj("DATA/UI/skill/skill_rogo.png");		// skill_rogo
 	image[IMAGE::SCORE_FRAME] = new iex2DObj("DATA/UI/skill/scoreFrame.png");		// scoreFrame
-
 	image[IMAGE::MANHOLE_FADE] = new iex2DObj("DATA/UI/manhole_fade.png");
+	image[IMAGE::ARROW_LEFT] = new iex2DObj("DATA/UI/action/Left_Cursor.png");
+	image[IMAGE::ARROW_RIGHT] = new iex2DObj("DATA/UI/action/Right_Cursor.png");
+	image[IMAGE::ARROW_UP] = new iex2DObj("DATA/UI/action/Up_Cursor.png");
+	image[IMAGE::ARROW_DOWN] = new iex2DObj("DATA/UI/action/Down_Cursor.png");
+	image[IMAGE::ARROW_ROLL] = new iex2DObj("DATA/UI/action/rot_Cursor.png");
 
 	// スーパー西田タイム
 	C_Five = new AnimationRippleEx("DATA/UI/call/five.png",
@@ -222,6 +226,7 @@ void UI::Mode::Main::Render()
 	me->Action();
 	me->TimeLimit();
 	me->Telop_render();
+	//me->Command();
 	me->Manhole_fade();
 }
 
@@ -421,6 +426,41 @@ void UI::TimeLimit()
 	C_Three->Render(498, 182, RS_COPY);
 	C_Two->Render(498, 182, RS_COPY);
 	C_One->Render(498, 182, RS_COPY);
+}
+
+void UI::Command()
+{
+	Vector2 pos(320, 320);
+	switch (command)
+	{
+	case REND_COMMAND::LEFT:
+		image[IMAGE::ARROW_LEFT]->Render(pos.x, pos.y, 256, 256, 0, 0, 256, 256);
+		break;
+	case REND_COMMAND::RIGHT:
+		image[IMAGE::ARROW_RIGHT]->Render(pos.x, pos.y, 256, 256, 0, 0, 256, 256);
+		break;
+	case REND_COMMAND::UP:
+		image[IMAGE::ARROW_UP]->Render(pos.x, pos.y, 256, 256, 0, 0, 256, 256);
+		break;
+	case REND_COMMAND::DOWN:
+		image[IMAGE::ARROW_DOWN]->Render(pos.x, pos.y, 256, 256, 0, 0, 256, 256);
+		break;
+	case REND_COMMAND::LU:
+		image[IMAGE::ARROW_LEFT]->Render(pos.x, pos.y, 256, 256, 0, 0, 256, 256);
+		break;
+	case REND_COMMAND::LD:
+		image[IMAGE::ARROW_LEFT]->Render(pos.x, pos.y, 256, 256, 0, 0, 256, 256);
+		break;
+	case REND_COMMAND::RU:
+		image[IMAGE::ARROW_LEFT]->Render(pos.x, pos.y, 256, 256, 0, 0, 256, 256);
+		break;
+	case REND_COMMAND::RD:
+		image[IMAGE::ARROW_LEFT]->Render(pos.x, pos.y, 256, 256, 0, 0, 256, 256);
+		break;
+	case REND_COMMAND::ROLL:
+		image[IMAGE::ARROW_ROLL]->Render(pos.x, pos.y, 256, 256, 0, 0, 256, 256);
+		break;
+	}
 }
 
 //
