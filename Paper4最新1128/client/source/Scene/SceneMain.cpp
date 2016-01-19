@@ -508,7 +508,7 @@ void SceneMain::Render()
 		else
 		{
 			// DownSample
-			//DeferredManager.UpdateDownSample(0.88f, 0.77f);
+			DeferredManager.UpdateDownSample(0.88f, 0.77f);
 		}
 		
 		// サーフェイス描画
@@ -701,20 +701,20 @@ void SceneMain::UG_Update()
 {
 	// ポイントライト
 	DeferredManager.ClearPointLight();
-	DeferredManager.SetInfoPointLight(Vector3(190,-100,-600), Vector3(450, 250, 100), 150, 4);
-	DeferredManager.SetInfoPointLight(Vector3(280,-100,-540), Vector3(450, 250, 100), 150, 4);
-	DeferredManager.SetInfoPointLight(Vector3(350,-100,-500), Vector3(450, 320, 100), 150, 4);
+	DeferredManager.SetInfoPointLight(Vector3(190, -100, -600), Vector3(450, 250, 100), 150, 4);
+	DeferredManager.SetInfoPointLight(Vector3(280, -100, -540), Vector3(450, 250, 100), 150, 4);
+	DeferredManager.SetInfoPointLight(Vector3(350, -100, -500), Vector3(450, 320, 100), 150, 4);
 	DeferredManager.SetInfoPointLight(Vector3(439, -100, -460), Vector3(450, 200, 100), 150, 4);
 
-	DeferredManager.SetInfoPointLight(Vector3(-610, -100, 120), Vector3(150, 100, 250), 150, 4);
-	DeferredManager.SetInfoPointLight(Vector3(-615, -100, 20), Vector3(150, 100, 250), 150, 4);
-	DeferredManager.SetInfoPointLight(Vector3(-614, -100, -59), Vector3(150, 100, 250), 150, 4);
-	DeferredManager.SetInfoPointLight(Vector3(-613, -100, -142), Vector3(150, 100, 250), 150, 4);
+	DeferredManager.SetInfoPointLight(Vector3(-610, -100, 120), Vector3(450, 250, 100), 150, 4);
+	DeferredManager.SetInfoPointLight(Vector3(-615, -100, 20), Vector3(450, 250, 100), 150, 4);
+	DeferredManager.SetInfoPointLight(Vector3(-614, -100, -59), Vector3(450, 320, 100), 150, 4);
+	DeferredManager.SetInfoPointLight(Vector3(-613, -100, -142), Vector3(450, 200, 100), 150, 4);
 
-	DeferredManager.SetInfoPointLight(Vector3(-398, -100, 606), Vector3(50, 200, 450), 150, 4);
-	DeferredManager.SetInfoPointLight(Vector3(-333, -100, 573), Vector3(50, 200, 450), 150, 4);
-	DeferredManager.SetInfoPointLight(Vector3(-262, -100, 531), Vector3(50, 200, 450), 150, 4);
-	DeferredManager.SetInfoPointLight(Vector3(-178, -100, 485), Vector3(50, 200, 450), 150, 4);
+	DeferredManager.SetInfoPointLight(Vector3(298, -100, 486), Vector3(450, 250, 100), 150, 4);
+	DeferredManager.SetInfoPointLight(Vector3(133, -90, 573), Vector3(450, 250, 100), 150, 4);
+	DeferredManager.SetInfoPointLight(Vector3(262, -90, 531), Vector3(430, 300, 100), 150, 4);
+	DeferredManager.SetInfoPointLight(Vector3(378, -100, 435), Vector3(450, 200, 100), 150, 4);
 
 	// 水
 	uvWater += 0.001f;

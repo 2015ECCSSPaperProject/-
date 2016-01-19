@@ -455,11 +455,6 @@ void SceneSelect::Update()
 			   if (SOCKET_MANAGER->GetUser(i).isReady == UserData::READY_MUTCH_ALL)
 				   ++count;
 		   }
-		   //@‘SˆõOK‚¾‚Á‚½‚ç”ò‚Ô
-		   if (active == count)
-		   {
-			   MainFrame->ChangeScene(new SceneMain());
-		   }
 
 		   if (SOCKET_MANAGER->GetUser(SOCKET_MANAGER->GetID()).isReady == READY)
 		   {
