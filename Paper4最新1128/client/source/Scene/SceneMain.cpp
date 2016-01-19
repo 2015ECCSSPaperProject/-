@@ -272,14 +272,7 @@ void SceneMain::Start()
 	// 救急車
 	ambulance_mng->Update();
 
-	if (ui->isStart())
-	{
-		mode = MODE::MAIN;
-		// ATフィールド展開
-		se->Play("AT", true);
-		// ピーポーならす
-		ambulance_mng->PlayAmbulanceSE();
-	}
+	if (ui->isStart())mode = MODE::MAIN;
 }
 void SceneMain::Main()
 {
@@ -449,7 +442,6 @@ void SceneMain::Render()
 		DeferredManager.ForwardBigin();
 		player_mng->Render_forword();	// バリアー	
 		stage->RenderForward();			// エリア
-		paper_obj_mng->Forward_render();
 
 		// ★地下にいるかいないか
 		if (player_mng->Get_player(SOCKET_MANAGER->GetID())->isManhole == true)

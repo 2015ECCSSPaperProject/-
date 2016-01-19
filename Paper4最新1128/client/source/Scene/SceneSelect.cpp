@@ -66,7 +66,7 @@ bool SceneSelect::Initialize()
 	image[IMAGE::TEN] = new iex2DObj("DATA/Image/lobby/ten.png");
 	image[IMAGE::BACK2] = new iex2DObj("DATA/Image/lobby/背景.png");
 	image[IMAGE::INFO] = new iex2DObj("DATA/Image/lobby/info.png");
-
+	image[IMAGE::CURSOR] = new iex2DObj("DATA/Image/lobby/cursor4.png");
 
 	// 文字のアニメーション
 	for (int i = 0; i < PLAYER_MAX; i++)
@@ -152,8 +152,8 @@ bool SceneSelect::Initialize()
 void SceneSelect::Initialize_buttons()
 {
 	modoru.lpButton = new iex2DObj("DATA/Image/lobby/もどる.png");
-	modoru.dstX = 1100;
-	modoru.dstY = 520;
+	modoru.dstX = 1120;
+	modoru.dstY = 560;
 	modoru.dstW = 128;
 	modoru.dstH = 128;
 	modoru.srcX = 256;
@@ -540,8 +540,17 @@ void SceneSelect::Render()
 
 	// 戻るボタン
 	modoru.lpButton->Render(modoru.dstX, modoru.dstY, modoru.dstW, modoru.dstH, 0, 0, modoru.srcX, modoru.srcY);
-	if (modoru.in)modoru.lpButton->Render(modoru.dstX, modoru.dstY, modoru.dstW, modoru.dstH, 0, 0, modoru.srcX, modoru.srcY, RS_ADD);
-
+	if (modoru.in){//　戻るを押したら
+	//	modoru.lpButton->Render(modoru.dstX, modoru.dstY, modoru.dstW, modoru.dstH, 0, 0, modoru.srcX, modoru.srcY, RS_ADD);
+		modoru.lpButton->SetARGB(127, 127, 127, 127);
+		modoru.lpButton->Render(modoru.dstX, modoru.dstY, modoru.dstW, modoru.dstH, 0, 0, modoru.srcX, modoru.srcY, RS_ADD);
+		modoru.lpButton->SetARGB(255, 255, 255, 255);
+		modoru.lpButton->SetScale(1.2f);// 大きく
+	}
+	else
+	{
+		modoru.lpButton->SetScale(1.0f);// もどす
+	}
 
 	// 点のアニメ用変数
 	static int tenFlame = 0;
@@ -562,6 +571,7 @@ void SceneSelect::Render()
 		{	// アクティブに初めてなったら
 			if (SOCKET_MANAGER->GetUser(i).com == UserData::ACTIVE_USER)
 			{
+				if (SOCKET_MANAGER->GetID() != i) se->Play("エントリー");
 				IconRip[i]->Action();		// 波紋■
 				isActivePlayer[i] = true;
 			}
@@ -628,15 +638,34 @@ void SceneSelect::Render()
 			{
 				image[IMAGE::OK]->SetARGB(alpha[i], 255, 255, 255);
 				image[IMAGE::OK]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64);
-				if (entry.in&&SOCKET_MANAGER->GetID() == i)
+				// 振れていたら
+				if (entry.in&&SOCKET_MANAGER->GetID() == i){
+					//image[IMAGE::OK]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64, RS_ADD);
+					image[IMAGE::OK]->SetARGB(127, 127, 127, 127);
 					image[IMAGE::OK]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64, RS_ADD);
+					image[IMAGE::OK]->SetARGB(255, 255, 255, 255);
+					image[IMAGE::OK]->SetScale(1.1f);	// 大きく
+				}
+				else
+				{
+					image[IMAGE::OK]->SetScale(1.0f);
+				}
 			}
 			else
 			{
 				image[IMAGE::WAIT]->SetARGB(alpha[i], 255, 255, 255);
 				image[IMAGE::WAIT]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64);
-				if (entry.in&&SOCKET_MANAGER->GetID() == i)
+				// 振れていたら
+				if (entry.in&&SOCKET_MANAGER->GetID() == i){
+					image[IMAGE::WAIT]->SetARGB(127, 127, 127, 127);
 					image[IMAGE::WAIT]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64, RS_ADD);
+					image[IMAGE::WAIT]->SetARGB(255, 255, 255, 255);
+					image[IMAGE::WAIT]->SetScale(1.1f);// 大きく
+				}
+				else
+				{
+					image[IMAGE::WAIT]->SetScale(1.0f);
+				}
 			}
 
 			// 準備OK波紋　追加
@@ -655,6 +684,11 @@ void SceneSelect::Render()
 		}
 
 	}
+
+	// カーソル
+	bool iconFlag = false;
+	if (KeyBoard(MOUSE_LEFT))iconFlag = true;	// マウス離す
+	image[IMAGE::CURSOR]->Render(mouse->pos.x - 32, mouse->pos.y - 32, 64, 64, iconFlag * 64 , 64, 64, 64);
 
 	//for (int i = 0; i < PLAYER_MAX; ++i)
 	//{

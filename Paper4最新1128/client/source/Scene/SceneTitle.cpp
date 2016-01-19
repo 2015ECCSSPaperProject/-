@@ -100,6 +100,7 @@ bool SceneTitle::Initialize()
 
 	move_mouse = MOUSE_POS;
 	mouse = new Mouse;
+	mouse->Initialize(FALSE);
 
 	return true;
 }
@@ -365,9 +366,16 @@ void SceneTitle::Render()
 			images[IMAGE::MOUSE]->Render(move_mouse.x, move_mouse.y, 64, 64, 0, 0, 64, 64);
 		}
 
+
 		bool iconFlag = false;
 		if (KeyBoard(MOUSE_LEFT))iconFlag = true;	// マウス離す
 		images[IMAGE::ICON]->Render(mouse->pos.x - 32, mouse->pos.y - 32, 64, 64, iconFlag * 64, 0, 64, 64);
+	}
+	else
+	{
+		//	わっしょい
+		images[IMAGE::ICON]->Render(mouse->pos.x - 32, mouse->pos.y - 32, 64, 64, 0, 64, 64, 64);
+
 	}
 
 	//ナンバーエフェクト
