@@ -14,7 +14,7 @@ public:
 
 	void Initialize(iexMesh *model) override;
 	void Update() override;
-	void Render(iexShader *shader = nullptr, char *name = '\0') override;
+	void Subclass_render( iexShader *shader = nullptr, char *name = '\0' ) override;
 
 	virtual	KIND_PAPER_OBJECT Get_kind();
 

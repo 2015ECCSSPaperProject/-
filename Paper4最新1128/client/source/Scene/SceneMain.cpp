@@ -442,6 +442,7 @@ void SceneMain::Render()
 		DeferredManager.ForwardBigin();
 		player_mng->Render_forword();	// バリアー	
 		stage->RenderForward();			// エリア
+		paper_obj_mng->Forward_render();
 
 		// ★地下にいるかいないか
 		if (player_mng->Get_player(SOCKET_MANAGER->GetID())->isManhole == true)

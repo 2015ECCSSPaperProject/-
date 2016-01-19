@@ -26,7 +26,7 @@ void Poster::Update()
 	model->Update();
 }
 
-void Poster::Render(iexShader *shader, char *name)
+void Poster::Subclass_render( iexShader *shader, char *name )
 {
 	if (broken) return;
 

@@ -1,12 +1,32 @@
 
 #include "iextreme.h"
 #include "paper object.h"
+#include "../HitEffect/HitEffect.h"
 
 Paper_obj::Paper_obj() : position( 0, 0, 0 ), angle( 0 ), broken( false )
-{}
+{
+	hiteffect = new HitEffect;
+}
 
 Paper_obj::~Paper_obj()
-{}
+{
+	delete hiteffect;
+}
+
+void Paper_obj::Update()
+{
+	hiteffect->Update( this->position );
+}
+
+void Paper_obj::Render( iexShader *shader, char *name)
+{
+	Subclass_render( shader, name );
+}
+
+void Paper_obj::Forward_render()
+{
+	hiteffect->Render();
+}
 
 void Paper_obj::Set_pose(const float angle, const Vector3& pos)
 {
@@ -21,6 +41,7 @@ const Vector3 &Paper_obj::Get_pos()
 
 void Paper_obj::Rend()
 {
+	hiteffect->Action();
 	broken = true;
 }
 

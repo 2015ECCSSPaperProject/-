@@ -9,15 +9,19 @@ class BasePlayer;
 
 enum KIND_PAPER_OBJECT;
 
+class HitEffect;
+
 class Paper_obj
 {
 public:
 	Paper_obj();
 	virtual ~Paper_obj();
 
-	virtual void Update() = 0;
+	virtual void Update();
 
-	virtual void Render(iexShader *shader = nullptr, char *name = '\0') = 0;
+	void Render(iexShader *shader = nullptr, char *name = '\0');
+
+	void Forward_render();
 
 	void Set_pose(const float angle, const Vector3& pos);
 
@@ -42,6 +46,10 @@ protected:
 	bool broken;
 	Vector3 position; // ˆÊ’u
 	float angle; // Œü‚«‚ð model ‚É“n‚·‚æ‚¤
+
+	HitEffect *hiteffect;
+
+	virtual void Subclass_render( iexShader *shader = nullptr, char *name = '\0' ) = 0;
 };
 
 class Paper_obj_Mesh : public Paper_obj

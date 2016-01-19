@@ -60,6 +60,14 @@ void Paper_obj_mng::Render(iexShader *shader, char *name)
 	}
 }
 
+void Paper_obj_mng::Forward_render()
+{
+	for( auto it : obj_array )
+	{
+		it->Forward_render();
+	}
+}
+
 //**************************************************
 
 void Paper_obj_mng::Rend( int index )

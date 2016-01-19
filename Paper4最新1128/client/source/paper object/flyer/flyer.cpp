@@ -39,7 +39,7 @@ void Flyer::Update()
 	model->Update();
 }
 
-void Flyer::Render( iexShader *shader, char *name )
+void Flyer::Subclass_render( iexShader *shader, char *name )
 {
 	if( broken )
 		return;
