@@ -373,6 +373,7 @@ void SceneMain::Render()
 
 		//　描画クリア
 		DeferredManager.ClearBloom();
+		DeferredManager.ClearGlow();
 		DeferredManager.ClearForward();
 		DeferredManager.ClearAllRender();
 
@@ -467,9 +468,10 @@ void SceneMain::Render()
 		/*■■■■■■■通常描画終り■■■■■■■*/
 
 		// グロウ
-		//DeferredManager.BeginDrawGlow();
+		DeferredManager.BeginDrawGlow();
 		//player_mng->EffectRender();
-		//DeferredManager.EndDrawGlow();
+		player_mng->Render_forword();	// バリアー	
+		DeferredManager.EndDrawGlow();
 
 	
 
@@ -481,6 +483,8 @@ void SceneMain::Render()
 		/*描画*/
 		DeferredManager.RenderDeferred();
 		DeferredManager.ForwardRender();
+		// グロウ
+		DeferredManager.GlowRender();
 
 		// ブルーム
 		DeferredManager.BeginDrawBloom();
