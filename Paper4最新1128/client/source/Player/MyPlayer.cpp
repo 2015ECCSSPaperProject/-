@@ -279,10 +279,10 @@ void MyPlayer::RendPosterSE()
 		// 破き始め
 		if (models[(int)model_part]->GetParam(0) == 1)
 		{
-			if (poster_num != -1)
-			{
-				Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 20, 0), paper_obj_mng->Get_point(poster_num), 4);
-			}
+			//if (poster_num != -1)
+			//{
+			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 20, 0), paper_obj_mng->Get_point(poster_num), 4);
+			//}
 			se_receive = se->Play("破る");
 			se_step = 99;	// ステップ終わり
 		}
@@ -297,10 +297,10 @@ void MyPlayer::RendFlyerSE()
 		// 破き始め
 		if (models[(int)model_part]->GetParam(0) == 1)
 		{
-			if (poster_num != -1)
-			{
-				Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 20, 0), paper_obj_mng->Get_point(poster_num), 4);
-			}
+			//if (poster_num != -1)
+			//{
+			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 20, 0), paper_obj_mng->Get_point(poster_num), 4);
+			//}
 			se_receive = se->Play("破る");
 			se_step = 99;	// ステップ終わり
 		}
@@ -331,10 +331,10 @@ void MyPlayer::RendCalendarSE()
 		// 雄叫び
 		if (models[(int)model_part]->GetParam(5) == 3)
 		{
-			if (poster_num != -1)
-			{
-				Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
-			}
+			//if (poster_num != -1)
+			//{
+			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
+			//}
 			se_step = 99;	// ステップ終わり
 		}
 	}
@@ -353,10 +353,10 @@ void MyPlayer::RendMagazineSE()
 		// 破き
 		if (models[(int)model_part]->GetParam(5) == 1)
 		{
-			if (poster_num != -1)
-			{
-				Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
-			}
+			//if (poster_num != -1)
+			//{
+			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
+			//}
 			se->Stop("マガジン破り", se_receive);
 			se->Play("マガジン破り2");
 			se_step = 99;	// ステップ終わり
@@ -388,10 +388,10 @@ void MyPlayer::RendMoneySE()
 		// 投げ捨て
 		if (models[(int)model_part]->GetParam(5) == 3)
 		{
-			if (poster_num != -1)
-			{
-				Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
-			}
+			//if (poster_num != -1)
+			//{
+			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
+			//}
 			se->Play("サイン破り2");
 			se_step = 99;	// ステップ終わり
 		}
@@ -420,10 +420,10 @@ void MyPlayer::RendSeisyoSE()
 		// 破き
 		if (models[(int)model_part]->GetParam(5) == 2)
 		{
-			if (poster_num != -1)
-			{
-				Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
-			}
+			//if (poster_num != -1)
+			//{
+			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
+			//}
 			se->Stop("聖書破り", se_receive);
 			se->Play("聖書破り3");
 			se_step = 99;	// ステップ終わり
@@ -439,10 +439,10 @@ void MyPlayer::RendSignSE()
 		// 破き始め
 		if (models[(int)model_part]->GetParam(5) == 1)
 		{
-			if (poster_num != -1)
-			{
-				Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
-			}
+			//if (poster_num != -1)
+			//{
+			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
+			//}
 			se->Play("サイン破り");
 			se_step++;
 		}
@@ -471,10 +471,10 @@ void MyPlayer::RendShinbunSE()
 		// 破き始め
 		if (models[(int)model_part]->GetParam(5) == 1)
 		{
-			if (poster_num != -1)
-			{
-				Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
-			}
+			//if (poster_num != -1)
+			//{
+			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
+			//}
 			se->Play("新聞破り");
 			se_step++;
 		}
@@ -503,10 +503,10 @@ void MyPlayer::RendToileSE()
 		// 破き
 		if (models[(int)model_part]->GetParam(5) == 1)
 		{
-			if (poster_num != -1)
-			{
-				Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
-			}
+			//if (poster_num != -1)
+			//{
+			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
+			//}
 			se->Stop("トイレ破り", se_receive);
 			se->Play("トイレ破り2");
 			se_step = 99;	// ステップ終わり
@@ -522,10 +522,10 @@ void MyPlayer::RendZasshiSE()
 		// 破き始め
 		if (models[(int)model_part]->GetParam(5) == 1)
 		{
-			if (poster_num != -1)
-			{
-				Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
-			}
+			//if (poster_num != -1)
+			//{
+			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
+			//}
 			se_receive = se->Play("短い破り");
 			se_step = 99;	// ステップ終わり
 		}
@@ -557,10 +557,10 @@ void MyPlayer::RendShojiSE()
 		// 蹴り
 		if (models[(int)model_part]->GetParam(5) == 3)
 		{
-			if (poster_num != -1)
-			{
-				Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
-			}
+			//if (poster_num != -1)
+			//{
+			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
+			//}
 			se->Play("サイン破り");
 			se_step = 99;	// ステップ終わり
 		}

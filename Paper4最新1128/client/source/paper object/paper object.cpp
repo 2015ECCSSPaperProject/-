@@ -43,6 +43,7 @@ const Vector3 &Paper_obj::Get_pos()
 void Paper_obj::Rend()
 {
 	hiteffect->Action();
+	Number_Effect::SetNum(position + Vector3(0, 10, 0), point, 4);
 	broken = true;
 }
 
