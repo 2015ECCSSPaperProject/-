@@ -85,14 +85,14 @@ void BasePlayer::Initialize(iex3DObj **objs)
 
 	// 絶対低い順に並べる
 	// 案ロックカウント
-	skill_data[(int)SKILL::GUN].unlock_rend_count = 0;
-	skill_data[(int)SKILL::SYURIKEN].unlock_rend_count = 1;
-	skill_data[(int)SKILL::KABUTO].unlock_rend_count = 10;
+	skill_data[(int)SKILL::GUN].unlock_rend_count = 15;
+	skill_data[(int)SKILL::SYURIKEN].unlock_rend_count = 0;
+	skill_data[(int)SKILL::KABUTO].unlock_rend_count = 30;
 
 	// クールタイム
 	skill_data[(int)SKILL::GUN].cool_time = 600;
-	skill_data[(int)SKILL::SYURIKEN].cool_time = 100;
-	skill_data[(int)SKILL::KABUTO].cool_time = 150;
+	skill_data[(int)SKILL::SYURIKEN].cool_time = 300;
+	skill_data[(int)SKILL::KABUTO].cool_time = 900;
 
 	// 全部ロックをかける
 	for (int i = 0; i < (int)SKILL::MAX; i++)
@@ -100,9 +100,9 @@ void BasePlayer::Initialize(iex3DObj **objs)
 		skill_data[i].unlock = false;
 		skill_data[i].wait_time = 0;
 	}
-	skill_data[(int)SKILL::GUN].unlock = true; // 最初のスキルは最初から使える
+	skill_data[(int)SKILL::SYURIKEN].unlock = true; // 最初のスキルは最初から使える
 
-	select_skill = (int)SKILL::GUN;
+	select_skill = (int)SKILL::SYURIKEN;
 
 
 	// 行動状態初期化
@@ -212,6 +212,10 @@ void BasePlayer::Render_forword()
 	{
 		barrier->Render();
 	}
+}
+
+void BasePlayer::Render_rush()
+{
 	rush->Render();
 }
 

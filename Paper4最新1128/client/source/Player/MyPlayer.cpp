@@ -265,8 +265,8 @@ void MyPlayer::Control_all()
 		{
 			const int FLAG[] =
 			{
-				(int)PLAYER_SKILL::GUN,
 				(int)PLAYER_SKILL::SYURIKEN,
+				(int)PLAYER_SKILL::GUN,
 				(int)PLAYER_SKILL::KABUTO,
 			};
 

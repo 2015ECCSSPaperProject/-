@@ -471,7 +471,7 @@ void SceneMain::Render()
 		// グロウ
 		DeferredManager.BeginDrawGlow();
 		//player_mng->EffectRender();
-		player_mng->Render_forword();	// バリアー	
+		player_mng->Render_rush();
 		DeferredManager.EndDrawGlow();
 
 	

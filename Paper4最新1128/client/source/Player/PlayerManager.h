@@ -47,6 +47,7 @@ public:
 	void Update();
 	void Render(iexShader *shader = nullptr, char *name = '\0');
 	void Render_forword();
+	void Render_rush();
 	//===============================================
 	//	エフェクトの更新と描画
 	//===============================================
