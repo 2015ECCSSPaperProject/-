@@ -269,6 +269,7 @@ void UI::Render_mark()
 				tv[0] = 0, tv[1] = 1;
 				Billboard::Draw3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0), image[IMAGE::MARK], 4, 4, tu, tv, RS_COPY);
 
+				iexSystem::Device->SetRenderState(D3DRS_ZENABLE, FALSE);//‚±‚±‚ðFalse‚É‚·‚é‚Æ
 				// ‚±‚êB‚Ü‚¤‚·‚©
 				Vector3 p_pos = my_player->Get_pos();
 				image[IMAGE::ACTION_DRAG]->SetScale(7.0f);
@@ -276,6 +277,8 @@ void UI::Render_mark()
 				image[IMAGE::ACTION]->SetARGB(255, 200, MinusCol, MinusCol);
 				//image[IMAGE::ACTION]->SetAngle(2);
 				image[IMAGE::ACTION]->SetScale(3.0f);
+
+
 
 				Vector3 ViewVec;
 				ViewVec.x = matView._11;
@@ -290,6 +293,9 @@ void UI::Render_mark()
 
 				ViewVec.Normalize();
 				image[IMAGE::ACTION]->Render3D(paper_obj_mng->Get_pos(i) + (ViewVec * d_moveX) + Vector3(0, 24, 0) + ViewVecZ * -1);
+		
+				iexSystem::Device->SetRenderState(D3DRS_ZENABLE, TRUE);//‚±‚±‚ðFalse‚É‚·‚é‚Æ
+
 			}
 			else
 			{	
@@ -301,6 +307,8 @@ void UI::Render_mark()
 				tu[0] = 0, tu[1] = .5f;
 				tv[0] = 0, tv[1] = 1;
 				Billboard::Draw3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0), image[IMAGE::MARK], 4, 4, tu, tv, RS_COPY);
+
+				iexSystem::Device->SetRenderState(D3DRS_ZENABLE, FALSE);//‚±‚±‚ðFalse‚É‚·‚é‚Æ
 
 				// ‚±‚êB‚Ü‚¤‚·‚©
 				Vector3 p_pos = my_player->Get_pos();
@@ -317,6 +325,8 @@ void UI::Render_mark()
 				ViewVec.Normalize();
 				image[IMAGE::ACTION]->Render3D(paper_obj_mng->Get_pos(i) + (ViewVec * -4.2) + Vector3(0, 24, 0));
 				
+				iexSystem::Device->SetRenderState(D3DRS_ZENABLE, TRUE);//‚±‚±‚ðFalse‚É‚·‚é‚Æ
+
 
 				//image[IMAGE::ARROW_RIGHT]->SetScale(5.0f);
 				//image[IMAGE::ARROW_RIGHT]->Render3D(p_pos + Vector3(20, 20, 0));
