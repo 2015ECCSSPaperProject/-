@@ -5,7 +5,7 @@
 HitEffect::HitEffect()
 {
 	hitefffect = new AnimationRippleEx("DATA/effect/DamageEffect.png", 12, 3, 6, 30, -1.0f);
-	sphere = new AnimationRippleEx("DATA/effect/sphereBlack.png", 12, 3, 6, 10, 2.0f);
+	sphere = new AnimationRippleEx("DATA/effect/sphereAlpha.png", 12, 3, 6, 10, 2.0f);
 	pos = Vector3(0.0f, 0.0f, 0.0f);
 }
 HitEffect::~HitEffect()
