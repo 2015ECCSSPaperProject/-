@@ -58,7 +58,21 @@ void Stage::Update()
 void Stage::Render( iexShader *shader, char *name )
 {
 	for( unsigned int i = 0; i < show_model.size(); i++ )
-	{		
+	{
+		show_model[i]->model->Render( shader, name );
+	}
+}
+
+void Stage::Render_culling( const Vector3 &pos, const Vector3 &front, iexShader *shader, char *name )
+{
+	for( unsigned int i = 0; i < show_model.size(); i++ )
+	{
+		// viewfront‚Ì•ûŒü‚ÉˆÚ“®‚³‚¹‚é
+		Vector3 modelpos = show_model[i]->model->GetPos() + front * show_model[i]->size;
+		// Œã‚ë‚Í•`‰æ‚µ‚È‚¢
+		if( Vector3Dot( modelpos - pos, front ) < 0 )
+			continue;
+
 		show_model[i]->model->Render( shader, name );
 	}
 }

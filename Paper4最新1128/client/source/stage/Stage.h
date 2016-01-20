@@ -19,6 +19,7 @@ public:
 	void Release();
 	void Update();
 	void Render( iexShader *shader, char *name );
+	void Render_culling( const Vector3 &pos, const Vector3 &front, iexShader *shader, char *name );
 	void Render_collision_model( iexShader *shader, char *name ); // ‰e‚Æ‚©
 	void RenderForward();
 	void Render_inhabitants( iexShader *shader, char *name );
