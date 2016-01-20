@@ -37,7 +37,7 @@ private:
 
 	enum : int
 	{
-		COLLISION_UP_SHIFT = 4 // “–‚½‚è”»’è‚ÅŒ´“_‚ðã‚É‚¸‚ç‚·‹——£
+		COLLISION_UP_SHIFT = 8 // “–‚½‚è”»’è‚ÅŒ´“_‚ðã‚É‚¸‚ç‚·‹——£
 	};
 
 	void Load_area();
