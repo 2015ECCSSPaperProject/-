@@ -62,7 +62,6 @@ void Stage::Render(iexShader *shader, char *name)
 		{
 			show_model[i]->Render( shader, name );
 		}
-		inhabitants->Render( shader, name );
 	}
 	else
 	{
@@ -79,6 +78,11 @@ void Stage::RenderForward()
 
 	area->Render();
 
+}
+// ’¬‚Ìl•`‰æ
+void Stage::Render_inhabitants( iexShader *shader, char *name )
+{
+	inhabitants->Render( shader, name );
 }
 
 

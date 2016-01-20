@@ -382,6 +382,7 @@ void SceneMain::Render()
 		DeferredManager.G_Bigin();
 
 		stage->Render(shaderD, "G_Buffer");
+		stage->Render_inhabitants( shaderD, "G_Buffer" );
 		sky->Render(shaderD, "G_Buffer");
 		player_mng->Render(shaderD, "G_Buffer");
 		paper_obj_mng->Render(shaderD, "G_Buffer");
