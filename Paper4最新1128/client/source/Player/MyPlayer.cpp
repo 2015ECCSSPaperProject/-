@@ -13,7 +13,8 @@
 #include	"../paper object/paper object manager.h"
 #include	"../paper object/Rend data.h"
 #include	"../Rush/Rush.h"
-
+#include	"../SkillBegin/SkillBegin.h"
+#include	"../Effect/Effect.h"
 //****************************************************************************************************************
 //
 //  初期化
@@ -268,8 +269,8 @@ void MyPlayer::Control_all()
 		{
 			const int FLAG[] =
 			{
-				(int)PLAYER_SKILL::SYURIKEN,
 				(int)PLAYER_SKILL::GUN,
+				(int)PLAYER_SKILL::SYURIKEN,
 				(int)PLAYER_SKILL::KABUTO,
 			};
 
@@ -641,10 +642,15 @@ void MyPlayer::Set_action(ACTION_PART part)
 {
 	if (action_part != part)
 	{
+		if (part == ACTION_PART::TRANS_FORM)
+		{
+			skill_begin->Action();
+		}
 		if (action_part == ACTION_PART::SYURIKEN && part == ACTION_PART::MOVE)
 		{
 			// 手裏剣エフェクトストップ
 			rush->Stop();
+			Sand_effect(pos.x, pos.y, pos.z);
 		}
 		if (action_part == ACTION_PART::MANHOLE && part == ACTION_PART::MOVE)
 		{

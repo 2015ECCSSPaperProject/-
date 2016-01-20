@@ -458,3 +458,22 @@ void AuraMAXEffect(Vector3 _pos, float _scale, Vector3 _col)
 	}
 
 
+
+	void Sand_effect(float x, float y, float z)
+	{
+		Vector3 Pos, Move, Power;
+
+		for (int i = 0; i < 50; i++){
+			Pos.x = x + (rand() % 24 - 12);
+			Pos.y = y+10;
+			Pos.z = z + (rand() % 24 - 12);
+			Move.x = (rand() % 3 - 1.5f)*0.5f;
+			Move.y = (rand() % 3 + 1.0f) * 0.5f;
+			Move.z = (rand() % 3 - 1.5f)*0.5f;
+			Power.x = .0f;
+			Power.y = .001f;
+			Power.z = .0f;
+
+			particle->Set3(0, 0, 1.0f, 60, .0f, 30, .75f, &Pos, &Move, &Power, 0, .01f, 1.0f, .0f, .75f, 5.0f, 1.001f, RS_COPY);
+		}
+	}

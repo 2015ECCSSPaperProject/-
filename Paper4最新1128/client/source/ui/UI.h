@@ -36,8 +36,8 @@ public:
 		ACTION,
 		TAPE,
 		TAPE_BAR,
-		SKILL_SYURIKEN,
 		SKILL_GUN,
+		SKILL_SYURIKEN,
 		SKILL_KABUTO,
 		SKILL_FRAME,
 		SKILL_SELECT,
@@ -50,6 +50,8 @@ public:
 		ARROW_DOWN,
 		ARROW_ROLL,
 		MARK,
+		ACTION_DRAG,
+		ACTION_HOLD,
 		MAX
 	};
 	enum class MANHOLE_FADE_TYPE
@@ -112,6 +114,8 @@ private:
 	float savePercent[SKILL_MAX];// 過去のパーセントを持っている 0.0f~1.0fまで
 	//AnimationRippleEx*  SkileSphere_2;
 	//AnimationRippleEx*  SkileSphere_3;
+	AnimationRippleEx* action_hold;
+	AnimationRippleEx* action_drag;
 
 
 	//===============================================

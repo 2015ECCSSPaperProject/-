@@ -14,6 +14,8 @@ public:
 	void Update();
 	void Render(Vector3 pos, DWORD dwFlag);
 	void Render(float x, float y, DWORD dwFlag);
+
+	bool isDoing(){ return isAction; }
 private:
 	iex2DObj* obj;
 	

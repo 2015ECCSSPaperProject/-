@@ -75,8 +75,8 @@ void AnimationRippleEx::Update()
 	if (nowFlame >= alphaNear)
 	{
 		// 100-100=0  100-50=50   0/50
-		float A = (float)(endFlame - nowFlame);
-		float B = (float)(endFlame - alphaFar);
+		float A = ((float)endFlame - nowFlame);
+		float B = ((float)endFlame - alphaFar);
 		alpha = A / B;
 	}
 	else
@@ -94,7 +94,11 @@ void AnimationRippleEx::Update()
 
 void AnimationRippleEx::Render(Vector3 pos, DWORD dwFlag)
 {
-	if (isAction == false)return;//実行されてないなら出てけ！！
+	if (isAction == false)
+	{
+		int i = 0;
+		return;//実行されてないなら出てけ！！
+	}
 
 	obj->Render3D(pos, dwFlag);
 }

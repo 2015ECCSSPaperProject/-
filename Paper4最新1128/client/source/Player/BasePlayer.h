@@ -5,7 +5,7 @@ class AnimationUV;
 class Explosion;
 class Barrier;
 class Rush;
-
+class SkillBegin;
 /*	ベースプレイヤー(クライアント)	*/
 
 #define TYPE1
@@ -56,7 +56,7 @@ public:
 		REND_SHOJI,
 		MAX
 	};
-	enum class SKILL{ SYURIKEN, GUN, KABUTO, MAX };
+	enum class SKILL{ GUN, SYURIKEN, KABUTO, MAX };
 
 protected:
 	//===============================================
@@ -322,6 +322,7 @@ protected:
 	ACTION_PART action_part;	// 現在のプレイヤーのモード
 	Barrier *barrier;			// バリアエフェクト
 	Rush *rush;
+	SkillBegin *skill_begin;
 	DO_FLAG do_flag;			// Zキー押したら何をするか
 
 

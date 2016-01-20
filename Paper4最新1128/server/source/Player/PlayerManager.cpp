@@ -86,7 +86,7 @@ void PlayerManager::Render()
 	}
 }
 
-int PlayerManager::Check_attack(int me)
+int PlayerManager::Check_attack(int me, float dist)
 {
 	int no = -1;
 	for (int i = 0; i < PLAYER_MAX; i++)
@@ -97,13 +97,13 @@ int PlayerManager::Check_attack(int me)
 		Vector3 vec(players[i]->Get_pos() - players[me]->Get_pos());
 
 		// ‹——£
-		if (vec.Length() < 16)
+		if (vec.LengthSq() < dist*dist)
 		{
 			vec.Normalize();
 			Vector3 front(sinf(players[me]->Get_angleY()), 0, cosf(players[me]->Get_angleY()));
 
 			// Šp“x
-			if (Vector3Dot(vec, front) > .707f)
+			if (Vector3Dot(vec, front) > .114f)
 			{
 				no = i;
 				break;

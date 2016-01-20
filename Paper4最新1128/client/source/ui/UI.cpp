@@ -1,6 +1,6 @@
 #include "iextreme.h"
 #include "../Player/BasePlayer.h"
-
+#include "../../../share_data/Enum_public.h"
 #include "../Scene/SceneMain.h"
 #include "../pie_graph/pie_graph.h"
 #include "UI.h"
@@ -98,6 +98,12 @@ void UI::Initialize(BasePlayer *my)
 	image[IMAGE::ARROW_DOWN] = new iex2DObj("DATA/UI/action/Down_Cursor.png");
 	image[IMAGE::ARROW_ROLL] = new iex2DObj("DATA/UI/action/rot_Cursor.png");
 	image[IMAGE::MARK] = new iex2DObj("DATA/Camera/mark.png");
+	image[IMAGE::ACTION_HOLD] = new iex2DObj("DATA/UI/action/ホールド！.png");
+	image[IMAGE::ACTION_DRAG] = new iex2DObj("DATA/UI/action/ドラッグ.png");
+	action_hold = new AnimationRippleEx("DATA/UI/action/ホールド！.png",
+		40, 24, 32, 12.2f, (12.2f / 40.0f), true);
+	action_drag = new AnimationRippleEx("DATA/UI/action/ドラッグ.png",
+		40, 24, 32, 12.2f, (12.2f / 40.0f), true);
 
 	// スーパー西田タイム
 	C_Five = new AnimationRippleEx("DATA/UI/call/five.png",
@@ -140,11 +146,18 @@ UI::~UI()
 	delete	C_Three;
 	delete	C_Two;
 	delete	C_One;
+
+	delete action_drag;
+	delete action_hold;
 }
 
 void UI::Update()
 {
 	mode->Update();
+
+	// アクションボタンアニメーション
+	//action_hold->Update();
+	//action_drag->Update();
 }
 
 void UI::Render()
@@ -161,25 +174,51 @@ void UI::Render()
 
 void UI::Render_mark()
 {
+	bool isRange = false;
 	for (int i = 0; i < paper_obj_mng->Get_numof(); i++)
 	{
 		if (!paper_obj_mng->Can_rend(i))continue;
-		float tu[2];
+		float tu[2], tv[2];
 		if (my_player->Get_poster_num() == i)
 		{
-			tu[0] = 1, tu[1] = .5f;
+			tu[0] = 0, tu[1] = 1;
+			tv[0] = 0, tv[1] = 1;
+			isRange = true;
 			if (my_player->Get_action() == BasePlayer::ACTION_PART::REND_OBJ)
 			{
+				//action_drag->Stop();
+				//action_hold->Stop();
 				continue;
+			}
+			else if (my_player->Get_action() == BasePlayer::ACTION_PART::REND
+				|| my_player->Get_controlDesc().controlFlag & (int)PLAYER_CONTROL::LEFT_CLICK
+				)
+			{
+				//action_hold->Stop();
+				//if (!action_drag->isDoing()) action_drag->Action();
+				//action_drag->Render(my_player->Get_pos() + Vector3(0, 12, 0), RS_COPY);
+				Billboard::Draw3D(my_player->Get_pos() + Vector3(0, 15, 0), image[IMAGE::ACTION_DRAG], 7, 7, tu, tv, RS_COPY);
+			}
+			else
+			{	
+				//action_drag->Stop();
+				//if (!action_hold->isDoing()) action_hold->Action();
+				//action_hold->Render(my_player->Get_pos() + Vector3(0, 12, 0), RS_COPY);
+				Billboard::Draw3D(my_player->Get_pos() + Vector3(0, 15, 0), image[IMAGE::ACTION_HOLD], 7, 7, tu, tv, RS_COPY);
 			}
 		}
 		else
 		{
 			tu[0] = 0, tu[1] = .5f;
+			tv[0] = 0, tv[1] = 1;
+			Billboard::Draw3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0), image[IMAGE::MARK], 4, 4, tu, tv, RS_COPY);
 		}
-		float tv[2] = { 0, 1 };
-		Billboard::Draw3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0), image[IMAGE::MARK], 4, 4, tu, tv, RS_COPY);
 	}
+	//if (!isRange)
+	//{
+	//	action_drag->Stop();
+	//	action_hold->Stop();
+	//}
 }
 
 //*****************************************************************************************************************************
@@ -230,7 +269,6 @@ void UI::Mode::Main::Update()
 	me->C_Three->Update();
 	me->C_Two->Update();
 	me->C_One->Update();
-
 
 	//// スキル溜まったら波紋の更新
 	//for (int i = 0; i < SKILL_MAX; i++)
@@ -381,8 +419,8 @@ void UI::SkillGauge()
 		gauge->Render(percent, SkillX + (i * (80)), (200 + SKILL_Y), 128, 128, i * 128, 0, 128, 128, RS_COPY, col);
 
 		// ￥スキルアイコンや
-		image[IMAGE::SKILL_SYURIKEN + i]->SetARGB(col);
-		image[IMAGE::SKILL_SYURIKEN + i]->Render(SkillX + (48 + i * 80), 216 + 32 + SKILL_Y, 32, 32, 0, 0, 32, 32);
+		image[IMAGE::SKILL_GUN + i]->SetARGB(col);
+		image[IMAGE::SKILL_GUN + i]->Render(SkillX + (48 + i * 80), 216 + 32 + SKILL_Y, 32, 32, 0, 0, 32, 32);
 
 
 	}

@@ -14,7 +14,6 @@
 #include	"../score/Score.h"
 #include	"../timer/Timer.h"
 #include "../paperQueue/paperQueue.h"
-
 #include	"../Manhole/Manhole.h"
 
 /*	ベースプレイヤー	*/
@@ -645,7 +644,7 @@ void BasePlayer::Action::Attack::Initialize()
 
 
 	// 固まらせる処理
-	target_no = player_mng->Check_attack(me->m_id);
+	target_no = player_mng->Check_attack(me->m_id, 24);
 	if (target_no != -1)
 	{
 		// 座標と向きを変更
@@ -1041,14 +1040,20 @@ void BasePlayer::Action::Syuriken::Initialize()
 	accel = max_speed;
 	kasoku = .25f;
 
-	syurikentaimaa = (int)timer->Get_second_limit();
-	r = false;
+	hit_stop = 0;
 
 	ServerManager::ResetControl(me->mynumber);
 }
 
 void BasePlayer::Action::Syuriken::Update(const CONTROL_DESC &_ControlDesc)
 {
+	if (hit_stop > 0)
+	{
+		me->move = VECTOR_ZERO;
+		hit_stop--;
+		return;
+	}
+
 	const Vector3 move_vec = Vector3(sinf(me->angleY), 0, cosf(me->angleY));
 	me->move = move_vec * accel;
 	if ((accel -= kasoku) < max_speed * .5f)
@@ -1080,6 +1085,7 @@ void BasePlayer::Action::Syuriken::Update(const CONTROL_DESC &_ControlDesc)
 			data.ID = rend_no;
 			player_mng->Get_player(n)->paperqueue->Push(data);
 		}
+		hit_stop = 6;
 	}
 
 	if (_ControlDesc.controlFlag & (int)PLAYER_CONTROL::SPACE)
@@ -1088,6 +1094,13 @@ void BasePlayer::Action::Syuriken::Update(const CONTROL_DESC &_ControlDesc)
 		me->isJump = true;
 		me->invincible = false;
 		me->Change_action(ACTION_PART::MOVE);
+	}
+
+	// vs Player
+	int target_no = player_mng->Check_attack(me->m_id, 10);
+	if (target_no != -1)
+	{
+		player_mng->Get_player(target_no)->Change_action(ACTION_PART::DIE);
 	}
 }
 
@@ -1102,6 +1115,9 @@ void BasePlayer::Collision_syuriken()
 		prev_move.Normalize();
 		if (n.x*prev_move.x + n.z*prev_move.z < -0.9f)	// 壁に対してほぼ垂直にヒット
 		{
+			jump_pow = 2.0f;
+			isJump = true;
+			invincible = false;
 			Change_action(ACTION_PART::MOVE);	// 手裏剣解除
 		}
 		else

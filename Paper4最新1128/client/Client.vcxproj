@@ -167,6 +167,7 @@
     <ClCompile Include="source\Scene\SceneSelect.cpp" />
     <ClCompile Include="source\Scene\SceneTitle.cpp" />
     <ClCompile Include="source\score\Score.cpp" />
+    <ClCompile Include="source\SkillBegin\SkillBegin.cpp" />
     <ClCompile Include="source\skill_gauge\skill_gauge.cpp" />
     <ClCompile Include="source\sound\SoundManager.cpp" />
     <ClCompile Include="source\stage\Area.cpp" />
@@ -249,6 +250,7 @@
     <ClInclude Include="source\Scene\SceneTitle.h" />
     <ClInclude Include="source\score\Score.h" />
     <ClInclude Include="source\ShareData\EventData.h" />
+    <ClInclude Include="source\SkillBegin\SkillBegin.h" />
     <ClInclude Include="source\skill_gauge\skill_gauge.h" />
     <ClInclude Include="source\sound\SoundManager.h" />
     <ClInclude Include="source\stage\Area.h" />

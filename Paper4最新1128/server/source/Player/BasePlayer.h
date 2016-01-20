@@ -242,11 +242,10 @@ protected:
 		class Syuriken : public Base
 		{
 		private:
-			int syurikentaimaa;
+			int hit_stop;
 			float max_speed;
 			float accel;
 			float kasoku;
-			bool r;
 		public:
 			Syuriken(BasePlayer*me) : Base(me){}
 

@@ -42,7 +42,7 @@ public:
 	//===============================================
 	//	”»’è
 	//===============================================
-	int Check_attack(int me);
+	int Check_attack(int me, float dist);
 	void Check_gun_attack(int me, float radius);
 
 

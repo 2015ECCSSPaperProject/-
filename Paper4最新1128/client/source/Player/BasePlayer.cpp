@@ -1,7 +1,7 @@
 #include	"iextreme.h"
 #include	"../system/system.h"
 #include	"BasePlayer.h"
-
+#include	"../SkillBegin/SkillBegin.h"
 #include	"../../../share_data/Enum_public.h"
 #include	"../Barrier/Barrier.h"
 #include	"../Rush/Rush.h"
@@ -11,7 +11,7 @@
 #include	"../Effect/Effect.h"
 #include	"../paper object/paper object manager.h"
 #include	"../Manhole/Manhole.h"
-
+#include	"../Effect/Effect.h"
 /*	ベースプレイヤー	*/
 
 //****************************************************************************************************************
@@ -61,9 +61,9 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	isMyNunber = false;
 	kind_paper_obj = -1;
 	barrier = new Barrier;
-	isBarrier = false;
+	skill_begin = new SkillBegin;
 	rush = new Rush;
-
+	isBarrier = false;
 	// 3D実体
 	models[(int)MODEL::NORMAL]	 = objs[(int)PlayerManager::CLONE_TYPE::NORMAL]->Clone();
 	models[(int)MODEL::DIE]		 = objs[(int)PlayerManager::CLONE_TYPE::DIE]->Clone();
@@ -85,8 +85,8 @@ void BasePlayer::Initialize(iex3DObj **objs)
 
 	// 絶対低い順に並べる
 	// 案ロックカウント
-	skill_data[(int)SKILL::GUN].unlock_rend_count = 15;
-	skill_data[(int)SKILL::SYURIKEN].unlock_rend_count = 0;
+	skill_data[(int)SKILL::GUN].unlock_rend_count = 0;
+	skill_data[(int)SKILL::SYURIKEN].unlock_rend_count = 1;
 	skill_data[(int)SKILL::KABUTO].unlock_rend_count = 30;
 
 	// クールタイム
@@ -100,9 +100,9 @@ void BasePlayer::Initialize(iex3DObj **objs)
 		skill_data[i].unlock = false;
 		skill_data[i].wait_time = 0;
 	}
-	skill_data[(int)SKILL::SYURIKEN].unlock = true; // 最初のスキルは最初から使える
+	skill_data[(int)SKILL::GUN].unlock = true; // 最初のスキルは最初から使える
 
-	select_skill = (int)SKILL::SYURIKEN;
+	select_skill = (int)SKILL::GUN;
 
 
 	// 行動状態初期化
@@ -139,6 +139,7 @@ void BasePlayer::Release()
 	}
 	delete barrier;
 	delete rush;
+	delete skill_begin;
 }
 
 
@@ -188,6 +189,7 @@ void BasePlayer::Update()
 		if (isBarrier) barrier->Stop();
 	}
 	rush->Update(pos, Vector3(models[(int)model_part]->TransMatrix._31, models[(int)model_part]->TransMatrix._32, models[(int)model_part]->TransMatrix._33), 25.0f, Vector3(0, angleY, 0));
+	skill_begin->Update(pos);
 }
 
 
@@ -212,6 +214,7 @@ void BasePlayer::Render_forword()
 	{
 		barrier->Render();
 	}
+	skill_begin->Render();
 }
 
 void BasePlayer::Render_rush()
@@ -281,6 +284,10 @@ void BasePlayer::Set_action(ACTION_PART part)
 {
 	if (action_part != part)
 	{
+		if (part == ACTION_PART::TRANS_FORM)
+		{
+			skill_begin->Action();
+		}
 		if (action_part == ACTION_PART::MANHOLE && part == ACTION_PART::MOVE)
 		{
 			isManhole ^= 1;
@@ -289,6 +296,7 @@ void BasePlayer::Set_action(ACTION_PART part)
 		{
 			// 手裏剣エフェクトストップ
 			rush->Stop();
+			Sand_effect(pos.x, pos.y, pos.z);
 		}
 		Change_action(part);
 	}
@@ -782,7 +790,19 @@ void BasePlayer::Action::Syuriken::Update()
 		me->m_controlDesc.controlFlag &= (0xff ^ (int)PLAYER_CONTROL::RIGHT_CLICK);
 	}
 	if (se->isPlay("手裏剣", me->se_receive))se->Set_pos("手裏剣", me->se_receive, me->pos);
-	Update_obj();
+	//Update_obj();
+
+	if (me->move.LengthSq() < 1)
+	{
+		BlurFilter::Set(8, 0, 0);
+	}
+	else
+	{
+		me->models[(int)me->model_part]->Animation();
+	}
+	me->models[(int)me->model_part]->SetScale(me->scale);
+	me->models[(int)me->model_part]->SetAngle(me->angleY);
+	me->models[(int)me->model_part]->SetPos(me->pos);
 }
 
 void BasePlayer::Action::Syuriken::Render(iexShader *shader, char *name)
