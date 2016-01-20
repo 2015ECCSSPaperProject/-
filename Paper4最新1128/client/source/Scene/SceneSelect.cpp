@@ -500,7 +500,6 @@ void SceneSelect::Update()
 			{
 				OKFlag[i] = true;
 				OKRip[i]->Action();
-				if (SOCKET_MANAGER->GetID() != i) se->Play("エントリー");
 			}
 		}
 
@@ -812,6 +811,7 @@ void SceneSelect::Render()
 				if (SOCKET_MANAGER->GetID() != i) se->Play("エントリー");
 				IconRip[i]->Action();		// 波紋■
 				isActivePlayer[i] = true;
+				if (SOCKET_MANAGER->GetID() != i) se->Play("エントリー");
 			}
 		}
 		// 文字アニメスイッチ

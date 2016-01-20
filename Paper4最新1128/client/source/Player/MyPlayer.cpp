@@ -15,6 +15,7 @@
 #include	"../Rush/Rush.h"
 #include	"../SkillBegin/SkillBegin.h"
 #include	"../Effect/Effect.h"
+#include	"../blur/blur.h"
 //****************************************************************************************************************
 //
 //  ‰Šú‰»
@@ -200,6 +201,13 @@ void MyPlayer::Update_action()
 		{
 			if (ui->GetManholeFade() != UI::MANHOLE_FADE_TYPE::F_OUT)
 				ui->SetManholeFade(UI::MANHOLE_FADE_TYPE::F_OUT);
+		}
+		break;
+
+	case ACTION_PART::SYURIKEN:
+		if (move.LengthSq() < 1)
+		{
+			BlurFilter::Set(8, 0, 0);
 		}
 		break;
 

@@ -792,11 +792,7 @@ void BasePlayer::Action::Syuriken::Update()
 	if (se->isPlay("Žè— Œ•", me->se_receive))se->Set_pos("Žè— Œ•", me->se_receive, me->pos);
 	//Update_obj();
 
-	if (me->move.LengthSq() < 1)
-	{
-		BlurFilter::Set(8, 0, 0);
-	}
-	else
+	if (me->move.LengthSq() > 1)
 	{
 		me->models[(int)me->model_part]->Animation();
 	}
