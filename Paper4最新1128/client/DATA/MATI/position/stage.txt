@@ -294,6 +294,32 @@ DATA/MATI/tenanto.IMO 3
 0
 476.8325
 
+DATA/MATI/tenanto2.IMO 3
+
+0
+0
+0
+
+655
+0
+-99
+
+0
+-120
+0
+
+-241.7635
+0
+616.7466
+
+0
+120
+0
+
+-413.2365
+0
+-517.7466l
+
 DATA/MATI/jimen.IMO 0
 
 0
@@ -424,31 +450,31 @@ DATA/MATI/hasira.IMO 3
 0
 348
 
-DATA/MATI/library.IMO 0
+DATA/MATI/library.IMO 3
 
 0
 0
 0
 
--245
+-300
 -53
-66.7
+98.7
 
 0
 -120
 0
 
-64.7
+64.5
 -53
--304
+-309.2
 
 0
 120
 0
 
-236.3
+235.5
 -53
-211.1736
+210.5
 
 DATA/MATI/wc.IMO 3
 
