@@ -61,6 +61,7 @@ bool SceneTitle::Initialize()
 	FadeControl::Setting(FadeControl::FADE_IN_W, 22);
 
 	view = new iexView();
+	view->SetProjection(D3DX_PI / 8, .1f, 10000);
 	viewPos = Vector3(0, 10, -90);
 	viewTarget = Vector3(0, 20, 0);
 	view->Set(viewPos, viewTarget);
@@ -94,7 +95,7 @@ bool SceneTitle::Initialize()
 		start_button[i].obj = new iex3DObj("DATA/paper object/Poster/posuta-.IEM");
 		start_button[i].obj->SetTexture(texture, 0);
 		start_button[i].obj->SetAngle(0, PI, PI*-.5f);
-		start_button[i].obj->SetScale(1.0f);
+		start_button[i].obj->SetScale(.75f);
 		start_button[i].obj->SetPos(start_button[0].pos);
 		start_button[i].obj->SetMotion(0);
 		start_button[i].rend = false;
@@ -128,7 +129,7 @@ SceneTitle::~SceneTitle()
 	delete mouse;
 }
 
-static float angle2 = .49f;
+static float angle2 = .37f;
 //******************************************************************
 //		ˆ—
 //******************************************************************
@@ -157,14 +158,17 @@ void SceneTitle::Update()
 
 	static Vector3 cameraPos = VECTOR_ZERO;
 
+#ifdef _DEBUG
 	if (KEY_Get(KEY_UP)){
 		cameraPos.x += sinf(angle) * 2; cameraPos.z += cosf(angle) * 2;
 	}
-	if (KEY_Get(KEY_RIGHT))angle2 += 0.05f;
-	if (KEY_Get(KEY_LEFT))angle2 -= 0.05f;
+	if (KEY_Get(KEY_RIGHT))angle2 += 0.01f;
+	if (KEY_Get(KEY_LEFT))angle2 -= 0.01f;
 	if (KEY_Get(KEY_DOWN)){
 		cameraPos.x -= sinf(angle); cameraPos.z -= cosf(angle);
 	}
+#endif
+
 	viewPos = cameraPos+ Vector3(0, 10, 0) -vecAngle * 70;
 	viewTarget = cameraPos + Vector3(0, 20, 0);
 
@@ -173,12 +177,12 @@ void SceneTitle::Update()
 	vecAngle.x = sinf(angle+angle2);
 	vecAngle.z = cosf(angle+angle2);
 	start_button[0].pos = (viewPos + vecAngle * 70);
-	start_button[0].pos.y -= .5f;
+	start_button[0].pos.y += 2.0f;
 
-	vecAngle.x = sinf(angle - 0.070f);
-	vecAngle.z = cosf(angle - 0.070f);
-	start_button[1].pos = (viewPos + vecAngle * 61);
-	start_button[1].pos.y -= .5f;
+	vecAngle.x = sinf(angle - 0.071f);
+	vecAngle.z = cosf(angle - 0.071f);
+	start_button[1].pos = (viewPos + vecAngle * 70);
+	start_button[1].pos.y += 2.0f;
 
 	mouse->Update();
 
@@ -306,13 +310,14 @@ void SceneTitle::Update()
 		break;
 	}
 
-
+#ifdef _DEBUG
 	//@debug
 	if (KEY(KEY_ENTER) == 3)
 	{
 		MainFrame->ChangeScene(new SceneSelect());
 		return;
 	}
+#endif
 }
 
 
@@ -462,12 +467,10 @@ void SceneTitle::Render()
 		DeferredManager.GetTex(SURFACE_NAME::SHADOWMAPL)->Render(0, 0, 2048/2, 2048/2, 0, 0, 2048, 2048);
 	//if ((GetKeyState('Y') & 0x80))DeferredManager.AddExposure(1.0f);
 	//if ((GetKeyState('U') & 0x80))DeferredManager.AddExposure(-1.0f);
-
-#endif
-
 	Text::Draw(32, 32, 0xff000000, "%d", mouse->pos.x);
 	Text::Draw(32, 64, 0xff000000, "%d", mouse->pos.y);
-	Text::Draw(32, 96, 0xff000000, "%.1f", angle2);
+	Text::Draw(32, 96, 0xff000000, "%.3f", angle2);
+#endif
 }
 void SceneTitle::RenderShadow()
 {
