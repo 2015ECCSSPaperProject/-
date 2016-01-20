@@ -21,6 +21,9 @@
 /*	グローバル変数	　*/
 /**********************/
 
+// EXTERNで使って
+// スコアアタックフラグ
+bool SCOREATACK_FLAG;
 
 //　スレッドを止める為に仮で作った
 //static int ThreadEND = false;
@@ -34,6 +37,8 @@ float uvMove = 0;
 //******************************************************************
 bool SceneSelect::Initialize()
 {
+	SCOREATACK_FLAG = false;
+
 	uvMove = 0;
 
 	if (!SOCKET_MANAGER->Init())
@@ -585,6 +590,7 @@ void SceneSelect::Update()
 								   InfoOKRip->Action();
 								   step = STEP::GAME;
 								   se->Play("決定");
+								   SCOREATACK_FLAG = true;	//スコアアタックフラグをON！
 							   }
 
 							   //　NO!もどる

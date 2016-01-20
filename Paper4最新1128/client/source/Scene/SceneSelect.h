@@ -117,3 +117,5 @@ private:
 
 
 };
+
+extern bool SCOREATACK_FLAG;
