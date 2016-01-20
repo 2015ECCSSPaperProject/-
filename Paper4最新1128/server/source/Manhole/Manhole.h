@@ -27,6 +27,8 @@ private:
 	ManholeMng(const ManholeMng&){}
 	ManholeMng &operator=(const ManholeMng&){}
 
+	void Load(char *filename);
+
 };
 
 #define manhole_mng ( ManholeMng::GetInstance() )

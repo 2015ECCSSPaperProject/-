@@ -237,11 +237,11 @@ void UI::Render_mark()
 
 			//↓　ホールドの
 			//アップとダウン
-			static float d_moveX = -4.3;
+			static float d_moveX = -4.3f;
 			d_moveX += 0.3f;
 			if (d_moveX >= 5)
 			{
-				d_moveX = -4.3;
+				d_moveX = -4.3f;
 			}
 
 			if (my_player->Get_action() == BasePlayer::ACTION_PART::REND_OBJ)
@@ -300,7 +300,7 @@ void UI::Render_mark()
 			else
 			{	
 				//初期化や　Xのドラッグ
-				d_moveX = -4.3;
+				d_moveX = -4.3f;
 				// こっち　ホールド！！！！！
 
 				// っこれ初期のやつｄ「
@@ -323,7 +323,7 @@ void UI::Render_mark()
 				ViewVec.y = matView._21;
 				ViewVec.z = matView._31;
 				ViewVec.Normalize();
-				image[IMAGE::ACTION]->Render3D(paper_obj_mng->Get_pos(i) + (ViewVec * -4.2) + Vector3(0, 24, 0));
+				image[IMAGE::ACTION]->Render3D(paper_obj_mng->Get_pos(i) + (ViewVec * -4.2f) + Vector3(0, 24, 0));
 				
 				iexSystem::Device->SetRenderState(D3DRS_ZENABLE, TRUE);//ここをFalseにすると
 

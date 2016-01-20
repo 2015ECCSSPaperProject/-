@@ -429,9 +429,8 @@ public:
 		stateFlag = flag;
 	}
 	// マンホール
-	bool			isManhole;
-	bool			manhole_no_haninai;
-	Vector3			next_manhole_pos;	// 降りた先の、上がった先の座標
+	bool		isManhole;
+	int			manhole_no;
 };
 
 //extern BasePlayer* player[PLAYER_MAX];

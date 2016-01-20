@@ -66,14 +66,16 @@ SE_Manager::DATA all_dataS[] =
 	{ "トイレ破り2", "DATA/Sound/SE/rend/rend_wc_paper2.wav", 1, false },
 	{ "お金破り", "DATA/Sound/SE/rend/rend_money.wav", 1, false },
 	{ "お金破り2", "DATA/Sound/SE/rend/rend_money2.wav", 1, false },
+	{ "手裏剣破り", "DATA/Sound/SE/rend/rend_syuriken.wav", 6, false },
 	{ "AT", "DATA/Sound/SE/at.wav", 1, true },
 	{ "成功", "DATA/Sound/SE/cursor3.wav", 6, false },
 	{ "エントリー", "DATA/Sound/SE/entry.wav", 6, false },
 	{ "決定", "DATA/Sound/SE/decision.wav", 2, false },
 	{ "キャンセル", "DATA/Sound/SE/cancel.wav", 2, false },
 	{ "カーソル", "DATA/Sound/SE/cursor_point.wav", 3, false },
-	{ "水", "DATA/Sound/SE/water.wav", 6, false },
+	{ "水", "DATA/Sound/SE/water.wav", 2, true },
 	{ "救急車", "DATA/Sound/SE/pi-po-.wav", 6, true },
+	{ "スキルたまる", "DATA/Sound/SE/fill_skill.wav", 2, false },
 	{ "END", nullptr }
 };
 

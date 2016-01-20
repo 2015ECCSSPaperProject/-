@@ -57,7 +57,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	// ‚»‚Ì‘¼‰Šú‰»
 	poster_num = 0;
 	isManhole = false;
-	manhole_no_haninai = false;
+	manhole_no = 0;
 	isMyNunber = false;
 	kind_paper_obj = -1;
 	barrier = new Barrier;
@@ -370,7 +370,7 @@ void BasePlayer::Action::Move::Update()
 	Update_obj();
 
 	// ƒ}ƒ“ƒz[ƒ‹”ÍˆÍ“à
-	me->manhole_no_haninai = manhole_mng->CheckManhole((me->isManhole) ? ManholeMng::LAND_TYPE::TIKA : ManholeMng::LAND_TYPE::TIJOU, me->pos, 8, &me->next_manhole_pos);
+	me->manhole_no = manhole_mng->CheckManhole((me->isManhole) ? ManholeMng::LAND_TYPE::TIKA : ManholeMng::LAND_TYPE::TIJOU, me->pos, 8);
 }
 
 void BasePlayer::Action::Move::Render(iexShader *shader, char *name)

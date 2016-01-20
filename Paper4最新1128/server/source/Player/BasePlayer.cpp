@@ -393,7 +393,7 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	//	¶ƒNƒŠƒbƒNˆ—
 	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
 	{
-		if (manhole_mng->CheckManhole((me->isManhole) ? ManholeMng::LAND_TYPE::TIKA : ManholeMng::LAND_TYPE::TIJOU, 8, &me->pos, &me->angleY, &me->next_manhole_pos))
+		if (manhole_mng->CheckManhole((me->isManhole) ? ManholeMng::LAND_TYPE::TIKA : ManholeMng::LAND_TYPE::TIJOU, 12, &me->pos, &me->angleY, &me->next_manhole_pos))
 		{
 			me->Change_action(ACTION_PART::MANHOLE);
 		}

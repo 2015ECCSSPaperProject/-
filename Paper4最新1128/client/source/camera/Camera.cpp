@@ -258,7 +258,7 @@ void Camera::Mode::TPS::Initialize(const Vector3 &pos, const Vector3 &target)
 
 void Camera::Mode::TPS::Update()
 {
-	//static int frame = 0;
+	static bool in_manhole = false;
 	//static int k = -1;
 	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::REND_OBJ)
 	{
@@ -273,6 +273,18 @@ void Camera::Mode::TPS::Update()
 		}
 	}
 	//else frame++;
+
+	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::MANHOLE&&!in_manhole)
+	{
+		me->angle.y = iangle = me->my_player->Get_angleY();
+		me->effect_camera->Set_pattern((me->my_player->isManhole) ? 12 : 11);
+		in_manhole = true;
+		return;
+	}
+	else if (me->my_player->Get_action() == BasePlayer::ACTION_PART::MOVE)
+	{
+		in_manhole = false;
+	}
 
 	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::SYURIKEN)
 	{
@@ -343,7 +355,8 @@ void Camera::Mode::TPS::Update()
 	me->pos = me->pos * .0f + me->ipos * 1.0f;
 	me->parth.fovY = me->parth.fovY * .8f + FOVY[(int)FOV_TYPE::DEFAULT] * .2f;
 
-	if (me->my_player->isManhole)Collision();
+	//if (!me->my_player->isManhole)
+		Collision();
 
 	me->Set(me->pos, me->target);
 }
