@@ -11,6 +11,7 @@
 #include <assert.h>
 
 #include "../Animation/AnimationRippleEx.h"
+#include "../camera/Camera.h"
 
 float UI::tape_len;
 
@@ -175,6 +176,30 @@ void UI::Render()
 ///////////////////aaaaaaaaaaaaaaaaaaa
 void UI::Render_mark()
 {
+	// レンダーステート
+ 	//iexSystem::Device->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);//ここをFalseにすると
+	//iexSystem::Device->SetRenderState(D3DRS_ZENABLE, FALSE);//ここをFalseにすると
+
+	// α更新
+	
+	//float fogRate = (FogFar - pos.z) / (FogFar - FogNear);
+	//fogRate = saturate(fogRate);//指定された値を 0 ～ 1 の範囲にクランプします
+
+	//float alphaRate;
+	//float alphaNear;
+	//float alphaFar;
+	//alphaNear = 30;
+	//alphaFar = 200;
+	//alphaRate = (alphaFar - camera->Get_pos().z) / (alphaFar - alphaNear);
+	////camera->Get_pos().z;
+	//alphaRate = 255 - alphaRate * 255;
+	////ラムダ式Min~Maxの範囲に抑える　２～０
+	//auto Clamp = [](float val, float Min, float Max){
+	//	return min(Max, max(val, Min));
+	//};
+	//alphaRate = Clamp(alphaRate, 0, 255);
+	//image[IMAGE::MARK]->SetARGB((int)alphaRate, 255, 255, 255);
+
 	bool isRange = false;
 	for (int i = 0; i < paper_obj_mng->Get_numof(); i++)
 	{
@@ -306,6 +331,8 @@ void UI::Render_mark()
 			tu[0] = 0, tu[1] = .5f;
 			tv[0] = 0, tv[1] = 1;
 			Billboard::Draw3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0), image[IMAGE::MARK], 4, 4, tu, tv, RS_COPY);
+			//image[IMAGE::MARK]->Render3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0))
+
 		}
 	}
 	//if (!isRange)
@@ -313,6 +340,13 @@ void UI::Render_mark()
 	//	action_drag->Stop();
 	//	action_hold->Stop();
 	//}
+
+
+	// レンダーステート
+	//iexSystem::Device->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);//ここをFalseにすると
+	//iexSystem::Device->SetRenderState(D3DRS_ZENABLE, TRUE);//ここをFalseにすると
+
+
 }
 
 //*****************************************************************************************************************************
