@@ -6,6 +6,7 @@
 class PaperClient;
 class Thread;
 class AnimationRipple;
+class AnimationRippleEx;
 class Mouse;
 
 
@@ -41,6 +42,21 @@ private:
 	AnimationRipple* OKRip[PLAYER_MAX];
 	bool OKFlag[PLAYER_MAX];
 
+	// 参加したスキル
+	AnimationRipple* JoinRip;
+	AnimationRipple* InfoOKRip;
+	//---------------------------------------------------------------------
+	//   InfoAnimation
+	//---------------------------------------------------------------------
+	AnimationRippleEx* Info;
+	AnimationRippleEx* InfoOK;
+	AnimationRippleEx* InfoNO;
+	bool onePlay;
+	bool InfoFlag; //Infoを表示さすフラグ
+
+
+
+
 	//================================
 	//		ボタン
 	struct Button
@@ -57,6 +73,8 @@ private:
 	Button modoru;
 	Button entry;
 	Button entry2;
+	Button OKInfo_B;
+	Button NOInfo_B;
 
 	void Initialize_buttons();
 	void Update_buttons(const Vector2 &pos);
@@ -89,4 +107,13 @@ private:
 	//　スタンプの画像の2次元配列
 	iex2DObj* StampPicture[KIND_MAX][NO_MAX];
 	Mouse *mouse;
+
+	// ブラ―用
+	iex2DObj* Screen;
+	iex2DObj* BlurScreenX;
+	iex2DObj* BlurScreenY;
+	float BlurValue;
+
+
+
 };

@@ -13,6 +13,8 @@
 #include	"../sound/SoundManager.h"
 #include	"../../IEX/OKB.h"
 #include	"../Animation/AnimationRipple.h"
+#include	"../Animation/AnimationRippleEx.h"
+
 #include	"SceneTitle.h"
 
 /**********************/
@@ -25,12 +27,15 @@
 
 
 using namespace std;
+float uvMove = 0;
 
 //******************************************************************
 //		初期化・解放
 //******************************************************************
 bool SceneSelect::Initialize()
 {
+	uvMove = 0;
+
 	if (!SOCKET_MANAGER->Init())
 	{
 		MessageBox(0, "サーバーとの接続ができません", null, MB_OK);
@@ -89,8 +94,10 @@ bool SceneSelect::Initialize()
 		OKRip[i] = new AnimationRipple("DATA/Image/lobby/junbi_ok.png", 25, 0.05f);
 		OKFlag[i] = false;
 	}
-
-
+	
+	// 酸化破門
+	JoinRip = new AnimationRipple("DATA/Image/lobby/参加Rip.png", 30, 0.1f);
+	InfoOKRip= new AnimationRipple("DATA/Image/lobby/OK.png", 30, 0.1f);
 	// キャラクター
 	chara.pos = Vector3(20, -19, 0);
 	chara.angle = PI;
@@ -145,6 +152,19 @@ bool SceneSelect::Initialize()
 
 	Initialize_buttons();
 
+
+	// INFO_ANIMATION!
+	Info = new AnimationRippleEx("DATA/Image/lobby/InfoText.png",
+		12, 10, 12, 0.5f, +(0.20f / 12.0f), true);
+	onePlay = false;
+	InfoFlag = false;
+
+	// Shader
+	Screen = new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_RENDERTARGET);
+	BlurScreenX = new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_RENDERTARGET);
+	BlurScreenY= new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_RENDERTARGET);
+	BlurValue = 0.0f;
+
 	return true;
 }
 
@@ -171,7 +191,6 @@ void SceneSelect::Initialize_buttons()
 	entry.srcY = 64;
 	entry.in = false;
 
-
 	entry2.lpButton = image[IMAGE::JOIN];
 	entry2.dstX = 920;
 	entry2.dstY = 560;
@@ -180,38 +199,92 @@ void SceneSelect::Initialize_buttons()
 	entry2.srcX = 256;
 	entry2.srcY = 256;
 	entry2.in = false;
+
+
+	OKInfo_B.lpButton = new iex2DObj("DATA/Image/lobby/OK.png");
+	OKInfo_B.dstX = 680;
+	OKInfo_B.dstY = 340;
+	OKInfo_B.dstW = 128;
+	OKInfo_B.dstH = 128;
+	OKInfo_B.srcX = 128;
+	OKInfo_B.srcY = 128;
+	OKInfo_B.in = false;
+
+	NOInfo_B.lpButton = new iex2DObj("DATA/Image/lobby/NO.png");
+	NOInfo_B.dstX = 840;
+	NOInfo_B.dstY = 340;
+	NOInfo_B.dstW = 128;
+	NOInfo_B.dstH = 128;
+	NOInfo_B.srcX = 128;
+	NOInfo_B.srcY = 128;
+	NOInfo_B.in = false;
+
 }
+
 void SceneSelect::Update_buttons(const Vector2 &pos)
 {
-	if (pos.x > modoru.dstX && pos.x  < modoru.dstX + modoru.dstW &&
-		pos.y > modoru.dstY && pos.y < modoru.dstY + modoru.dstH)
+	//INFOじゃないとき
+	if (!InfoFlag)
 	{
-		if (!modoru.in){
-			se->Play("カーソル");
-			modoru.in = true;
-		}
-	}
-	else modoru.in = false;
 
-	if (pos.x > entry.dstX && pos.x  < entry.dstX + entry.dstW &&
-		pos.y > entry.dstY && pos.y < entry.dstY + entry.dstH)
-	{
-		if (!entry.in){
-			se->Play("カーソル");
-			entry.in = true;
+		if (pos.x > modoru.dstX && pos.x  < modoru.dstX + modoru.dstW &&
+			pos.y > modoru.dstY && pos.y < modoru.dstY + modoru.dstH)
+		{
+			if (!modoru.in){
+				se->Play("カーソル");
+				modoru.in = true;
+			}
 		}
-	}
-	else entry.in = false;
+		else modoru.in = false;
 
-	if (pos.x > entry2.dstX && pos.x  < entry2.dstX + entry2.dstW &&
-		pos.y > entry2.dstY && pos.y < entry2.dstY + entry2.dstH)
-	{
-		if (!entry2.in){
-			se->Play("カーソル");
-			entry2.in = true;
+		if (pos.x > entry.dstX && pos.x  < entry.dstX + entry.dstW &&
+			pos.y > entry.dstY && pos.y < entry.dstY + entry.dstH)
+		{
+			if (!entry.in){
+				se->Play("カーソル");
+				entry.in = true;
+			}
 		}
+		else entry.in = false;
+
+		if (pos.x > entry2.dstX && pos.x  < entry2.dstX + entry2.dstW &&
+			pos.y > entry2.dstY && pos.y < entry2.dstY + entry2.dstH)
+		{
+			if (!entry2.in){
+				se->Play("カーソル");
+				entry2.in = true;
+			}
+		}
+		else entry2.in = false;
+
 	}
-	else entry2.in = false;
+
+
+	//INFO
+	if (InfoFlag)
+	{
+
+		if (pos.x > OKInfo_B.dstX && pos.x  < OKInfo_B.dstX + OKInfo_B.dstW &&
+			pos.y > OKInfo_B.dstY && pos.y < OKInfo_B.dstY + OKInfo_B.dstH)
+		{
+			if (!OKInfo_B.in){
+				se->Play("カーソル");
+				OKInfo_B.in = true;
+			}
+		}
+		else OKInfo_B.in = false;
+
+		if (pos.x > NOInfo_B.dstX && pos.x  < NOInfo_B.dstX + NOInfo_B.dstW &&
+			pos.y > NOInfo_B.dstY && pos.y < NOInfo_B.dstY + NOInfo_B.dstH)
+		{
+			if (!NOInfo_B.in){
+				se->Play("カーソル");
+				NOInfo_B.in = true;
+			}
+		}
+		else NOInfo_B.in = false;
+
+	}
 }
 //*************************************************************************************************
 
@@ -291,6 +364,8 @@ SceneSelect::~SceneSelect()
 	{
 		SAFE_DELETE(IconRip[i]);
 	}
+	SAFE_DELETE(JoinRip);
+	SAFE_DELETE(InfoOKRip);
 
 	for (int i = 0; i < PLAYER_MAX; i++)
 	{
@@ -298,6 +373,12 @@ SceneSelect::~SceneSelect()
 	}
 	delete mouse;
 
+	// AnimationRippleEX
+	SAFE_DELETE(Info);
+
+	SAFE_DELETE(Screen);
+	SAFE_DELETE(BlurScreenX);
+	SAFE_DELETE(BlurScreenY);
 }
 
 //===================================================================================
@@ -385,10 +466,17 @@ void SceneSelect::Update()
 		IconRip[i]->Update();
 	}
 
+	// 参加
+	JoinRip->Update();
+	InfoOKRip->Update();
+
 
 
 	if (KEY(KEY_SPACE) == 3)
 	{
+		
+
+		Info->Action();
 		for (int i = 0; i < PLAYER_MAX; i++)
 		{
 			IconRip[i]->Action();
@@ -444,6 +532,8 @@ void SceneSelect::Update()
 	switch (step)
 	{
 	case STEP::START_NO:
+
+
 		//　Aボタン押したら
 		if (KeyBoardTRG(MOUSE_LEFT)&&entry.in)
 		{
@@ -451,6 +541,7 @@ void SceneSelect::Update()
 			//OKRip[SOCKET_MANAGER->GetID()]->Action();
 			step = STEP::START_OK;
 			se->Play("決定");
+			JoinRip->Action();
 		}
 
 		//　Aボタン押したら(Botton)
@@ -460,49 +551,106 @@ void SceneSelect::Update()
 			//OKRip[SOCKET_MANAGER->GetID()]->Action();
 			step = STEP::START_OK;
 			se->Play("決定");
+			JoinRip->Action();
 		}
 
 		break;
 	case STEP::START_OK:
 	{
-		   //　まだ準備できてないので戻ります
-		if (KeyBoardTRG(MOUSE_LEFT) && entry.in)
-		   {
-			   step = STEP::START_NO;
-			   se->Play("キャンセル");
-		   }
+						   // インフォが出てたら無効！！
+						   if (InfoFlag == false)
+						   {
 
-		   //　まだ準備できてないので戻ります(bottonver)
-		if (KeyBoardTRG(MOUSE_LEFT) && entry2.in)
-		   {
-			   step = STEP::START_NO;
-			   se->Play("キャンセル");
-		   }
-		 
+							   //　まだ準備できてないので戻ります
+							   if (KeyBoardTRG(MOUSE_LEFT) && entry.in)
+							   {
+								   step = STEP::START_NO;
+								   se->Play("キャンセル");
+							   }
+
+							   //　まだ準備できてないので戻ります(bottonver)
+							   if (KeyBoardTRG(MOUSE_LEFT) && entry2.in)
+							   {
+								   step = STEP::START_NO;
+								   se->Play("キャンセル");
+							   }
+
+						   }
+						   else
+						   {
+							   //　OK!スコアアタックを始める
+							   if (KeyBoardTRG(MOUSE_LEFT) && OKInfo_B.in)
+							   {
+								   // いくぜえええええ
+								   InfoOKRip->Action();
+								   step = STEP::GAME;
+								   se->Play("決定");
+							   }
+
+							   //　NO!もどる
+							   if (KeyBoardTRG(MOUSE_LEFT) && NOInfo_B.in)
+							   {
+								   step = STEP::START_NO;
+								   InfoFlag = false;			// INFOフラグを戻して
+								   BlurValue = 0.0f;			// ぼかしも戻すぴょん
+								   se->Play("キャンセル");
+								   
+								   return;			//出ていけ！！！
+							   }
+
+
+						   }
+
 		//　追記：同期して
 		   // 皆isResdy==2だったらゲーム画面へ！！
 		   enum { READY = 2 };
+
 		   int count(0);
 		   int active(0);
 		   for (int i = 0; i < PLAYER_MAX; ++i)
 		   {
 			   if (SOCKET_MANAGER->GetUser(i).com == UserData::ACTIVE_USER)
 				   ++active;
-
-			   // isReadyが全員OKになってたら　カウントするよ
-			   if (SOCKET_MANAGER->GetUser(i).isReady == UserData::READY_MUTCH_ALL)
-				   ++count;
 		   }
 
-		   if (SOCKET_MANAGER->GetUser(SOCKET_MANAGER->GetID()).isReady == READY)
+		   // ぼっちなら選択画面へ
+		   if (active == 1)
 		   {
-		   		//	初期シーン登録
-		   		//ThreadEND = true;
-				//MainFrame->ChangeScene(new SceneMain());	
+			   // Info
+			   if (InfoFlag == false)
+			   {
+				   InfoFlag = true;
+				   Info->Action();
+			   }
 
-			   step = STEP::GAME;
-			   
+			   // ぼかす
+			   if (BlurValue <= 2.0f)
+			   {
+				   BlurValue += 0.1f;
+			   }
+			  
+
 		   }
+		   else
+		   {
+			   // 誰か入ってきたら戻る？？？
+			   InfoFlag = false;			// INFOフラグを戻して
+			   BlurValue = 0.0f;			// ぼかしも戻すぴょん
+
+
+			   if (SOCKET_MANAGER->GetUser(SOCKET_MANAGER->GetID()).isReady == READY)
+			   {
+				   //	初期シーン登録
+				   //ThreadEND = true;
+				   //MainFrame->ChangeScene(new SceneMain());	
+
+				   step = STEP::GAME;
+
+			   }
+
+		   }
+
+
 
 	}
 		break;
@@ -521,6 +669,7 @@ void SceneSelect::Update()
 		if (FadeControl::isFadeOut == true)
 		{
 			MainFrame->ChangeScene(new SceneMain());
+			return;
 		}
 
 		break;
@@ -530,8 +679,10 @@ void SceneSelect::Update()
 		break;
 	}
 
+	// INFO_ANIMATION!Update
+	Info->Update();
+	shader2D->SetValue("BlurValue", BlurValue);
 
-	
 }
 
 
@@ -548,14 +699,18 @@ void SceneSelect::Render()
 	//{
 	//	PosterRender(i);
 	//}
-	////バックバッファ
-	//iexSystem::Device->SetRenderTarget(0, backbuffer);
+
+
+	view->Clear();
+	
+	//ブラ―用に
+	Screen->RenderTarget();
 
 	view->Clear();
 
 	// 背景
-	static float uvMove = 0;
-	uvMove += 0.2f;
+	if (uvMove <= 770.0f)	uvMove += 0.2f;
+
 	image[IMAGE::BACK2]->RenderBack(0, 0, 1280, 720, (int)uvMove, 0, 1280, 720);
 
 	// キャラクター
@@ -751,11 +906,13 @@ void SceneSelect::Render()
 		}
 
 	}
+	
+	//参加波紋
+	JoinRip->Render(entry2.dstX, entry2.dstY, RS_ADD);
 
-	// カーソル
-	bool iconFlag = false;
-	if (KeyBoard(MOUSE_LEFT))iconFlag = true;	// マウス離す
-	image[IMAGE::CURSOR]->Render(mouse->pos.x - 32, mouse->pos.y - 24, 64, 64, iconFlag * 64 , 64, 64, 64);
+
+
+
 
 	//for (int i = 0; i < PLAYER_MAX; ++i)
 	//{
@@ -763,6 +920,74 @@ void SceneSelect::Render()
 	//	Text::Draw(1000, 40 + (i * 32), 0xffffffff, "name[%d]->%s", i, SOCKET_MANAGER->GetUser(i).name);
 	//	Text::Draw(900, 470 + (i * 32), 0xff00ffff, "isReady[%d]->%d", i, SOCKET_MANAGER->GetUser(i).isReady);
 	//}
+
+	// ぼかすゲーム画面X
+	BlurScreenX->RenderTarget();
+	Screen->Render(0, 0, shader2D, "XBlur");
+	shader2D->SetValue("TextureBX", BlurScreenX);//Xブラ―の情報を送
+
+	//バックバッファにチェンジ
+	iexSystem::Device->SetRenderTarget(0, backbuffer);
+
+	// ぼかすゲーム画面
+	//Screen->Render(0, 0, shader2D, "XBlur");
+	//shader2D->SetValue("TextureBX", BlurScreen);//Xブラ―の情報を送
+	BlurScreenY->Render(0, 0, shader2D, "YBlur_M");
+
+
+
+	//INFO
+	if (InfoFlag)
+	{
+		// INFO_ANIMATIO_RENDER
+		Info->Render(-380, -170, RS_COPY);
+
+
+
+		//ボタンバージョン
+		OKInfo_B.lpButton->Render(OKInfo_B.dstX, OKInfo_B.dstY, OKInfo_B.dstW, OKInfo_B.dstH, 0, 0,
+			OKInfo_B.srcX, OKInfo_B.srcY, RS_COPY);
+		// 振れていたら
+		if (OKInfo_B.in){
+			//image[IMAGE::OK]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64, RS_ADD);
+			OKInfo_B.lpButton->SetARGB(127, 127, 127, 127);
+			OKInfo_B.lpButton->Render(OKInfo_B.dstX, OKInfo_B.dstY, OKInfo_B.dstW, OKInfo_B.dstH, 0, 0,
+				OKInfo_B.srcX, OKInfo_B.srcY, RS_ADD);
+			OKInfo_B.lpButton->SetARGB(255, 255, 255, 255);
+			OKInfo_B.lpButton->SetScale(1.2f);	// 大きく
+		}
+		else
+		{
+			OKInfo_B.lpButton->SetScale(1.0f);
+		}
+
+
+		//ボタンバージョン
+		NOInfo_B.lpButton->Render(NOInfo_B.dstX, NOInfo_B.dstY, NOInfo_B.dstW, NOInfo_B.dstH, 0, 0,
+			NOInfo_B.srcX, NOInfo_B.srcY, RS_COPY);
+		// 振れていたら
+		if (NOInfo_B.in){
+			//image[IMAGE::NO]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64, RS_ADD);
+			NOInfo_B.lpButton->SetARGB(127, 127, 127, 127);
+			NOInfo_B.lpButton->Render(NOInfo_B.dstX, NOInfo_B.dstY, NOInfo_B.dstW, NOInfo_B.dstH, 0, 0,
+				NOInfo_B.srcX, NOInfo_B.srcY, RS_ADD);
+			NOInfo_B.lpButton->SetARGB(255, 255, 255, 255);
+			NOInfo_B.lpButton->SetScale(1.2f);	// 大きく
+		}
+		else
+		{
+			NOInfo_B.lpButton->SetScale(1.0f);
+		}
+
+	}
+	// OKRIP
+	InfoOKRip->Render(OKInfo_B.dstX, OKInfo_B.dstY, RS_ADD);
+
+	// カーソル
+	bool iconFlag = false;
+	if (KeyBoard(MOUSE_LEFT))iconFlag = true;	// マウス離す
+	image[IMAGE::CURSOR]->Render(mouse->pos.x - 32, mouse->pos.y - 24, 64, 64, iconFlag * 64, 64, 64, 64);
+
 
 	//ステップ
 	switch (step)

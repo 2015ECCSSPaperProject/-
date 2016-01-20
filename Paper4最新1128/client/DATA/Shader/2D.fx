@@ -376,6 +376,22 @@ sampler GaussianSamp = sampler_state
 	AddressU = CLAMP;
 	AddressV = CLAMP;
 };
+
+texture TextureBX;
+sampler GaussianSampBX = sampler_state
+{
+	Texture = <TextureBX>;
+
+	MinFilter = LINEAR;//補間
+	MagFilter = LINEAR;//補間
+
+	MipFilter = LINEAR;
+
+	AddressU = CLAMP;
+	AddressV = CLAMP;
+};
+
+
 //------------------------------------------------------
 //		頂点フォーマット
 //------------------------------------------------------
@@ -495,8 +511,92 @@ technique gaussZ
 		//VertexShader = compile vs_3_0 VS_Basic();
 		PixelShader = compile ps_3_0 PS_gaussY();
 	}
+
+
 }
 
+float4 PS_gaussZ_M(VS_2D In) : COLOR
+{
+
+	//Xテクセルを取得   
+	float2 Texel0 = In.Tex + float2(-TU * 1 * BlurValue, 0.0f);
+	float2 Texel1 = In.Tex + float2(-TU * 2 * BlurValue, 0.0f);
+	float2 Texel2 = In.Tex + float2(-TU * 3 * BlurValue, 0.0f);
+	float2 Texel3 = In.Tex + float2(-TU * 4 * BlurValue, 0.0f);
+	float2 Texel4 = In.Tex + float2(-TU * 5 * BlurValue, 0.0f);
+
+	float2 Texel5 = In.Tex + float2(TU * 1 * BlurValue, 0.0f);
+	float2 Texel6 = In.Tex + float2(TU * 2 * BlurValue, 0.0f);
+	float2 Texel7 = In.Tex + float2(TU * 3 * BlurValue, 0.0f);
+	float2 Texel8 = In.Tex + float2(TU * 4 * BlurValue, 0.0f);
+	float2 Texel9 = In.Tex + float2(TU * 5 * BlurValue, 0.0f);
+
+	//Yテクセルを取得   
+	float2 Texel0_Y = In.Tex + float2(0.0, -TV * 1 * BlurValue);
+	float2 Texel1_Y = In.Tex + float2(0.0, -TV * 2 * BlurValue);
+	float2 Texel2_Y = In.Tex + float2(0.0, -TV * 3 * BlurValue);
+	float2 Texel3_Y = In.Tex + float2(0.0, -TV * 4 * BlurValue);
+	float2 Texel4_Y = In.Tex + float2(0.0, -TV * 5 * BlurValue);
+
+	float2 Texel5_Y = In.Tex + float2(0.0, TV * 1 * BlurValue);
+	float2 Texel6_Y = In.Tex + float2(0.0, TV * 2 * BlurValue);
+	float2 Texel7_Y = In.Tex + float2(0.0, TV * 3 * BlurValue);
+	float2 Texel8_Y = In.Tex + float2(0.0, TV * 4 * BlurValue);
+	float2 Texel9_Y = In.Tex + float2(0.0, TV * 5 * BlurValue);
+
+
+	//取得したテクセル位置のカラー情報を取得する。
+	//それぞれのカラー値に重みをかけている。この重み値はすべての合計が 1.0f になるように調整する。
+	float4 p0 = tex2D(GaussianSamp, In.Tex) * 0.20f;
+
+	float4 p1 = tex2D(GaussianSamp, Texel0) * 0.12f;
+	float4 p2 = tex2D(GaussianSamp, Texel1) * 0.10f;
+	float4 p3 = tex2D(GaussianSamp, Texel2) * 0.08f;
+	float4 p4 = tex2D(GaussianSamp, Texel3) * 0.06f;
+	float4 p5 = tex2D(GaussianSamp, Texel4) * 0.04f;
+
+	float4 p6 = tex2D(GaussianSamp, Texel5) * 0.12f;
+	float4 p7 = tex2D(GaussianSamp, Texel6) * 0.10f;
+	float4 p8 = tex2D(GaussianSamp, Texel7) * 0.08f;
+	float4 p9 = tex2D(GaussianSamp, Texel8) * 0.06f;
+	float4 p10 = tex2D(GaussianSamp, Texel9) * 0.04f;
+
+
+	//取得したテクセル位置のカラー情報を取得する。
+	//それぞれのカラー値に重みをかけている。この重み値はすべての合計が 1.0f になるように調整する。
+	float4 p0_Y = tex2D(GaussianSamp, In.Tex) * 0.20f;
+
+	float4 p1_Y = tex2D(GaussianSamp, Texel0_Y) * 0.12f;
+	float4 p2_Y = tex2D(GaussianSamp, Texel1_Y) * 0.10f;
+	float4 p3_Y = tex2D(GaussianSamp, Texel2_Y) * 0.08f;
+	float4 p4_Y = tex2D(GaussianSamp, Texel3_Y) * 0.06f;
+	float4 p5_Y = tex2D(GaussianSamp, Texel4_Y) * 0.04f;
+
+	float4 p6_Y = tex2D(GaussianSamp, Texel5_Y) * 0.12f;
+	float4 p7_Y = tex2D(GaussianSamp, Texel6_Y) * 0.10f;
+	float4 p8_Y = tex2D(GaussianSamp, Texel7_Y) * 0.08f;
+	float4 p9_Y = tex2D(GaussianSamp, Texel8_Y) * 0.06f;
+	float4 p10_Y = tex2D(GaussianSamp, Texel9_Y) * 0.04f;
+
+	//カラーを合成する
+	return (p0 + p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9 + p10 + p0_Y + p1_Y + p2_Y + p3_Y + p4_Y + p5_Y + p6_Y + p7_Y + p8_Y + p9_Y + p10_Y) / 2.0f;
+
+}
+
+technique gaussZ_M
+{
+
+	pass P0
+	{
+		AlphaBlendEnable = true;
+		BlendOp = Add;
+		SrcBlend = SrcAlpha;
+		DestBlend = InvSrcAlpha;
+
+		PixelShader = compile ps_2_0 PS_gaussZ_M();
+	}
+
+}
 
 /************************/
 /*		ToneMap		*/
@@ -714,37 +814,37 @@ technique RadialBlur
 }
 
 
-float4 PS_YBlur(VS_2D In) : COLOR
+float4 PS_YBlur_M(VS_2D In) : COLOR
 {
 
 	//テクセルを取得   
-	float2 Texel0 = In.Tex + float2(0.0, -TV * 1 * BluePower);
-	float2 Texel1 = In.Tex + float2(0.0, -TV * 2 * BluePower);
-	float2 Texel2 = In.Tex + float2(0.0, -TV * 3 * BluePower);
-	float2 Texel3 = In.Tex + float2(0.0, -TV * 4 * BluePower);
-	float2 Texel4 = In.Tex + float2(0.0, -TV * 5 * BluePower);
+	float2 Texel0 = In.Tex + float2(0.0, -TV * 1 * BlurValue);
+	float2 Texel1 = In.Tex + float2(0.0, -TV * 2 * BlurValue);
+	float2 Texel2 = In.Tex + float2(0.0, -TV * 3 * BlurValue);
+	float2 Texel3 = In.Tex + float2(0.0, -TV * 4 * BlurValue);
+	float2 Texel4 = In.Tex + float2(0.0, -TV * 5 * BlurValue);
 
-	float2 Texel5 = In.Tex + float2(0.0, TV * 1 * BluePower);
-	float2 Texel6 = In.Tex + float2(0.0, TV * 2 * BluePower);
-	float2 Texel7 = In.Tex + float2(0.0, TV * 3 * BluePower);
-	float2 Texel8 = In.Tex + float2(0.0, TV * 4 * BluePower);
-	float2 Texel9 = In.Tex + float2(0.0, TV * 5 * BluePower);
+	float2 Texel5 = In.Tex + float2(0.0, TV * 1 * BlurValue);
+	float2 Texel6 = In.Tex + float2(0.0, TV * 2 * BlurValue);
+	float2 Texel7 = In.Tex + float2(0.0, TV * 3 * BlurValue);
+	float2 Texel8 = In.Tex + float2(0.0, TV * 4 * BlurValue);
+	float2 Texel9 = In.Tex + float2(0.0, TV * 5 * BlurValue);
 
 	//取得したテクセル位置のカラー情報を取得する。
 	//それぞれのカラー値に重みをかけている。この重み値はすべての合計が 1.0f になるように調整する。
-	float4 p0 = tex2D(GaussianSamp, In.Tex) * 0.20f;
+	float4 p0 = tex2D(GaussianSampBX, In.Tex) * 0.20f;
 
-	float4 p1 = tex2D(GaussianSamp, Texel0) * 0.12f;
-	float4 p2 = tex2D(GaussianSamp, Texel1) * 0.10f;
-	float4 p3 = tex2D(GaussianSamp, Texel2) * 0.08f;
-	float4 p4 = tex2D(GaussianSamp, Texel3) * 0.06f;
-	float4 p5 = tex2D(GaussianSamp, Texel4) * 0.04f;
+	float4 p1 = tex2D(GaussianSampBX, Texel0) * 0.12f;
+	float4 p2 = tex2D(GaussianSampBX, Texel1) * 0.10f;
+	float4 p3 = tex2D(GaussianSampBX, Texel2) * 0.08f;
+	float4 p4 = tex2D(GaussianSampBX, Texel3) * 0.06f;
+	float4 p5 = tex2D(GaussianSampBX, Texel4) * 0.04f;
 
-	float4 p6 = tex2D(GaussianSamp, Texel5) * 0.12f;
-	float4 p7 = tex2D(GaussianSamp, Texel6) * 0.10f;
-	float4 p8 = tex2D(GaussianSamp, Texel7) * 0.08f;
-	float4 p9 = tex2D(GaussianSamp, Texel8) * 0.06f;
-	float4 p10 = tex2D(GaussianSamp, Texel9) * 0.04f;
+	float4 p6 = tex2D(GaussianSampBX, Texel5) * 0.12f;
+	float4 p7 = tex2D(GaussianSampBX, Texel6) * 0.10f;
+	float4 p8 = tex2D(GaussianSampBX, Texel7) * 0.08f;
+	float4 p9 = tex2D(GaussianSampBX, Texel8) * 0.06f;
+	float4 p10 = tex2D(GaussianSampBX, Texel9) * 0.04f;
 
 	//カラーを合成する
 	return p0 + p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9 + p10;
@@ -754,7 +854,7 @@ float4 PS_YBlur(VS_2D In) : COLOR
 //------------------------------------------------------
 // テクニック
 //------------------------------------------------------
-technique YBlur
+technique YBlur_M
 {
 	pass P0
 	{
@@ -765,7 +865,7 @@ technique YBlur
 		CullMode = None;
 		ZEnable = false;
 
-		PixelShader = compile ps_3_0 PS_gaussY();
+		PixelShader = compile ps_3_0 PS_YBlur_M();
 	}
 }
 technique XBlur
