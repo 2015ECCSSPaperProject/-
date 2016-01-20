@@ -745,6 +745,51 @@ void SceneSelect::Render()
 		modoru.lpButton->SetScale(1.0f);// もどす
 	}
 
+
+	// 準備中？準備OK
+	if (SOCKET_MANAGER->GetUser(SOCKET_MANAGER->GetID()).isReady)
+	{
+		//ボタンバージョン
+		image[IMAGE::JOIN]->Render(entry2.dstX, entry2.dstY, entry2.dstW, entry2.dstH, 0, 0,
+			entry2.srcX, entry2.srcY, RS_COPY);
+		// 振れていたら
+		if (entry2.in){
+			//image[IMAGE::OK]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64, RS_ADD);
+			image[IMAGE::JOIN]->SetARGB(127, 127, 127, 127);
+			image[IMAGE::JOIN]->Render(entry2.dstX, entry2.dstY, entry2.dstW, entry2.dstH, 0, 0,
+				entry2.srcX, entry2.srcY, RS_ADD);
+			image[IMAGE::JOIN]->SetARGB(255, 255, 255, 255);
+			image[IMAGE::JOIN]->SetScale(1.2f);	// 大きく
+		}
+		else
+		{
+			image[IMAGE::JOIN]->SetScale(1.0f);
+		}
+	}
+	else//準備中
+	{
+
+
+		//ボタンバージョン
+		image[IMAGE::NOT_JOIN]->Render(entry2.dstX, entry2.dstY, entry2.dstW, entry2.dstH, 0, 0,
+			entry2.srcX, entry2.srcY, RS_COPY);
+		// 振れていたら
+		if (entry2.in){
+			//image[IMAGE::OK]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64, RS_ADD);
+			image[IMAGE::NOT_JOIN]->SetARGB(127, 127, 127, 127);
+			image[IMAGE::NOT_JOIN]->Render(entry2.dstX, entry2.dstY, entry2.dstW, entry2.dstH, 0, 0,
+				entry2.srcX, entry2.srcY, RS_ADD);
+			image[IMAGE::NOT_JOIN]->SetARGB(255, 255, 255, 255);
+			image[IMAGE::NOT_JOIN]->SetScale(1.2f);	// 大きく
+		}
+		else
+		{
+			image[IMAGE::NOT_JOIN]->SetScale(1.0f);
+		}
+
+	}
+
+
 	// 点のアニメ用変数
 	static int tenFlame = 0;
 	static int tenAnime = 0;
@@ -844,22 +889,7 @@ void SceneSelect::Render()
 					image[IMAGE::OK]->SetScale(1.0f);
 				}
 
-				//ボタンバージョン
-				image[IMAGE::JOIN]->Render(entry2.dstX, entry2.dstY, entry2.dstW, entry2.dstH, 0, 0,
-					entry2.srcX, entry2.srcY, RS_COPY);
-				// 振れていたら
-				if (entry2.in){
-					//image[IMAGE::OK]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64, RS_ADD);
-					image[IMAGE::JOIN]->SetARGB(127, 127, 127, 127);
-					image[IMAGE::JOIN]->Render(entry2.dstX, entry2.dstY, entry2.dstW, entry2.dstH, 0, 0, 
-						entry2.srcX, entry2.srcY, RS_ADD);
-					image[IMAGE::JOIN]->SetARGB(255, 255, 255, 255);
-					image[IMAGE::JOIN]->SetScale(1.2f);	// 大きく
-				}
-				else
-				{
-					image[IMAGE::JOIN]->SetScale(1.0f);
-				}
+		
 			}
 			else
 			{
@@ -878,22 +908,7 @@ void SceneSelect::Render()
 				}
 
 
-				//ボタンバージョン
-				image[IMAGE::NOT_JOIN]->Render(entry2.dstX, entry2.dstY, entry2.dstW, entry2.dstH, 0, 0,
-					entry2.srcX, entry2.srcY, RS_COPY);
-				// 振れていたら
-				if (entry2.in){
-					//image[IMAGE::OK]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64, RS_ADD);
-					image[IMAGE::NOT_JOIN]->SetARGB(127, 127, 127, 127);
-					image[IMAGE::NOT_JOIN]->Render(entry2.dstX, entry2.dstY, entry2.dstW, entry2.dstH, 0, 0,
-						entry2.srcX, entry2.srcY, RS_ADD);
-					image[IMAGE::NOT_JOIN]->SetARGB(255, 255, 255, 255);
-					image[IMAGE::NOT_JOIN]->SetScale(1.2f);	// 大きく
-				}
-				else
-				{
-					image[IMAGE::NOT_JOIN]->SetScale(1.0f);
-				}
+
 			}
 
 			// 準備OK波紋　追加

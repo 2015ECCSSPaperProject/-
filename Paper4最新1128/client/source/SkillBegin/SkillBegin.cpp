@@ -45,8 +45,8 @@ void SkillBegin::Render()
 {
 	sphere->Render(pos, RS_ADD);
 	shine->Render(pos, RS_ADD);
-	//ring->Render();
-	//ring2->Render();
+	ring->Render();
+	ring2->Render();
 
 }
 

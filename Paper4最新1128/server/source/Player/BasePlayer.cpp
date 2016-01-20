@@ -1113,7 +1113,7 @@ void BasePlayer::Collision_syuriken()
 	if (stage->Collision(pos, &move, 5, 2, &n))		// •Ç‚É‚Ô‚Â‚©‚Á‚Ä‚¢‚½‚ç(true)
 	{
 		prev_move.Normalize();
-		if (n.x*prev_move.x + n.z*prev_move.z < -0.9f)	// •Ç‚É‘Î‚µ‚Ä‚Ù‚Ú‚’¼‚Éƒqƒbƒg
+		if (n.x*prev_move.x + n.z*prev_move.z < -0.8f)	// •Ç‚É‘Î‚µ‚Ä‚Ù‚Ú‚’¼‚Éƒqƒbƒg
 		{
 			jump_pow = 2.0f;
 			isJump = true;
