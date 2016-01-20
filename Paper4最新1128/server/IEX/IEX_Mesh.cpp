@@ -972,3 +972,27 @@ void iexMesh::NearestPoint( NearestPointOut *out, const Vector3 &inPos )
 	lpMesh->UnlockVertexBuffer();
 	lpMesh->UnlockIndexBuffer();
 }
+
+float iexMesh::Length_of_furthest_point()
+{
+	//	情報取得	
+	u32 fvf = lpMesh->GetFVF();
+	//	頂点サイズ計算
+	int vertexSize = D3DXGetFVFVertexSize( fvf ) / sizeof( float );
+	//	バッファロック
+	float	*pVertices;
+	u32 numVertices = lpMesh->GetNumVertices();
+	lpMesh->LockVertexBuffer( D3DLOCK_READONLY, ( void** ) &pVertices );
+
+	float length( 0 );
+	Vector3 vertex( 0, 0, 0 );
+	for( u32 index = 0; index < numVertices; index += 3 )
+	{
+		vertex.x = pVertices[index]; vertex.y = pVertices[index + 1]; vertex.z = pVertices[index + 2];
+		length = max( length, vertex.LengthSq() );
+	}
+
+	lpMesh->UnlockVertexBuffer();
+
+	return sqrtf( length );
+}

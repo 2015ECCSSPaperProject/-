@@ -18,7 +18,8 @@ public:
 	void Initialize();
 	void Release();
 	void Update();
-	void Render(iexShader *shader = nullptr, char *name = '\0');
+	void Render( iexShader *shader, char *name );
+	void Render_collision_model( iexShader *shader, char *name ); // ‰e‚Æ‚©
 	void RenderForward();
 	void Render_inhabitants( iexShader *shader, char *name );
 
@@ -32,7 +33,16 @@ public:
 	void Area_Is_work(unsigned int index, bool in);
 
 private:
-	std::vector<iexMesh*>show_model, collision_model;
+	struct Show_model_part
+	{
+		float size;
+		iexMesh *model;
+
+		Show_model_part( iexMesh *model );
+		~Show_model_part();
+	};
+	std::vector<Show_model_part*>show_model;
+	std::vector<iexMesh*>collision_model;
 
 	float Length( Vector3 &pos, Vector3 &v );
 

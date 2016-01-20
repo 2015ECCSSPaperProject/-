@@ -288,7 +288,7 @@ inline void Vector3Cross( Vector& out, Vector& v1, Vector& v2 )
 //------------------------------------------------------
 //	ì‡êœ
 //------------------------------------------------------
-inline float Vector3Dot( Vector& v1, Vector& v2 )
+inline float Vector3Dot( const Vector& v1, const Vector& v2 )
 {
 	return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
 }
@@ -880,6 +880,8 @@ public:
 	Texture2D*	GetTexture( int n ){ return lpTexture[n]; }
 	void SetTexture(Texture2D *t, int n){ lpTexture[n] = t; }
 	Texture2D*	ChangeTexture(Texture2D *t, int n){ Texture2D *ret = lpTexture[n]; lpTexture[n] = t; return ret; }
+
+	float iexMesh::Length_of_furthest_point();
 };
 
 typedef iexMesh IEXMESH, *LPIEXMESH;

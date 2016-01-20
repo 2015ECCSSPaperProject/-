@@ -628,7 +628,6 @@ BOOL iexMesh::LoadIMO( LPSTR filename )
 	SetScale(1.0f);
 	dwFlags = 0;
 
-	bLoad = TRUE;
 	return TRUE;
 }
 
@@ -838,7 +837,34 @@ int	IEX_RayPickMeshUD( iexMesh* lpMesh, Vector3* out, Vector3* pos, Vector3* vec
 
 int	IEX_RayPickMesh( iexMesh* lpMesh, Vector3* out, Vector3* pos, Vector3* vec, float *Dist )
 {
-	int ret = lpMesh->RayPick( out, pos, vec, Dist );
+	const Matrix *TransMatrix = &lpMesh->TransMatrix;
+	Matrix InverseMatrix;
+	D3DXMatrixInverse( &InverseMatrix, 0, TransMatrix );
+
+	Vector3 raypos;
+	raypos.x = pos->x * InverseMatrix._11 + pos->y * InverseMatrix._21 + pos->z * InverseMatrix._31 + InverseMatrix._41;
+	raypos.x = pos->x * InverseMatrix._11 + pos->y * InverseMatrix._21 + pos->z * InverseMatrix._31 + InverseMatrix._41;
+	raypos.x = pos->x * InverseMatrix._11 + pos->y * InverseMatrix._21 + pos->z * InverseMatrix._31 + InverseMatrix._41;
+
+	Vector3 rayvec;
+	rayvec.x = vec->x * InverseMatrix._11 + vec->y * InverseMatrix._21 + vec->z * InverseMatrix._31;
+	rayvec.x = vec->x * InverseMatrix._11 + vec->y * InverseMatrix._21 + vec->z * InverseMatrix._31;
+	rayvec.x = vec->x * InverseMatrix._11 + vec->y * InverseMatrix._21 + vec->z * InverseMatrix._31;
+	rayvec.Normalize();
+
+	int ret = lpMesh->RayPick( out, &raypos, &rayvec, Dist );
+	if( ret < 0 )
+		return ret;
+
+	raypos.x = pos->x * TransMatrix->_11 + pos->y * TransMatrix->_21 + pos->z * TransMatrix->_31 + TransMatrix->_41;
+	raypos.x = pos->x * TransMatrix->_11 + pos->y * TransMatrix->_21 + pos->z * TransMatrix->_31 + TransMatrix->_41;
+	raypos.x = pos->x * TransMatrix->_11 + pos->y * TransMatrix->_21 + pos->z * TransMatrix->_31 + TransMatrix->_41;
+
+	rayvec.x = vec->x * TransMatrix->_11 + vec->y * TransMatrix->_21 + vec->z * TransMatrix->_31;
+	rayvec.x = vec->x * TransMatrix->_11 + vec->y * TransMatrix->_21 + vec->z * TransMatrix->_31;
+	rayvec.x = vec->x * TransMatrix->_11 + vec->y * TransMatrix->_21 + vec->z * TransMatrix->_31;
+	rayvec.Normalize();
+
 	return	ret;
 }
 
@@ -945,4 +971,28 @@ void iexMesh::NearestPoint( NearestPointOut *out, const Vector3 &inPos )
 	//	バッファアンロック
 	lpMesh->UnlockVertexBuffer();
 	lpMesh->UnlockIndexBuffer();
+}
+
+float iexMesh::Length_of_furthest_point()
+{
+	//	情報取得	
+	u32 fvf = lpMesh->GetFVF();
+	//	頂点サイズ計算
+	int vertexSize = D3DXGetFVFVertexSize( fvf ) / sizeof( float );
+	//	バッファロック
+	float	*pVertices;
+	u32 numVertices = lpMesh->GetNumVertices();
+	lpMesh->LockVertexBuffer( D3DLOCK_READONLY, ( void** ) &pVertices );
+
+	float length( 0 );
+	Vector3 vertex( 0, 0, 0 );
+	for( u32 index = 0; index < numVertices; index += 3 )
+	{
+		vertex.x = pVertices[index]; vertex.y = pVertices[index + 1]; vertex.z = pVertices[index + 2];
+		length = max( length, vertex.LengthSq() );
+	}
+
+	lpMesh->UnlockVertexBuffer();
+
+	return sqrtf( length );
 }

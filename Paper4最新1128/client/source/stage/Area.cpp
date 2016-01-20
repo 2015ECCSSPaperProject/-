@@ -34,10 +34,10 @@ protected:
 
 	float positionY; // 位置Y座標
 
-	static const unsigned int TIME_TAKE_BREAK; // 壁を壊すのにかかる時間
+	static const int TIME_TAKE_BREAK; // 壁を壊すのにかかる時間
 	static const float DOWN_SPEED; // 降りるスピード
 };
-const unsigned int Area::TIME_TAKE_BREAK = 3U;
+const int Area::TIME_TAKE_BREAK = 3U;
 const float Area::DOWN_SPEED = -4.0f;
 
 Area::Area() : wall( nullptr ), is_work( true ), positionY( 0 )

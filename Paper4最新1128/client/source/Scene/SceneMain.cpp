@@ -523,7 +523,7 @@ void SceneMain::Render()
 	}
 	else
 	{
-		stage->Render();
+		//stage->Render();
 		sky->Render();
 
 		//　プレイヤー
@@ -595,7 +595,7 @@ void SceneMain::RenderShadow()
 	DeferredManager.ShadowBegin();
 
 	// これ当たり判定にしてね！！！！！！！！！！！！！！！！！！！！！！！！！
-	stage->Render(shaderD, "ShadowBuf");
+	stage->Render( shaderD, "ShadowBuf" );
 
 	Vector3 flont;
 	flont.x = matView._13;
@@ -623,7 +623,7 @@ void SceneMain::RenderShadow()
 			// far
 			DeferredManager.ShadowBeginL();
 
-			stage->Render(shaderD, "ShadowBufL");
+			stage->Render( shaderD, "ShadowBufL" );
 			//player_mng->Render(shaderD, "G_Buffer");
 
 			DeferredManager.ShadowEndL();// end

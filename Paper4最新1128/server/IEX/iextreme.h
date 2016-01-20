@@ -799,6 +799,9 @@ public:
 	Texture2D*	GetTexture( int n ){ return lpTexture[n]; }
 	void SetTexture(Texture2D *t, int n){ lpTexture[n] = t; }
 	Texture2D*	ChangeTexture(Texture2D *t, int n){ Texture2D *ret = lpTexture[n]; lpTexture[n] = t; return ret; }
+
+	// ˆê”Ô‰“‚¢’¸“_‚Ü‚Å‚Ì‹——£
+	float Length_of_furthest_point();
 };
 
 typedef iexMesh IEXMESH, *LPIEXMESH;

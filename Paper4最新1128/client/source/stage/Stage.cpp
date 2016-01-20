@@ -4,7 +4,7 @@
 #include "../fstream/fstream_paper.h"
 #include <string>
 #include "Inhabitant.h"
-//#include "../player/Player.h"
+#include "../Player/PlayerManager.h"
 
 Stage::Stage() : area( nullptr )
 {}
@@ -20,7 +20,8 @@ void Stage::Initialize()
 	//collision_model = new iexMesh("DATA/MATI/stage_atari.IMO");
 
 	//show_model = new iexMesh("../stage_machi.IMO");
-	//collision_model = new iexMesh("../stage_machi.IMO");
+
+	collision_model.push_back( new iexMesh( "../stage_machi.IMO" ) );
 
 	
 	Load_mapdata();
@@ -28,7 +29,7 @@ void Stage::Initialize()
 
 	for( unsigned int i = 0; i < show_model.size(); i++ )
 	{
-		show_model[i]->Update();
+		show_model[i]->model->Update();
 	}
 
 	inhabitants = new Inhabitants( "DATA/MATI/position/zattou.txt" );
@@ -54,21 +55,19 @@ void Stage::Update()
 	inhabitants->Update();
 }
 
-void Stage::Render(iexShader *shader, char *name)
+void Stage::Render( iexShader *shader, char *name )
 {
-	if (shader)
-	{
-		for( unsigned int i = 0; i < show_model.size(); i++ )
-		{
-			show_model[i]->Render( shader, name );
-		}
+	for( unsigned int i = 0; i < show_model.size(); i++ )
+	{		
+		show_model[i]->model->Render( shader, name );
 	}
-	else
+}
+
+void Stage::Render_collision_model( iexShader *shader, char *name )
+{
+	for( unsigned int i = 0; i < collision_model.size(); i++ )
 	{
-		for( unsigned int i = 0; i < show_model.size(); i++ )
-		{
-			show_model[i]->Render();
-		}
+		collision_model[i]->Render( shader, name );
 	}
 }
 
@@ -201,18 +200,18 @@ void Stage::Load_mapdata()
 			pos.x *= -1;
 			angle *= -1;
 			// メッシュ作成
-			iexMesh *m;
+			Show_model_part *smp;
 			if( i == 0 ) // 最初の一つはそのまま
-				m = mesh;
+				smp = new Show_model_part( mesh );
 			else         // 残りはクローン
-				m = mesh->Clone();
+				smp = new Show_model_part( mesh->Clone() );
 			// 角度と位置設定
-			m->SetAngle( angle.x, angle.y, angle.z );
-			m->SetPos( pos.x, pos.y, pos.z );
+			smp->model->SetAngle( angle.x, angle.y, angle.z );
+			smp->model->SetPos( pos.x, pos.y, pos.z );
 			// 更新
-			m->Update();
+			smp->model->Update();
 			// 配列に追加
-			show_model.push_back( m );
+			show_model.push_back( smp );
 		}
 	}
 }
@@ -236,5 +235,21 @@ void Stage::Load_area()
 		}
 	}
 }
+
+
+
+
+Stage::Show_model_part::Show_model_part( iexMesh *model ) :model( model )
+{
+	size = model->Length_of_furthest_point();
+}
+
+Stage::Show_model_part::~Show_model_part()
+{
+	delete model;
+}
+
+
+
 
 Stage *stage = nullptr;
