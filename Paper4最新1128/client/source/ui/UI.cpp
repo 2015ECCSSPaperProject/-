@@ -79,7 +79,7 @@ void UI::Initialize(BasePlayer *my)
 
 	// その他2D初期化
 	//image[IMAGE::TEROP] = new iex2DObj("")
-	image[IMAGE::ACTION] = new iex2DObj("DATA/UI/action/anim.png");
+	image[IMAGE::ACTION] = new iex2DObj("DATA/UI/action/1.png");
 	image[IMAGE::NUMBER] = new iex2DObj("DATA/UI/Num.png");
 	image[IMAGE::NUMBER_BACK] = new iex2DObj("DATA/UI/NumBack.png");
 	image[IMAGE::TAPE] = new iex2DObj("DATA/UI/tape/tape.png");
@@ -93,7 +93,7 @@ void UI::Initialize(BasePlayer *my)
 	image[IMAGE::SCORE_FRAME] = new iex2DObj("DATA/UI/skill/scoreFrame.png");		// scoreFrame
 	image[IMAGE::MANHOLE_FADE] = new iex2DObj("DATA/UI/manhole_fade.png");
 	image[IMAGE::ARROW_LEFT] = new iex2DObj("DATA/UI/action/Left_Cursor.png");
-	image[IMAGE::ARROW_RIGHT] = new iex2DObj("DATA/UI/action/Right_Cursor.png");
+	image[IMAGE::ARROW_RIGHT] = new iex2DObj("DATA/UI/action/Cursor.png");
 	image[IMAGE::ARROW_UP] = new iex2DObj("DATA/UI/action/Up_Cursor.png");
 	image[IMAGE::ARROW_DOWN] = new iex2DObj("DATA/UI/action/Down_Cursor.png");
 	image[IMAGE::ARROW_ROLL] = new iex2DObj("DATA/UI/action/rot_Cursor.png");
@@ -181,9 +181,19 @@ void UI::Render_mark()
 		float tu[2], tv[2];
 		if (my_player->Get_poster_num() == i)
 		{
-			tu[0] = 0, tu[1] = 1;
-			tv[0] = 0, tv[1] = 1;
-			isRange = true;
+			static int add = 10;
+			static int MinusCol = 0;
+			//アップとダウン
+			if (MinusCol >= 255)
+			{
+				add = -10;
+			}
+			if (MinusCol <= 0)
+			{
+				add = 10;
+			}
+			MinusCol += add;
+
 			if (my_player->Get_action() == BasePlayer::ACTION_PART::REND_OBJ)
 			{
 				//action_drag->Stop();
@@ -194,17 +204,22 @@ void UI::Render_mark()
 				|| my_player->Get_controlDesc().controlFlag & (int)PLAYER_CONTROL::LEFT_CLICK
 				)
 			{
-				//action_hold->Stop();
-				//if (!action_drag->isDoing()) action_drag->Action();
-				//action_drag->Render(my_player->Get_pos() + Vector3(0, 12, 0), RS_COPY);
-				Billboard::Draw3D(my_player->Get_pos() + Vector3(0, 15, 0), image[IMAGE::ACTION_DRAG], 7, 7, tu, tv, RS_COPY);
+				Vector3 p_pos = my_player->Get_pos();
+				image[IMAGE::ACTION_DRAG]->SetScale(7.0f);
+				image[IMAGE::ACTION_DRAG]->Render3D(p_pos + Vector3(0, 20, 0));
+				image[IMAGE::ACTION]->SetARGB(255, 200, MinusCol, MinusCol);
+				image[IMAGE::ACTION]->Render3D(p_pos + Vector3(0, 20, 0));
+				image[IMAGE::ARROW_RIGHT]->SetScale(3.0f);
+				image[IMAGE::ARROW_RIGHT]->Render3D(p_pos + Vector3(0, 20, 0));
 			}
 			else
 			{	
-				//action_drag->Stop();
-				//if (!action_hold->isDoing()) action_hold->Action();
-				//action_hold->Render(my_player->Get_pos() + Vector3(0, 12, 0), RS_COPY);
-				Billboard::Draw3D(my_player->Get_pos() + Vector3(0, 15, 0), image[IMAGE::ACTION_HOLD], 7, 7, tu, tv, RS_COPY);
+				Vector3 p_pos = my_player->Get_pos();
+				image[IMAGE::ACTION_HOLD]->SetScale(7.0f);
+				image[IMAGE::ACTION_HOLD]->Render3D(p_pos+ Vector3(0, 20, 0));
+				image[IMAGE::ACTION]->SetARGB(255, 200, MinusCol, MinusCol);
+				image[IMAGE::ACTION]->SetScale(3.0f);
+				image[IMAGE::ACTION]->Render3D(p_pos + Vector3(0, 20, 0));
 			}
 		}
 		else
@@ -443,21 +458,21 @@ void UI::SkillGauge()
 
 void UI::Action()
 {
-	Vector2 src;	// 取ってくる画像の位置
-	src.x = 256 * 3;
-	src.y = 0;
-
-	if (my_player->manhole_no_haninai)
-	{
-		src.x = 0;
-		src.y = 0;
-	}
-	else if (my_player->Get_poster_num() != -1)
-	{
-		src.x = 0;
-		src.y = 0;
-	}
-	image[IMAGE::ACTION]->Render(1032, 482, 256, 256, src.x, src.y, 256, 256);
+	//Vector2 src;	// 取ってくる画像の位置
+	//src.x = 256 * 3;
+	//src.y = 0;
+	//
+	//if (my_player->manhole_no_haninai)
+	//{
+	//	src.x = 0;
+	//	src.y = 0;
+	//}
+	//else if (my_player->Get_poster_num() != -1)
+	//{
+	//	src.x = 0;
+	//	src.y = 0;
+	//}
+	//image[IMAGE::ACTION]->Render(1032, 482, 256, 256, src.x, src.y, 256, 256);
 }
 
 void UI::TimeLimit()

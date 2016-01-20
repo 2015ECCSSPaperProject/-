@@ -9,8 +9,8 @@ SkillBegin::SkillBegin()
 {
 	sphere = new AnimationRippleEx("DATA/effect/sphere.png", 18, 3, 6, 10, 4.0f);;
 	shine = new AnimationRippleEx("DATA/effect/flash.png", 16, 2, 6, 30, 2.0f);;
-	ring = new AnimationUV("DATA/uvAnim/wave2.imo", 0.00f, 0.008, 18, false, 2, 10);
-	ring2 = new AnimationUV("DATA/uvAnim/wave2.imo", 0.00f, 0.008, 18, false, 2, 10);
+	ring = new AnimationUV("DATA/uvAnim/wave2.imo", 0.00f, 0.008f, 18, false, 2, 10);
+	ring2 = new AnimationUV("DATA/uvAnim/wave2.imo", 0.00f, 0.008f, 18, false, 2, 10);
 	pos = VECTOR_ZERO;
 	RandAngle = VECTOR_ZERO;
 	RandAngle2 = VECTOR_ZERO;
