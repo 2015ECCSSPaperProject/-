@@ -114,13 +114,22 @@ void AuraMAXEffect(Vector3 _pos, float _scale, Vector3 _col)
 			b2 = .0f;
 			break;
 		case BLUE:
-			a = .0f;
-			g = .7f;
+
+			a = .8f;
+			g = .8f;
 			b = 1.0f;
 
-			a2 = .0f;
-			g2 = .5f;
+			a2 = 1.0f;
+			g2 = 1.0f;
 			b2 = 1.0f;
+
+			//a = .0f;
+			//g = .7f;
+			//b = 1.0f;
+
+			//a2 = .0f;
+			//g2 = .5f;
+			//b2 = 1.0f;
 			break;
 		case YELLOW:
 			a = 0.5f;

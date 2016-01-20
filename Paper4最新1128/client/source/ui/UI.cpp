@@ -172,6 +172,7 @@ void UI::Render()
 #endif
 }
 
+///////////////////aaaaaaaaaaaaaaaaaaa
 void UI::Render_mark()
 {
 	bool isRange = false;
@@ -194,6 +195,30 @@ void UI::Render_mark()
 			}
 			MinusCol += add;
 
+			//↓　ホールドの
+			//アップとダウン
+			static float h_add = 0;
+			static float h_moveY = 0;
+
+			if (h_moveY >= 2)
+			{
+				h_add = -0.2f;
+			}
+			if (h_moveY <= 0)
+			{
+				h_add = 0.2f;
+			}
+			h_moveY += h_add;
+
+			//↓　ホールドの
+			//アップとダウン
+			static float d_moveX = -4.3;
+			d_moveX += 0.3f;
+			if (d_moveX >= 5)
+			{
+				d_moveX = -4.3;
+			}
+
 			if (my_player->Get_action() == BasePlayer::ACTION_PART::REND_OBJ)
 			{
 				//action_drag->Stop();
@@ -204,26 +229,80 @@ void UI::Render_mark()
 				|| my_player->Get_controlDesc().controlFlag & (int)PLAYER_CONTROL::LEFT_CLICK
 				)
 			{
+				// こっち　ドラッグ！！
+
+				//Vector3 p_pos = my_player->Get_pos();
+				//image[IMAGE::ACTION_DRAG]->SetScale(7.0f);
+				//image[IMAGE::ACTION_DRAG]->Render3D(p_pos + Vector3(0, 20, 0));
+				//image[IMAGE::ACTION]->SetARGB(255, 200, MinusCol, MinusCol);
+				//image[IMAGE::ACTION]->Render3D(p_pos + Vector3(0, 20, 0));
+				//image[IMAGE::ARROW_RIGHT]->SetScale(5.0f);
+				//image[IMAGE::ARROW_RIGHT]->Render3D(p_pos + Vector3(0, 20, 0));
+
+				// っこれ初期のやつｄ「
+				tu[0] = 0, tu[1] = .5f;
+				tv[0] = 0, tv[1] = 1;
+				Billboard::Draw3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0), image[IMAGE::MARK], 4, 4, tu, tv, RS_COPY);
+
+				// これ。まうすか
 				Vector3 p_pos = my_player->Get_pos();
 				image[IMAGE::ACTION_DRAG]->SetScale(7.0f);
-				image[IMAGE::ACTION_DRAG]->Render3D(p_pos + Vector3(0, 20, 0));
+				image[IMAGE::ACTION_DRAG]->Render3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0));
 				image[IMAGE::ACTION]->SetARGB(255, 200, MinusCol, MinusCol);
-				image[IMAGE::ACTION]->Render3D(p_pos + Vector3(0, 20, 0));
-				image[IMAGE::ARROW_RIGHT]->SetScale(3.0f);
-				image[IMAGE::ARROW_RIGHT]->Render3D(p_pos + Vector3(0, 20, 0));
+				//image[IMAGE::ACTION]->SetAngle(2);
+				image[IMAGE::ACTION]->SetScale(3.0f);
+
+				Vector3 ViewVec;
+				ViewVec.x = matView._11;
+				ViewVec.y = matView._21;
+				ViewVec.z = matView._31;
+
+				Vector3 ViewVecZ;
+				ViewVecZ.x = matView._13;
+				ViewVecZ.y = matView._23;
+				ViewVecZ.z = matView._33;
+				ViewVecZ.Normalize();
+
+				ViewVec.Normalize();
+				image[IMAGE::ACTION]->Render3D(paper_obj_mng->Get_pos(i) + (ViewVec * d_moveX) + Vector3(0, 24, 0) + ViewVecZ * -1);
 			}
 			else
 			{	
+				//初期化や　Xのドラッグ
+				d_moveX = -4.3;
+				// こっち　ホールド！！！！！
+
+				// っこれ初期のやつｄ「
+				tu[0] = 0, tu[1] = .5f;
+				tv[0] = 0, tv[1] = 1;
+				Billboard::Draw3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0), image[IMAGE::MARK], 4, 4, tu, tv, RS_COPY);
+
+				// これ。まうすか
 				Vector3 p_pos = my_player->Get_pos();
 				image[IMAGE::ACTION_HOLD]->SetScale(7.0f);
-				image[IMAGE::ACTION_HOLD]->Render3D(p_pos+ Vector3(0, 20, 0));
+				image[IMAGE::ACTION_HOLD]->Render3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24 + h_moveY, 0));
 				image[IMAGE::ACTION]->SetARGB(255, 200, MinusCol, MinusCol);
+				//image[IMAGE::ACTION]->SetAngle(2);
 				image[IMAGE::ACTION]->SetScale(3.0f);
-				image[IMAGE::ACTION]->Render3D(p_pos + Vector3(0, 20, 0));
+
+				Vector3 ViewVec;
+				ViewVec.x = matView._11;
+				ViewVec.y = matView._21;
+				ViewVec.z = matView._31;
+				ViewVec.Normalize();
+				image[IMAGE::ACTION]->Render3D(paper_obj_mng->Get_pos(i) + (ViewVec * -4.2) + Vector3(0, 24, 0));
+				
+
+				//image[IMAGE::ARROW_RIGHT]->SetScale(5.0f);
+				//image[IMAGE::ARROW_RIGHT]->Render3D(p_pos + Vector3(20, 20, 0));
+			
+
+
 			}
 		}
 		else
 		{
+			// っこれ初期のやつｄ「
 			tu[0] = 0, tu[1] = .5f;
 			tv[0] = 0, tv[1] = 1;
 			Billboard::Draw3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0), image[IMAGE::MARK], 4, 4, tu, tv, RS_COPY);

@@ -380,6 +380,8 @@ SceneSelect::~SceneSelect()
 
 	// AnimationRippleEX
 	SAFE_DELETE(Info);
+	SAFE_DELETE(OKInfo_B.lpButton);
+	SAFE_DELETE(NOInfo_B.lpButton);
 
 	SAFE_DELETE(Screen);
 	SAFE_DELETE(BlurScreenX);
