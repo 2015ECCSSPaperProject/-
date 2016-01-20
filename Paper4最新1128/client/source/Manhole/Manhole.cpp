@@ -8,7 +8,7 @@ ManholeMng::ManholeMng()
 	data[1][0].pos = Vector3(392, -120, -411.2f);
 	data[1][1].pos = Vector3(174.8f, -120, -538);
 
-	data[0][2].pos = Vector3(149.4f, 0, 525.8f);
+	data[0][2].pos = Vector3(169, 0, 542);
 	data[0][3].pos = Vector3(365.7f, 0, 401);
 	data[1][3].pos = Vector3(390, -120, 412);
 	data[1][2].pos = Vector3(177, -120, 542);

@@ -33,7 +33,6 @@ Camera::~Camera()
 	}
 	delete collision_stage;
 	delete effect_camera;
-	delete target_mark;
 }
 
 void Camera::Initialize(BasePlayer *my)
@@ -44,8 +43,6 @@ void Camera::Initialize(BasePlayer *my)
 	ipos = Vector3(0, 10.0f, -20.0f);
 	itarget = Vector3(0, 0, 0);
 	angle = Vector3(-0.1f, 0, 0);
-
-	target_mark = new iex2DObj("DATA/Camera/mark.png");
 	
 	shaderViewPos = VECTOR_ZERO;
 
@@ -102,40 +99,11 @@ void Camera::Render()
 	Activate();
 	Clear();
 
-	Text::Draw(32, 64, 0xff00ff33, "c.x:%.1f", pos.x);
-	Text::Draw(32, 96, 0xff00ff33, "c.y:%.1f", pos.y);
-	Text::Draw(32, 128, 0xff00ff33, "c.z:%.1f", pos.z);
-
-	if (my_player->Get_action() == BasePlayer::ACTION_PART::MOVE_TARGET)
-	{
-		float tu[2] = { 1, .5f };
-		float tv[2] = { 0, 1 };
-		Billboard::Draw3D(paper_obj_mng->Get_pos(my_player->Get_poster_num()) + Vector3(0, 5, 0), target_mark, 4, 4, tu, tv, RS_COPY);
-	}
+	//Text::Draw(32, 64, 0xff00ff33, "c.x:%.1f", pos.x);
+	//Text::Draw(32, 96, 0xff00ff33, "c.y:%.1f", pos.y);
+	//Text::Draw(32, 128, 0xff00ff33, "c.z:%.1f", pos.z);
 }
 
-void Camera::Render_mark()
-{
-	for (int i = 0; i < paper_obj_mng->Get_numof(); i++)
-	{
-		if (!paper_obj_mng->Can_rend(i))continue;
-		float tu[2];
-		if (my_player->Get_poster_num() == i)
-		{
-			tu[0] = 1, tu[1] = .5f;
-			if (my_player->Get_action() == BasePlayer::ACTION_PART::REND_OBJ)
-			{
-				continue;
-			}
-		}
-		else
-		{
-			tu[0] = 0, tu[1] = .5f;
-		}
-		float tv[2] = { 0, 1 };
-		Billboard::Draw3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0), target_mark, 4, 4, tu, tv, RS_COPY);
-	}
-}
 
 //*****************************************************************************
 //
@@ -290,21 +258,21 @@ void Camera::Mode::TPS::Initialize(const Vector3 &pos, const Vector3 &target)
 
 void Camera::Mode::TPS::Update()
 {
-	static int frame = 0;
-	static int k = -1;
+	//static int frame = 0;
+	//static int k = -1;
 	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::REND_OBJ)
 	{
 		int kind = paper_obj_mng->Get_kind(me->my_player->Get_poster_num());
-		if ((kind != 0 && kind != 1)
-			&& !(frame <= 180 && k == kind))
+		if ((kind != 0 && kind != 1))
+	//		&& !(frame <= 180 && k == kind))
 		{
-			frame = 0;
-			k = kind;
+	//		frame = 0;
+	//		k = kind;
 			me->effect_camera->Set_pattern(kind);
 			return;
 		}
 	}
-	else frame++;
+	//else frame++;
 
 	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::SYURIKEN)
 	{

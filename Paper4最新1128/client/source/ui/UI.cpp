@@ -4,7 +4,7 @@
 #include "../Scene/SceneMain.h"
 #include "../pie_graph/pie_graph.h"
 #include "UI.h"
-
+#include "../paper object/paper object manager.h"
 #include "../timer/Timer.h"
 #include "../score/Score.h"
 #include "../skill_gauge/skill_gauge.h"
@@ -97,6 +97,7 @@ void UI::Initialize(BasePlayer *my)
 	image[IMAGE::ARROW_UP] = new iex2DObj("DATA/UI/action/Up_Cursor.png");
 	image[IMAGE::ARROW_DOWN] = new iex2DObj("DATA/UI/action/Down_Cursor.png");
 	image[IMAGE::ARROW_ROLL] = new iex2DObj("DATA/UI/action/rot_Cursor.png");
+	image[IMAGE::MARK] = new iex2DObj("DATA/Camera/mark.png");
 
 	// スーパー西田タイム
 	C_Five = new AnimationRippleEx("DATA/UI/call/five.png",
@@ -133,8 +134,6 @@ UI::~UI()
 		delete SkileRip[i];
 	}
 
-
-
 	// カウントダウン
 	delete	C_Five;
 	delete	C_Four;
@@ -160,7 +159,28 @@ void UI::Render()
 #endif
 }
 
-
+void UI::Render_mark()
+{
+	for (int i = 0; i < paper_obj_mng->Get_numof(); i++)
+	{
+		if (!paper_obj_mng->Can_rend(i))continue;
+		float tu[2];
+		if (my_player->Get_poster_num() == i)
+		{
+			tu[0] = 1, tu[1] = .5f;
+			if (my_player->Get_action() == BasePlayer::ACTION_PART::REND_OBJ)
+			{
+				continue;
+			}
+		}
+		else
+		{
+			tu[0] = 0, tu[1] = .5f;
+		}
+		float tv[2] = { 0, 1 };
+		Billboard::Draw3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0), image[IMAGE::MARK], 4, 4, tu, tv, RS_COPY);
+	}
+}
 
 //*****************************************************************************************************************************
 //
@@ -229,6 +249,7 @@ void UI::Mode::Main::Render()
 	//me->Command();
 	me->Manhole_fade();
 }
+
 
 void UI::Telop_render()
 {

@@ -49,6 +49,7 @@ public:
 		ARROW_UP,
 		ARROW_DOWN,
 		ARROW_ROLL,
+		MARK,
 		MAX
 	};
 	enum class MANHOLE_FADE_TYPE
@@ -210,7 +211,7 @@ public:
 	//===============================================
 	void Update();
 	void Render();
-
+	void Render_mark();
 
 	//===============================================
 	//	ÉeÉçÉbÉví«â¡

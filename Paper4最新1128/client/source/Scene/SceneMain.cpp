@@ -426,7 +426,7 @@ void SceneMain::Render()
 			SetRenderState(D3DRS_ALPHAREF, 230);
 
 		/*š‚±‚Ì’†‚É‚â‚¶‚é‚µ“ü‚ê‚Ä*/
-		camera->Render_mark();
+		ui->Render_mark();
 
 
 		iexSystem::Device->

@@ -17,8 +17,8 @@
 using namespace std;
 
 static const Vector2 MOUSE_POS[2] = { Vector2(960, 454), Vector2(136, 454) };
-const Vector2 max_v[2] = { Vector2(1245, 670), Vector2(410, 670) };
-const Vector2 min_v[2] = { Vector2(950, 470), Vector2(145, 480) };
+const Vector2 max_v[SceneTitle::CURSOR_NO::CURSOR_MAX] = { Vector2(1245, 670), Vector2(410, 670) };
+const Vector2 min_v[SceneTitle::CURSOR_NO::CURSOR_MAX] = { Vector2(950, 470), Vector2(145, 480) };
 
 //******************************************************************
 //		初期化・解放
@@ -87,7 +87,7 @@ bool SceneTitle::Initialize()
 		12, 10, 12, 3.0f, -(2.5f / 12.0f), true);
 	titleEx->Action();
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < CURSOR_NO::CURSOR_MAX; i++)
 	{
 		start_button[i].pos = Vector3(42.7f, 13.4f, 0);
 		Texture2D *texture = iexTexture::Load("DATA/Image/title/gamestart.png");
@@ -105,6 +105,7 @@ bool SceneTitle::Initialize()
 
 	mouse = new Mouse;
 	mouse->Initialize(FALSE);
+	cursor_no = CURSOR_NO::START;
 
 	return true;
 }
@@ -123,8 +124,7 @@ SceneTitle::~SceneTitle()
 	{
 		delete images[i];
 	}
-	delete start_button[0].obj;
-	delete start_button[1].obj;
+	for (int i = 0; i < CURSOR_NO::CURSOR_MAX; i++) delete start_button[i].obj;
 	delete mouse;
 }
 
@@ -213,45 +213,46 @@ void SceneTitle::Update()
 	//if (KeyBoard(KB_S)) start_button[0].pos.y -= .1f;
 	//if (KeyBoard(KB_D)) start_button[0].pos.x += .1f;
 
-	start_button[0].obj->SetAngle(0, angle, PI*.5f);
-	start_button[0].obj->SetPos(start_button[0].pos);
-	start_button[0].obj->Update();
+	start_button[CURSOR_NO::START].obj->SetAngle(0, angle, PI*.5f);
+	start_button[CURSOR_NO::START].obj->SetPos(start_button[0].pos);
+	start_button[CURSOR_NO::START].obj->Update();
 
-	start_button[1].obj->SetAngle(0, angle, PI*.5f);
-	start_button[1].obj->SetPos(start_button[1].pos);
-	start_button[1].obj->Update();
+	start_button[CURSOR_NO::EXIT].obj->SetAngle(0, angle, PI*.5f);
+	start_button[CURSOR_NO::EXIT].obj->SetPos(start_button[1].pos);
+	start_button[CURSOR_NO::EXIT].obj->Update();
 
-	static int no = -1;
-
-	if (mouse->pos.x >= min_v[0].x && mouse->pos.x <= max_v[0].x&&
-		mouse->pos.y >= min_v[0].y && mouse->pos.y <= max_v[0].y)
+	if (step < STEP::DRAG)
 	{
-		if (!start_button[0].pointing)se->Play("カーソル");
-		start_button[0].pointing = true;
-		no = 0;
+		if (mouse->pos.x >= min_v[CURSOR_NO::START].x && mouse->pos.x <= max_v[CURSOR_NO::START].x&&
+			mouse->pos.y >= min_v[CURSOR_NO::START].y && mouse->pos.y <= max_v[CURSOR_NO::START].y)
+		{
+			if (!start_button[CURSOR_NO::START].pointing)se->Play("カーソル");
+			start_button[CURSOR_NO::START].pointing = true;
+			cursor_no = CURSOR_NO::START;
+		}
+		else start_button[CURSOR_NO::START].pointing = false;
+		if (mouse->pos.x >= min_v[CURSOR_NO::EXIT].x && mouse->pos.x <= max_v[CURSOR_NO::EXIT].x&&
+			mouse->pos.y >= min_v[CURSOR_NO::EXIT].y && mouse->pos.y <= max_v[CURSOR_NO::EXIT].y)
+		{
+			if (!start_button[CURSOR_NO::EXIT].pointing)se->Play("カーソル");
+			start_button[CURSOR_NO::EXIT].pointing = true;
+			cursor_no = CURSOR_NO::EXIT;
+		}
+		else start_button[CURSOR_NO::EXIT].pointing = false;
 	}
-	else start_button[0].pointing = false;
-	if (mouse->pos.x >= min_v[1].x && mouse->pos.x <= max_v[1].x&&
-		mouse->pos.y >= min_v[1].y && mouse->pos.y <= max_v[1].y)
-	{
-		if (!start_button[1].pointing)se->Play("カーソル");
-		start_button[1].pointing = true;
-		no = 1;
-	}
-	else start_button[1].pointing = false;
 
 	switch (step)
 	{
 	case STEP::WAIT:
 		if (KeyBoard(MOUSE_LEFT))
 		{
-			if (start_button[no].pointing)
+			if (start_button[cursor_no].pointing)
 			{
 				step = STEP::CLICK;
-				start_button[no].obj->SetMotion(1);
-				start_button[no].rend = true;
+				start_button[cursor_no].obj->SetMotion(1);
+				start_button[cursor_no].rend = true;
 				se->Play("成功");
-				move_mouse = MOUSE_POS[no];
+				move_mouse = MOUSE_POS[cursor_no];
 			}
 		}
 		break;
@@ -259,12 +260,12 @@ void SceneTitle::Update()
 	case STEP::CLICK:
 		if (!KeyBoard(MOUSE_LEFT))	// マウス離す
 		{
-			move_mouse = MOUSE_POS[no];
+			move_mouse = MOUSE_POS[cursor_no];
 			step = STEP::WAIT;
 		}
 		else if (mouse->Get_move_dist() > 20)
 		{
-			move_mouse = MOUSE_POS[no];
+			move_mouse = MOUSE_POS[cursor_no];
 			step = STEP::DRAG;
 			se->Play("成功");
 			se->Play("破る");
@@ -273,10 +274,10 @@ void SceneTitle::Update()
 		{
 			float move_x, move_y;
 			Vector2 next_vec;
-			next_vec = (no == 0) ? Vector2(1180 - move_mouse.x, 600 - move_mouse.y) : Vector2(360 - move_mouse.x, 600 - move_mouse.y);
+			next_vec = (cursor_no == CURSOR_NO::START) ? Vector2(1180 - move_mouse.x, 600 - move_mouse.y) : Vector2(360 - move_mouse.x, 600 - move_mouse.y);
 			if (next_vec.Length() < 4)
 			{
-				move_mouse = MOUSE_POS[no];
+				move_mouse = MOUSE_POS[cursor_no];
 			}
 			else
 			{
@@ -288,18 +289,18 @@ void SceneTitle::Update()
 		break;
 
 	case STEP::DRAG:
-		start_button[no].obj->SetMotion(1);
-		start_button[no].rend = true;
+		start_button[cursor_no].obj->SetMotion(1);
+		start_button[cursor_no].rend = true;
 		step = STEP::REND_PAPER;
 		break;
 
 	case STEP::REND_PAPER:
-		start_button[no].obj->Animation();
+		start_button[cursor_no].obj->Animation();
 
-		if (start_button[no].obj->GetFrame() >= 47)
+		if (start_button[cursor_no].obj->GetFrame() >= 47)
 		{
-			if (no == 0)MainFrame->ChangeScene(new SceneSelect());
-			else if (no == 1)PostQuitMessage(0);
+			if (cursor_no == CURSOR_NO::START)MainFrame->ChangeScene(new SceneSelect());
+			else if (cursor_no == CURSOR_NO::EXIT)PostQuitMessage(0);
 			return;
 		}
 		break;
@@ -379,7 +380,7 @@ void SceneTitle::Render()
 
 	if ((int)step >= (int)STEP::CLICK)
 	{
-		if (start_button[0].pointing)
+		if (start_button[CURSOR_NO::START].pointing)
 		{
 			images[IMAGE::CLICK2]->Render(962, 520, 256, 64, 0, 0, 256, 64);
 		}
@@ -390,7 +391,7 @@ void SceneTitle::Render()
 	}
 	if ((int)step >= (int)STEP::DRAG)
 	{
-		if (start_button[0].pointing)
+		if (start_button[CURSOR_NO::START].pointing)
 		{
 			images[IMAGE::CLICK3]->Render(962, 520, 256, 64, 0, 0, 256, 64);
 		}

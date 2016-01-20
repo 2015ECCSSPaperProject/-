@@ -9,6 +9,11 @@ class Mouse;
 class SceneTitle : public Scene
 {
 public:
+	enum CURSOR_NO
+	{
+		START, EXIT, CURSOR_MAX
+	};
+
 	//‰Šú‰»E‰ğ•ú
 	bool Initialize();
 	~SceneTitle();
@@ -19,6 +24,8 @@ public:
 	void RenderShadow();
 
 private:
+	CURSOR_NO cursor_no;
+
 	int FarShadowTimer;
 	iexView* view;
 	iexMesh* sky;		

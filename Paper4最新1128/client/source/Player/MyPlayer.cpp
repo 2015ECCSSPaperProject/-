@@ -53,6 +53,8 @@ void MyPlayer::Initialize(iex3DObj **obj)
 	isMyNunber = true;
 	se_step = 0;
 
+	ShowCursor(FALSE);
+
 	// ”j‚éƒ}ƒEƒX‚Ì“®‚«‚Ì‰Šú‰»
 	const int num = 4;
 	Rend_data::Movedata data[num]=
@@ -180,7 +182,7 @@ void MyPlayer::Update_action()
 		//	command_data[paper_obj_mng->Get_kind(poster_num)]->Reset();
 		//}
 
-		if (m_controlDesc.mouseX*m_controlDesc.mouseX + m_controlDesc.mouseY*m_controlDesc.mouseY > 80000 * 80000) m_controlDesc.rendFlag |= (BYTE)PLAYER_FLAG::REND;
+		if (sqrtf(m_controlDesc.mouseX*m_controlDesc.mouseX + m_controlDesc.mouseY*m_controlDesc.mouseY) > 80000) m_controlDesc.rendFlag |= (BYTE)PLAYER_FLAG::REND;
 
 		break;
 
@@ -195,7 +197,8 @@ void MyPlayer::Update_action()
 		}
 		if (models[(int)model_part]->GetParam(0) == 2)
 		{
-			if (ui->GetManholeFade() != UI::MANHOLE_FADE_TYPE::F_OUT)ui->SetManholeFade(UI::MANHOLE_FADE_TYPE::F_OUT);
+			if (ui->GetManholeFade() != UI::MANHOLE_FADE_TYPE::F_OUT)
+				ui->SetManholeFade(UI::MANHOLE_FADE_TYPE::F_OUT);
 		}
 		break;
 

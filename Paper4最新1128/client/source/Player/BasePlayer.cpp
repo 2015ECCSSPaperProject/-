@@ -696,7 +696,7 @@ void BasePlayer::Action::Manhole::Initialize()
 	me->m_controlDesc.rendFlag &= 0x00000000;
 
 	me->model_part = MODEL::NORMAL;
-	me->models[(int)me->model_part]->SetMotion(19);
+	me->models[(int)me->model_part]->SetMotion((me->isManhole)?22:18);
 
 	me->se_receive = -1;
 }
@@ -897,7 +897,7 @@ void BasePlayer::Action::RendObj::Initialize()
 	case KIND_PAPER_OBJECT::POSTER:
 	case KIND_PAPER_OBJECT::FLYER:
 		me->model_part = MODEL::NORMAL;
-		me->Set_motion(2);
+		me->Set_motion((me->motion_no == 5 || me->motion_no == 21) ? 21 : 2);
 		break;
 	}
 
@@ -920,6 +920,10 @@ void BasePlayer::Action::RendObj::Update()
 	{
 		me->m_controlDesc.motion_no = 0;
 		//me->Change_action(ACTION_PART::MOVE);
+	}
+	if (me->models[(int)me->model_part]->GetMotion() == 21)
+	{
+		me->models[(int)me->model_part]->Animation();
 	}
 }
 

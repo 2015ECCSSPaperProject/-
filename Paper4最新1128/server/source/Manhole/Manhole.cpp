@@ -11,7 +11,7 @@ ManholeMng::ManholeMng()
 	data[0][1].angle = data[0][0].angle - PI;
 	data[1][0].angle = data[1][1].angle = 2.7f + PI;
 
-	data[0][2].pos = Vector3(149.4f, 0, 525.8f);
+	data[0][2].pos = Vector3(169, 0, 549);
 	data[0][3].pos = Vector3(365.7f, 0, 401);
 	data[1][3].pos = Vector3(390, -120, 412);
 	data[1][2].pos = Vector3(177, -120, 542);
