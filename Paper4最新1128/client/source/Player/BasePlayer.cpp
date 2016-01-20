@@ -370,7 +370,7 @@ void BasePlayer::Action::Move::Update()
 	Update_obj();
 
 	// マンホール範囲内
-	me->manhole_no = manhole_mng->CheckManhole((me->isManhole) ? ManholeMng::LAND_TYPE::TIKA : ManholeMng::LAND_TYPE::TIJOU, me->pos, 8);
+	//me->manhole_no_haninai = manhole_mng->CheckManhole((me->isManhole) ? ManholeMng::LAND_TYPE::TIKA : ManholeMng::LAND_TYPE::TIJOU, me->pos, 8, &me->next_manhole_pos);
 }
 
 void BasePlayer::Action::Move::Render(iexShader *shader, char *name)
@@ -481,6 +481,7 @@ void BasePlayer::Action::Rend::Initialize()
 	me->model_part = MODEL::NORMAL;
 
 	//se->Play("破る構え");
+me->Set_motion(23);
 }
 
 void BasePlayer::Action::Rend::Update()
@@ -488,7 +489,7 @@ void BasePlayer::Action::Rend::Update()
 	me->m_controlDesc.rendFlag &= 0x00000000;
 
 	// 扱いに注意
-	me->Set_motion(me->motion_no);
+	//me->Set_motion(me->motion_no);
 
 	// 破くモーションのフレーム
 
@@ -792,7 +793,7 @@ void BasePlayer::Action::Syuriken::Update()
 	if (se->isPlay("手裏剣", me->se_receive))se->Set_pos("手裏剣", me->se_receive, me->pos);
 	//Update_obj();
 
-	if (me->move.LengthSq() > 1)
+	if (me->move.LengthSq() > .1f)
 	{
 		me->models[(int)me->model_part]->Animation();
 	}

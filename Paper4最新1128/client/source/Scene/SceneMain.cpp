@@ -319,7 +319,7 @@ void SceneMain::End()
 	if (event_bgm->Get_mode() == EventBGM::MODE::NONE && FadeControl::isFadeOut_W)
 	{
 		if (player_mng->Get_player(SOCKET_MANAGER->GetID())->isManhole == true)
-			event_bgm->Set_manhole(false);
+			event_bgm->Manhole_off();
 		se->Stop_all();
 		// ƒV[ƒ““o˜^
 		MainFrame->ChangeScene(new SceneResult());

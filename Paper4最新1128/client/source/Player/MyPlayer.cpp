@@ -6,7 +6,7 @@
 #include	"../../IEX/OKB.h"
 #include	"../../../share_data/Enum_public.h"
 #include	"../Sound/SoundManager.h"
-#include "../pie_graph/pie_graph.h"
+#include "../stage/Stage.h"
 #include "../Animation/Spread2D.h"
 #include	"../Manhole/Manhole.h"
 #include	"../Barrier/Barrier.h"
@@ -16,6 +16,9 @@
 #include	"../SkillBegin/SkillBegin.h"
 #include	"../Effect/Effect.h"
 #include	"../blur/blur.h"
+
+static const bool on_number = false;	// ナンバーエフェクト自分で出すかどうか
+
 //****************************************************************************************************************
 //
 //  初期化
@@ -107,6 +110,11 @@ void MyPlayer::Update()
 		Control_all();
 		/*マウスの処理*/
 		Mouse_Update();
+
+		// ATフィールドセット
+		Vector3 AT_nearest;
+		stage->Area_Get_nearest_point(0, &AT_nearest, pos);
+		se->Set_pos("AT", 0, AT_nearest);
 	}
 
 	BasePlayer::Update();
@@ -136,8 +144,7 @@ void MyPlayer::Render(iexShader *shader, char *name)
 	//DeferredManager.ForwardBigin();
 
 	//円ゲージ
-	//float persent =1.0f - ((float)skill_data[(int)SKILL::GUN].wait_time / (float)skill_data[(int)SKILL::GUN].cool_time);
-	//Text::Draw(32, 420, 0xff00ffff, "aaa%f", persent);
+	if (manhole_mng->CheckManhole(ManholeMng::LAND_TYPE::TIJOU, pos, 30) != -1)Text::Draw(32, 420, 0xff00ffff, "やったぜ");
 	//skillGage->Render(persent, 0, 300, 128, 128, 0, 0, 128, 128);
 	//DeferredManager.ForwardEnd();
 }
@@ -205,10 +212,17 @@ void MyPlayer::Update_action()
 		break;
 
 	case ACTION_PART::SYURIKEN:
-		if (move.LengthSq() < 1)
-		{
-			BlurFilter::Set(8, 0, 0);
-		}
+	{
+								  static bool stop = false;
+								  if (move.LengthSq() < 1)
+								  {
+
+									  if (!stop) BlurFilter::Set(8, 0, 0);
+									  stop = true;
+								  }
+								  else stop = false;
+	}
+
 		break;
 
 	case ACTION_PART::REND_OBJ:
@@ -358,10 +372,10 @@ void MyPlayer::RendPosterSE()
 		// 破き始め
 		if (models[(int)model_part]->GetParam(0) == 1)
 		{
-			//if (poster_num != -1)
-			//{
-			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 20, 0), paper_obj_mng->Get_point(poster_num), 4);
-			//}
+			if (poster_num != -1)
+			{
+				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 20, 0), paper_obj_mng->Get_point(poster_num), 4);
+			}
 			se_receive = se->Play("破る");
 			se_step = 99;	// ステップ終わり
 		}
@@ -376,10 +390,10 @@ void MyPlayer::RendFlyerSE()
 		// 破き始め
 		if (models[(int)model_part]->GetParam(0) == 1)
 		{
-			//if (poster_num != -1)
-			//{
-			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 20, 0), paper_obj_mng->Get_point(poster_num), 4);
-			//}
+			if (poster_num != -1)
+			{
+				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 20, 0), paper_obj_mng->Get_point(poster_num), 4);
+			}
 			se_receive = se->Play("破る");
 			se_step = 99;	// ステップ終わり
 		}
@@ -410,10 +424,10 @@ void MyPlayer::RendCalendarSE()
 		// 雄叫び
 		if (models[(int)model_part]->GetParam(5) == 3)
 		{
-			//if (poster_num != -1)
-			//{
-			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
-			//}
+			if (poster_num != -1)
+			{
+				if(on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
+			}
 			se_step = 99;	// ステップ終わり
 		}
 	}
@@ -432,10 +446,10 @@ void MyPlayer::RendMagazineSE()
 		// 破き
 		if (models[(int)model_part]->GetParam(5) == 1)
 		{
-			//if (poster_num != -1)
-			//{
-			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
-			//}
+			if (poster_num != -1)
+			{
+				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
+			}
 			se->Stop("マガジン破り", se_receive);
 			se->Play("マガジン破り2");
 			se_step = 99;	// ステップ終わり
@@ -467,10 +481,10 @@ void MyPlayer::RendMoneySE()
 		// 投げ捨て
 		if (models[(int)model_part]->GetParam(5) == 3)
 		{
-			//if (poster_num != -1)
-			//{
-			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
-			//}
+			if (poster_num != -1)
+			{
+				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
+			}
 			se->Play("サイン破り2");
 			se_step = 99;	// ステップ終わり
 		}
@@ -499,10 +513,10 @@ void MyPlayer::RendSeisyoSE()
 		// 破き
 		if (models[(int)model_part]->GetParam(5) == 2)
 		{
-			//if (poster_num != -1)
-			//{
-			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
-			//}
+			if (poster_num != -1)
+			{
+				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
+			}
 			se->Stop("聖書破り", se_receive);
 			se->Play("聖書破り3");
 			se_step = 99;	// ステップ終わり
@@ -518,10 +532,10 @@ void MyPlayer::RendSignSE()
 		// 破き始め
 		if (models[(int)model_part]->GetParam(5) == 1)
 		{
-			//if (poster_num != -1)
-			//{
-			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
-			//}
+			if (poster_num != -1)
+			{
+				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
+			}
 			se->Play("サイン破り");
 			se_step++;
 		}
@@ -550,10 +564,10 @@ void MyPlayer::RendShinbunSE()
 		// 破き始め
 		if (models[(int)model_part]->GetParam(5) == 1)
 		{
-			//if (poster_num != -1)
-			//{
-			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
-			//}
+			if (poster_num != -1)
+			{
+				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
+			}
 			se->Play("新聞破り");
 			se_step++;
 		}
@@ -582,10 +596,10 @@ void MyPlayer::RendToileSE()
 		// 破き
 		if (models[(int)model_part]->GetParam(5) == 1)
 		{
-			//if (poster_num != -1)
-			//{
-			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
-			//}
+			if (poster_num != -1)
+			{
+				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
+			}
 			se->Stop("トイレ破り", se_receive);
 			se->Play("トイレ破り2");
 			se_step = 99;	// ステップ終わり
@@ -601,10 +615,10 @@ void MyPlayer::RendZasshiSE()
 		// 破き始め
 		if (models[(int)model_part]->GetParam(5) == 1)
 		{
-			//if (poster_num != -1)
-			//{
-			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
-			//}
+			if (poster_num != -1)
+			{
+				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
+			}
 			se_receive = se->Play("短い破り");
 			se_step = 99;	// ステップ終わり
 		}
@@ -636,10 +650,10 @@ void MyPlayer::RendShojiSE()
 		// 蹴り
 		if (models[(int)model_part]->GetParam(5) == 3)
 		{
-			//if (poster_num != -1)
-			//{
-			//	Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
-			//}
+			if (poster_num != -1)
+			{
+				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
+			}
 			se->Play("サイン破り");
 			se_step = 99;	// ステップ終わり
 		}
@@ -663,7 +677,7 @@ void MyPlayer::Set_action(ACTION_PART part)
 		if (action_part == ACTION_PART::MANHOLE && part == ACTION_PART::MOVE)
 		{
 			isManhole ^= 1;
-			event_bgm->Set_manhole(isManhole);
+			(!isManhole) ? event_bgm->Manhole_off() : event_bgm->Manhole_on(manhole_mng->CheckManhole(ManholeMng::LAND_TYPE::TIKA, pos, 30));
 			ui->SetManholeFade(UI::MANHOLE_FADE_TYPE::F_IN);
 		}
 		if (part == ACTION_PART::REND_OBJ) se_step = 0;

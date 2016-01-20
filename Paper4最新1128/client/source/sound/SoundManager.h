@@ -187,7 +187,8 @@ public:
 		mode = m;
 	}
 	MODE Get_mode(){ return mode; }
-	void Set_manhole(bool in);
+	void Manhole_on(int manhole_no);
+	void Manhole_off();
 };
 #define event_bgm ( EventBGM::getInstance() )
 

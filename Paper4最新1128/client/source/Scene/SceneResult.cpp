@@ -103,7 +103,7 @@ bool SceneResult::Initialize()
 		break;
 	}
 
-	chara.obj = new iex3DObj("DATA/CHR/player/run.IEM");
+	chara.obj = new iex3DObj("DATA/CHR/player/result.IEM");
 	chara.obj->SetTexture(texture, 0);
 	chara.obj->SetAngle(chara.angle);
 	chara.obj->SetScale(1.0f);
@@ -275,9 +275,9 @@ void SceneResult::Set_ranking()
 	{
 		if (datas[i].p_num == result_my_number)
 		{
-			if (i == 0)chara.motion_no = 23;				// 1à 
-			else if (i == active_num-1)chara.motion_no = 24;	// ç≈â∫à 
-			else chara.motion_no = 22;						// íÜä‘
+			if (i == 0)chara.motion_no = 1;				// 1à 
+			else if (i == active_num-1)chara.motion_no = 2;	// ç≈â∫à 
+			else chara.motion_no = 0;						// íÜä‘
 			break;
 		}
 	}

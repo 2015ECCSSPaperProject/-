@@ -170,6 +170,10 @@ void Stage::Area_Is_work(unsigned int index, bool in)
 	area->Set_Is_work(index, in);
 }
 
+void Stage::Area_Get_nearest_point(unsigned int index, Vector3 *out, const Vector3 &pos)
+{
+	area->Get_nearest_point(index, out, pos);
+}
 
 void Stage::Load_mapdata()
 {

@@ -1,6 +1,6 @@
 #include	"iextreme.h"
 #include	"SoundManager.h"
-
+#include	"../Manhole/Manhole.h"
 //**************************************************************************************************************
 //
 //		サウンド管理クラス(winmainとframeworkで使うだけ)
@@ -475,28 +475,39 @@ void EventBGM::End()
 	}
 }
 
-void EventBGM::Set_manhole(bool in)
+void EventBGM::Manhole_on(int manhole_no)
 {
-	static int se_receive = -1;
 	// マンホール内エフェクト
-	if (in)
+	mainVolume = -1000;
+	bgm->Set_volume(mainBGM, mainVolume);
+	bgm->SetFX(DXA_FX::DXAFX_DISTORTION);
+	se->SetFX(DXA_FX::DXAFX_ECHO);
+	if (manhole_no == 0 || manhole_no == 1)
 	{
-		mainVolume = -1000;
-		bgm->Set_volume(mainBGM, mainVolume);
-		bgm->SetFX(DXA_FX::DXAFX_DISTORTION);
-		se->SetFX(DXA_FX::DXAFX_ECHO);
-		se_receive = se->Play("水", true);
+		se->Play("水", manhole_mng->data[(int)ManholeMng::LAND_TYPE::TIKA][0].pos, Vector3(0, 0, 1), Vector3(0, 0, 0), true);
+		se->Play("水", manhole_mng->data[(int)ManholeMng::LAND_TYPE::TIKA][1].pos, Vector3(0, 0, 1), Vector3(0, 0, 0), true);
 	}
+	if (manhole_no == 2 || manhole_no == 3)
+	{
+		se->Play("水", manhole_mng->data[(int)ManholeMng::LAND_TYPE::TIKA][2].pos, Vector3(0, 0, 1), Vector3(0, 0, 0), true);
+		se->Play("水", manhole_mng->data[(int)ManholeMng::LAND_TYPE::TIKA][3].pos, Vector3(0, 0, 1), Vector3(0, 0, 0), true);
+	}
+	if (manhole_no == 4 || manhole_no == 5)
+	{
+		se->Play("水", manhole_mng->data[(int)ManholeMng::LAND_TYPE::TIKA][4].pos, Vector3(0, 0, 1), Vector3(0, 0, 0), true);
+		se->Play("水", manhole_mng->data[(int)ManholeMng::LAND_TYPE::TIKA][5].pos, Vector3(0, 0, 1), Vector3(0, 0, 0), true);
+	}
+}
 
+void EventBGM::Manhole_off()
+{
 	// マンホール外(通常)
-	else
-	{
-		mainVolume = DSBVOLUME_MAX;
-		bgm->Set_volume(mainBGM, mainVolume);
-		bgm->SetFX(DXA_FX::DXAFX_OFF);
-		se->SetFX(DXA_FX::DXAFX_OFF);
-		se->Stop("水", se_receive);
-	}
+	mainVolume = DSBVOLUME_MAX;
+	bgm->Set_volume(mainBGM, mainVolume);
+	bgm->SetFX(DXA_FX::DXAFX_OFF);
+	se->SetFX(DXA_FX::DXAFX_OFF);
+	se->Stop("水", 0);
+	se->Stop("水", 1);
 }
 
 

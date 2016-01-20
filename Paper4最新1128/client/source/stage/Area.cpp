@@ -27,6 +27,9 @@ public:
 		return is_work;
 	};
 
+	// ƒEƒH[ƒ‹‚Æ‚ÌÅ’Z‹——£‚ğ•Ô‚·ŠÖ”(’Ç‰Á‚µ‚Ü‚µ‚½)
+	void Get_nearest_point(Vector3 *out, const Vector3 &pos);
+
 protected:
 	int time_to_break; // Á‚¦‚éŠÔ
 	bool is_work; // ”»’è‚ğ‚Æ‚é‚©
@@ -102,7 +105,12 @@ void Area::Render(iexShader *shader, char *name)
 	}
 }
 
-
+void Area::Get_nearest_point(Vector3 *out ,const Vector3 &pos)
+{
+	iexMesh::NearestPointOut receive;
+	wall->GetObj()->NearestPoint(&receive, pos);
+	*out = receive.Pos;
+}
 
 Area_mng::~Area_mng()
 {
@@ -185,4 +193,9 @@ void Area_mng::Set_Is_work(unsigned int index, bool in)
 	{
 		area_array[index]->Open();
 	}
+}
+
+void Area_mng::Get_nearest_point(unsigned int index, Vector3 *out, const Vector3 &pos)
+{
+	area_array[index]->Get_nearest_point(out, pos);
 }

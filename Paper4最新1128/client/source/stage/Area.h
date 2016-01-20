@@ -26,6 +26,9 @@ public:
 
 	void Set_Is_work(unsigned int index, bool in);
 
+	// ƒEƒH[ƒ‹‚Æ‚ÌÅ’Z‹——£‚ğ•Ô‚·ŠÖ”(’Ç‰Á‚µ‚Ü‚µ‚½)
+	void Get_nearest_point(unsigned int index, Vector3 *out, const Vector3 &pos);
+
 private:
 	std::vector<Area*> area_array;
 };
