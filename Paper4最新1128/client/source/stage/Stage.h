@@ -20,6 +20,7 @@ public:
 	void Update();
 	void Render(iexShader *shader = nullptr, char *name = '\0');
 	void RenderForward();
+	void Render_inhabitants( iexShader *shader, char *name );
 
 
 	bool Collision_rand(const Vector3 &pos, Vector3 *move, float up);
