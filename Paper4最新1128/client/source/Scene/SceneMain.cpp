@@ -84,7 +84,7 @@ bool SceneMain::Initialize()
 	stage->Initialize();
 
 	sky = new iexMesh("DATA/Skydome/Skydome.IMO");
-	sky->SetScale(4.0f);
+	sky->SetScale(5.0f);
 	sky->SetPos(0, -100, 0);
 	sky->Update();
 
@@ -426,7 +426,7 @@ void SceneMain::Render()
 		iexSystem::Device->
 			SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
 		iexSystem::Device->
-			SetRenderState(D3DRS_ALPHAREF, 230);
+			SetRenderState(D3DRS_ALPHAREF, 20);		// ほぼ透明に等しかったらに変更！！！
 
 		/*★この中にやじるし入れて*/
 		ui->Render_mark();
@@ -447,6 +447,7 @@ void SceneMain::Render()
 		DeferredManager.GetTex(SURFACE_NAME::SCREEN)->Render(0, 0, 1280, 720, 0, 0, 1280, 720, RS_COPY_NOZ);
 		DeferredManager.GetTex(SURFACE_NAME::FORWARD)->Render(0, 0, 1280, 720, 0, 0, 1280, 720, RS_COPY_NOZ);
 		DeferredManager.AllEnd();
+		
 		// バリアー用環境マップ
 		shaderD->SetValue("EnvFullBuf", DeferredManager.GetTex(SURFACE_NAME::ALLSCREEN));
 

@@ -98,7 +98,8 @@ void UI::Initialize(BasePlayer *my)
 	image[IMAGE::ARROW_UP] = new iex2DObj("DATA/UI/action/Up_Cursor.png");
 	image[IMAGE::ARROW_DOWN] = new iex2DObj("DATA/UI/action/Down_Cursor.png");
 	image[IMAGE::ARROW_ROLL] = new iex2DObj("DATA/UI/action/rot_Cursor.png");
-	image[IMAGE::MARK] = new iex2DObj("DATA/Camera/mark.png");
+	image[IMAGE::MARK] = new iex2DObj("DATA/Camera/mark1.png");
+	image[IMAGE::MARK]->SetScale(4.0f);
 	image[IMAGE::ACTION_HOLD] = new iex2DObj("DATA/UI/action/ホールド！.png");
 	image[IMAGE::ACTION_DRAG] = new iex2DObj("DATA/UI/action/ドラッグ.png");
 	action_hold = new AnimationRippleEx("DATA/UI/action/ホールド！.png",
@@ -177,32 +178,37 @@ void UI::Render()
 void UI::Render_mark()
 {
 	// レンダーステート
- 	//iexSystem::Device->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);//ここをFalseにすると
-	//iexSystem::Device->SetRenderState(D3DRS_ZENABLE, FALSE);//ここをFalseにすると
+ 	iexSystem::Device->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);//ここをFalseにすると
+	iexSystem::Device->SetRenderState(D3DRS_ZENABLE, FALSE);//ここをFalseにすると
 
 	// α更新
 	
 	//float fogRate = (FogFar - pos.z) / (FogFar - FogNear);
 	//fogRate = saturate(fogRate);//指定された値を 0 ～ 1 の範囲にクランプします
 
-	//float alphaRate;
-	//float alphaNear;
-	//float alphaFar;
-	//alphaNear = 30;
-	//alphaFar = 200;
-	//alphaRate = (alphaFar - camera->Get_pos().z) / (alphaFar - alphaNear);
-	////camera->Get_pos().z;
-	//alphaRate = 255 - alphaRate * 255;
-	////ラムダ式Min~Maxの範囲に抑える　２～０
-	//auto Clamp = [](float val, float Min, float Max){
-	//	return min(Max, max(val, Min));
-	//};
-	//alphaRate = Clamp(alphaRate, 0, 255);
-	//image[IMAGE::MARK]->SetARGB((int)alphaRate, 255, 255, 255);
+
+	float alphaRate ;
+	float alphaNear= 150;//★実体化する距離
+	float alphaFar = 700;//★透明化する距離
 
 	bool isRange = false;
 	for (int i = 0; i < paper_obj_mng->Get_numof(); i++)
 	{
+
+		/*****************************/
+		//		α
+		/*****************************/
+		Vector3 lenVec = camera->Get_pos() - paper_obj_mng->Get_pos(i);		// 物の距離
+		alphaRate = (alphaFar - lenVec.Length()) / (alphaFar - alphaNear);
+		alphaRate = alphaRate * 255;
+		//ラムダ式Min~Maxの範囲に抑える　２～０
+		auto Clamp = [](float val, float Min, float Max){
+			return min(Max, max(val, Min));
+		};
+		alphaRate = Clamp(alphaRate, 0, 255);
+		image[IMAGE::MARK]->SetARGB((int)alphaRate, 255, 255, 255);
+		/************************************************************/
+
 		if (!paper_obj_mng->Can_rend(i))continue;
 		float tu[2], tv[2];
 		if (my_player->Get_poster_num() == i)
@@ -267,7 +273,8 @@ void UI::Render_mark()
 				// っこれ初期のやつｄ「
 				tu[0] = 0, tu[1] = .5f;
 				tv[0] = 0, tv[1] = 1;
-				Billboard::Draw3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0), image[IMAGE::MARK], 4, 4, tu, tv, RS_COPY);
+				//Billboard::Draw3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0), image[IMAGE::MARK], 4, 4, tu, tv, RS_COPY);
+				image[IMAGE::MARK]->Render3D(paper_obj_mng->Get_pos(i)+ Vector3(0, 24, 0));
 
 				iexSystem::Device->SetRenderState(D3DRS_ZENABLE, FALSE);//ここをFalseにすると
 				// これ。まうすか
@@ -277,7 +284,6 @@ void UI::Render_mark()
 				image[IMAGE::ACTION]->SetARGB(255, 200, MinusCol, MinusCol);
 				//image[IMAGE::ACTION]->SetAngle(2);
 				image[IMAGE::ACTION]->SetScale(3.0f);
-
 
 
 				Vector3 ViewVec;
@@ -306,7 +312,9 @@ void UI::Render_mark()
 				// っこれ初期のやつｄ「
 				tu[0] = 0, tu[1] = .5f;
 				tv[0] = 0, tv[1] = 1;
-				Billboard::Draw3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0), image[IMAGE::MARK], 4, 4, tu, tv, RS_COPY);
+				//Billboard::Draw3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0), image[IMAGE::MARK], 4, 4, tu, tv, RS_COPY);
+				image[IMAGE::MARK]->Render3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0));
+
 
 				iexSystem::Device->SetRenderState(D3DRS_ZENABLE, FALSE);//ここをFalseにすると
 
@@ -340,8 +348,9 @@ void UI::Render_mark()
 			// っこれ初期のやつｄ「
 			tu[0] = 0, tu[1] = .5f;
 			tv[0] = 0, tv[1] = 1;
-			Billboard::Draw3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0), image[IMAGE::MARK], 4, 4, tu, tv, RS_COPY);
+			//Billboard::Draw3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0), image[IMAGE::MARK], 4, 4, tu, tv, RS_COPY);
 			//image[IMAGE::MARK]->Render3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0))
+			image[IMAGE::MARK]->Render3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0));
 
 		}
 	}
@@ -353,8 +362,8 @@ void UI::Render_mark()
 
 
 	// レンダーステート
-	//iexSystem::Device->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);//ここをFalseにすると
-	//iexSystem::Device->SetRenderState(D3DRS_ZENABLE, TRUE);//ここをFalseにすると
+	iexSystem::Device->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);//ここをFalseにすると
+	iexSystem::Device->SetRenderState(D3DRS_ZENABLE, TRUE);//ここをFalseにすると
 
 
 }
