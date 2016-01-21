@@ -11,7 +11,7 @@
 
 //=============================================================================================
 //		‰	Šú	‰»
-Ambulance::Ambulance() :pos(Vector3(0, 0, 0)), goal_pos(Vector3(0, 0, 0)), angle(0), obj(nullptr), se_receive(-1), move(Vector3(0, 0, 0)), scale(1.0f)
+Ambulance::Ambulance() :pos(Vector3(0, 0, 0)), goal_pos(Vector3(0, 0, 0)), angle(0), obj(nullptr), se_receive(-1), move(Vector3(0, 0, 0)), scale(3.0f)
 {
 	MoveFunk[(int)MOVE_TYPE::ROUND_TRIP] = &Ambulance::MoveRoundTrip;
 	MoveFunk[(int)MOVE_TYPE::AROUND_OUTER] = &Ambulance::MoveAroundOuter;
@@ -19,6 +19,7 @@ Ambulance::Ambulance() :pos(Vector3(0, 0, 0)), goal_pos(Vector3(0, 0, 0)), angle
 void Ambulance::Initialize(iex3DObj *clone, Ambulance::MOVE_TYPE type, const Vector3 &start, const Vector3 &goal, float speed)
 {
 	obj = clone->Clone();
+	obj->SetMotion(1);
 	pos = start_pos = start;
 	goal_pos = goal;
 	angle = atan2(goal.x - start.x, goal.z - start.z);
@@ -129,7 +130,7 @@ AmbulanceMng::AmbulanceMng() :clone(nullptr)
 }
 void AmbulanceMng::Initialize()
 {
-	clone = new iex3DObj("DATA/Ambulance/A—ñŽÔ‚­‚ñ‚Ì—ðŽj‚ª‹l‚Ü‚Á‚½‚·‚Î‚ç‚µ‚¢” /hako.IEM");
+	clone = new iex3DObj("DATA/Ambulance/ambulance.IEM");
 	Load("DATA/Ambulance/set.txt");
 }
 

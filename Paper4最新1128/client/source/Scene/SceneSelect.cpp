@@ -170,6 +170,8 @@ bool SceneSelect::Initialize()
 	BlurScreenY= new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_RENDERTARGET);
 	BlurValue = 0.0f;
 
+	bgm->Fade_in("ドッグラン", .1f);
+
 	return true;
 }
 
@@ -664,6 +666,7 @@ void SceneSelect::Update()
 	case STEP::GAME:
 
 		FadeControl::Setting(FadeControl::FADE_OUT, 26);
+		bgm->Fade_out("ドッグラン", .05f);
 		step = STEP::GAME_FADE;
 		//if (KEY_Get(KEY_ENTER, 0) == 3)
 		//{
@@ -675,6 +678,7 @@ void SceneSelect::Update()
 
 		if (FadeControl::isFadeOut == true)
 		{
+			bgm->Stop("ドッグラン");
 			MainFrame->ChangeScene(new SceneMain());
 			return;
 		}

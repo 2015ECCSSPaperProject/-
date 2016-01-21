@@ -108,6 +108,8 @@ bool SceneTitle::Initialize()
 	mouse->Initialize(FALSE);
 	cursor_no = CURSOR_NO::START;
 
+
+
 	return true;
 }
 

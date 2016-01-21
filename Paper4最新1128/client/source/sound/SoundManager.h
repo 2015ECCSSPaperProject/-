@@ -166,6 +166,8 @@ private:
 	void End();
 	void(EventBGM::*Mode_funk[MODE::MAX])();
 
+	void LoadBGM(LPSTR filename);
+
 public:
 
 	// ŽÀ‘ÌŽæ“¾

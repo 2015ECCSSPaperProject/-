@@ -215,6 +215,8 @@ BGM_Manager::DATA all_dataB[] =
 {
 	{ "フライハイ", "DATA/Sound/BGM/フライ・ハイ.wav", false },
 	{ "フライハイ2", "DATA/Sound/BGM/フライ・ハイ.wav", false },
+	{ "ラプトル", "DATA/Sound/BGM/ラプトル.wav", false },
+	{ "ドッグラン", "DATA/Sound/BGM/ドッグラン.wav", false },
 	{ "ホイッスル", "DATA/Sound/SE/whistle.wav", false },
 	{ "END", nullptr }
 };
@@ -369,6 +371,10 @@ void BGM_Manager::Set_listener(const Vector3 &pos, const Vector3 &front, const V
 #include	"../timer/Timer.h"
 
 EventBGM::EventBGM()
+{
+
+}
+void EventBGM::LoadBGM(LPSTR filename)
 {
 
 }
