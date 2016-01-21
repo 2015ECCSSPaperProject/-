@@ -516,7 +516,7 @@ void SceneMain::Render()
 		else
 		{
 			// DownSample
-			DeferredManager.UpdateDownSample(0.88f, 0.77f);
+			DeferredManager.UpdateDownSample(0.85f, 0.77f);
 		}
 		
 		// サーフェイス描画

@@ -117,7 +117,7 @@ private:
 	AnimationRippleEx* action_hold;
 	AnimationRippleEx* action_drag;
 
-
+	AnimationRippleEx* DragRip; //ƒhƒ‰ƒbƒO
 	//===============================================
 	//	ˆÏ÷
 	//===============================================

@@ -12,6 +12,8 @@
 
 #include "../Animation/AnimationRippleEx.h"
 #include "../camera/Camera.h"
+#include "../../IEX/OKB.h"
+
 
 float UI::tape_len;
 
@@ -69,6 +71,8 @@ void UI::Initialize(BasePlayer *my)
 		18, 1, 6, 1.0f, +(1.5f / 18.0f), false);
 
 
+
+
 	// 円グラフさん
 	graph = new Pie_graph;
 	graph->Add_content("DATA/UI/graph/red.png");
@@ -106,6 +110,10 @@ void UI::Initialize(BasePlayer *my)
 		40, 24, 32, 12.2f, (12.2f / 40.0f), true);
 	action_drag = new AnimationRippleEx("DATA/UI/action/ドラッグ.png",
 		40, 24, 32, 12.2f, (12.2f / 40.0f), true);
+
+	// ドラッグリップ
+	DragRip = new AnimationRippleEx("DATA/UI/action/ドラッグ.png",
+		8, 1, 2, 7.0f, +(3.5f / 8.0f), false);
 
 	// スーパー西田タイム
 	C_Five = new AnimationRippleEx("DATA/UI/call/five.png",
@@ -151,6 +159,8 @@ UI::~UI()
 
 	delete action_drag;
 	delete action_hold;
+	delete DragRip;
+
 }
 
 void UI::Update()
@@ -260,6 +270,11 @@ void UI::Render_mark()
 				|| my_player->Get_controlDesc().controlFlag & (int)PLAYER_CONTROL::LEFT_CLICK
 				)
 			{
+				if (KeyBoardTRG(MOUSE_LEFT))
+				{
+					DragRip->Action();
+				}
+				
 				// こっち　ドラッグ！！
 
 				//Vector3 p_pos = my_player->Get_pos();
@@ -281,6 +296,8 @@ void UI::Render_mark()
 				Vector3 p_pos = my_player->Get_pos();
 				image[IMAGE::ACTION_DRAG]->SetScale(7.0f);
 				image[IMAGE::ACTION_DRAG]->Render3D(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0));
+				DragRip->Update();
+				DragRip->Render(paper_obj_mng->Get_pos(i) + Vector3(0, 24, 0), RS_ADD);					// 波紋
 				image[IMAGE::ACTION]->SetARGB(255, 200, MinusCol, MinusCol);
 				//image[IMAGE::ACTION]->SetAngle(2);
 				image[IMAGE::ACTION]->SetScale(3.0f);
