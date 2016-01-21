@@ -301,6 +301,7 @@ void SceneMain::Main()
 	static float angle = 0;
 	angle += 0.0007f;
 	sky->SetAngle(angle);
+	sky->SetPos( Vector3( camera->shaderViewPos.x, -100, camera->shaderViewPos.z ) );
 	sky->Update();
 
 	if (timer->Get_limit_time() == 0)
