@@ -1,4 +1,5 @@
 #include	"iExtreme.h"
+#include	<tchar.h>
 
 // 画像の補間への対処のためのサイズ調整
 // テクスチャ上のテクセルはそのど真ん中が切りの良い整数座標になっているため、
@@ -13,12 +14,27 @@ static const float abjustSize = 0.5f;
 //------------------------------------------------------
 //	コンストラクタ
 //------------------------------------------------------
+iex2DObj::iex2DObj(){
+	//	情報初期化
+	width = height = 0;
+	lpTexture = NULL;
+	lpSurface = NULL;
+
+	// ステータス初期化
+	scale = 1.0f;
+	angle = 0.0f;
+	color = 0xFFFFFFFF;
+	centerX = centerY = 0.0f;
+	isTurnOver = false;
+	isShiftCenter = false;
+};
+
 iex2DObj::iex2DObj( char* filename )
 {
 	//	情報初期化
 	width = height = 0;
 	lpSurface = NULL;
-
+	
 	//	テクスチャ読み込み
 	lpTexture = iexTexture::Load(filename);
 	if( lpTexture == NULL ) return;
@@ -135,6 +151,103 @@ iex2DObj::iex2DObj( u32 width, u32 height, u8 flag )
 	centerX = centerY = 0.0f;
 	isTurnOver = false;
 	isShiftCenter = false;
+}
+
+
+//	文字テクスチャをロード
+bool	iex2DObj::LoadFontTexture(LPCSTR character, UINT createSize, LPCSTR _FontName)
+{
+	//	現在保持しているテクスチャを破棄
+	if (lpTexture != NULL){
+		lpTexture->Release();
+		lpTexture = NULL;
+	}
+
+	//	フォントの生成
+	int	fontsize = createSize;
+	LOGFONT	lf = { fontsize, 0, 0, 0, 0, 0, 0, 0, SHIFTJIS_CHARSET, OUT_TT_ONLY_PRECIS,
+		CLIP_DEFAULT_PRECIS, PROOF_QUALITY, (FIXED_PITCH | FF_MODERN), "ＭＳ 明朝" };
+	strcpy_s(lf.lfFaceName, _FontName);
+	HFONT	hFont;
+	if (!(hFont = CreateFontIndirect(&lf))){
+		return FALSE;
+	}
+
+	//	デバイスコンテキスト取得
+	HDC hdc = GetDC(NULL);
+	HFONT oldFont = (HFONT)SelectObject(hdc, hFont);
+
+	//	文字コード取得
+	TCHAR *c = _T((LPSTR)character);
+	UINT code = 0;
+	if (IsDBCSLeadByte(*c))
+		code = (BYTE)c[0] << 8 | (BYTE)c[1];
+	else
+		code = c[0];
+
+	//	フォントビットマップ取得
+	TEXTMETRIC	TM;
+	GetTextMetrics(hdc, &TM);
+	GLYPHMETRICS	GM;
+	CONST MAT2	Mat = { { 0, 1 }, { 0, 0 }, { 0, 0 }, { 0, 1 } };
+	DWORD		size = GetGlyphOutline(hdc, code, GGO_GRAY4_BITMAP, &GM, 0, NULL, &Mat);
+	BYTE		*ptr = new BYTE[size];
+	GetGlyphOutline(hdc, code, GGO_GRAY4_BITMAP, &GM, size, ptr, &Mat);
+
+	// デバイスコンテキストとフォントハンドルの開放
+	SelectObject(hdc, oldFont);
+	DeleteObject(hFont);
+	ReleaseDC(NULL, hdc);
+
+	// テクスチャ作成
+	if (FAILED(iexSystem::Device->CreateTexture(GM.gmCellIncX, TM.tmHeight, 1,
+		D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT,
+		&lpTexture, NULL)))
+	if (FAILED(iexSystem::Device->CreateTexture(GM.gmCellIncX, TM.tmHeight, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &lpTexture, NULL)))
+	{
+		delete[] ptr;	return FALSE;
+	}
+
+	//	テクスチャにフォントビットマップ書き込み
+	D3DLOCKED_RECT	LockedRect;
+	if (FAILED(lpTexture->LockRect(0, &LockedRect, NULL, D3DLOCK_DISCARD)))
+	if (FAILED(lpTexture->LockRect(0, &LockedRect, NULL, 0)))
+	{
+		delete[] ptr;	return FALSE;
+	}
+
+	//	フォント情報の書き込み
+	int	iOfs_x = GM.gmptGlyphOrigin.x;
+	int iOfs_y = TM.tmAscent - GM.gmptGlyphOrigin.y;
+	int iBmp_w = GM.gmBlackBoxX + (4 - (GM.gmBlackBoxX % 4)) % 4;
+	int iBmp_h = GM.gmBlackBoxY;
+	int Level = 17;
+	int	x, y;
+	DWORD	Alpha, Color;
+	FillMemory(LockedRect.pBits, LockedRect.Pitch * TM.tmHeight, 0);
+	for (y = iOfs_y; y < (iOfs_y + iBmp_h); y++){
+
+		for (x = iOfs_x; x < (int)(iOfs_x + GM.gmBlackBoxX); x++){
+
+			Alpha = (255 * ptr[x - iOfs_x + iBmp_w * (y - iOfs_y)]) / (Level - 1);
+
+			Color = 0x00ffffff | (Alpha << 24);
+
+			memcpy((BYTE*)LockedRect.pBits + (LockedRect.Pitch * y) + (4 * x), &Color, sizeof(DWORD));
+
+		}
+
+	}
+	//	サーフェイスアンロック
+	lpTexture->UnlockRect(0);
+	delete[] ptr;
+
+	//	パラメータをセット
+	UINT	byte = _mbclen((BYTE*)character);
+	width = GM.gmCellIncX;
+	height = TM.tmHeight;
+
+	return	TRUE;
 }
 
 //*****************************************************************************

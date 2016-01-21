@@ -52,6 +52,9 @@ BOOL	InitApp( HWND hWnd )
 	// サウンド初期化
 	SoundManager::Initialize();
 
+	// フォント初期化
+	Font::Initialize();
+
 	//	システムの初期化
 	SYSTEM_Initialize();
 	//	メインフレームワーク生成
@@ -185,6 +188,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	OKB_Release();
 	Text::CleanUpModule();
 	SoundManager::Release();
+	Font::Release();
 
 	return 0;
 }

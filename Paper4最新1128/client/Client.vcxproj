@@ -120,6 +120,7 @@
     <ClCompile Include="IEX\Billboard.cpp" />
     <ClCompile Include="IEX\Debug.cpp" />
     <ClCompile Include="IEX\Fade.cpp" />
+    <ClCompile Include="IEX\FONT.cpp" />
     <ClCompile Include="IEX\IEX_AudioIIDX.cpp" />
     <ClCompile Include="IEX\IEX_Math2.cpp" />
     <ClCompile Include="IEX\Number.cpp" />

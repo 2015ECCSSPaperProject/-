@@ -37,10 +37,10 @@ BasePlayer::BasePlayer(int id) :m_id(id)
 void BasePlayer::Init_pos()
 {
 	// 基本パラメータ初期化
-	pos.z = 0.0f;
+	angleY = PI / 3 * m_id;
+	pos.z = sinf( angleY ) * 100;
 	pos.y = 1;
-	pos.x = (float)(m_id * 45);// 仮
-	angleY = 0.0f;
+	pos.x = cosf( angleY ) * 100;// 仮
 	scale = .5f;
 	move = Vector3(0, 0, 0);
 	speed = 1.5f;
@@ -76,9 +76,9 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	paperqueue = new PaperQueue;
 
 	// 基本パラメータ初期化
-	pos.z = 0.0f;
-	pos.x = (float)(m_id * 45);// 仮
-	angleY = 0.0f;
+	angleY = PI / 3 * m_id;
+	pos.z = cosf( angleY ) * 100;
+	pos.x = sinf( angleY ) * 100;// 仮
 	scale = .5f;
 	move = Vector3(0, 0, 0);
 	speed = 1.5f;
@@ -393,7 +393,7 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	//	左クリック処理
 	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
 	{
-		if (manhole_mng->CheckManhole((me->isManhole) ? ManholeMng::LAND_TYPE::TIKA : ManholeMng::LAND_TYPE::TIJOU, 12, &me->pos, &me->angleY, &me->next_manhole_pos))
+		if (manhole_mng->CheckManhole((me->isManhole) ? ManholeMng::LAND_TYPE::TIKA : ManholeMng::LAND_TYPE::TIJOU, 15, &me->pos, &me->angleY, &me->next_manhole_pos))
 		{
 			me->Change_action(ACTION_PART::MANHOLE);
 		}
@@ -1101,6 +1101,7 @@ void BasePlayer::Action::Syuriken::Update(const CONTROL_DESC &_ControlDesc)
 	if (target_no != -1)
 	{
 		player_mng->Get_player(target_no)->Change_action(ACTION_PART::DIE);
+		hit_stop = 12;
 	}
 }
 

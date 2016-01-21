@@ -13,7 +13,7 @@ HitEffect::HitEffect()
 
 }
 HitEffect::~HitEffect()
-{	
+{
 	SAFE_DELETE(hitDamage);
 	SAFE_DELETE(hitSlash);
 	SAFE_DELETE(sphere);

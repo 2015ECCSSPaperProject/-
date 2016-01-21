@@ -74,6 +74,11 @@ void Paper_obj_mng::Rend( int index )
 {
 	obj_array[index]->Rend();
 }
+void Paper_obj_mng::Rend_by_skill(int index, BasePlayer *player)
+{
+	obj_array[index]->Rend_by_skill(player);
+}
+
 
 bool Paper_obj_mng::Can_rend(int index)
 {

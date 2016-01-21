@@ -78,6 +78,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	models[(int)MODEL::REND_ZASSHI] = objs[(int)PlayerManager::CLONE_TYPE::REND_ZASSHI]->Clone(2);
 	models[(int)MODEL::REND_SEISHO] = objs[(int)PlayerManager::CLONE_TYPE::REND_SEISHO]->Clone(2);
 	models[(int)MODEL::REND_SHOJI] = objs[(int)PlayerManager::CLONE_TYPE::REND_SHOJI]->Clone(2);
+	models[(int)MODEL::START] = objs[(int)PlayerManager::CLONE_TYPE::START]->Clone(2);
 
 	skill_data[(int)SKILL::GUN].do_action = ACTION_PART::GUN;
 	skill_data[(int)SKILL::SYURIKEN].do_action = ACTION_PART::SYURIKEN;
@@ -119,8 +120,9 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	action[(int)ACTION_PART::SYURIKEN] = new BasePlayer::Action::Syuriken(this);
 	action[(int)ACTION_PART::TRANS_FORM] = new BasePlayer::Action::TransForm(this);
 	action[(int)ACTION_PART::REND_OBJ] = new BasePlayer::Action::RendObj(this);
+	action[(int)ACTION_PART::START] = new BasePlayer::Action::Start(this);
 
-	Change_action(ACTION_PART::MOVE);	// 最初は移動状態
+	Change_action(ACTION_PART::START);	// 最初の構え
 
 	//	キー初期化
 	GetCursorPos(&mousePos);
@@ -282,6 +284,9 @@ void BasePlayer::Set_motion(int no)
 
 void BasePlayer::Set_action(ACTION_PART part)
 {
+	if (action_part == ACTION_PART::START)
+		return;
+
 	if (action_part != part)
 	{
 		if (part == ACTION_PART::TRANS_FORM)
@@ -481,7 +486,7 @@ void BasePlayer::Action::Rend::Initialize()
 	me->model_part = MODEL::NORMAL;
 
 	//se->Play("破る構え");
-me->Set_motion(23);
+	me->Set_motion(23);
 }
 
 void BasePlayer::Action::Rend::Update()
@@ -489,7 +494,7 @@ void BasePlayer::Action::Rend::Update()
 	me->m_controlDesc.rendFlag &= 0x00000000;
 
 	// 扱いに注意
-	//me->Set_motion(me->motion_no);
+	if (me->motion_no == 2) me->Set_motion(me->motion_no);
 
 	// 破くモーションのフレーム
 
@@ -945,6 +950,42 @@ void BasePlayer::Action::RendObj::Update()
 }
 
 void BasePlayer::Action::RendObj::Render(iexShader *shader, char *name)
+{
+	me->models[(int)me->model_part]->Update();
+	if (shader)
+	{
+		me->models[(int)me->model_part]->Render(shader, name);
+	}
+	{
+		me->models[(int)me->model_part]->Render();
+	}
+}
+
+//*****************************************************************************
+//
+//		「ゲームスタート」状態処理
+//
+//*****************************************************************************
+
+void BasePlayer::Action::Start::Initialize()
+{
+	me->model_part = MODEL::START;
+	me->models[(int)me->model_part]->SetFrame(0);
+	me->models[(int)me->model_part]->SetParam(0, 0);
+}
+
+void BasePlayer::Action::Start::Update()
+{
+	Update_obj();
+	me->models[(int)me->model_part]->Animation();
+	if (me->models[(int)me->model_part]->GetParam(0) == 1)
+	{
+		me->m_controlDesc.motion_no = 0;
+		me->Change_action(ACTION_PART::MOVE);
+	}
+}
+
+void BasePlayer::Action::Start::Render(iexShader *shader, char *name)
 {
 	me->models[(int)me->model_part]->Update();
 	if (shader)

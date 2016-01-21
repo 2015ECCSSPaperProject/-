@@ -422,8 +422,18 @@ void SocketManager::UpdateStage()
 	ui->Set_telopID(*(telopID_p));
 	//paper_obj_mng->Set_receive_data( receive_data + telop_size );
 	PaperData *Paper_obj_data = ( PaperData * ) (receive_data + telop_size);
-	if( Paper_obj_data->ID >= 0 )
-		paper_obj_mng->Rend( Paper_obj_data->ID );
+	if (Paper_obj_data->ID >= 0)
+	{
+		// ‰½‚ç‚©‚ÌƒXƒLƒ‹‚Å”j‚ç‚ê‚½ 
+		if (Paper_obj_data->from == m_myID &&(
+			player_mng->Get_player(m_myID)->Get_action() == BasePlayer::ACTION_PART::GUN || 
+			player_mng->Get_player(m_myID)->Get_action() == BasePlayer::ACTION_PART::SYURIKEN)
+			)
+			paper_obj_mng->Rend_by_skill(Paper_obj_data->ID, player_mng->Get_player(m_myID));
+
+		// ’Êí‚Ì”j‚è
+		else paper_obj_mng->Rend(Paper_obj_data->ID);
+	}
 
 	delete[] receive_data;
 

@@ -17,7 +17,7 @@
 #include	"../Effect/Effect.h"
 #include	"../blur/blur.h"
 
-static const bool on_number = false;	// ナンバーエフェクト自分で出すかどうか
+static const bool on_number = true;	// ナンバーエフェクト自分で出すかどうか
 
 //****************************************************************************************************************
 //
@@ -144,7 +144,7 @@ void MyPlayer::Render(iexShader *shader, char *name)
 	//DeferredManager.ForwardBigin();
 
 	//円ゲージ
-	if (manhole_mng->CheckManhole(ManholeMng::LAND_TYPE::TIJOU, pos, 30) != -1)Text::Draw(32, 420, 0xff00ffff, "やったぜ");
+	//if (manhole_mng->CheckManhole(ManholeMng::LAND_TYPE::TIJOU, pos, 30) != -1)Text::Draw(32, 420, 0xff00ffff, "やったぜ");
 	//skillGage->Render(persent, 0, 300, 128, 128, 0, 0, 128, 128);
 	//DeferredManager.ForwardEnd();
 }
@@ -662,6 +662,9 @@ void MyPlayer::RendShojiSE()
 
 void MyPlayer::Set_action(ACTION_PART part)
 {
+	if (action_part == ACTION_PART::START)
+		return;
+
 	if (action_part != part)
 	{
 		if (part == ACTION_PART::TRANS_FORM)

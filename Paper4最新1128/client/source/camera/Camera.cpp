@@ -12,7 +12,7 @@
 
 // カメラ⇒プレイヤーの基本距離
 const float Camera::Mode::Base::DIST = 50.0f;
-
+bool isStart = false;
 const float FOVY[2] =
 {
 	D3DX_PI / 4,	// 0.79f
@@ -37,6 +37,8 @@ Camera::~Camera()
 
 void Camera::Initialize(BasePlayer *my)
 {
+	my_player = my;
+
 	// 基本パラメータ初期化
 	pos = Vector3(0, 10.0f, -20.0f);
 	target = Vector3(0, 0, 0);
@@ -61,7 +63,6 @@ void Camera::Initialize(BasePlayer *my)
 
 	Change_mode(MODE::M_TPS);	// 最初は三人称
 	//Change_mode(MODE::M_DEBUG);	// デバッグカメラ
-	my_player = my;
 
 	collision_stage = new iexMesh("DATA/MATI/stage_atari.IMO");
 
@@ -73,7 +74,8 @@ void Camera::Initialize(BasePlayer *my)
 	// スクリプトカメラさん
 	effect_camera = new EffectCamera;
 	effect_camera->Initialize(this, "DATA/Camera/save_data.ecd");
-	effect_camera->Set_pattern(114514);
+
+	isStart = false;
 }
 
 void Camera::Update()
@@ -99,7 +101,7 @@ void Camera::Render()
 	Activate();
 	Clear();
 
-	//Text::Draw(32, 64, 0xff00ff33, "c.x:%.1f", pos.x);
+	//Text::Draw(32, 64, 0xff00ff33, "c.x:%.1f", angle.x);
 	//Text::Draw(32, 96, 0xff00ff33, "c.y:%.1f", pos.y);
 	//Text::Draw(32, 128, 0xff00ff33, "c.z:%.1f", pos.z);
 }
@@ -127,7 +129,16 @@ void Camera::Mode::Base::Collision()
 	if (me->collision_stage->RayPick(&Out, &ray_Pos, &Vec, &Dist) != -1){
 
 		//もし注視点から壁の距離がradiusより小さい場合
-		if ((Out - me->target).Length() < (me->pos - me->target).Length()) me->pos = Out;
+		if ((Out - me->target).Length() < (me->pos - me->target).Length() +15)
+		{
+			me->pos = Out;
+
+			if (me->my_player->isManhole)
+			{
+				Vec.Normalize();
+				me->pos += Vec * 2;
+			}
+		}
 	}
 }
 
@@ -258,6 +269,15 @@ void Camera::Mode::TPS::Initialize(const Vector3 &pos, const Vector3 &target)
 
 void Camera::Mode::TPS::Update()
 {
+	if (!isStart) if (me->my_player->Get_action() == BasePlayer::ACTION_PART::START)
+	{
+		if (me->my_player->Get_pos() != VECTOR_ZERO)
+		{
+			me->effect_camera->Set_pattern(114514);
+			isStart = true;
+		}
+	}
+
 	static bool in_manhole = false;
 	//static int k = -1;
 	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::REND_OBJ)
@@ -304,7 +324,11 @@ void Camera::Mode::TPS::Update()
 	//me->angle.y = iangle;
 
 	//アングル処理	角度補正
-	if (!(me->my_player->Get_controlDesc().controlFlag & ((BYTE)PLAYER_CONTROL::LEFT_CLICK | (BYTE)PLAYER_CONTROL::RIGHT_CLICK))){
+	if (me->my_player->isManhole)
+	{
+		me->angle.x = -.15f;
+	}
+	else if (!(me->my_player->Get_controlDesc().controlFlag & ((BYTE)PLAYER_CONTROL::LEFT_CLICK | (BYTE)PLAYER_CONTROL::RIGHT_CLICK))){
 		float	work;
 		work = me->my_player->Get_controlDesc().mouseY *0.0000005f;
 		if (work > 0.1f) work = 0.1f;
@@ -348,7 +372,7 @@ void Camera::Mode::TPS::Update()
 	// 注視点はプレイヤー
 	me->target = p_pos;
 
-	me->ipos += Vector3(0, 20, 0);
+	if(!me->my_player->isManhole)me->ipos += Vector3(0, 20, 0);
 	me->target += Vector3(0, 15, 0);
 
 	// 目標座標までゆっくり動かす

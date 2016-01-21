@@ -47,6 +47,11 @@ iexMesh::iexMesh( char* filename )
 //------------------------------------------------------
 iexMesh::~iexMesh()
 {
+	Release();
+}
+
+void iexMesh::Release()
+{
 	if( bLoad )
 	{
 		if( lpMesh ) lpMesh->Release();
@@ -627,6 +632,8 @@ BOOL iexMesh::LoadIMO( LPSTR filename )
 	SetAngle(0.0f);
 	SetScale(1.0f);
 	dwFlags = 0;
+
+	bLoad = TRUE;
 
 	return TRUE;
 }

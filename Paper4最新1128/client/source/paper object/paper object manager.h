@@ -38,6 +38,7 @@ public:
 
 	// ”j‚é
 	void Rend(int index);
+	void Rend_by_skill(int index, BasePlayer *player);
 
 	//**************************************************
 	/// Get Set

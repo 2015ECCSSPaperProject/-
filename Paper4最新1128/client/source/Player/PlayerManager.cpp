@@ -45,6 +45,7 @@ void PlayerManager::Initialize()
 	clone_model[(int)CLONE_TYPE::REND_MAGAZINE]	 = new iex3DObj("DATA/CHR/player/rend_motion/animation_magazin.IEM");
 	clone_model[(int)CLONE_TYPE::REND_SEISHO]	 = new iex3DObj("DATA/CHR/player/rend_motion/animation_seisyo.IEM");
 	clone_model[(int)CLONE_TYPE::REND_SHOJI]	 = new iex3DObj("DATA/CHR/player/rend_motion/animation_syoji.IEM");
+	clone_model[(int)CLONE_TYPE::START]			 = new iex3DObj("DATA/CHR/player/start.IEM");
 
 	// セットするテクスチャ
 	Texture2D *textures[3][6] =
@@ -107,6 +108,7 @@ void PlayerManager::Initialize()
 		players[i]->Set_texture(BasePlayer::MODEL::REND_ZASSHI, textures[TEX_TYPE::NORMAL][i]);
 		players[i]->Set_texture(BasePlayer::MODEL::REND_SEISHO, textures[TEX_TYPE::NORMAL][i]);
 		players[i]->Set_texture(BasePlayer::MODEL::REND_SHOJI, textures[TEX_TYPE::NORMAL][i]);
+		players[i]->Set_texture(BasePlayer::MODEL::START, textures[TEX_TYPE::NORMAL][i]);
 	}
 }
 
@@ -152,6 +154,7 @@ void PlayerManager::Render(iexShader *shader, char *name)
 			//Vector3 v = players[i]->Get_pos() - Vector3(matView._41, matView._42, matView._43);
 			//v.Normalize();
 			//if (Vector3Dot(v, Vector3(matView._13, matView._23, matView._33)) < .707f) continue;
+			if (SOCKET_MANAGER->GetUser(i).isReady <= 0) continue;
 			players[i]->Render(shader, name);
 		}
 	}else
@@ -174,6 +177,18 @@ void PlayerManager::Render_forword()
 	for (int i = 0; i < PLAYER_MAX; i++)
 	{
 		players[i]->Render_forword();
+
+		// ネームプレートの描画
+		static const DWORD col[PLAYER_MAX] =
+		{
+			0xffff3333,		// 赤
+			0xff00ffff,		// 青
+			0xffffff00,		// 黄
+			0xff33ff00,		// 緑
+			0xffff00ff,		// ピンク
+			0xff9900ff,		// 紫
+		};
+		Font::RenderFont3D(SOCKET_MANAGER->GetUser(i).name, 32, players[i]->Get_pos() + Vector3(0, 20, 0), col[i]);
 	}
 }
 

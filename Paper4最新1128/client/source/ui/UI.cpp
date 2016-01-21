@@ -9,7 +9,7 @@
 #include "../score/Score.h"
 #include "../skill_gauge/skill_gauge.h"
 #include <assert.h>
-
+#include "../sound/SoundManager.h"
 #include "../Animation/AnimationRippleEx.h"
 #include "../camera/Camera.h"
 #include "../../IEX/OKB.h"
@@ -446,8 +446,8 @@ void UI::Mode::Main::Render()
 	me->Graph();
 	me->SkillGauge();
 	me->Action();
-	me->TimeLimit();
 	me->Telop_render();
+	me->TimeLimit();
 	//me->Command();
 	me->Manhole_fade();
 }
@@ -457,8 +457,8 @@ void UI::Telop_render()
 {
 	// ƒeƒƒbƒv‚Ìƒe[ƒv
 	int len = (int)(1024 * tape_len);
-	image[IMAGE::TAPE_BAR]->Render(250+(1024-len), 92, len, 128, 0, 0, 1024, 128);
-	image[IMAGE::TAPE]->Render(1048, 92, 256, 128, 0, 0, 256, 128);
+	image[IMAGE::TAPE_BAR]->Render(TimerX + 250 + (1024 - len) - 1092, 12, len, 128, 0, 0, 1024, 128);
+	image[IMAGE::TAPE]->Render(TimerX + 1048 - 1092, 12, 256, 128, 0, 0, 256, 128);
 
 	if (telopID != seted_ID)
 	{
@@ -546,6 +546,7 @@ void UI::SkillGauge()
 				if (percent >= 1.0f){
 					SkileSphere[i]->Action();
 					SkileRip[i]->Action();
+					se->Play("ƒXƒLƒ‹‚½‚Ü‚é");
 				}
 			}
 		}
@@ -638,10 +639,10 @@ void UI::TimeLimit()
 	{
 		// 64x64
 		//image[IMAGE::NUMBER_BACK]->Render(TimerX, 16);		// ”wŒi
-		image[IMAGE::NUMBER]->Render(TimerX, 16, 64, 64, minutes * 64, 0, 64, 64);		// •ª
-		image[IMAGE::NUMBER]->Render(TimerX + 36, 16, 64, 64, 13 * 64, 0, 64, 64);			// :
-		image[IMAGE::NUMBER]->Render(TimerX + 72, 16, 64, 64, second / 10 * 64, 0, 64, 64);	// •b(10‚ÌˆÊ)
-		image[IMAGE::NUMBER]->Render(TimerX + 108, 16, 64, 64, second % 10 * 64, 0, 64, 64);	// •b(1‚ÌˆÊ)
+		image[IMAGE::NUMBER]->Render(TimerX, 32, 64, 64, minutes * 64, 0, 64, 64);		// •ª
+		image[IMAGE::NUMBER]->Render(TimerX + 36, 32, 64, 64, 13 * 64, 0, 64, 64);			// :
+		image[IMAGE::NUMBER]->Render(TimerX + 72, 32, 64, 64, second / 10 * 64, 0, 64, 64);	// •b(10‚ÌˆÊ)
+		image[IMAGE::NUMBER]->Render(TimerX + 108, 32, 64, 64, second % 10 * 64, 0, 64, 64);	// •b(1‚ÌˆÊ)
 	}
 	// ƒJƒEƒ“ƒgƒ_ƒEƒ“•`‰æ
 	C_Five->Render(498, 182, RS_COPY);
@@ -864,7 +865,7 @@ void Telop::Render()
 {
 	if (step > 0)
 	{
-		moji->Render(378, 94, 1024, 128, 0, 0, 1024, 128);
+		moji->Render(378, 16, 1024, 128, 0, 0, 1024, 128);
 	}
 }
 //

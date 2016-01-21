@@ -35,6 +35,7 @@ public:
 	bool Can_rend();
 
 	void Rend(); // ”j‚é
+	void Rend_by_skill(BasePlayer *player);
 
 	//**************************************************
 

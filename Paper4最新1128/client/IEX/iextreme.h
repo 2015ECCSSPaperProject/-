@@ -637,7 +637,8 @@ public:
 	//------------------------------------------------------
 	//	作成・解放
 	//------------------------------------------------------
-	iex2DObj(){};
+	iex2DObj();
+
 	//	ファイルから作成
 	iex2DObj(char* filename);
 	//	作成
@@ -645,6 +646,10 @@ public:
 
 	//自作
 	iex2DObj::iex2DObj(char* filename, u8 flag);
+
+	// 文字テクスチャ作成
+	bool LoadFontTexture(LPCSTR _Character, UINT _CreateSize, LPCSTR _FontName);
+
 
 	//	解放
 	~iex2DObj(){
@@ -662,6 +667,9 @@ public:
 	void RenderTarget(int index = 0);
 	Texture2D*	GetTexture(){ return lpTexture; }
 	Surface*	GetSurface(){ return lpSurface; }
+
+	u32 GetWidth(){ return width; }
+	u32 GetHeight(){ return height; }
 
 	//------------------------------------------------------
 	//	描画
@@ -823,6 +831,7 @@ public:
 	iexMesh(){ bLoad = FALSE; }
 	iexMesh*	Clone();
 	~iexMesh();
+	void Release();
 
 	//------------------------------------------------------
 	//	読み込み
@@ -1888,6 +1897,131 @@ public:
 	};
 
 };
+
+
+
+///////////////////////////////////////////
+//										 //
+//				Font				     //
+//										 //
+///////////////////////////////////////////
+class Font
+{		//	照合用データ
+	typedef	struct	ReferenceData{
+		bool	isEnable;	//	有効化フラグ
+		char	chara[2];	//	文字
+		UINT	byte;		//	文字のバイト数
+		UINT	size;		//	サイズ
+		LPCSTR	fontName;	//	フォント名
+	}	RefData;
+
+	//	キャッシュ処理用デスク
+	struct	CacheDesc{
+		UINT		nextUseCacheNum;		//	次に使用するキャッシュの番号
+		iex2DObj*		textureCacheList;		//	文字テクスチャのリスト
+		RefData*	referenceDataList;		//	キャッシュの照合用データリスト
+	};
+
+	// アウトライン付き
+	typedef	struct	ReferenceDataOutline{
+		bool	isEnable;	//	有効化フラグ
+		char	chara[2];	//	文字
+		UINT	byte;		//	文字のバイト数
+		UINT	size;		//	サイズ
+		LPCSTR	fontName;	//	フォント名
+
+		UINT	fontWeight;	//	フォントの幅？
+		int		edgeWidth;	//	アウトラインの幅
+		DWORD	fillColor;	//	塗りの色（文字の色）
+		DWORD	edgeColor;	//	アウトラインの色
+		int		quality;	//	品質
+	}	RefDataOL;
+
+	struct	CacheDescOL{
+		UINT		nextUseCacheNum;		//	次に使用するキャッシュの番号
+		iex2DObj*		textureCacheList;		//	文字テクスチャのリスト
+		RefDataOL*	referenceDataList;		//	キャッシュの照合用データリスト
+	};
+
+	//	描画パラメータ
+	static	DWORD		m_DefaultFontColor;		//	指定がない場合に使用する文字色
+	static	float		m_DefaultFontWidth;		//	指定がない場合に使用する文字の横幅
+	static	float		m_DefaultFontHeight;	//	指定がない場合に使用する文字の縦幅
+
+	//	管理パラメータ
+	static	bool		m_IsInitialized;		//	初期化済みフラグ
+	static	CacheDesc	m_CacheDesc;			//	キャッシュ処理用デスク
+	static	CacheDescOL	m_CacheDescOL;			//	キャッシュ処理用デスク
+
+public:
+
+	//	初期化
+	static	void	Initialize(void);
+	//	解放
+	static	void	Release(void);
+
+	//	文字列描画
+	static	void	DrawString2D(LPCSTR _String, LPCSTR _FontName, float _DrawX, float _DrawY, float _Depth, DWORD _iexRenderStateFlag);
+	// ふつうの行きつく先
+	static	void	DrawString2D(LPCSTR _String, LPCSTR _FontName, float _DrawX, float _DrawY, float _Width, float _Height, float _Angle, DWORD _Color, float _Depth, DWORD _iexRenderStateFlag);
+	//	文字列描画（制限版）
+	static	void	DrawString2Dc(LPCSTR _String, LPCSTR _FontName, int _FontSize, float _DrawX, float _DrawY, float _Depth, DWORD _iexRenderStateFlag);
+	//  無制限の行きつく先
+	static	void	DrawString2Dc(LPCSTR _String, LPCSTR _FontName, int _FontSize, float _DrawX, float _DrawY, float _ScaleX, float _ScaleY, DWORD _Color, float _Depth, DWORD _iexRenderStateFlag);
+	static	void	DrawString3Dc(LPCSTR _String, LPCSTR _FontName, int _FontSize, float _DrawX, float _DrawY, float _ScaleX, float _ScaleY, DWORD _Color, float _Depth, DWORD _iexRenderStateFlag);
+
+	//  簡易３D描画
+	static	void	RenderFont2D(LPCSTR _String, int _FontSize, float _DrawX, float _DrawY,DWORD col=0xffffffff);
+	static	void	RenderFont3D(LPCSTR _String, int _FontSize, Vector3 _Pos,DWORD col=0xffffffff);
+
+
+	// 簡易アウトライン
+//	static	void RnederFont(LPCSTR string, float x, float y, int fontSize);
+//	static	void RnederFont3D(LPCSTR string, Vector3 pos, int fontSize);
+
+
+	//	アウトライン付き文字列描画
+//	static	void	DrawOutlineString2D(LPCSTR _String, LPCSTR _FontName, UINT _FontSize, UINT _FontWeight, int _EdgeWidth, DWORD _FillColor, DWORD _EdgeColor, int _Quality, float _DrawX, float _DrawY, float _ScaleX, float _ScaleY, DWORD _Color, float _Depth, DWORD _iexRenderStateFlag);
+
+	// 3D
+//	static	void	DrawOutlineString3D(LPCSTR _String, LPCSTR _FontName, UINT _FontSize, UINT _FontWeight, int _EdgeWidth, DWORD _FillColor, DWORD _EdgeColor, int _Quality, float _DrawX, float _DrawY, float _ScaleX, float _ScaleY, DWORD _Color, float _Depth, DWORD _iexRenderStateFlag);
+
+
+	//  描画
+	static	void	DrawCharacter2D(LPCSTR _Character, LPCSTR _FontName, float _DrawX, float _DrawY, float _Width, float _Height, float _Angle, DWORD _Color, float _Depth, DWORD _iexRenderStateFlag);
+	static	void	DrawCharacter2D(LPCSTR _Character, LPCSTR _FontName, float _DrawX, float _DrawY, float _Width, float _Height, float _Angle, DWORD _Color, float _Depth, iexShader* _pShader, LPSTR _Technique);
+
+	static	Vector2	DrawCharacter2Dc(LPCSTR _Character, LPCSTR _FontName, int _FontSize, float _DrawX, float _DrawY, float _ScaleX, float _ScaleY, float _Angle, DWORD _Color, float _Depth, DWORD _iexRenderStateFlag);
+
+	//3Dchar
+	static	Vector2	DrawCharacter3Dc(LPCSTR _Character, LPCSTR _FontName, int _FontSize, float _DrawX, float _DrawY, float _ScaleX, float _ScaleY, float _Angle, DWORD _Color, float _Depth, DWORD _iexRenderStateFlag);
+
+
+	// アウトライン
+//	static	Vector2	DrawOutlineCharacter2D(LPCSTR _FontName, LPCSTR _Character, UINT _FontSize, UINT _FontWeight, int _EdgeWidth, DWORD _FillColor, DWORD _EdgeColor, int _Quality, float _DrawX, float _DrawY, float _ScaleX, float _ScaleY, DWORD _Color, float _Depth, DWORD _iexRenderStateFlag);
+
+//	static	Vector2	DrawOutlineCharacter3D(LPCSTR _FontName, LPCSTR _Character, UINT _FontSize, UINT _FontWeight, int _EdgeWidth, DWORD _FillColor, DWORD _EdgeColor, int _Quality, float _DrawX, float _DrawY, float _ScaleX, float _ScaleY, DWORD _Color, float _Depth, DWORD _iexRenderStateFlag);
+
+	//****************************************************************************************
+	///		情報の取得
+	//****************************************************************************************
+	///	指定されたフォント、文字サイズで生成される文字列のサイズを取得
+	static	Vector2	GetStringSize(LPCSTR _String, LPCSTR _FontName, int _FontSize);
+	//  一つの文字のサイズ取得
+	static	Vector2	GetCharacterSize(LPCSTR _Character, LPCSTR _FontName, int _FontSize);
+	// アウトライン用のサイズ取得
+	//static	Vector2	GetCharacterSizeOL(LPCSTR _Character, LPCSTR _FontName, UINT _FontSize, UINT _FontWeight, int _EdgeWidth, int _Quality);
+	// アウトラインに必要な関数
+	//static	void	GetMatric(TEXTMETRIC* _pTextMetric, GLYPHMETRICS* _pGlyphMetrics, LPCSTR _Character, LPCSTR _FontName, UINT _FontSize, UINT _FontWeight, int _EdgeWidth, int _Quality);
+
+	/******************************/
+	//		サポート関数
+	/******************************/
+	static	UINT	SearchCache(LPCSTR chara, UINT size, LPCSTR _FontName);
+	//static	UINT	SearchCacheOL(LPCSTR _FontName, LPCSTR _Character, UINT _FontSize, UINT _FontWeight, int _EdgeWidth, DWORD _FillColor, DWORD _EdgeColor, int _Quality);
+
+};
+
 
 
 // ここにシェーダを扱っているヘッダーを追加

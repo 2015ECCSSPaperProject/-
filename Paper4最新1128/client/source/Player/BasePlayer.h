@@ -37,7 +37,7 @@ public:
 	//===============================================
 	//	定数
 	//===============================================
-	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, REND, FREEZE, DIE, RESPAWN, GUN, MANHOLE, THROUGH, SYURIKEN, TRANS_FORM, REND_OBJ, MAX };
+	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, REND, FREEZE, DIE, RESPAWN, GUN, MANHOLE, THROUGH, SYURIKEN, TRANS_FORM, REND_OBJ, START, MAX };
 	enum class DO_FLAG{ NONE, ATTACK, PASTE, REND, MAX };
 	enum class MODEL
 	{
@@ -54,6 +54,7 @@ public:
 		REND_MAGAZINE,
 		REND_SEISHO,
 		REND_SHOJI,
+		START,
 		MAX
 	};
 	enum class SKILL{ GUN, SYURIKEN, KABUTO, MAX };
@@ -307,6 +308,18 @@ protected:
 		{
 		public:
 			RendObj(BasePlayer*me) : Base(me){}
+
+			void Initialize();
+			void Update();
+			void Render(iexShader *shader = nullptr, char *name = '\0');
+		};
+
+		//===========================================
+		//	ゲームスタート時の構え
+		class Start : public Base
+		{
+		public:
+			Start(BasePlayer*me) : Base(me){}
 
 			void Initialize();
 			void Update();
