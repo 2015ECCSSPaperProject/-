@@ -16,6 +16,7 @@ public:
 	void Render(float x, float y, DWORD dwFlag);
 
 	bool isDoing(){ return isAction; }
+	iex2DObj* GetObj(){ return obj; };
 private:
 	iex2DObj* obj;
 	
