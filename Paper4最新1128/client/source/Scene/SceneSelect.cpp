@@ -881,18 +881,26 @@ void SceneSelect::Render()
 			if (SOCKET_MANAGER->GetUser(i).isReady)
 			{
 				image[IMAGE::OK]->SetARGB(alpha[i], 255, 255, 255);
-				image[IMAGE::OK]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64);
+
 				// 振れていたら
 				if (entry.in&&SOCKET_MANAGER->GetID() == i){
+					
+					// デフォルト
+					image[IMAGE::OK]->SetScale(1.1f);	// 大きく
+					image[IMAGE::OK]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64);
+
 					//image[IMAGE::OK]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64, RS_ADD);
 					image[IMAGE::OK]->SetARGB(127, 127, 127, 127);
 					image[IMAGE::OK]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64, RS_ADD);
 					image[IMAGE::OK]->SetARGB(255, 255, 255, 255);
-					image[IMAGE::OK]->SetScale(1.1f);	// 大きく
+
 				}
 				else
 				{
+					// デフォルト
 					image[IMAGE::OK]->SetScale(1.0f);
+					image[IMAGE::OK]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64);
+					
 				}
 
 		
@@ -900,17 +908,23 @@ void SceneSelect::Render()
 			else
 			{
 				image[IMAGE::WAIT]->SetARGB(alpha[i], 255, 255, 255);
-				image[IMAGE::WAIT]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64);
 				// 振れていたら
 				if (entry.in&&SOCKET_MANAGER->GetID() == i){
+
+					// Defo
+					image[IMAGE::WAIT]->SetScale(1.1f);// 大きく
+					image[IMAGE::WAIT]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64);
+
 					image[IMAGE::WAIT]->SetARGB(127, 127, 127, 127);
 					image[IMAGE::WAIT]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64, RS_ADD);
 					image[IMAGE::WAIT]->SetARGB(255, 255, 255, 255);
-					image[IMAGE::WAIT]->SetScale(1.1f);// 大きく
+	
 				}
 				else
 				{
 					image[IMAGE::WAIT]->SetScale(1.0f);
+					image[IMAGE::WAIT]->Render(396 + moveX[i], 136 + i * 96, 128, 64, 0, 0, 128, 64);
+
 				}
 
 

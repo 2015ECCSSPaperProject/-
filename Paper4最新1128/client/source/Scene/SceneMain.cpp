@@ -453,8 +453,8 @@ void SceneMain::Render()
 		/*■■バリアーや水用　通常描画(フォアード)開始■■*/
 		DeferredManager.ForwardBigin();
 		player_mng->Render_rush();
-		player_mng->Render_forword();	// バリアー	
 		stage->RenderForward();			// エリア
+		player_mng->Render_forword();	// バリアー	
 		paper_obj_mng->Forward_render();
 
 		// ★地下にいるかいないか
