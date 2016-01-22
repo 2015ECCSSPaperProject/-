@@ -21,7 +21,7 @@ void Stage::Initialize()
 
 	//show_model = new iexMesh("../stage_machi.IMO");
 
-	collision_model.push_back( new iexMesh( "../stage_machi.IMO" ) );
+	collision_model.push_back( new iexMesh( "DATA/MATI/stage_atari.IMO" ) );
 
 	
 	Load_mapdata();

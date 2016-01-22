@@ -922,9 +922,12 @@ void BasePlayer::Action::RendObj::Initialize()
 		break;
 
 	case KIND_PAPER_OBJECT::POSTER:
-	case KIND_PAPER_OBJECT::HUUSENN:
 		me->model_part = MODEL::NORMAL;
 		me->Set_motion((me->motion_no == 5 || me->motion_no == 21) ? 21 : 2);
+
+	case KIND_PAPER_OBJECT::HUUSENN:
+		me->model_part = MODEL::NORMAL;
+		me->Set_motion(21);
 		break;
 	}
 

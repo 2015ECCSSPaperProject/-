@@ -390,6 +390,22 @@ void UI::Render_mark()
 		image[IMAGE::MANHOLE_IN]->Render3D(manhole_mng->data[(int)ManholeMng::LAND_TYPE::TIJOU][i].pos + Vector3(0, 24, 0));
 	}
 
+	for (int i = 0; i < 6; i++)
+	{
+		/*****************************/
+		//		α
+		/*****************************/
+		Vector3 lenVec = camera->Get_pos() - manhole_mng->data[(int)ManholeMng::LAND_TYPE::TIKA][i].pos;		// 物の距離
+		alphaRate = (alphaFar - lenVec.Length()) / (alphaFar - alphaNear);
+		alphaRate = alphaRate * 255;
+		//ラムダ式Min~Maxの範囲に抑える　２～０
+		auto Clamp = [](float val, float Min, float Max){
+			return min(Max, max(val, Min));
+		};
+		alphaRate = Clamp(alphaRate, 0, 255);
+		image[IMAGE::MANHOLE_IN]->SetARGB((int)alphaRate, 255, 255, 255);
+		image[IMAGE::MANHOLE_IN]->Render3D(manhole_mng->data[(int)ManholeMng::LAND_TYPE::TIKA][i].pos + Vector3(0, 24, 0));
+	}
 
 	// レンダーステート
 	iexSystem::Device->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);//ここをFalseにすると

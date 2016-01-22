@@ -65,6 +65,7 @@ void Camera::Initialize(BasePlayer *my)
 	//Change_mode(MODE::M_DEBUG);	// デバッグカメラ
 
 	collision_stage = new iexMesh("DATA/MATI/stage_atari.IMO");
+	collision_stage = new iexMesh("DATA/MATI/stage_atari.IMO");
 
 	// パース
 	parth.fovY = FOVY[(int)FOV_TYPE::DEFAULT];
@@ -126,13 +127,15 @@ void Camera::Mode::Base::Collision()
 	float Dist = 500.0f;
 
 	ray_Pos -= Vec;
-	if (me->collision_stage->RayPick(&Out, &ray_Pos, &Vec, &Dist) != -1){
 
+	//stage->Collision(ray_Pos, &Vec, Dist, 1);
+	if (me->collision_stage->RayPick(&Out, &ray_Pos, &Vec, &Dist) != -1){
+	
 		//もし注視点から壁の距離がradiusより小さい場合
 		if ((Out - me->target).Length() < (me->pos - me->target).Length() +15)
 		{
 			me->pos = Out;
-
+	
 			if (me->my_player->isManhole)
 			{
 				Vec.Normalize();
@@ -140,6 +143,8 @@ void Camera::Mode::Base::Collision()
 			}
 		}
 	}
+
+	//if(Vec.Length()<)me->pos = me->target + Vec;
 }
 
 //*****************************************************************************************************************************
