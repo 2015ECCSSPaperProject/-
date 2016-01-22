@@ -995,7 +995,7 @@ float iexMesh::Length_of_furthest_point()
 	Vector3 vertex( 0, 0, 0 );
 	for( u32 index = 0; index < numVertices; index += 3 )
 	{
-		vertex.x = pVertices[index]; vertex.y = pVertices[index + 1]; vertex.z = pVertices[index + 2];
+		vertex.x = pVertices[index] * vertexSize; vertex.y = pVertices[index + 1] * vertexSize; vertex.z = pVertices[index + 2] * vertexSize;
 		length = max( length, vertex.LengthSq() );
 	}
 
