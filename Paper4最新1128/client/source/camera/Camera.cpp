@@ -283,7 +283,7 @@ void Camera::Mode::TPS::Update()
 	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::REND_OBJ)
 	{
 		int kind = paper_obj_mng->Get_kind(me->my_player->Get_poster_num());
-		if ((kind != 0 && kind != 1))
+		if ((kind != 0))
 	//		&& !(frame <= 180 && k == kind))
 		{
 	//		frame = 0;

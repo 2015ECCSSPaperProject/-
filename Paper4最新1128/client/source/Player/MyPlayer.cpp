@@ -51,6 +51,8 @@ MyPlayer::~MyPlayer()
 	//	delete command_data[i];
 	//}
 	//delete[] command_data;
+
+	delete hit_effect;
 }
 
 void MyPlayer::Initialize(iex3DObj **obj)
@@ -122,7 +124,7 @@ void MyPlayer::Update()
 	}
 
 	// ヒットエフェクト更新
-	const Vector3 shift(sinf(angleY) * 5, 10, cosf(angleY) * 5);
+	const Vector3 shift(sinf(angleY) * 5, 5, cosf(angleY) * 5);
 	hit_effect_pos = pos + shift;
 	hit_effect->Update(hit_effect_pos);
 
@@ -408,8 +410,8 @@ void MyPlayer::RendFlyerSE()
 		{
 			if (poster_num != -1)
 			{
-				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 20, 0), paper_obj_mng->Get_point(poster_num), 4);
 				hit_effect->Action(HIT_TYPE::ALL);
+				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 20, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
 			se_receive = se->Play("破る");
 			se_step = 99;	// ステップ終わり
@@ -686,6 +688,22 @@ void MyPlayer::RendShojiSE()
 
 void MyPlayer::RendBalloonSE()
 {
+	switch (se_step)
+	{
+	case 0:
+		// 破き始め
+		if (models[(int)model_part]->GetParam(0) == 1)
+		{
+			if (poster_num != -1)
+			{
+				hit_effect->Action(HIT_TYPE::ALL);
+				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 20, 0), paper_obj_mng->Get_point(poster_num), 4);
+			}
+			se_receive = se->Play("破る");
+			se_step = 99;	// ステップ終わり
+		}
+		break;
+	}
 }
 
 void MyPlayer::Set_action(ACTION_PART part)

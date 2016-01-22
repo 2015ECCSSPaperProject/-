@@ -42,5 +42,5 @@ private:
 	int limit; // 制限時間
 };
 
-#define LIMIT_TIME 6 + 6	// +6は、よーいドンの補間extern Timer *timer;
+#define LIMIT_TIME 30 + 6	// +6は、よーいドンの補間extern Timer *timer;
 extern Timer *timer;

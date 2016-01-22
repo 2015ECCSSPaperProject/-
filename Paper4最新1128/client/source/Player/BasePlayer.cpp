@@ -78,6 +78,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	models[(int)MODEL::REND_ZASSHI] = objs[(int)PlayerManager::CLONE_TYPE::REND_ZASSHI]->Clone(2);
 	models[(int)MODEL::REND_SEISHO] = objs[(int)PlayerManager::CLONE_TYPE::REND_SEISHO]->Clone(2);
 	models[(int)MODEL::REND_SHOJI] = objs[(int)PlayerManager::CLONE_TYPE::REND_SHOJI]->Clone(2);
+	models[(int)MODEL::REND_FLYER] = objs[(int)PlayerManager::CLONE_TYPE::REND_FLYER]->Clone(2);
 	models[(int)MODEL::START] = objs[(int)PlayerManager::CLONE_TYPE::START]->Clone(2);
 
 	skill_data[(int)SKILL::GUN].do_action = ACTION_PART::GUN;
@@ -916,8 +917,12 @@ void BasePlayer::Action::RendObj::Initialize()
 		me->model_part = MODEL::REND_SHOJI;
 		break;
 
-	case KIND_PAPER_OBJECT::POSTER:
 	case KIND_PAPER_OBJECT::FLYER:
+		me->model_part = MODEL::REND_FLYER;
+		break;
+
+	case KIND_PAPER_OBJECT::POSTER:
+	case KIND_PAPER_OBJECT::HUUSENN:
 		me->model_part = MODEL::NORMAL;
 		me->Set_motion((me->motion_no == 5 || me->motion_no == 21) ? 21 : 2);
 		break;

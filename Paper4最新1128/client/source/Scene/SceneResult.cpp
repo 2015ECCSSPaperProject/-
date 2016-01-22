@@ -119,6 +119,7 @@ SceneResult::~SceneResult()
 {
 	delete view;
 	for (int i = 0; i < IMAGE::MAX; i++)delete image[i];
+	delete chara.obj;
 }
 
 //******************************************************************
@@ -181,7 +182,7 @@ void SceneResult::Render()
 	for (int i = 0; i < PLAYER_MAX; ++i)
 	{
 		if (datas[i].p_num == -114514) continue;
-		image[IMAGE::P1 + datas[i].p_num]->Render(MoveX[i]+64, 136 + i * 96, 64, 64, 0, 0, 64, 64);
+		image[IMAGE::P1 + datas[i].p_num]->Render(MoveX[i] + 64, 136 + i * 96, 64, 64, 0, 0, 64, 64);
 
 		int iti, juu, hyaku, sen, man;
 		int s = datas[i].score;
@@ -195,13 +196,13 @@ void SceneResult::Render()
 		s %= 10;
 		iti = s;
 
-		image[IMAGE::NUMBER]->Render(MoveX[i]+392, 138 + i * 96, 64, 64, 64 * man, 0, 64, 64);
-		image[IMAGE::NUMBER]->Render(MoveX[i]+424, 138 + i * 96, 64, 64, 64 * sen, 0, 64, 64);
-		image[IMAGE::NUMBER]->Render(MoveX[i]+456, 138 + i * 96, 64, 64, 64 * hyaku, 0, 64, 64);
-		image[IMAGE::NUMBER]->Render(MoveX[i]+488, 138 + i * 96, 64, 64, 64 * juu, 0, 64, 64);
-		image[IMAGE::NUMBER]->Render(MoveX[i]+520, 138 + i * 96, 64, 64, 64 * iti, 0, 64, 64);
-		image[IMAGE::NUMBER]->Render(MoveX[i]+568, 138 + i * 96, 64, 64, 64 * 11, 0, 64, 64);
-	
+		image[IMAGE::NUMBER]->Render(MoveX[i] + 392, 138 + i * 96, 64, 64, 64 * man, 0, 64, 64);
+		image[IMAGE::NUMBER]->Render(MoveX[i] + 424, 138 + i * 96, 64, 64, 64 * sen, 0, 64, 64);
+		image[IMAGE::NUMBER]->Render(MoveX[i] + 456, 138 + i * 96, 64, 64, 64 * hyaku, 0, 64, 64);
+		image[IMAGE::NUMBER]->Render(MoveX[i] + 488, 138 + i * 96, 64, 64, 64 * juu, 0, 64, 64);
+		image[IMAGE::NUMBER]->Render(MoveX[i] + 520, 138 + i * 96, 64, 64, 64 * iti, 0, 64, 64);
+		image[IMAGE::NUMBER]->Render(MoveX[i] + 568, 138 + i * 96, 64, 64, 64 * 11, 0, 64, 64);
+
 		// 自分の名前or相手	
 		if (SOCKET_MANAGER->GetID() == i)
 		{
@@ -215,7 +216,7 @@ void SceneResult::Render()
 			// 名前
 			Text::Draw(MoveX[i] + 124, 156 + i * 96, 0xff000000, "%s", SOCKET_MANAGER->GetUser(datas[i].p_num).name);
 		}
-	
+
 	}
 
 	// ランク表示
@@ -224,15 +225,7 @@ void SceneResult::Render()
 	// スコア描画
 	//Text::Draw(320, 320, 0xffffffff, "スコア : %d",limited_data->Get_score(SOCKET_MANAGER->GetID()));
 
-	//ステップ
-	switch (step)
-	{
-	case STEP::GAME:
-
-		Text::Draw(10, 620, 0xff00ffff, "ENTERで進む");
-
-		break;
-	}
+	Text::Draw(32,640, 0xff00ffff, "左クリックで進む");
 
 	//ナンバーエフェクト　※sceneMainで出したエフェクトが残って描画されるので消しておく
 	//Number_Effect::Render();

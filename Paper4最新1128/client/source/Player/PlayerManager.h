@@ -23,6 +23,7 @@ public:
 		REND_MAGAZINE,
 		REND_SEISHO,
 		REND_SHOJI,
+		REND_FLYER,
 		START,
 		MAX
 	};

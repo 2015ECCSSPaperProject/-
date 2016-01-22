@@ -45,6 +45,7 @@ void PlayerManager::Initialize()
 	clone_model[(int)CLONE_TYPE::REND_MAGAZINE]	 = new iex3DObj("DATA/CHR/player/rend_motion/animation_magazin.IEM");
 	clone_model[(int)CLONE_TYPE::REND_SEISHO]	 = new iex3DObj("DATA/CHR/player/rend_motion/animation_seisyo.IEM");
 	clone_model[(int)CLONE_TYPE::REND_SHOJI]	 = new iex3DObj("DATA/CHR/player/rend_motion/animation_syoji.IEM");
+	clone_model[(int)CLONE_TYPE::REND_FLYER] = new iex3DObj("DATA/CHR/player/rend_motion/flyer.IEM");
 	clone_model[(int)CLONE_TYPE::START]			 = new iex3DObj("DATA/CHR/player/start.IEM");
 
 	// セットするテクスチャ
@@ -108,6 +109,7 @@ void PlayerManager::Initialize()
 		players[i]->Set_texture(BasePlayer::MODEL::REND_ZASSHI, textures[TEX_TYPE::NORMAL][i]);
 		players[i]->Set_texture(BasePlayer::MODEL::REND_SEISHO, textures[TEX_TYPE::NORMAL][i]);
 		players[i]->Set_texture(BasePlayer::MODEL::REND_SHOJI, textures[TEX_TYPE::NORMAL][i]);
+		players[i]->Set_texture(BasePlayer::MODEL::REND_FLYER, textures[TEX_TYPE::NORMAL][i]);
 		players[i]->Set_texture(BasePlayer::MODEL::START, textures[TEX_TYPE::NORMAL][i]);
 	}
 }
