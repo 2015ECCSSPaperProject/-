@@ -27,7 +27,7 @@ public:
 private:
 	// ‰æ‘œ
 	iexView* view;
-	enum IMAGE{ BACK, R1, R2, R3, R4, R5, R6, P1, P2, P3, P4, P5, P6, KEKKA, ACTION, NUMBER, MAX };
+	enum IMAGE{ BACK,WIN_BACK,LOSE_BACK,NORMAL_BACK, R1, R2, R3, R4, R5, R6, P1, P2, P3, P4, P5, P6, KEKKA, ACTION, NUMBER,OME, MAX };
 	iex2DObj* image[IMAGE::MAX];
 
 	//===============================================

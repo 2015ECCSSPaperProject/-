@@ -65,7 +65,6 @@ void Camera::Initialize(BasePlayer *my)
 	//Change_mode(MODE::M_DEBUG);	// デバッグカメラ
 
 	collision_stage = new iexMesh("DATA/MATI/stage_atari.IMO");
-	collision_stage = new iexMesh("DATA/MATI/stage_atari.IMO");
 
 	// パース
 	parth.fovY = FOVY[(int)FOV_TYPE::DEFAULT];

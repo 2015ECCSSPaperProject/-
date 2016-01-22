@@ -14,7 +14,9 @@
 #include	"SceneSelect.h"
 #include	"../score/Score.h"
 #include	"../sound/SoundManager.h"
-#include	"../../IEX/OKB.h"
+#include "../../IEX/OKB.h"
+
+//#include	"../score/Score.h"
 //#include	"../data/LimitedData.h"
 
 /**********************/
@@ -34,8 +36,20 @@ using namespace std;
 //		初期化・解放
 //******************************************************************
 
+int active(0);
+//int PlayerMAX = 0;
+
 bool SceneResult::Initialize()
 {
+	active = 0;
+	int count(0);
+	for (int i = 0; i < PLAYER_MAX; ++i)
+	{
+		if (SOCKET_MANAGER->GetUser(i).com == UserData::ACTIVE_USER)
+			++active;
+	}
+	//PlayerMAX = 6 - active;
+
 	//	環境設定
 	iexLight::SetAmbient(0x808080);
 	iexLight::SetFog(800, 3000, 0);
@@ -59,11 +73,14 @@ bool SceneResult::Initialize()
 	image[IMAGE::P4] = new iex2DObj("DATA/Image/lobby/green.png");
 	image[IMAGE::P5] = new iex2DObj("DATA/Image/lobby/purple.png");
 	image[IMAGE::P6] = new iex2DObj("DATA/Image/lobby/pink.png");
-	image[IMAGE::BACK] = new iex2DObj("DATA/Image/result/back.png");
+	image[IMAGE::BACK] = new iex2DObj("DATA/Image/result/back2.png");
+	image[IMAGE::WIN_BACK] = new iex2DObj("DATA/Image/result/orange.png");
+	image[IMAGE::LOSE_BACK] = new iex2DObj("DATA/Image/result/blue.png");
+	image[IMAGE::NORMAL_BACK] = new iex2DObj("DATA/Image/result/green.png");	
 	image[IMAGE::ACTION] = new iex2DObj("DATA/UI/action/1.png");
 	image[IMAGE::KEKKA] = new iex2DObj("DATA/Image/result/result.png");
 	image[IMAGE::NUMBER] = new iex2DObj("DATA/UI/Num.png");
-	
+	image[IMAGE::OME] = new iex2DObj("DATA/Image/result/ome.png");	
 	// Move値を
 	for (int i = 0; i < PLAYER_MAX; i++)
 	{
@@ -119,7 +136,6 @@ SceneResult::~SceneResult()
 {
 	delete view;
 	for (int i = 0; i < IMAGE::MAX; i++)delete image[i];
-	delete chara.obj;
 }
 
 //******************************************************************
@@ -138,18 +154,21 @@ bool SceneResult::Update()
 	// ランキングのイラストのスライド
 	for (int i = (PLAYER_MAX-1); i >= 0; --i)
 	{
-		if (MoveX[i] >= 0){
-			MoveX[i] -= 48;
-			break;				// 一人づつ移動や
+		if (i <= active)
+		{
+			if (MoveX[i] >= 0){
+				MoveX[i] -= 48;
+				break;				// 一人づつ移動や
+			}
 		}
 	}
 
 	// 戻る
-	if (KeyBoardTRG(MOUSE_LEFT))
+	if (KEY_Get(KEY_ENTER) == 3 || KeyBoardTRG(MOUSE_LEFT))
 	{
 		bgm->Stop("ラプトル");
-		MainFrame->ChangeScene(new SceneSelect());
-		return true;
+		   MainFrame->ChangeScene(new SceneSelect());
+		   return true;
 	}
 
 	return true;
@@ -167,7 +186,29 @@ void SceneResult::Render()
 	view->Clear();
 
 	// 背景 西田書き換え
+	if (chara.motion_no == 1)// 1位
+	{
+		// 背景 西田書き換え
+		image[IMAGE::WIN_BACK]->RenderBack(0, 0, 1280, 720, 0, 0, 1280, 720, RS_COPY);
+
+	}		
+	else if (chara.motion_no == 2)	// 最下位
+	{
+		// 背景 西田書き換え
+		image[IMAGE::LOSE_BACK]->RenderBack(0, 0, 1280, 720, 0, 0, 1280, 720, RS_COPY);
+	}
+	else
+	{
+		// 背景 西田書き換え
+		image[IMAGE::NORMAL_BACK]->RenderBack(0, 0, 1280, 720, 0, 0, 1280, 720, RS_COPY);
+
+	}
+
+	// 背景 西田書き換え
 	image[IMAGE::BACK]->RenderBack(0, 0, 1280, 720, 0, 0, 1280, 720, RS_COPY);
+
+
+
 
 	// キャラクター
 	chara.obj->Update();
@@ -182,7 +223,7 @@ void SceneResult::Render()
 	for (int i = 0; i < PLAYER_MAX; ++i)
 	{
 		if (datas[i].p_num == -114514) continue;
-		image[IMAGE::P1 + datas[i].p_num]->Render(MoveX[i] + 64, 136 + i * 96, 64, 64, 0, 0, 64, 64);
+		image[IMAGE::P1 + datas[i].p_num]->Render(MoveX[i]+64, 136 + i * 96, 64, 64, 0, 0, 64, 64);
 
 		int iti, juu, hyaku, sen, man;
 		int s = datas[i].score;
@@ -196,13 +237,13 @@ void SceneResult::Render()
 		s %= 10;
 		iti = s;
 
-		image[IMAGE::NUMBER]->Render(MoveX[i] + 392, 138 + i * 96, 64, 64, 64 * man, 0, 64, 64);
-		image[IMAGE::NUMBER]->Render(MoveX[i] + 424, 138 + i * 96, 64, 64, 64 * sen, 0, 64, 64);
-		image[IMAGE::NUMBER]->Render(MoveX[i] + 456, 138 + i * 96, 64, 64, 64 * hyaku, 0, 64, 64);
-		image[IMAGE::NUMBER]->Render(MoveX[i] + 488, 138 + i * 96, 64, 64, 64 * juu, 0, 64, 64);
-		image[IMAGE::NUMBER]->Render(MoveX[i] + 520, 138 + i * 96, 64, 64, 64 * iti, 0, 64, 64);
-		image[IMAGE::NUMBER]->Render(MoveX[i] + 568, 138 + i * 96, 64, 64, 64 * 11, 0, 64, 64);
-
+		image[IMAGE::NUMBER]->Render(MoveX[i]+392, 138 + i * 96, 64, 64, 64 * man, 0, 64, 64);
+		image[IMAGE::NUMBER]->Render(MoveX[i]+424, 138 + i * 96, 64, 64, 64 * sen, 0, 64, 64);
+		image[IMAGE::NUMBER]->Render(MoveX[i]+456, 138 + i * 96, 64, 64, 64 * hyaku, 0, 64, 64);
+		image[IMAGE::NUMBER]->Render(MoveX[i]+488, 138 + i * 96, 64, 64, 64 * juu, 0, 64, 64);
+		image[IMAGE::NUMBER]->Render(MoveX[i]+520, 138 + i * 96, 64, 64, 64 * iti, 0, 64, 64);
+		image[IMAGE::NUMBER]->Render(MoveX[i]+568, 138 + i * 96, 64, 64, 64 * 11, 0, 64, 64);
+	
 		// 自分の名前or相手	
 		if (SOCKET_MANAGER->GetID() == i)
 		{
@@ -216,16 +257,32 @@ void SceneResult::Render()
 			// 名前
 			Text::Draw(MoveX[i] + 124, 156 + i * 96, 0xff000000, "%s", SOCKET_MANAGER->GetUser(datas[i].p_num).name);
 		}
-
+	
 	}
 
 	// ランク表示
-	image[IMAGE::R1 + Get_rank(result_my_number)]->Render(848, 52, 256, 128, 0, 0, 256, 128);
+	if (active == 1)
+	{
+		image[IMAGE::OME]->Render(708, 32);
+	}
+	else
+	{
+		image[IMAGE::R1 + Get_rank(result_my_number)]->Render(848, 52, 256, 128, 0, 0, 256, 128);
+
+	}
 
 	// スコア描画
 	//Text::Draw(320, 320, 0xffffffff, "スコア : %d",limited_data->Get_score(SOCKET_MANAGER->GetID()));
 
-	Text::Draw(32,640, 0xff00ffff, "左クリックで進む");
+	//ステップ
+	switch (step)
+	{
+	case STEP::GAME:
+
+		Text::Draw(10, 620, 0xff00ffff, "ENTERで進む");
+
+		break;
+	}
 
 	//ナンバーエフェクト　※sceneMainで出したエフェクトが残って描画されるので消しておく
 	//Number_Effect::Render();
