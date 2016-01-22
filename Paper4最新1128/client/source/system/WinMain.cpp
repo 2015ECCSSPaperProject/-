@@ -6,7 +6,7 @@
 #include	"../Scene/SceneMakePoster.h"
 #include	"../sound/SoundManager.h"
 #include	"../score/Score.h"
-
+#include	"../../resource.h"
 #include<crtdbg.h>
 
 //*****************************************************************************************************************************
@@ -113,7 +113,7 @@ HWND InitWindow( HINSTANCE hInstance, int nCmdShow )
 	wc.cbClsExtra    = 0;
 	wc.cbWndExtra    = 0;
 	wc.hInstance     = hInstance;
-	wc.hIcon = LoadIcon(hInstance, IDI_APPLICATION);
+	wc.hIcon = LoadIcon(hInstance, LPSTR(IDI_ICON1));
 	wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = (HBRUSH )GetStockObject(BLACK_BRUSH);
 	wc.lpszMenuName  = NULL;
