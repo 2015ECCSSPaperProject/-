@@ -14,7 +14,7 @@
 #include "../camera/Camera.h"
 #include "../../IEX/OKB.h"
 #include "../Scene/SceneSelect.h"
-
+#include "../Manhole/Manhole.h"
 float UI::tape_len;
 
 void UI::Change_mode(int m)
@@ -106,6 +106,8 @@ void UI::Initialize(BasePlayer *my)
 	image[IMAGE::MARK]->SetScale(4.0f);
 	image[IMAGE::ACTION_HOLD] = new iex2DObj("DATA/UI/action/ホールド！.png");
 	image[IMAGE::ACTION_DRAG] = new iex2DObj("DATA/UI/action/ドラッグ.png");
+	image[IMAGE::MANHOLE_IN] = new iex2DObj("DATA/UI/action/in.png");
+	image[IMAGE::MANHOLE_IN]->SetScale(4.0f);
 	action_hold = new AnimationRippleEx("DATA/UI/action/ホールド！.png",
 		40, 24, 32, 12.2f, (12.2f / 40.0f), true);
 	action_drag = new AnimationRippleEx("DATA/UI/action/ドラッグ.png",
@@ -201,7 +203,6 @@ void UI::Render_mark()
 	float alphaNear= 150;//★実体化する距離
 	float alphaFar = 700;//★透明化する距離
 
-	bool isRange = false;
 	for (int i = 0; i < paper_obj_mng->Get_numof(); i++)
 	{
 
@@ -371,11 +372,23 @@ void UI::Render_mark()
 
 		}
 	}
-	//if (!isRange)
-	//{
-	//	action_drag->Stop();
-	//	action_hold->Stop();
-	//}
+
+	for (int i = 0; i < 6; i++)
+	{
+		/*****************************/
+		//		α
+		/*****************************/
+		Vector3 lenVec = camera->Get_pos() - manhole_mng->data[(int)ManholeMng::LAND_TYPE::TIJOU][i].pos;		// 物の距離
+		alphaRate = (alphaFar - lenVec.Length()) / (alphaFar - alphaNear);
+		alphaRate = alphaRate * 255;
+		//ラムダ式Min~Maxの範囲に抑える　２～０
+		auto Clamp = [](float val, float Min, float Max){
+			return min(Max, max(val, Min));
+		};
+		alphaRate = Clamp(alphaRate, 0, 255);
+		image[IMAGE::MANHOLE_IN]->SetARGB((int)alphaRate, 255, 255, 255);
+		image[IMAGE::MANHOLE_IN]->Render3D(manhole_mng->data[(int)ManholeMng::LAND_TYPE::TIJOU][i].pos + Vector3(0, 24, 0));
+	}
 
 
 	// レンダーステート

@@ -52,6 +52,7 @@ public:
 		MARK,
 		ACTION_DRAG,
 		ACTION_HOLD,
+		MANHOLE_IN,
 		MAX
 	};
 	enum class MANHOLE_FADE_TYPE
