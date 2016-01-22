@@ -382,8 +382,8 @@ void SceneMain::Render()
 		/*¡¡¡¡¡¡¡G_BufferŠJŽn¡¡¡¡¡¡¡*/
 		DeferredManager.G_Bigin();
 
-		//stage->Render(shaderD, "G_Buffer");
-		stage->Render_culling( camera->shaderViewPos, Vector3( matView._13, matView._23, matView._33 ), shaderD, "G_Buffer" );
+		stage->Render(shaderD, "G_Buffer");
+		//stage->Render_culling( camera->shaderViewPos, Vector3( matView._13, matView._23, matView._33 ), shaderD, "G_Buffer" );
 		stage->Render_inhabitants( shaderD, "G_Buffer" );
 		sky->Render(shaderD, "G_Buffer");
 		player_mng->Render(shaderD, "G_Buffer");

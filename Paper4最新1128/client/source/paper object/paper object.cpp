@@ -4,7 +4,7 @@
 #include "../HitEffect/HitEffect.h"
 #include "../Player/BasePlayer.h"
 #include "../sound/SoundManager.h"
-Paper_obj::Paper_obj() : position( 0, 0, 0 ), angle( 0 ), broken( false )
+Paper_obj::Paper_obj() : position(0, 0, 0), angle(0), broken(false), rend_delay_time(0)
 {
 	hiteffect = new HitEffect;
 }
@@ -48,7 +48,8 @@ void Paper_obj::Rend()
 
 void Paper_obj::Rend_by_skill(BasePlayer *player)
 {
-	hiteffect->Action();
+	if(player->Get_action()==BasePlayer::ACTION_PART::GUN) hiteffect->Action(HIT_TYPE::ALL);
+	else if (player->Get_action() == BasePlayer::ACTION_PART::SYURIKEN) hiteffect->Action(HIT_TYPE::SLASH);
 	Number_Effect::SetNum(position + Vector3(0, 10, 0), point, 4);
 	if (player->Get_action() == BasePlayer::ACTION_PART::SYURIKEN) se->Play("Žè— Œ•”j‚è");
 	broken = true;

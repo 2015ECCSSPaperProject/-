@@ -16,7 +16,7 @@
 #include	"../SkillBegin/SkillBegin.h"
 #include	"../Effect/Effect.h"
 #include	"../blur/blur.h"
-
+#include	"../HitEffect/HitEffect.h"
 static const bool on_number = true;	// ナンバーエフェクト自分で出すかどうか
 
 //****************************************************************************************************************
@@ -60,6 +60,8 @@ void MyPlayer::Initialize(iex3DObj **obj)
 
 	ShowCursor(FALSE);
 
+	hit_effect = new HitEffect;
+
 	// 破るマウスの動きの初期化
 	const int num = 4;
 	Rend_data::Movedata data[num]=
@@ -87,6 +89,7 @@ void MyPlayer::Initialize(iex3DObj **obj)
 
 void MyPlayer::Release()
 {
+	delete hit_effect;
 	BasePlayer::Release();
 }
 
@@ -116,6 +119,11 @@ void MyPlayer::Update()
 		stage->Area_Get_nearest_point(0, &AT_nearest, pos);
 		se->Set_pos("AT", 0, AT_nearest);
 	}
+
+	// ヒットエフェクト更新
+	const Vector3 shift(sinf(angleY) * 5, 10, cosf(angleY) * 5);
+	hit_effect_pos = pos + shift;
+	hit_effect->Update(hit_effect_pos);
 
 	BasePlayer::Update();
 	Update_action();
@@ -147,6 +155,12 @@ void MyPlayer::Render(iexShader *shader, char *name)
 	//if (manhole_mng->CheckManhole(ManholeMng::LAND_TYPE::TIJOU, pos, 30) != -1)Text::Draw(32, 420, 0xff00ffff, "やったぜ");
 	//skillGage->Render(persent, 0, 300, 128, 128, 0, 0, 128, 128);
 	//DeferredManager.ForwardEnd();
+}
+
+void MyPlayer::Render_forword()
+{
+	hit_effect->Render();
+	BasePlayer::Render_forword();
 }
 
 void MyPlayer::Update_action()
@@ -374,6 +388,7 @@ void MyPlayer::RendPosterSE()
 		{
 			if (poster_num != -1)
 			{
+				hit_effect->Action(HIT_TYPE::ALL);
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 20, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
 			se_receive = se->Play("破る");
@@ -393,6 +408,7 @@ void MyPlayer::RendFlyerSE()
 			if (poster_num != -1)
 			{
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 20, 0), paper_obj_mng->Get_point(poster_num), 4);
+				hit_effect->Action(HIT_TYPE::ALL);
 			}
 			se_receive = se->Play("破る");
 			se_step = 99;	// ステップ終わり
@@ -426,7 +442,7 @@ void MyPlayer::RendCalendarSE()
 		{
 			if (poster_num != -1)
 			{
-				if(on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
+				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
 			se_step = 99;	// ステップ終わり
 		}
@@ -438,7 +454,7 @@ void MyPlayer::RendMagazineSE()
 	{
 	case 0:
 		// 最初から鳴らす
-		se_receive=se->Play("マガジン破り");
+		se_receive = se->Play("マガジン破り");
 		se_step++;
 
 		break;
@@ -448,6 +464,7 @@ void MyPlayer::RendMagazineSE()
 		{
 			if (poster_num != -1)
 			{
+				hit_effect->Action(HIT_TYPE::ALL);
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
 			se->Stop("マガジン破り", se_receive);
@@ -515,6 +532,7 @@ void MyPlayer::RendSeisyoSE()
 		{
 			if (poster_num != -1)
 			{
+				hit_effect->Action(HIT_TYPE::SLASH);
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
 			se->Stop("聖書破り", se_receive);
@@ -534,6 +552,7 @@ void MyPlayer::RendSignSE()
 		{
 			if (poster_num != -1)
 			{
+				hit_effect->Action();
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
 			se->Play("サイン破り");
@@ -566,6 +585,7 @@ void MyPlayer::RendShinbunSE()
 		{
 			if (poster_num != -1)
 			{
+				hit_effect->Action(HIT_TYPE::ALL);
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
 			se->Play("新聞破り");
@@ -598,6 +618,7 @@ void MyPlayer::RendToileSE()
 		{
 			if (poster_num != -1)
 			{
+				hit_effect->Action(HIT_TYPE::ALL);
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
 			se->Stop("トイレ破り", se_receive);
@@ -617,6 +638,7 @@ void MyPlayer::RendZasshiSE()
 		{
 			if (poster_num != -1)
 			{
+				hit_effect->Action(HIT_TYPE::ALL);
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
 			se_receive = se->Play("短い破り");
@@ -652,6 +674,7 @@ void MyPlayer::RendShojiSE()
 		{
 			if (poster_num != -1)
 			{
+				hit_effect->Action();
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
 			se->Play("サイン破り");
@@ -670,6 +693,7 @@ void MyPlayer::Set_action(ACTION_PART part)
 		if (part == ACTION_PART::TRANS_FORM)
 		{
 			skill_begin->Action();
+			se->Play("スキル発動");
 		}
 		if (action_part == ACTION_PART::SYURIKEN && part == ACTION_PART::MOVE)
 		{

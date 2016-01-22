@@ -23,6 +23,12 @@ void Poster::Subclass_update()
 {
 	if (broken) return;
 
+	if (rend_delay_time > 0)
+	{
+		if (--rend_delay_time <= 0)
+			broken = true;
+	}
+
 	model->Update();
 }
 
@@ -45,6 +51,11 @@ void Poster::Subclass_render( iexShader *shader, char *name )
 KIND_PAPER_OBJECT Poster::Get_kind()
 {
 	return KIND_PAPER_OBJECT::POSTER;
+}
+
+void Poster::Rend()
+{
+	rend_delay_time = 20;
 }
 
 //**************************************************

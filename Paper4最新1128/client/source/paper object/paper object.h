@@ -34,8 +34,8 @@ public:
 
 	bool Can_rend();
 
-	void Rend(); // ”j‚é
-	void Rend_by_skill(BasePlayer *player);
+	virtual void Rend(); // ”j‚é
+	virtual void Rend_by_skill(BasePlayer *player);
 
 	//**************************************************
 
@@ -55,6 +55,9 @@ protected:
 	HitEffect *hiteffect;
 
 	int point;
+
+	// tuikasimasita
+	int rend_delay_time;	// ”j‚ê‚é‚Æ‚«‚É’x‚ç‚¹‚é(‚²‚è‰Ÿ‚µ)
 
 	virtual void Subclass_update() = 0;
 	virtual void Subclass_render( iexShader *shader = nullptr, char *name = '\0' ) = 0;

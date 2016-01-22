@@ -14,8 +14,6 @@
 #include	"SceneSelect.h"
 #include	"../score/Score.h"
 
-#include	"SceneSelect.h"
-
 //#include	"../score/Score.h"
 //#include	"../data/LimitedData.h"
 
@@ -216,10 +214,7 @@ void SceneResult::Render()
 	}
 
 	// ランク表示
-	if( !SCOREATACK_FLAG )
-	{
-		image[IMAGE::R1 + Get_rank( result_my_number )]->Render( 848, 52, 256, 128, 0, 0, 256, 128 );
-	}
+	image[IMAGE::R1 + Get_rank(result_my_number)]->Render(848, 52, 256, 128, 0, 0, 256, 128);
 
 	// スコア描画
 	//Text::Draw(320, 320, 0xffffffff, "スコア : %d",limited_data->Get_score(SOCKET_MANAGER->GetID()));

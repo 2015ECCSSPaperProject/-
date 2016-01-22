@@ -354,7 +354,7 @@ public:
 	//===============================================
 	virtual void Update();
 	virtual void Render(iexShader *shader = nullptr, char *name = '\0');
-	void Render_forword();
+	virtual void Render_forword();
 	void Render_rush();
 	
 	//===============================================

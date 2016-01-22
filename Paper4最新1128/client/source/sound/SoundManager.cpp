@@ -76,6 +76,7 @@ SE_Manager::DATA all_dataS[] =
 	{ "水", "DATA/Sound/SE/water.wav", 2, true },
 	{ "救急車", "DATA/Sound/SE/pi-po-.wav", 6, true },
 	{ "スキルたまる", "DATA/Sound/SE/fill_skill.wav", 2, false },
+	{ "スキル発動", "DATA/Sound/SE/fill_skill.wav", 2, false },
 	{ "END", nullptr }
 };
 

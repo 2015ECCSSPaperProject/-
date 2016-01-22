@@ -24,6 +24,8 @@ public:
 
 	void Set_receive_data( char *in );
 
+	// オーバーライド
+	void Rend();
 };
 
 

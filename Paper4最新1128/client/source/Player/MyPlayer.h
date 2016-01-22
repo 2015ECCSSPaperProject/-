@@ -4,6 +4,7 @@
 class Pie_graph_content;
 class Spread2D;
 class Rend_data;
+class HitEffect;
 
 /*前方宣言*/
 //class BasePlayer;
@@ -30,6 +31,7 @@ public:
 	void Update();
 	void Update_action();
 	void Render(iexShader *shader = nullptr, char *name = '\0');
+	void Render_forword();
 
 	void Mouse_Update();	//	マウスのポジション
 	void Control_all();		//　自分だけ操作追加
@@ -46,6 +48,11 @@ private:
 	//	破るマウスの動き
 	//===============================================
 	Rend_data **command_data;
+
+	// 破ったときのエフェクト
+	HitEffect *hit_effect;
+
+	Vector3 hit_effect_pos;
 
 	int se_step;
 	void (MyPlayer::*RendSE[11])();	// 小物破くSE
