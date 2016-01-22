@@ -164,8 +164,7 @@ void Paper_obj_mng::Load()
 	original_model[7].LoadIMO( "DATA/paper object/zasshi/zasshi.IMO" );
 	original_model[8].LoadIMO( "DATA/paper object/shinbun/shinbun.IMO" );
 	original_model[9].LoadIMO( "DATA/paper object/shoji/shoji.IMO" );
-	//original_model[10].LoadIMO( "DATA/paper object/huusenn/huusenn.IMO" );
-	original_model[10].LoadIMO("DATA/paper object/shoji/shoji.IMO");
+	original_model[10].LoadIMO( "DATA/paper object/huusen/huusen.IMO" );
 
 	// à íuÉçÅ[Éh
 	Load_flyer();
@@ -179,7 +178,7 @@ void Paper_obj_mng::Load()
 	Load_poster_tmp<Zasshi>( "DATA/MATI/position/zasshi.txt", &original_model[7] );
 	Load_poster_tmp<Shinbun>( "DATA/MATI/position/shinbun_pos.txt", &original_model[8] );
 	Load_poster_tmp<Shoji>( "DATA/MATI/position/shoji_pos.txt", &original_model[9] );
-	//Load_poster_tmp<Huusenn>( "DATA/MATI/position/huusenn_pos.txt", &original_model[9] );
+	Load_poster_tmp<Huusenn>( "DATA/MATI/position/huusen_pos.txt", &original_model[10] );
 }
 
 void Paper_obj_mng::Load_flyer()
