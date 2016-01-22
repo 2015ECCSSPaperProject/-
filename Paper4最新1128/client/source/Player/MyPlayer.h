@@ -55,7 +55,7 @@ private:
 	Vector3 hit_effect_pos;
 
 	int se_step;
-	void (MyPlayer::*RendSE[11])();	// è¨ï®îjÇ≠SE
+	void (MyPlayer::*RendSE[12])();	// è¨ï®îjÇ≠SE
 	void RendPosterSE();
 	void RendFlyerSE();
 	void RendCalendarSE();
@@ -67,4 +67,5 @@ private:
 	void RendToileSE();
 	void RendZasshiSE();
 	void RendShojiSE();
+	void RendBalloonSE();
 };

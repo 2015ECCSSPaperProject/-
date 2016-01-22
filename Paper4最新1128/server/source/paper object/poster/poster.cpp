@@ -239,3 +239,8 @@ KIND_PAPER_OBJECT Shoji::Get_kind()
 {
 	return KIND_PAPER_OBJECT::SHOJI;
 }
+
+KIND_PAPER_OBJECT Huusenn::Get_kind()
+{
+	return KIND_PAPER_OBJECT::HUUSENN;
+}

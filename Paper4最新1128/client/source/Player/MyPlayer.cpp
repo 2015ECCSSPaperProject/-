@@ -41,15 +41,16 @@ MyPlayer::MyPlayer() :BasePlayer()
 	RendSE[KIND_PAPER_OBJECT::TOILET_PAPER] = &MyPlayer::RendToileSE;
 	RendSE[KIND_PAPER_OBJECT::ZASSHI] = &MyPlayer::RendZasshiSE;
 	RendSE[KIND_PAPER_OBJECT::SHOJI] = &MyPlayer::RendShojiSE;
+	RendSE[KIND_PAPER_OBJECT::HUUSENN] = &MyPlayer::RendBalloonSE;
 }
 
 MyPlayer::~MyPlayer()
 {
-	for (int i = 0; i < KIND_PAPER_OBJECT::KIND_MAX_PAPER_OBJ; i++)
-	{
-		delete command_data[i];
-	}
-	delete[] command_data;
+	//for (int i = 0; i < KIND_PAPER_OBJECT::KIND_MAX_PAPER_OBJ; i++)
+	//{
+	//	delete command_data[i];
+	//}
+	//delete[] command_data;
 }
 
 void MyPlayer::Initialize(iex3DObj **obj)
@@ -73,18 +74,18 @@ void MyPlayer::Initialize(iex3DObj **obj)
 	};
 
 	// commandデータ
-	command_data = new Rend_data*[KIND_PAPER_OBJECT::KIND_MAX_PAPER_OBJ];
-	Rend_data::Load(command_data[KIND_PAPER_OBJECT::CALENDAR],	"DATA/paper object/calendar/rend command.txt");
-	Rend_data::Load(command_data[KIND_PAPER_OBJECT::FLYER],		"DATA/paper object/flyer/rend command.txt");
-	Rend_data::Load(command_data[KIND_PAPER_OBJECT::MAGAZIN],	"DATA/paper object/magazin/rend command.txt");
-	Rend_data::Load(command_data[KIND_PAPER_OBJECT::MONEY],		"DATA/paper object/money/rend command.txt");
-	Rend_data::Load(command_data[KIND_PAPER_OBJECT::POSTER],	"DATA/paper object/Poster/rend command.txt");
-	Rend_data::Load(command_data[KIND_PAPER_OBJECT::SEISHO],	"DATA/paper object/seisho/rend command.txt");
-	Rend_data::Load(command_data[KIND_PAPER_OBJECT::SHINBUN],	"DATA/paper object/shinbun/rend command.txt");
-	Rend_data::Load(command_data[KIND_PAPER_OBJECT::SHOJI],		"DATA/paper object/shoji/rend command.txt");
-	Rend_data::Load(command_data[KIND_PAPER_OBJECT::SIGN],		"DATA/paper object/sign/rend command.txt");
-	Rend_data::Load(command_data[KIND_PAPER_OBJECT::TOILET_PAPER], "DATA/paper object/toilet_paper/rend command.txt");
-	Rend_data::Load(command_data[KIND_PAPER_OBJECT::ZASSHI],	"DATA/paper object/zasshi/rend command.txt");
+	//command_data = new Rend_data*[KIND_PAPER_OBJECT::KIND_MAX_PAPER_OBJ];
+	//Rend_data::Load(command_data[KIND_PAPER_OBJECT::CALENDAR],	"DATA/paper object/calendar/rend command.txt");
+	//Rend_data::Load(command_data[KIND_PAPER_OBJECT::FLYER],		"DATA/paper object/flyer/rend command.txt");
+	//Rend_data::Load(command_data[KIND_PAPER_OBJECT::MAGAZIN],	"DATA/paper object/magazin/rend command.txt");
+	//Rend_data::Load(command_data[KIND_PAPER_OBJECT::MONEY],		"DATA/paper object/money/rend command.txt");
+	//Rend_data::Load(command_data[KIND_PAPER_OBJECT::POSTER],	"DATA/paper object/Poster/rend command.txt");
+	//Rend_data::Load(command_data[KIND_PAPER_OBJECT::SEISHO],	"DATA/paper object/seisho/rend command.txt");
+	//Rend_data::Load(command_data[KIND_PAPER_OBJECT::SHINBUN],	"DATA/paper object/shinbun/rend command.txt");
+	//Rend_data::Load(command_data[KIND_PAPER_OBJECT::SHOJI],		"DATA/paper object/shoji/rend command.txt");
+	//Rend_data::Load(command_data[KIND_PAPER_OBJECT::SIGN],		"DATA/paper object/sign/rend command.txt");
+	//Rend_data::Load(command_data[KIND_PAPER_OBJECT::TOILET_PAPER], "DATA/paper object/toilet_paper/rend command.txt");
+	//Rend_data::Load(command_data[KIND_PAPER_OBJECT::ZASSHI],	"DATA/paper object/zasshi/rend command.txt");
 }
 
 void MyPlayer::Release()
@@ -681,6 +682,10 @@ void MyPlayer::RendShojiSE()
 			se_step = 99;	// ステップ終わり
 		}
 	}
+}
+
+void MyPlayer::RendBalloonSE()
+{
 }
 
 void MyPlayer::Set_action(ACTION_PART part)

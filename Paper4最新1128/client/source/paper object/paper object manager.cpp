@@ -152,8 +152,8 @@ void Paper_obj_mng::Load()
 
 	// モデルロード
 	original_flyer = new iex3DObj( "DATA/paper object/flyer/flyer.IEM" );
-	unsigned int num_models = 10;							// モデルの種類
-	original_model = new iexMesh[num_models];
+	unsigned int num_models = 11;							// モデルの種類
+	original_model = new iexMesh[num_models]{};
 	original_model[0].LoadIMO( "DATA/paper object/Poster/posuta-.IMO" );
 	original_model[1].LoadIMO( "DATA/paper object/calendar/calendar.IMO" );
 	original_model[2].LoadIMO( "DATA/paper object/magazin/magazin.IMO" );
@@ -164,6 +164,8 @@ void Paper_obj_mng::Load()
 	original_model[7].LoadIMO( "DATA/paper object/zasshi/zasshi.IMO" );
 	original_model[8].LoadIMO( "DATA/paper object/shinbun/shinbun.IMO" );
 	original_model[9].LoadIMO( "DATA/paper object/shoji/shoji.IMO" );
+	//original_model[10].LoadIMO( "DATA/paper object/huusenn/huusenn.IMO" );
+	original_model[10].LoadIMO("DATA/paper object/shoji/shoji.IMO");
 
 	// 位置ロード
 	Load_flyer();
@@ -177,6 +179,7 @@ void Paper_obj_mng::Load()
 	Load_poster_tmp<Zasshi>( "DATA/MATI/position/zasshi.txt", &original_model[7] );
 	Load_poster_tmp<Shinbun>( "DATA/MATI/position/shinbun_pos.txt", &original_model[8] );
 	Load_poster_tmp<Shoji>( "DATA/MATI/position/shoji_pos.txt", &original_model[9] );
+	//Load_poster_tmp<Huusenn>( "DATA/MATI/position/huusenn_pos.txt", &original_model[9] );
 }
 
 void Paper_obj_mng::Load_flyer()

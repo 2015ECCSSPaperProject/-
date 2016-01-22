@@ -149,3 +149,9 @@ class Shoji : public Poster
 public:
 	KIND_PAPER_OBJECT Get_kind();
 };
+
+class Huusenn : public Poster
+{
+public:
+	KIND_PAPER_OBJECT Get_kind();
+};

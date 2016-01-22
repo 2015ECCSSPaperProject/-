@@ -13,7 +13,7 @@
 #include "../Animation/AnimationRippleEx.h"
 #include "../camera/Camera.h"
 #include "../../IEX/OKB.h"
-
+#include "../Scene/SceneSelect.h"
 
 float UI::tape_len;
 
@@ -443,7 +443,7 @@ void UI::Mode::Main::Update()
 
 void UI::Mode::Main::Render()
 {
-	me->Graph();
+	if (!SCOREATACK_FLAG)me->Graph();
 	me->SkillGauge();
 	me->Action();
 	me->Telop_render();
@@ -751,7 +751,7 @@ void UI::Mode::Start::Update()
 void UI::Mode::Start::Render()
 {
 	//me->TimeLimit();
-	me->Graph();
+	if(!SCOREATACK_FLAG)me->Graph();
 	me->SkillGauge();
 	me->Action();
 	YooiDon();
@@ -802,7 +802,7 @@ void UI::Mode::End::Render()
 	TimeUp->Update();
 	TimeUpRip->Update();
 
-	me->Graph();
+	if(SCOREATACK_FLAG)me->Graph();
 	me->SkillGauge();
 	me->Action();
 	//sokomade->Render(128, 182, 1024, 256, 0, 0, 1024, 256);
