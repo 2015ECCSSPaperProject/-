@@ -12,7 +12,8 @@
 #include	"../../IEX/OKB.h"
 
 #include "../Animation/AnimationRippleEx.h"
-
+#include	"../movie/Movie.h"
+MoviePlay *test;
 
 using namespace std;
 
@@ -25,6 +26,17 @@ const Vector2 min_v[SceneTitle::CURSOR_NO::CURSOR_MAX] = { Vector2(950, 470), Ve
 //******************************************************************
 bool SceneTitle::Initialize()
 {
+	movieStep = MOVIE_STEP::NORMAL;
+	movieTimer = 0;
+	movieStopTimer = 0;
+
+	/*動画再生*/
+	test = new MoviePlay();
+	test->SetSource("DATA/MOVIE/t2.wmv");
+	//test->SetSource( "DATA/MOVIE/SAO.MP4" );
+	test->SetWindow((OAHWND)iexSystem::Window, 0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight);
+
+
 	// ディファード
 	LightVec = Vector3(1, 1, 1);
 	FarShadowTimer = 0;
@@ -118,6 +130,7 @@ SceneTitle::~SceneTitle()
 	// deferredの解除
 	DeferredManager.Release();
 
+	delete test;
 	delete stage;
 	delete sky;
 	delete titleEx;
@@ -136,8 +149,9 @@ static float angle2 = .37f;
 //		処理
 //******************************************************************
 
-void SceneTitle::Update()
+bool SceneTitle::Update()
 {
+
 	static float ANGLE = 2.5f;
 	if ((GetKeyState('U') & 0x80))ANGLE += 0.05f;
 	if ((GetKeyState('I') & 0x80))ANGLE -= 0.05f;
@@ -171,153 +185,214 @@ void SceneTitle::Update()
 	}
 #endif
 
-	viewPos = cameraPos+ Vector3(0, 10, 0) -vecAngle * 70;
-	viewTarget = cameraPos + Vector3(0, 20, 0);
-
-	view->Set(viewPos, viewTarget);
-
-	vecAngle.x = sinf(angle+angle2);
-	vecAngle.z = cosf(angle+angle2);
-	start_button[0].pos = (viewPos + vecAngle * 70);
-	start_button[0].pos.y += 2.0f;
-
-	vecAngle.x = sinf(angle - 0.071f);
-	vecAngle.z = cosf(angle - 0.071f);
-	start_button[1].pos = (viewPos + vecAngle * 70);
-	start_button[1].pos.y += 2.0f;
-
-	mouse->Update();
-
-	// イメージのアニメーション
-	if (arrowPosY >= 0)
+	if (movieStep == MOVIE_STEP::NORMAL)
 	{
-		arrowMoveY = -1;
-	}
-	else if (arrowPosY <= -20)
-	{
-		arrowMoveY = 1;
-	}
-	// やじるし更新
-	arrowPosY += arrowMoveY;
 
+		viewPos = cameraPos + Vector3(0, 10, 0) - vecAngle * 70;
+		viewTarget = cameraPos + Vector3(0, 20, 0);
 
-	//ナンバーエフェクト
-	Number_Effect::Update();
+		view->Set(viewPos, viewTarget);
 
-	//フェード処理
-	FadeControl::Update();
+		vecAngle.x = sinf(angle + angle2);
+		vecAngle.z = cosf(angle + angle2);
+		start_button[0].pos = (viewPos + vecAngle * 70);
+		start_button[0].pos.y += 2.0f;
 
+		vecAngle.x = sinf(angle - 0.071f);
+		vecAngle.z = cosf(angle - 0.071f);
+		start_button[1].pos = (viewPos + vecAngle * 70);
+		start_button[1].pos.y += 2.0f;
 
-	// タイトルEX
-	if (KEY_Get(KEY_SPACE) == 3){
-		titleEx->Action();
-	}
-	titleEx->Update();
+		mouse->Update();
 
-	//if (KeyBoard(KB_A)) start_button[0].pos.x -= .1f;
-	//if (KeyBoard(KB_W)) start_button[0].pos.y += .1f;
-	//if (KeyBoard(KB_S)) start_button[0].pos.y -= .1f;
-	//if (KeyBoard(KB_D)) start_button[0].pos.x += .1f;
-
-	start_button[CURSOR_NO::START].obj->SetAngle(0, angle, PI*.5f);
-	start_button[CURSOR_NO::START].obj->SetPos(start_button[0].pos);
-	start_button[CURSOR_NO::START].obj->Update();
-
-	start_button[CURSOR_NO::EXIT].obj->SetAngle(0, angle, PI*.5f);
-	start_button[CURSOR_NO::EXIT].obj->SetPos(start_button[1].pos);
-	start_button[CURSOR_NO::EXIT].obj->Update();
-
-	if (step < STEP::DRAG)
-	{
-		if (mouse->pos.x >= min_v[CURSOR_NO::START].x && mouse->pos.x <= max_v[CURSOR_NO::START].x&&
-			mouse->pos.y >= min_v[CURSOR_NO::START].y && mouse->pos.y <= max_v[CURSOR_NO::START].y)
+		// イメージのアニメーション
+		if (arrowPosY >= 0)
 		{
-			if (!start_button[CURSOR_NO::START].pointing)se->Play("カーソル");
-			start_button[CURSOR_NO::START].pointing = true;
-			cursor_no = CURSOR_NO::START;
+			arrowMoveY = -1;
 		}
-		else start_button[CURSOR_NO::START].pointing = false;
-		if (mouse->pos.x >= min_v[CURSOR_NO::EXIT].x && mouse->pos.x <= max_v[CURSOR_NO::EXIT].x&&
-			mouse->pos.y >= min_v[CURSOR_NO::EXIT].y && mouse->pos.y <= max_v[CURSOR_NO::EXIT].y)
+		else if (arrowPosY <= -20)
 		{
-			if (!start_button[CURSOR_NO::EXIT].pointing)se->Play("カーソル");
-			start_button[CURSOR_NO::EXIT].pointing = true;
-			cursor_no = CURSOR_NO::EXIT;
+			arrowMoveY = 1;
 		}
-		else start_button[CURSOR_NO::EXIT].pointing = false;
-	}
+		// やじるし更新
+		arrowPosY += arrowMoveY;
 
-	switch (step)
-	{
-	case STEP::WAIT:
-		if (KeyBoard(MOUSE_LEFT))
+
+		//ナンバーエフェクト
+		Number_Effect::Update();
+
+		//フェード処理
+		FadeControl::Update();
+
+
+		// タイトルEX
+		if (KEY_Get(KEY_SPACE) == 3){
+			//titleEx->Action();
+			test->Play();
+		}
+		titleEx->Update();
+
+		//if (KeyBoard(KB_A)) start_button[0].pos.x -= .1f;
+		//if (KeyBoard(KB_W)) start_button[0].pos.y += .1f;
+		//if (KeyBoard(KB_S)) start_button[0].pos.y -= .1f;
+		//if (KeyBoard(KB_D)) start_button[0].pos.x += .1f;
+
+		start_button[CURSOR_NO::START].obj->SetAngle(0, angle, PI*.5f);
+		start_button[CURSOR_NO::START].obj->SetPos(start_button[0].pos);
+		start_button[CURSOR_NO::START].obj->Update();
+
+		start_button[CURSOR_NO::EXIT].obj->SetAngle(0, angle, PI*.5f);
+		start_button[CURSOR_NO::EXIT].obj->SetPos(start_button[1].pos);
+		start_button[CURSOR_NO::EXIT].obj->Update();
+
+		if (step < STEP::DRAG)
 		{
-			if (start_button[cursor_no].pointing)
+			if (mouse->pos.x >= min_v[CURSOR_NO::START].x && mouse->pos.x <= max_v[CURSOR_NO::START].x&&
+				mouse->pos.y >= min_v[CURSOR_NO::START].y && mouse->pos.y <= max_v[CURSOR_NO::START].y)
 			{
-				step = STEP::CLICK;
-				start_button[cursor_no].obj->SetMotion(1);
-				start_button[cursor_no].rend = true;
+				if (!start_button[CURSOR_NO::START].pointing)se->Play("カーソル");
+				start_button[CURSOR_NO::START].pointing = true;
+				cursor_no = CURSOR_NO::START;
+			}
+			else start_button[CURSOR_NO::START].pointing = false;
+			if (mouse->pos.x >= min_v[CURSOR_NO::EXIT].x && mouse->pos.x <= max_v[CURSOR_NO::EXIT].x&&
+				mouse->pos.y >= min_v[CURSOR_NO::EXIT].y && mouse->pos.y <= max_v[CURSOR_NO::EXIT].y)
+			{
+				if (!start_button[CURSOR_NO::EXIT].pointing)se->Play("カーソル");
+				start_button[CURSOR_NO::EXIT].pointing = true;
+				cursor_no = CURSOR_NO::EXIT;
+			}
+			else start_button[CURSOR_NO::EXIT].pointing = false;
+		}
+
+		switch (step)
+		{
+		case STEP::WAIT:
+			if (KeyBoard(MOUSE_LEFT))
+			{
+				if (start_button[cursor_no].pointing)
+				{
+					step = STEP::CLICK;
+					start_button[cursor_no].obj->SetMotion(1);
+					start_button[cursor_no].rend = true;
+					se->Play("成功");
+					move_mouse = MOUSE_POS[cursor_no];
+				}
+			}
+			break;
+
+		case STEP::CLICK:
+			if (!KeyBoard(MOUSE_LEFT))	// マウス離す
+			{
+				move_mouse = MOUSE_POS[cursor_no];
+				step = STEP::WAIT;
+			}
+			else if (mouse->Get_move_dist() > 20)
+			{
+				move_mouse = MOUSE_POS[cursor_no];
+				step = STEP::DRAG;
 				se->Play("成功");
-				move_mouse = MOUSE_POS[cursor_no];
+				se->Play("破る");
 			}
-		}
-		break;
 
-	case STEP::CLICK:
-		if (!KeyBoard(MOUSE_LEFT))	// マウス離す
-		{
-			move_mouse = MOUSE_POS[cursor_no];
-			step = STEP::WAIT;
-		}
-		else if (mouse->Get_move_dist() > 20)
-		{
-			move_mouse = MOUSE_POS[cursor_no];
-			step = STEP::DRAG;
-			se->Play("成功");
-			se->Play("破る");
-		}
-
-		{
-			float move_x, move_y;
-			Vector2 next_vec;
-			next_vec = (cursor_no == CURSOR_NO::START) ? Vector2(1180 - move_mouse.x, 600 - move_mouse.y) : Vector2(360 - move_mouse.x, 600 - move_mouse.y);
-			if (next_vec.Length() < 4)
 			{
-				move_mouse = MOUSE_POS[cursor_no];
+				float move_x, move_y;
+				Vector2 next_vec;
+				next_vec = (cursor_no == CURSOR_NO::START) ? Vector2(1180 - move_mouse.x, 600 - move_mouse.y) : Vector2(360 - move_mouse.x, 600 - move_mouse.y);
+				if (next_vec.Length() < 4)
+				{
+					move_mouse = MOUSE_POS[cursor_no];
+				}
+				else
+				{
+					next_vec.Normalize(move_x, move_y);
+					move_mouse.x += (int)(move_x * 8);
+					move_mouse.y += (int)(move_y * 8);
+				}
 			}
-			else
+			break;
+
+		case STEP::DRAG:
+			start_button[cursor_no].obj->SetMotion(1);
+			start_button[cursor_no].rend = true;
+			step = STEP::REND_PAPER;
+			break;
+
+		case STEP::REND_PAPER:
+			start_button[cursor_no].obj->Animation();
+
+			if (start_button[cursor_no].obj->GetFrame() >= 47)
 			{
-				next_vec.Normalize(move_x, move_y);
-				move_mouse.x += (int)(move_x * 8);
-				move_mouse.y += (int)(move_y * 8);
+				if (cursor_no == CURSOR_NO::START)MainFrame->ChangeScene(new SceneSelect());
+				else if (cursor_no == CURSOR_NO::EXIT)PostQuitMessage(0);
+				return true;
 			}
+			break;
 		}
-		break;
 
-	case STEP::DRAG:
-		start_button[cursor_no].obj->SetMotion(1);
-		start_button[cursor_no].rend = true;
-		step = STEP::REND_PAPER;
-		break;
 
-	case STEP::REND_PAPER:
-		start_button[cursor_no].obj->Animation();
-
-		if (start_button[cursor_no].obj->GetFrame() >= 47)
-		{
-			if (cursor_no == CURSOR_NO::START)MainFrame->ChangeScene(new SceneSelect());
-			else if (cursor_no == CURSOR_NO::EXIT)PostQuitMessage(0);
-			return;
-		}
-		break;
 	}
+
+	static int TIMER = 0;
+
+	if (movieStep == MOVIE_STEP::NORMAL)
+	{
+
+		// ムービー
+		movieTimer++;
+		if (movieTimer == 240)
+		{
+			FadeControl::Setting(FadeControl::FADE_OUT, 10);
+			//movieTimer = 0;
+		
+		}
+		if (FadeControl::isFadeOut)
+		{
+			movieStep = MOVIE_STEP::MOVIE;
+			test->Play();
+		}
+	}
+	else if (movieStep == MOVIE_STEP::MOVIE)	// ムービー中
+	{
+		if (KeyBoardTRG(MOUSE_LEFT))
+		{
+			movieStep = MOVIE_STEP::NORMAL;
+			test->Stop();
+			// Fade処理
+			FadeControl::Setting(FadeControl::FADE_IN_W, 22);
+			titleEx->Action();
+		}
+
+		// おわり
+		TIMER++;
+		if (TIMER >= 31 * 60)
+		{
+			movieStep = MOVIE_STEP::NORMAL;
+			test->Stop();
+			// Fade処理
+			FadeControl::Setting(FadeControl::FADE_IN_W, 22);
+			titleEx->Action();
+		}
+
+
+	}
+
+
+	/*　動画が動いてたらここへ行って描画を止める　*/
+	if (test->GetStateRun())
+	{
+		return false;
+	};
+
+
+	return true;
 
 #ifdef _DEBUG
 	//　debug
 	if (KEY(KEY_ENTER) == 3)
 	{
 		MainFrame->ChangeScene(new SceneSelect());
-		return;
+		return true;
 	}
 #endif
 }

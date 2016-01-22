@@ -169,7 +169,8 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		} else {
-			if( MainFrame->Update() ) MainFrame->Render();
+			if( MainFrame->Update() ) 
+				MainFrame->Render();
 		}
 	}
 

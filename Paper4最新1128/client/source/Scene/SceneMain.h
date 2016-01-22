@@ -15,7 +15,7 @@ public:
 	bool Initialize();
 	~SceneMain();
 	//ˆ—
-	void Update();
+	bool Update();
 	//•`‰æ
 	void Render();
 

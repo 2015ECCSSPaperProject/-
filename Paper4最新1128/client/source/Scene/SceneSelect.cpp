@@ -447,7 +447,7 @@ void SceneSelect::ThreadFunc(void* pData, bool*isEnd)
 //******************************************************************
 //		処理
 //******************************************************************
-void SceneSelect::Update()
+bool SceneSelect::Update()
 {
 	int AxisX = 0, AxisY = 0;
 	if (KEY(KEY_LEFT) == 1) AxisX += -1;
@@ -533,7 +533,7 @@ void SceneSelect::Update()
 		{
 			// シーンもドル
 			MainFrame->ChangeScene(new SceneTitle());
-			return;
+			return true;
 		}
 	}
 
@@ -604,7 +604,7 @@ void SceneSelect::Update()
 								   BlurValue = 0.0f;			// ぼかしも戻すぴょん
 								   se->Play("キャンセル");
 								   
-								   return;			//出ていけ！！！
+								   return true;			//出ていけ！！！
 							   }
 
 
@@ -680,7 +680,7 @@ void SceneSelect::Update()
 		{
 			bgm->Stop("ドッグラン");
 			MainFrame->ChangeScene(new SceneMain());
-			return;
+			return true;
 		}
 
 		break;
@@ -694,6 +694,7 @@ void SceneSelect::Update()
 	Info->Update();
 	shader2D->SetValue("BlurValue", BlurValue);
 
+	return true;
 }
 
 

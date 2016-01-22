@@ -81,7 +81,15 @@ bool Framework::Update()
 	OKB_Update();
 	SoundManager::Update();
 
-	if( scene != NULL ) scene->Update();
+	//if( scene != NULL ) scene->Update();
+
+
+	/*“®‰æ‚ğÄ¶‚µ‚Ä‚¢‚½‚ç•`‰æ‚³‚¹‚È‚¢*/
+	if (scene != NULL){
+		movie_play = scene->Update();
+		return movie_play;
+	}
+
 
 	return true;
 }

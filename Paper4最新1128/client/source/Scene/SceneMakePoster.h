@@ -9,7 +9,7 @@ public:
 	bool Initialize();
 	~SceneMakePoster();
 	//処理
-	void Update();
+	bool Update();
 	void CatchStamp();//　スタンプが近くにあれば選択
 	//描画
 	void Render();

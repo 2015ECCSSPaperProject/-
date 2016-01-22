@@ -254,7 +254,7 @@ SceneMakePoster::~SceneMakePoster()
 }
 
 
-void SceneMakePoster::Update()
+bool SceneMakePoster::Update()
 {
 	//　マウスの処理
 	isTap = false;//毎回掴む手に戻す
@@ -284,8 +284,9 @@ void SceneMakePoster::Update()
 	if (KEY_Get(KEY_SPACE) == 3)
 	{
 		MainFrame->ChangeScene(new SceneSelect());
+		return true;
 	}
-
+	return true;
 }
 
 // 選択したらKindSelectをチェンジ

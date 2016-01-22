@@ -236,7 +236,7 @@ void SceneMain::ThreadFunc(void* pData, bool*isEnd)
 //******************************************************************
 //		ˆ—
 //******************************************************************
-void SceneMain::Update()
+bool SceneMain::Update()
 {
 	// ƒuƒ‰\
 	BlurFilter::Update();
@@ -261,6 +261,8 @@ void SceneMain::Update()
 	}
 
 	(this->*Mode_funk[mode])();
+
+	return true;
 }
 
 void SceneMain::Start()

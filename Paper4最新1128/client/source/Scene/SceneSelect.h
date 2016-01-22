@@ -17,7 +17,7 @@ public:
 	bool Initialize();
 	~SceneSelect();
 	//ˆ—
-	void Update();
+	bool Update();
 	//•`‰æ
 	void Render();
 

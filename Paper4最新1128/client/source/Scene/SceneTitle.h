@@ -9,6 +9,14 @@ class Mouse;
 class SceneTitle : public Scene
 {
 public:
+	enum MOVIE_STEP
+	{
+		NORMAL = 0, MOVIE = 1
+	};
+	int movieStep;
+	int movieTimer;
+	int movieStopTimer;
+
 	enum CURSOR_NO
 	{
 		START, EXIT, CURSOR_MAX
@@ -18,7 +26,7 @@ public:
 	bool Initialize();
 	~SceneTitle();
 	//èàóù
-	void Update();
+	bool Update();
 	//ï`âÊ
 	void Render();
 	void RenderShadow();

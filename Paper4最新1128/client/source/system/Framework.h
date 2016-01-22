@@ -48,6 +48,7 @@ private:
 	DWORD	dwCurFrame;		//	処理カウンタ
 	DWORD	dwRCurFrame;	//	描画カウンタ
 
+	bool movie_play = false; /*動画を再生しているかどうか*/
 public:
 	//------------------------------------------------------
 	//	初期化・解放

@@ -1,0 +1,101 @@
+
+//-------------------------------------------------------------
+// DirectXサンプルプログラム
+//-------------------------------------------------------------
+#include "GameWindow.h"
+#include "Camera.h"
+#include "SampleMovie.h"
+
+
+//-------------------------------------------------------------
+// ◆関数プロトタイプ
+//-------------------------------------------------------------
+int WINAPI			WinMain( HINSTANCE h_instance, HINSTANCE h_prev_instance, LPSTR cmd_line, int cmd_show );
+LRESULT CALLBACK	WindowProc(HWND h_window, UINT msg, WPARAM wParam, LPARAM lParam);
+
+
+//-------------------------------------------------------------
+// アプリケーションのエントリポイント
+//-------------------------------------------------------------
+// 引数
+//		h_instance		: 現在のインスタンスのハンドル
+//		h_prev_instance	: 以前のインスタンスのハンドル
+//		cmd_line		: コマンドラインパラメータ
+//		cmd_show		: ウィンドウの表示状態
+// 戻り値
+//		成功したら0
+//-------------------------------------------------------------
+int WINAPI	WinMain( HINSTANCE h_instance, HINSTANCE h_prev_instance, LPSTR cmd_line, int cmd_show )
+{
+	//---------------------------------------------------------
+	// 各種初期設定
+	//---------------------------------------------------------
+	CoInitializeEx( NULL, COINIT_APARTMENTTHREADED );	// DirectXの初期化
+	timeBeginPeriod( 1 );								// 時間のカウント間隔を1msにする
+	srand( (DWORD)time( NULL ) );						// 乱数の初期値を変動
+	rand();rand();rand();rand();rand();					// 乱数は何度か空読みすると良い
+
+	// ゲーム用ウィンドウの生成
+	GameWindow	game_window( 960, 560, h_instance, cmd_line, cmd_show );
+	LPDIRECT3DDEVICE9	d3d_dev	= game_window.GetDevice();
+
+	// カメラの生成
+	Camera		camera( d3d_dev );
+	camera.SetLookAt( 0.0f, 0.0f, 0.0f );
+	camera.SetPos( 0.0f, 0.0f, -5.0f );
+	camera.Update( d3d_dev );
+
+	// 文字
+	Font		font( d3d_dev, _T("メイリオ"), 48 );
+
+	// サンプルの生成
+	SampleMovie	sample;
+	sample.Create( d3d_dev );
+
+	//---------------------------------------------------------
+	// メッセージ処理および描画ループ
+	//---------------------------------------------------------
+	DWORD	time_render	= timeGetTime();
+	while( true )
+	{
+		DWORD	time_now	= timeGetTime();
+
+		// ◆描画処理
+		if( timeGetTime() > time_render )
+		{
+			// ウィンドウが見えている時だけ描画
+			if( game_window.IsVisible() ) 
+			{
+				// 描画処理の実行
+				game_window.ClearScene( D3DCOLOR_XRGB(128,0,128) );	// 画面を初期化
+				game_window.BeginScene();							// 描画の開始
+
+				sample.Draw( d3d_dev );
+
+				font.Draw( L"動画再生", D3DCOLOR_XRGB(255,255,0), 16, 512 );
+				
+				game_window.EndScene();					// 描画を終了し、画面に転写
+			}
+
+			// 次の描画予定時刻は16ms後→秒間約60回描画する
+			time_render	+= 16;
+		}
+
+		// ◆ウィンドウメッセージ処理
+		if( !game_window.ProcMessage() )	break;
+
+		// OSに制御を明け渡すためのスリープ（コラム参照）
+		Sleep(1);
+    }
+
+
+	//---------------------------------------------------------
+	// プログラム終了処理
+	//---------------------------------------------------------
+	// DirectXの終了処理
+	CoUninitialize();
+
+	// プログラム終了
+	return	0;
+}
+

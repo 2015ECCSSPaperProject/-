@@ -17,7 +17,7 @@ public:
 	//	‰Šú‰»
 	virtual bool Initialize(){ return true; }
 	//	XVE•`‰æ
-	virtual void Update(){}
+	virtual bool Update(){ return false; }
 	virtual void Render(){}
 };
 

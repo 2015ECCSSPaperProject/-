@@ -122,7 +122,7 @@ SceneResult::~SceneResult()
 //******************************************************************
 //		処理
 //******************************************************************
-void SceneResult::Update()
+bool SceneResult::Update()
 {
 	//ナンバーエフェクト
 	Number_Effect::Update();
@@ -145,8 +145,10 @@ void SceneResult::Update()
 	if (KEY_Get(KEY_ENTER) == 3)
 	{
 		   MainFrame->ChangeScene(new SceneSelect());
-		   return;
+		   return true;
 	}
+
+	return true;
 
 }
 
