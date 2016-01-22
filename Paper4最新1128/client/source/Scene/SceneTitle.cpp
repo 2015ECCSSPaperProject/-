@@ -120,7 +120,8 @@ bool SceneTitle::Initialize()
 	mouse->Initialize(FALSE);
 	cursor_no = CURSOR_NO::START;
 
-
+	if (!bgm->isPlay("ドッグラン"))bgm->Fade_in("ドッグラン", .1f);
+	bgm->SetFX("ドッグラン", DXA_FX::DXAFX_COMPRESSOR);
 
 	return true;
 }
@@ -226,10 +227,10 @@ bool SceneTitle::Update()
 
 
 		// タイトルEX
-		if (KEY_Get(KEY_SPACE) == 3){
-			//titleEx->Action();
-			test->Play();
-		}
+		//if (KEY_Get(KEY_SPACE) == 3){
+		//	//titleEx->Action();
+		//	test->Play();
+		//}
 		titleEx->Update();
 
 		//if (KeyBoard(KB_A)) start_button[0].pos.x -= .1f;
@@ -348,6 +349,7 @@ bool SceneTitle::Update()
 		}
 		if (FadeControl::isFadeOut)
 		{
+			bgm->Fade_out("ドッグラン", .01f);
 			movieStep = MOVIE_STEP::MOVIE;
 			test->Play();
 		}
@@ -356,6 +358,7 @@ bool SceneTitle::Update()
 	{
 		if (KeyBoardTRG(MOUSE_LEFT))
 		{
+			if (!bgm->isPlay("ドッグラン"))bgm->Fade_in("ドッグラン", .1f);
 			movieStep = MOVIE_STEP::NORMAL;
 			test->Stop();
 			// Fade処理
@@ -367,6 +370,7 @@ bool SceneTitle::Update()
 		TIMER++;
 		if (TIMER >= 31 * 60)
 		{
+			if (!bgm->isPlay("ドッグラン"))bgm->Fade_in("ドッグラン", .1f);
 			movieStep = MOVIE_STEP::NORMAL;
 			test->Stop();
 			// Fade処理
@@ -389,11 +393,11 @@ bool SceneTitle::Update()
 
 #ifdef _DEBUG
 	//　debug
-	if (KEY(KEY_ENTER) == 3)
-	{
-		MainFrame->ChangeScene(new SceneSelect());
-		return true;
-	}
+	//if (KEY(KEY_ENTER) == 3)
+	//{
+	//	MainFrame->ChangeScene(new SceneSelect());
+	//	return true;
+	//}
 #endif
 }
 

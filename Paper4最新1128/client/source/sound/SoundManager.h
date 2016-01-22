@@ -134,6 +134,7 @@ public:
 	void Cross_fade(LPSTR inID, LPSTR outID, float fade_speed = .0075f, bool loop = true);
 	void Cross_fade(LPSTR inID, LPSTR outID, float in_speed, float out_speed, bool loop);
 	void SetFX(DXA_FX flag){ play_manager->SetFX(flag); }
+	void SetFX(LPSTR _ID, DXA_FX flag){ play_manager->SetFX(ID[_ID], flag); }
 
 	void Set_listener(const Vector3 &pos, const Vector3 &front, const Vector3 &up, const Vector3 &move);											// ƒŠƒXƒi[î•ñ
 };

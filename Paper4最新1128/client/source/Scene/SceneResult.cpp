@@ -13,8 +13,8 @@
 #include	"SceneResult.h"
 #include	"SceneSelect.h"
 #include	"../score/Score.h"
-
-//#include	"../score/Score.h"
+#include	"../sound/SoundManager.h"
+#include	"../../IEX/OKB.h"
 //#include	"../data/LimitedData.h"
 
 /**********************/
@@ -110,6 +110,8 @@ bool SceneResult::Initialize()
 	chara.obj->SetPos(chara.pos);
 	chara.obj->SetMotion(chara.motion_no);
 
+	bgm->Fade_in("ラプトル", .1f);
+
 	return true;
 }
 
@@ -142,10 +144,11 @@ bool SceneResult::Update()
 	}
 
 	// 戻る
-	if (KEY_Get(KEY_ENTER) == 3)
+	if (KeyBoardTRG(MOUSE_LEFT))
 	{
-		   MainFrame->ChangeScene(new SceneSelect());
-		   return true;
+		bgm->Stop("ラプトル");
+		MainFrame->ChangeScene(new SceneSelect());
+		return true;
 	}
 
 	return true;

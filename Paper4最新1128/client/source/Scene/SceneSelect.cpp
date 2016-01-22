@@ -170,7 +170,8 @@ bool SceneSelect::Initialize()
 	BlurScreenY= new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_RENDERTARGET);
 	BlurValue = 0.0f;
 
-	bgm->Fade_in("ドッグラン", .1f);
+	if (!bgm->isPlay("ドッグラン"))bgm->Fade_in("ドッグラン", .1f);
+	bgm->SetFX("ドッグラン", DXA_FX::DXAFX_OFF);
 
 	return true;
 }
