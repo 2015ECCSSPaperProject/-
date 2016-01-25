@@ -167,7 +167,7 @@ void Paper_obj_mng::Load()
 	original_model[10].LoadIMO( "DATA/paper object/huusen/huusen.IMO" );
 
 	// 位置ロード
-	Load_flyer();
+	Load_timeposter_tmp<Flyer>( "DATA/MATI/position/flyer pos.txt", original_flyer );
 	Load_poster_tmp<Poster>( "DATA/MATI/position/poster_pos.txt", &original_model[0] );
 	Load_poster_tmp<Calendar>( "DATA/MATI/position/calendar_pos.txt", &original_model[1] );
 	Load_poster_tmp<Magazin>( "DATA/MATI/position/magazin_pos.txt", &original_model[2] );
@@ -178,12 +178,12 @@ void Paper_obj_mng::Load()
 	Load_poster_tmp<Zasshi>( "DATA/MATI/position/zasshi.txt", &original_model[7] );
 	Load_poster_tmp<Shinbun>( "DATA/MATI/position/shinbun_pos.txt", &original_model[8] );
 	Load_poster_tmp<Shoji>( "DATA/MATI/position/shoji_pos.txt", &original_model[9] );
-	Load_poster_tmp<Huusenn>( "DATA/MATI/position/huusen_pos.txt", &original_model[10] );
+	Load_timeposter_tmp<Huusenn>( "DATA/MATI/position/huusen_pos.txt", &original_model[10] );
 }
 
-void Paper_obj_mng::Load_flyer()
+template<class POSTERCLASS, class MESHCLASS>void Paper_obj_mng::Load_timeposter_tmp( char *filename, MESHCLASS *model )
 {
-	std::ifstream infs( "DATA/MATI/position/flyer pos.txt" );
+	std::ifstream infs( filename );
 	std::string str;
 
 	unsigned int time = 0;
@@ -207,8 +207,8 @@ void Paper_obj_mng::Load_flyer()
 			int point;
 			infs >> point;
 			// フライヤー作成
-			Flyer *p = new Flyer;
-			p->Initialize( original_flyer, point, time );
+			POSTERCLASS *p = new POSTERCLASS;
+			p->Initialize( model, point, time );
 			p->Set_pose( angle, pos );
 			obj_array.push_back( p );
 			this->number_of_objects++;

@@ -9,6 +9,8 @@
 
 #include	"../../sound/SoundManager.h"
 
+#include "../../timer/Timer.h"
+
 Poster::Poster()
 {}
 Poster::~Poster()
@@ -129,4 +131,22 @@ KIND_PAPER_OBJECT Shoji::Get_kind()
 KIND_PAPER_OBJECT Huusenn::Get_kind()
 {
 	return KIND_PAPER_OBJECT::HUUSENN;
+}
+void Huusenn::Initialize( iexMesh *model, int point, int start_time )
+{
+	Paper_obj_Mesh::Initialize( model, point );
+	broken = true;
+	this->start_time = start_time;
+}
+void Huusenn::Subclass_update()
+{
+	if( broken )
+	{
+		// oŒ»
+		if( start_time >= timer->Get_limit_time() )
+		{
+			broken = false;
+			start_time = UINT_MAX;
+		}
+	}
 }

@@ -70,7 +70,7 @@ protected:
 
 	void Load();
 
-	void Load_flyer();
+	template<class POSTERCLASS, class MESHCLASS>void Load_timeposter_tmp( char *filename, MESHCLASS *model );
 	template<class POSTERCLASS>void Load_poster_tmp( char *filename, iexMesh *model );
 };
 

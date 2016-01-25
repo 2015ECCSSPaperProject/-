@@ -90,4 +90,11 @@ class Huusenn : public Poster
 {
 public:
 	KIND_PAPER_OBJECT Get_kind();
+
+	void Initialize( iexMesh *model, int point, int start_time );
+
+	void Subclass_update() override;
+
+private:
+	int start_time;
 };

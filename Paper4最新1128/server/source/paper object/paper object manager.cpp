@@ -208,7 +208,7 @@ void Paper_obj_mng::Load()
 	// 位置ロード
 	number_of_objects = 0;
 
-	Load_flyer();
+	Load_timeposter_tmp<Flyer>( "DATA/MATI/position/flyer pos.txt" );
 	Load_poster_tmp<Poster>( "DATA/MATI/position/poster_pos.txt" );
 	Load_poster_tmp<Calendar>( "DATA/MATI/position/calendar_pos.txt" );
 	Load_poster_tmp<Magazin>( "DATA/MATI/position/magazin_pos.txt" );
@@ -219,7 +219,7 @@ void Paper_obj_mng::Load()
 	Load_poster_tmp<Zasshi>( "DATA/MATI/position/zasshi.txt" );
 	Load_poster_tmp<Shinbun>( "DATA/MATI/position/shinbun_pos.txt" );
 	Load_poster_tmp<Shoji>( "DATA/MATI/position/shoji_pos.txt" );
-	Load_poster_tmp<Huusenn>( "DATA/MATI/position/huusen_pos.txt" );
+	Load_timeposter_tmp<Huusenn>( "DATA/MATI/position/huusen_pos.txt" );
 }
 
 void Paper_obj_mng::Load_flyer()
@@ -249,6 +249,47 @@ void Paper_obj_mng::Load_flyer()
 			infs >> point;
 			// フライヤー作成
 			Flyer *p = new Flyer;
+			p->Initialize( 1, &original_model[1], point );
+			p->Set_pose( angle, pos );
+			obj_array.push_back( p );
+			this->number_of_objects++;
+			// イベント設定
+			Event_advent_paper_obj *ev;
+			ev = new Event_advent_paper_obj( p );
+			ev->Set_time( ( unsigned int ) ( time * 1000 ) );
+			ev->Set_telop_id( 1 );
+			event_list->push( ev );
+		}
+	}
+}
+
+template<class POSTERCLASS>void Paper_obj_mng::Load_timeposter_tmp( char *filename )
+{
+	std::ifstream infs( filename );
+	std::string str;
+
+	unsigned int time = 0;
+	while( !infs.eof() )
+	{
+		infs >> str; // 文字列読み込み
+		if( str == "time" ) // 発生時間
+		{
+			infs >> time;
+		}
+		else
+		{
+			// 角度
+			float angle = std::stof( str, 0 );
+			// 位置
+			Vector3 pos;
+			infs >> pos.x;
+			infs >> pos.y;
+			infs >> pos.z;
+			//ポイント
+			int point;
+			infs >> point;
+			// フライヤー作成
+			POSTERCLASS *p = new POSTERCLASS;
 			p->Initialize( 1, &original_model[1], point );
 			p->Set_pose( angle, pos );
 			obj_array.push_back( p );

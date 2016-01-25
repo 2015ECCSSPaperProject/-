@@ -68,6 +68,7 @@ protected:
 	void Load(); // テキストファイルから配置を読み込む
 
 	void Load_flyer(); // フライヤーだけ処理が別
+	template<class POSTERCLASS>void Load_timeposter_tmp( char *filename ); // オブジェクトごとの読み込み
 	template<class POSTERCLASS>void Load_poster_tmp( char *filename ); // オブジェクトごとの読み込み
 };
 
