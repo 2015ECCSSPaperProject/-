@@ -11,7 +11,7 @@ class Telop
 {
 public:
 	bool erase;		// ‚¯‚µ‚Ä‚Ë
-	Telop();
+	Telop(int id);
 	~Telop();
 	void Update();
 	void Render();

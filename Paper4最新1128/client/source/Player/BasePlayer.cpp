@@ -85,16 +85,14 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	skill_data[(int)SKILL::SYURIKEN].do_action = ACTION_PART::SYURIKEN;
 	skill_data[(int)SKILL::KABUTO].do_action = ACTION_PART::GUN;
 
-	// 絶対低い順に並べる
-	// 案ロックカウント
-	skill_data[(int)SKILL::GUN].unlock_rend_count = 0;
-	skill_data[(int)SKILL::SYURIKEN].unlock_rend_count = 1;
-	skill_data[(int)SKILL::KABUTO].unlock_rend_count = 30;
-
-	// クールタイム
-	skill_data[(int)SKILL::GUN].cool_time = 600;
-	skill_data[(int)SKILL::SYURIKEN].cool_time = 300;
-	skill_data[(int)SKILL::KABUTO].cool_time = 900;
+	std::fstream inf("DATA/UI/skill/skill_data.txt");
+	inf >> skill_data[(int)SKILL::GUN].unlock_rend_count;
+	inf >> skill_data[(int)SKILL::GUN].cool_time;
+	inf >> skill_data[(int)SKILL::SYURIKEN].unlock_rend_count;
+	inf >> skill_data[(int)SKILL::SYURIKEN].cool_time;
+	inf >> skill_data[(int)SKILL::KABUTO].unlock_rend_count;
+	inf >> skill_data[(int)SKILL::KABUTO].cool_time;
+	inf.close();
 
 	// 全部ロックをかける
 	for (int i = 0; i < (int)SKILL::MAX; i++)
@@ -664,8 +662,7 @@ void BasePlayer::Action::Gun::Initialize()
 	// モデルを鉄砲に変更
 	me->model_part = MODEL::GUN;
 
-	// 0フレームにリセット
-	me->models[(int)me->model_part]->SetFrame(0);
+	me->models[(int)me->model_part]->SetFrame(6);
 	me->models[(int)me->model_part]->SetParam(0, 0);
 }
 

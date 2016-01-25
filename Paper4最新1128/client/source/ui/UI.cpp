@@ -179,7 +179,7 @@ void UI::Render()
 	mode->Render();
 
 #ifdef _DEBUG
-	Text::Draw(32, 480, 0xff00ffff, "%.1f", my_player->Get_angleY());
+	Text::Draw(32, 480, 0xff00ffff, "%d", score_mng->Get(0));
 	Text::Draw(32, 520, 0xff00ffff, "%.1f", my_player->Get_pos().x);
 	Text::Draw(32, 560, 0xff00ffff, "%.1f", my_player->Get_pos().y);
 	Text::Draw(32, 600, 0xff00ffff, "%.1f", my_player->Get_pos().z);
@@ -850,13 +850,24 @@ void UI::Mode::End::Render()
 //		テロップ関係
 void UI::Append_telop(int id)
 {
-	Telop *set = new Telop;
+	Telop *set = new Telop(id);
 	List.push_back(set);
 }
 
-Telop::Telop() :app_timer(150), erase(false), step(0)
+Telop::Telop(int id) :app_timer(150), erase(false), step(0)
 {
-	moji = new iex2DObj("DATA/UI/telop/telop.png");
+	switch (id)
+	{
+		/* フライヤーが降ってきた！ */
+	case 1:
+		moji = new iex2DObj("DATA/UI/telop/telop.png");
+		break;
+		
+		/* エリアが解放された！ */
+	case 2:
+		moji = new iex2DObj("DATA/UI/telop/AT.png");
+		break;
+	}
 }
 
 Telop::~Telop()

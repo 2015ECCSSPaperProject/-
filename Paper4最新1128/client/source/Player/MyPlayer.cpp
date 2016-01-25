@@ -699,7 +699,7 @@ void MyPlayer::RendBalloonSE()
 				hit_effect->Action(HIT_TYPE::ALL);
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 20, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
-			se_receive = se->Play("破る");
+			se_receive = se->Play("手裏剣破り");
 			se_step = 99;	// ステップ終わり
 		}
 		break;

@@ -192,7 +192,9 @@ void Stage::Load_area()
 			area->Push( str.c_str() );
 			int time;
 			ifs >> time;
-			event_list->push( new Event_open_area( time * 1000, area, 0 ) );
+			Event_open_area *ev = new Event_open_area(time * 1000, area, 0);
+			ev->Set_telop_id(2);	// ƒGƒŠƒA‚ª‰ğ•ú‚³‚ê‚½IID
+			event_list->push( ev );
 		}
 	}
 

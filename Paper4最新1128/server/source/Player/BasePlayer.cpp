@@ -82,7 +82,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	scale = .5f;
 	move = Vector3(0, 0, 0);
 	speed = 1.5f;
-	fallspeed = .1f;
+	fallspeed = .075f;
 	se_receive = 0;
 	isJump = isLand = attackFlag = false;
 	jump_pow = 0;
@@ -310,7 +310,7 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 			me->isLand = false;
 		}
 	}
-	if (me->isJump)
+	if (!me->isLand)
 	{
 		me->move.y = me->jump_pow;
 		me->jump_pow -= me->fallspeed;
@@ -393,13 +393,13 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	//	左クリック処理
 	else if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)
 	{
-		if (manhole_mng->CheckManhole((me->isManhole) ? ManholeMng::LAND_TYPE::TIKA : ManholeMng::LAND_TYPE::TIJOU, 15, &me->pos, &me->angleY, &me->next_manhole_pos))
+		if (manhole_mng->CheckManhole((me->isManhole) ? ManholeMng::LAND_TYPE::TIKA : ManholeMng::LAND_TYPE::TIJOU, 20, &me->pos, &me->angleY, &me->next_manhole_pos))
 		{
 			me->Change_action(ACTION_PART::MANHOLE);
 		}
 		if (!auto_target)
 		{
-			me->poster_num = paper_obj_mng->Can_targeting(me, 10, 180);
+			me->poster_num = paper_obj_mng->Can_targeting(me, (me->isJump) ? 15.0f : 10.0f, 180);
 
 			if (me->poster_num != -1)
 			{
@@ -424,12 +424,12 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	}
 
 	//	自動ターゲッティング
-	me->poster_num = paper_obj_mng->Can_targeting(me, 10, 180);
-	if (me->poster_num != -1 && auto_target)
-	{
-		me->Change_action(ACTION_PART::MOVE_TARGET);
-		return;
-	}
+	//me->poster_num = paper_obj_mng->Can_targeting(me, 10, 180);
+	//if (me->poster_num != -1 && auto_target)
+	//{
+	//	me->Change_action(ACTION_PART::MOVE_TARGET);
+	//	return;
+	//}
 
 	if (me->pos.y < -500)
 	{
@@ -587,7 +587,7 @@ void BasePlayer::Action::MoveTarget::Update(const CONTROL_DESC &_ControlDesc)
 		}
 		else
 		{
-			const int no = paper_obj_mng->Can_targeting(me, 10, 180);
+			const int no = paper_obj_mng->Can_targeting(me, (me->isJump) ? 15.0f : 10.0f, 180);
 
 			// ポスターがあった
 			if (no != -1)
@@ -706,22 +706,22 @@ void BasePlayer::Action::Rend::Initialize()
 	me->motion_no = 1;
 	me->Set_motion(1);
 
-	if (!thrash_rend)
-	{
-		me->motion_no = 2;
-		me->Set_motion(2);
-
-		// 送信するデータプッシュ
-		for (int i = 0; i < PLAYER_MAX; i++)
-		{
-			PaperData data;
-			data.from = me->mynumber;
-			data.ID = me->poster_num;
-			player_mng->Get_player(i)->paperqueue->Push(data);
-		}
-		me->Change_action(ACTION_PART::REND_OBJ);
-		me->push_rend = true;
-	}
+	//if (!thrash_rend)
+	//{
+	//	me->motion_no = 2;
+	//	me->Set_motion(2);
+	//
+	//	// 送信するデータプッシュ
+	//	for (int i = 0; i < PLAYER_MAX; i++)
+	//	{
+	//		PaperData data;
+	//		data.from = me->mynumber;
+	//		data.ID = me->poster_num;
+	//		player_mng->Get_player(i)->paperqueue->Push(data);
+	//	}
+	//	me->Change_action(ACTION_PART::REND_OBJ);
+	//	me->push_rend = true;
+	//}
 }
 
 void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
@@ -941,7 +941,7 @@ void BasePlayer::Action::Gun::Update(const CONTROL_DESC &_ControlDesc)
 		for (int i = 0; poster_numbers[i] != -1; i++)	// -1(終端)
 		{
 			paper_obj_mng->Rend(poster_numbers[i]);
-			score->Add(1, me->mynumber);	// 仮で1点
+			score->Add(paper_obj_mng->Get_point(poster_numbers[i]), me->mynumber);
 			me->god_gage++;
 
 			// 送信するデータプッシュ
@@ -1069,7 +1069,7 @@ void BasePlayer::Action::Syuriken::Update(const CONTROL_DESC &_ControlDesc)
 	}
 
 	// Vs Poster
-	int rend_no = paper_obj_mng->Can_targeting(me, 13, 360);
+	int rend_no = paper_obj_mng->Can_targeting(me, 18, 360);
 
 	if (rend_no != -1)
 	{
@@ -1085,7 +1085,7 @@ void BasePlayer::Action::Syuriken::Update(const CONTROL_DESC &_ControlDesc)
 			data.ID = rend_no;
 			player_mng->Get_player(n)->paperqueue->Push(data);
 		}
-		hit_stop = 6;
+		hit_stop = 4;
 	}
 
 	if (_ControlDesc.controlFlag & (int)PLAYER_CONTROL::SPACE)
