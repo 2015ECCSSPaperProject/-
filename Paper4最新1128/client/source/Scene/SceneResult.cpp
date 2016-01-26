@@ -166,7 +166,7 @@ bool SceneResult::Update()
 	// 戻る
 	if (KEY_Get(KEY_ENTER) == 3 || KeyBoardTRG(MOUSE_LEFT))
 	{
-		bgm->Stop("ラプトル");
+		//bgm->Stop("ラプトル");
 		   MainFrame->ChangeScene(new SceneSelect());
 		   return true;
 	}

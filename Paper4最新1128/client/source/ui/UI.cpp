@@ -1,4 +1,5 @@
 #include "iextreme.h"
+#include "../../../share_data/Enum_public.h"
 #include "../Player/BasePlayer.h"
 #include "../../../share_data/Enum_public.h"
 #include "../Scene/SceneMain.h"
@@ -16,7 +17,6 @@
 #include "../Scene/SceneSelect.h"
 #include "../Manhole/Manhole.h"
 float UI::tape_len;
-
 void UI::Change_mode(int m)
 {
 	SAFE_DELETE(mode);
@@ -831,7 +831,7 @@ void UI::Mode::End::Render()
 	TimeUp->Update();
 	TimeUpRip->Update();
 
-	if(SCOREATACK_FLAG)me->Graph();
+	if(!SCOREATACK_FLAG || timer->Get_limit_time() < 5*60)me->Graph();
 	me->SkillGauge();
 	me->Action();
 	//sokomade->Render(128, 182, 1024, 256, 0, 0, 1024, 256);
@@ -856,15 +856,23 @@ void UI::Append_telop(int id)
 
 Telop::Telop(int id) :app_timer(150), erase(false), step(0)
 {
-	switch (id)
+	switch ((TELOP_ID)id)
 	{
 		/* フライヤーが降ってきた！ */
-	case 1:
+	case TELOP_ID::FLYER:
 		moji = new iex2DObj("DATA/UI/telop/telop.png");
 		break;
 		
 		/* エリアが解放された！ */
-	case 2:
+	case TELOP_ID::AREA_OPEN:
+		moji = new iex2DObj("DATA/UI/telop/AT.png");
+		break;
+
+	case TELOP_ID::BALLOON:
+		moji = new iex2DObj("DATA/UI/telop/huusen.png");
+		break;
+
+	default:	// 例外処理
 		moji = new iex2DObj("DATA/UI/telop/AT.png");
 		break;
 	}

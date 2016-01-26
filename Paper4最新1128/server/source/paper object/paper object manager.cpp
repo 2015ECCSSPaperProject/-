@@ -257,7 +257,7 @@ void Paper_obj_mng::Load_flyer()
 			Event_advent_paper_obj *ev;
 			ev = new Event_advent_paper_obj( p );
 			ev->Set_time( ( unsigned int ) ( time * 1000 ) );
-			ev->Set_telop_id( 1 );
+			ev->Set_telop_id( (int)TELOP_ID::FLYER );
 			event_list->push( ev );
 		}
 	}
@@ -298,7 +298,7 @@ template<class POSTERCLASS>void Paper_obj_mng::Load_timeposter_tmp( char *filena
 			Event_advent_paper_obj *ev;
 			ev = new Event_advent_paper_obj( p );
 			ev->Set_time( ( unsigned int ) ( time * 1000 ) );
-			ev->Set_telop_id( 1 );
+			ev->Set_telop_id((int)TELOP_ID::FLYER);				// ここのIDをフライヤーと風船で分けたい
 			event_list->push( ev );
 		}
 	}

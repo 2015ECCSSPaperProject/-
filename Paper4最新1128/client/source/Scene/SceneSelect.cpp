@@ -170,7 +170,9 @@ bool SceneSelect::Initialize()
 	BlurScreenY= new iex2DObj(iexSystem::ScreenWidth, iexSystem::ScreenHeight, IEX2D_RENDERTARGET);
 	BlurValue = 0.0f;
 
-	if (!bgm->isPlay("ドッグラン"))bgm->Fade_in("ドッグラン", .1f);
+	if (bgm->isPlay("TAPTAP"))bgm->Cross_fade(0, "ドッグラン", "TAPTAP", .01f, true);
+	else if (bgm->isPlay("ラプトル"))bgm->Cross_fade(0, "ドッグラン", "ラプトル", .01f, true);
+	else bgm->Fade_in("ドッグラン", .05f);
 	bgm->SetFX("ドッグラン", DXA_FX::DXAFX_OFF);
 
 	return true;
@@ -680,6 +682,7 @@ bool SceneSelect::Update()
 		if (FadeControl::isFadeOut == true)
 		{
 			bgm->Stop("ドッグラン");
+			bgm->Stop("TAPTAP");
 			MainFrame->ChangeScene(new SceneMain());
 			return true;
 		}

@@ -120,8 +120,22 @@ bool SceneTitle::Initialize()
 	mouse->Initialize(FALSE);
 	cursor_no = CURSOR_NO::START;
 
-	if (!bgm->isPlay("ドッグラン"))bgm->Fade_in("ドッグラン", .1f);
-	bgm->SetFX("ドッグラン", DXA_FX::DXAFX_COMPRESSOR);
+	if (bgm->isPlay("ドッグラン"))bgm->Cross_fade(0, "TAPTAP", "ドッグラン", .01f);
+	else bgm->Fade_in("TAPTAP", .05f);
+
+	// ランダムでサウンドエフェクトをかける
+	DXA_FX fx = DXA_FX::DXAFX_OFF;
+	switch (rand() % 3)
+	{
+	case 0:
+		fx = DXA_FX::DXAFX_CHORUS;
+		break;
+
+	case 1:
+		fx = DXA_FX::DXAFX_FLANGER;
+		break;
+	}
+	bgm->SetFX("TAPTAP", fx);
 
 	return true;
 }
@@ -349,7 +363,7 @@ bool SceneTitle::Update()
 		}
 		if (FadeControl::isFadeOut)
 		{
-			bgm->Fade_out("ドッグラン", .01f);
+			bgm->Fade_out("TAPTAP", .01f);
 			movieStep = MOVIE_STEP::MOVIE;
 			test->Play();
 		}
@@ -358,7 +372,7 @@ bool SceneTitle::Update()
 	{
 		if (KeyBoardTRG(MOUSE_LEFT))
 		{
-			if (!bgm->isPlay("ドッグラン"))bgm->Fade_in("ドッグラン", .1f);
+			bgm->Fade_in("TAPTAP", .1f);
 			movieStep = MOVIE_STEP::NORMAL;
 			test->Stop();
 			// Fade処理
@@ -370,7 +384,7 @@ bool SceneTitle::Update()
 		TIMER++;
 		if (TIMER >= 31 * 60)
 		{
-			if (!bgm->isPlay("ドッグラン"))bgm->Fade_in("ドッグラン", .1f);
+			if (!bgm->isPlay("TAPTAP"))bgm->Fade_in("TAPTAP", .1f);
 			movieStep = MOVIE_STEP::NORMAL;
 			test->Stop();
 			// Fade処理

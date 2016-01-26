@@ -21,7 +21,7 @@
 const float CAN_TARGET_DIST = 40.0f;
 const bool auto_target = false;
 const bool thrash_rend = true;
-
+static const float JUMP_POW = 1.8f;
 
 //****************************************************************************************************************
 //
@@ -80,7 +80,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	pos.z = cosf( angleY ) * 100;
 	pos.x = sinf( angleY ) * 100;// ‰¼
 	scale = .5f;
-	move = Vector3(0, 0, 0);
+	move = huttobi=Vector3(0, 0, 0);
 	speed = 1.5f;
 	fallspeed = .075f;
 	se_receive = 0;
@@ -187,6 +187,18 @@ void BasePlayer::Update()
 
 	// •KŽE‹ZNo
 	controlDesc.skillFlag = ServerManager::GetDesc(m_id).skillFlag;
+
+	// ‹~‹}ŽÔÕ“Ë
+	if (controlDesc.controlFlag&(BYTE)PLAYER_CONTROL::AMBULANCE)
+	{
+		jump_pow = JUMP_POW*1.2f;
+		huttobi = move;
+		huttobi.y = 0;
+		huttobi *= -1.1f;
+		isJump = true;
+		isLand = false;
+		Change_action(ACTION_PART::DIE);
+	}
 
 	// Š•‚Ì–³“GŽžŠÔ
 	if (kabuto_timer & 0xffff)
@@ -305,7 +317,7 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	{
 		if (!me->isJump && me->isLand)
 		{
-			me->jump_pow = 2.0f;
+			me->jump_pow = JUMP_POW;
 			me->isJump = true;
 			me->isLand = false;
 		}
@@ -518,7 +530,7 @@ void BasePlayer::Action::MoveTarget::Update(const CONTROL_DESC &_ControlDesc)
 	{
 		if (_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::SPACE)
 		{
-			me->jump_pow = 2.0f;
+			me->jump_pow = JUMP_POW;
 			me->isJump = true;
 		}
 	}
@@ -640,7 +652,7 @@ void BasePlayer::Action::Attack::Initialize()
 	me->move = VECTOR_ZERO;
 
 	me->model_part = MODEL::NORMAL;
-	(me->isJump) ? me->Set_motion(21) : me->Set_motion(4);
+	me->Set_motion(4);
 
 
 	// ŒÅ‚Ü‚ç‚¹‚éˆ—
@@ -828,9 +840,25 @@ void BasePlayer::Action::Die::Initialize()
 
 void BasePlayer::Action::Die::Update(const CONTROL_DESC &_ControlDesc)
 {
+	if (!me->isLand)
+	{
+		me->move.x = me->huttobi.x;
+		me->move.z = me->huttobi.z;
+		me->move.y = me->jump_pow;
+		me->jump_pow -= me->fallspeed;
+	}
+	else
+	{
+		me->move.x = 0;
+		me->move.z = 0;
+	}
+
+	me->move.y -= me->fallspeed;
+
 	if (die_frame++ > 180)
 	{
 		me->Change_action(ACTION_PART::RESPAWN);
+		me->huttobi = VECTOR_ZERO;
 	}
 }
 
@@ -1085,7 +1113,7 @@ void BasePlayer::Action::Syuriken::Update(const CONTROL_DESC &_ControlDesc)
 			data.ID = rend_no;
 			player_mng->Get_player(n)->paperqueue->Push(data);
 		}
-		hit_stop = 4;
+		hit_stop = 2;
 	}
 
 	if (_ControlDesc.controlFlag & (int)PLAYER_CONTROL::SPACE)

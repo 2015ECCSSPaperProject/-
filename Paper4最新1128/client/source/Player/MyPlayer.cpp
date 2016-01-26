@@ -17,6 +17,7 @@
 #include	"../Effect/Effect.h"
 #include	"../blur/blur.h"
 #include	"../HitEffect/HitEffect.h"
+#include	"../Ambulance/Ambulance.h"
 static const bool on_number = true;	// ナンバーエフェクト自分で出すかどうか
 
 //****************************************************************************************************************
@@ -105,11 +106,6 @@ void MyPlayer::Release()
 
 void MyPlayer::Update()
 {
-	// Cキーのトグル
-	//m_controlDesc.controlFlag &= ((BYTE)PLAYER_CONTROL::TRG_C ^ 0xff);
-	//if (toggle_c)
-	//	m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::TRG_C;
-
 	if (ui->isStart())
 	{
 		/*入力受付処理*/
@@ -121,6 +117,13 @@ void MyPlayer::Update()
 		Vector3 AT_nearest;
 		stage->Area_Get_nearest_point(0, &AT_nearest, pos);
 		se->Set_pos("AT", 0, AT_nearest);
+
+		//救急車衝突
+		if (ambulance_mng->CheckDist(pos, 20.0f) != -1)
+		{
+			if (!(m_controlDesc.controlFlag & BYTE(PLAYER_CONTROL::AMBULANCE)))se->Play("救急車衝突");
+			m_controlDesc.controlFlag |= (BYTE)PLAYER_CONTROL::AMBULANCE;
+		}
 	}
 
 	// ヒットエフェクト更新
@@ -718,7 +721,7 @@ void MyPlayer::Set_action(ACTION_PART part)
 			skill_begin->Action();
 			se->Play("スキル発動");
 		}
-		if (action_part == ACTION_PART::SYURIKEN && part == ACTION_PART::MOVE)
+		if (action_part == ACTION_PART::SYURIKEN)
 		{
 			// 手裏剣エフェクトストップ
 			rush->Stop();

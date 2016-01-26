@@ -50,6 +50,7 @@ protected:
 	float			speed;
 	float			fallspeed;
 	int				se_receive;
+	Vector3			huttobi;
 
 	iex3DObj		*models[(int)MODEL::MAX];
 

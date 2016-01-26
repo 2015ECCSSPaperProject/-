@@ -77,6 +77,7 @@ SE_Manager::DATA all_dataS[] =
 	{ "救急車", "DATA/Sound/SE/pi-po-.wav", 6, true },
 	{ "スキルたまる", "DATA/Sound/SE/fill_skill.wav", 2, false },
 	{ "スキル発動", "DATA/Sound/SE/skill_begin.wav", 1, false },
+	{ "救急車衝突", "DATA/Sound/SE/collision_ambulance.wav", 1, false },
 	{ "END", nullptr }
 };
 
@@ -218,6 +219,7 @@ BGM_Manager::DATA all_dataB[] =
 	{ "フライハイ2", "DATA/Sound/BGM/フライ・ハイ.wav", false },
 	{ "ラプトル", "DATA/Sound/BGM/ラプトル.wav", false },
 	{ "ドッグラン", "DATA/Sound/BGM/ドッグラン.wav", false },
+	{ "TAPTAP", "DATA/Sound/BGM/TAPTAP.wav", false },
 	{ "ホイッスル", "DATA/Sound/SE/whistle.wav", false },
 	{ "END", nullptr }
 };
@@ -344,9 +346,9 @@ void BGM_Manager::Fade_out(LPSTR _ID, float fade_speed)
 	play_manager->FadeOut(ID[_ID], fade_speed);
 }
 
-void BGM_Manager::Cross_fade(LPSTR inID, LPSTR outID, float fade_speed, bool loop)
+void BGM_Manager::Cross_fade(int type, LPSTR inID, LPSTR outID, float fade_speed, bool loop)
 {
-	play_manager->CrossFade(ID[inID], ID[outID], fade_speed, fstSoundBGM::CROSS_FADE_TYPE::END_OF_ETERNITY, loop);
+	play_manager->CrossFade(ID[inID], ID[outID], fade_speed, (fstSoundBGM::CROSS_FADE_TYPE)type, loop);
 }
 
 void BGM_Manager::Cross_fade(LPSTR inID, LPSTR outID, float in_speed, float out_speed, bool loop)
@@ -450,7 +452,7 @@ void EventBGM::Kouhan()
 	strcpy_s(str, 64, mainBGM);
 	strcat(mainBGM, "2");
 
-	bgm->Cross_fade(mainBGM, str, .01f);
+	bgm->Cross_fade(1, mainBGM, str, .0075f);
 	bgm->Set_speed(str, 1.1f);
 	bgm->Set_speed(mainBGM, 1.1f);
 	step = 0;

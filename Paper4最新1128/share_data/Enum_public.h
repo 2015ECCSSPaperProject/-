@@ -14,8 +14,9 @@ enum class PLAYER_CONTROL
 	LEFT_CLICK = 0x1,
 	RIGHT_CLICK = 0x1 << 1,
 	SPACE = 0x1 << 2,
+	ATTACK_BUTTON = 0x1 << 3,
 	RENDING = 0x1 << 4,	// 小物を破ってる途中
-	ATTACK_BUTTON = 0x1 << 3
+	AMBULANCE = 0x1 << 5
 };
 
 // 必殺技
@@ -24,7 +25,6 @@ enum class PLAYER_SKILL
 	GUN = 0x1,
 	SYURIKEN = 0x1 << 1,
 	KABUTO = 0x1 << 2,
-	ZENRYOKU = 0x1 << 3
 };
 
 
@@ -63,4 +63,13 @@ enum KIND_PAPER_OBJECT
 	SHOJI = 10,
 	HUUSENN = 11,
 	KIND_MAX_PAPER_OBJ = 12
+};
+
+
+// テロップID
+enum class TELOP_ID
+{
+	FLYER=1,		// フライヤーが降ってきた
+	AREA_OPEN=2,	// 新たなエリアが解放された
+	BALLOON=3		// 風船が飛んできた
 };

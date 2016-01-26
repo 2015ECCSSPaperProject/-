@@ -9,7 +9,7 @@
 #include "../event/Event list.h"
 #include "../event/Event.h"
 #include "../event/Event open area.h"
-//#include "../player/Player.h"
+#include "../../../share_data/Enum_public.h"
 #include <string>
 
 Stage::Stage() : collision_model(nullptr), area(nullptr)
@@ -193,7 +193,7 @@ void Stage::Load_area()
 			int time;
 			ifs >> time;
 			Event_open_area *ev = new Event_open_area(time * 1000, area, 0);
-			ev->Set_telop_id(2);	// エリアが解放された！ID
+			ev->Set_telop_id((int)TELOP_ID::AREA_OPEN);	// エリアが解放された！ID
 			event_list->push( ev );
 		}
 	}

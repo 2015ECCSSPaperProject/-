@@ -131,7 +131,7 @@ public:
 	void Fade_in(LPSTR _ID, float fade_speed, bool loop = true);
 	void Fade_out(LPSTR _ID, float fade_speed);
 	void Fade_stop(LPSTR _ID){ play_manager->FadeStop(ID[_ID]); }
-	void Cross_fade(LPSTR inID, LPSTR outID, float fade_speed = .0075f, bool loop = true);
+	void Cross_fade(int type, LPSTR inID, LPSTR outID, float fade_speed = .0075f, bool loop = true);
 	void Cross_fade(LPSTR inID, LPSTR outID, float in_speed, float out_speed, bool loop);
 	void SetFX(DXA_FX flag){ play_manager->SetFX(flag); }
 	void SetFX(LPSTR _ID, DXA_FX flag){ play_manager->SetFX(ID[_ID], flag); }
