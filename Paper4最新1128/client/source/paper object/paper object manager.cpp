@@ -164,7 +164,7 @@ void Paper_obj_mng::Load()
 	original_model[7].LoadIMO( "DATA/paper object/zasshi/zasshi.IMO" );
 	original_model[8].LoadIMO( "DATA/paper object/shinbun/shinbun.IMO" );
 	original_model[9].LoadIMO( "DATA/paper object/shoji/shoji.IMO" );
-	original_model[10].LoadIMO( "DATA/paper object/huusen/huusen.IMO" );
+	original_model[10].LoadIMO( "DATA/paper object/huusen/kamiHuusen.IMO" );
 
 	// à íuÉçÅ[Éh
 	Load_timeposter_tmp<Flyer>( "DATA/MATI/position/flyer pos.txt", original_flyer );

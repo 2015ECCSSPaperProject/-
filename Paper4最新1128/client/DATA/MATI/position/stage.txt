@@ -1,3 +1,13 @@
+DATA/MATI/rapyuta.IMO 1
+
+0
+0
+0
+
+0
+340
+0
+
 DATA/MATI/kiso.IMO 1
 
 0
