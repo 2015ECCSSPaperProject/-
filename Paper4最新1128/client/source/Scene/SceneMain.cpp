@@ -389,7 +389,7 @@ void SceneMain::Render()
 		stage->Render_inhabitants( shaderD, "G_Buffer" );
 		sky->Render(shaderD, "G_Buffer");
 		player_mng->Render(shaderD, "G_Buffer");
-		paper_obj_mng->Render(shaderD, "G_Buffer");
+		paper_obj_mng->Render(camera->shaderViewPos, shaderD, "G_Buffer");
 		ambulance_mng->Render(shaderD, "G_Buffer");
 
 		DeferredManager.G_End();// ‚±‚±‚Ü‚Å
@@ -540,7 +540,7 @@ void SceneMain::Render()
 			Text::Draw(950, 20 + (i * 32), 0xff00ffff, "–¼‘OF%s", SOCKET_MANAGER->GetUser(i).name);
 		}
 		player_mng->Render();
-		paper_obj_mng->Render(shaderD, "copy");
+		paper_obj_mng->Render(camera->shaderViewPos, shaderD, "copy");
 
 
 

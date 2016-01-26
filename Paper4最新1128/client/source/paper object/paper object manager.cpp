@@ -42,21 +42,16 @@ void Paper_obj_mng::Update()
 	}
 }
 
-void Paper_obj_mng::Render(iexShader *shader, char *name)
+void Paper_obj_mng::Render( const Vector3 &pos, iexShader *shader, char *name )
 {
-	if (shader)
+	for (auto it : obj_array)
 	{
-		for (auto it : obj_array)
-		{
-			it->Render(shader, name);
-		}
-	}
-	else
-	{
-		for (auto it : obj_array)
-		{
-			it->Render();
-		}
+		Vector3 v( it->Get_pos() - pos );
+		if( Vector3Dot( v, Vector3( matView._13, matView._23, matView._33 ) ) < 0 )
+			continue;
+		if( v.LengthSq() > 1000000 ) // 1000 * 1000
+			continue;
+		it->Render(shader, name);
 	}
 }
 

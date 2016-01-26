@@ -21,7 +21,7 @@ public:
 	void Initialize();
 	void Release();
 	void Update();
-	void Render(iexShader *shader = nullptr, char *name = '\0');
+	void Render(const Vector3 &pos, iexShader *shader, char *name);
 	void Forward_render();
 
 	//**************************************************

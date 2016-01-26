@@ -208,7 +208,7 @@ void Paper_obj_mng::Load()
 	// à íuÉçÅ[Éh
 	number_of_objects = 0;
 
-	Load_timeposter_tmp<Flyer>( "DATA/MATI/position/flyer pos.txt" );
+	Load_timeposter_tmp<Flyer>( "DATA/MATI/position/flyer pos.txt", (int)TELOP_ID::FLYER );
 	Load_poster_tmp<Poster>( "DATA/MATI/position/poster_pos.txt" );
 	Load_poster_tmp<Calendar>( "DATA/MATI/position/calendar_pos.txt" );
 	Load_poster_tmp<Magazin>( "DATA/MATI/position/magazin_pos.txt" );
@@ -219,7 +219,7 @@ void Paper_obj_mng::Load()
 	Load_poster_tmp<Zasshi>( "DATA/MATI/position/zasshi.txt" );
 	Load_poster_tmp<Shinbun>( "DATA/MATI/position/shinbun_pos.txt" );
 	Load_poster_tmp<Shoji>( "DATA/MATI/position/shoji_pos.txt" );
-	Load_timeposter_tmp<Huusenn>( "DATA/MATI/position/huusen_pos.txt" );
+	Load_timeposter_tmp<Huusenn>( "DATA/MATI/position/huusen_pos.txt", ( int ) TELOP_ID::BALLOON );
 }
 
 void Paper_obj_mng::Load_flyer()
@@ -263,7 +263,7 @@ void Paper_obj_mng::Load_flyer()
 	}
 }
 
-template<class POSTERCLASS>void Paper_obj_mng::Load_timeposter_tmp( char *filename )
+template<class POSTERCLASS>void Paper_obj_mng::Load_timeposter_tmp( char *filename, int id )
 {
 	std::ifstream infs( filename );
 	std::string str;
