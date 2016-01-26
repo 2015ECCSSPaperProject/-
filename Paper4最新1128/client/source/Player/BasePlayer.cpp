@@ -447,7 +447,7 @@ void BasePlayer::Action::Attack::Initialize()
 
 	me->model_part = MODEL::NORMAL;
 
-	(sqrtf(me->move.y*me->move.y) >= .1f) ? me->Set_motion(21) : me->Set_motion(4);
+	(sqrtf(me->move.y*me->move.y) >= .1f) ? me->Set_motion(20) : me->Set_motion(4);
 }
 
 void BasePlayer::Action::Attack::Update()
