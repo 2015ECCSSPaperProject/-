@@ -189,14 +189,13 @@ void BasePlayer::Update()
 	controlDesc.skillFlag = ServerManager::GetDesc(m_id).skillFlag;
 
 	// ã~ã}é‘è’ìÀ
-	if (controlDesc.controlFlag&(BYTE)PLAYER_CONTROL::AMBULANCE)
+	if (controlDesc.controlFlag&(BYTE)PLAYER_CONTROL::AMBULANCE && action_part != ACTION_PART::DIE)
 	{
-		jump_pow = JUMP_POW*1.2f;
-		huttobi = move;
-		huttobi.y = 0;
-		huttobi *= -1.1f;
+		jump_pow = JUMP_POW + move.LengthSq() * .5f;
+		huttobi = move * -2.0f;
 		isJump = true;
 		isLand = false;
+		//assert(huttobi.Length() != 0);
 		Change_action(ACTION_PART::DIE);
 	}
 
