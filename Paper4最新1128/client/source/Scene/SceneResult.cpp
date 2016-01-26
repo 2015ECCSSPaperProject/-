@@ -133,13 +133,13 @@ bool SceneResult::Initialize()
 	screen = new iex2DObj(1280, 720, IEX2D_RENDERTARGET);
 	// 壊れるスクリーン	
 	breakScreen = new iex3DObj("DATA/Screen/gamen.iem");//screen_grid
-	breakScreen->SetAngle(3.14f);
+	breakScreen->SetAngle(3.14);
 	breakScreen->SetPos(0, 0, 0);
 	breakScreen->SetScale(1.2f);
 	//breakScreen->SetMotion(1);
 	// ふつうのスクリーン	
 	normalScreen = new iex3DObj("DATA/Screen/gamen.iem");
-	normalScreen->SetAngle(3.14f);
+	normalScreen->SetAngle(3.14);
 	normalScreen->SetPos(0, 0, 11);
 	normalScreen->SetScale(2.2f);
 	normalScreen->Update();
@@ -149,7 +149,7 @@ bool SceneResult::Initialize()
 
 
 	step = STEP::START;
-
+	startTimer = 0;
 
 	return true;
 }
@@ -196,11 +196,18 @@ bool SceneResult::Update()
 	{
 	case SceneResult::START:
 
-	
+		startTimer++;
+		if (startTimer == 60)
+		{
+			breakScreen->SetMotion(1);
+		}
+
 		if (breakScreen->GetParam(0)==1)
 		{
 			step = SceneResult::MAIN;
 		}
+
+		chara.obj->Animation();
 
 		break;
 	case SceneResult::MAIN:

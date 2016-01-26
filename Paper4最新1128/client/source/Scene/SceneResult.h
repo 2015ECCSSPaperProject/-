@@ -23,7 +23,7 @@ public:
 		START = 0, MAIN = 1, END = 2
 	};
 	int step;//ステップ
-	int timer;
+	int startTimer;
 
 private:
 	// 画像
