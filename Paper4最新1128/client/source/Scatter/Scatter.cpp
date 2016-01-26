@@ -4,7 +4,7 @@
 
 Scatter::Scatter()
 {
-	scatter = new AnimationUV("DATA/uvAnim/scatter.imo", 0.00f, 0.075, 120, false, 2, 108);
+	scatter = new AnimationUV("DATA/uvAnim/scatter.imo", 0.00f, 0.075f, 90, false, 2, 78);
 
 	//wave = new AnimationUV("DATA/uvAnim/wave.imo", 0.00f, 0.018, 20 * 3, true, 20 * 0.5);
 

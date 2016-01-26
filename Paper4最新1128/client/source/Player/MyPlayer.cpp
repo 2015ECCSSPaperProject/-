@@ -18,6 +18,7 @@
 #include	"../blur/blur.h"
 #include	"../HitEffect/HitEffect.h"
 #include	"../Ambulance/Ambulance.h"
+#include	"../Scatter/Scatter.h"
 static const bool on_number = true;	// ナンバーエフェクト自分で出すかどうか
 
 //****************************************************************************************************************
@@ -65,6 +66,7 @@ void MyPlayer::Initialize(iex3DObj **obj)
 	ShowCursor(FALSE);
 
 	hit_effect = new HitEffect;
+	scatter = new Scatter;
 
 	// 破るマウスの動きの初期化
 	const int num = 4;
@@ -94,6 +96,7 @@ void MyPlayer::Initialize(iex3DObj **obj)
 void MyPlayer::Release()
 {
 	delete hit_effect;
+	delete scatter;
 	BasePlayer::Release();
 }
 
@@ -130,7 +133,8 @@ void MyPlayer::Update()
 	const Vector3 shift(sinf(angleY) * 5, 5, cosf(angleY) * 5);
 	hit_effect_pos = pos + shift;
 	hit_effect->Update(hit_effect_pos);
-
+	scatter->Update(pos+Vector3(0,12,0), Vector3(0, angleY+PI, 0), 0.075f);
+	
 	BasePlayer::Update();
 	Update_action();
 
@@ -167,6 +171,7 @@ void MyPlayer::Render_forword()
 {
 	hit_effect->Render();
 	BasePlayer::Render_forword();
+	scatter->Render();
 }
 
 void MyPlayer::Update_action()
@@ -430,6 +435,8 @@ void MyPlayer::RendCalendarSE()
 		// 破き始め
 		if (models[(int)model_part]->GetParam(5) == 1)
 		{
+			BlurFilter::Set(12, 0, 0);
+			scatter->Action();
 			se_receive = se->Play("カレンダー破り", true);
 			se_step++;
 		}
@@ -488,6 +495,8 @@ void MyPlayer::RendMoneySE()
 		// 破き始め
 		if (models[(int)model_part]->GetParam(5) == 1)
 		{
+			BlurFilter::Set(12, 0, 0);
+			scatter->Action();
 			se_receive = se->Play("お金破り", true);
 			se_step++;
 		}

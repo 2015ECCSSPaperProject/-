@@ -831,7 +831,7 @@ void UI::Mode::End::Render()
 	TimeUp->Update();
 	TimeUpRip->Update();
 
-	if(!SCOREATACK_FLAG || timer->Get_limit_time() < 5*60)me->Graph();
+	if(!SCOREATACK_FLAG && timer->Get_limit_time() < 5*60)me->Graph();
 	me->SkillGauge();
 	me->Action();
 	//sokomade->Render(128, 182, 1024, 256, 0, 0, 1024, 256);

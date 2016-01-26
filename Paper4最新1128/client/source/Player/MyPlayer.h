@@ -5,6 +5,7 @@ class Pie_graph_content;
 class Spread2D;
 class Rend_data;
 class HitEffect;
+class Scatter;
 
 /*前方宣言*/
 //class BasePlayer;
@@ -23,8 +24,6 @@ public:
 	void Initialize(iex3DObj **obj);
 	void Release();
 
-
-	//SkillData
 	//===============================================
 	//	更新と描画
 	//===============================================
@@ -51,7 +50,7 @@ private:
 
 	// 破ったときのエフェクト
 	HitEffect *hit_effect;
-
+	Scatter *scatter;
 	Vector3 hit_effect_pos;
 
 	int se_step;

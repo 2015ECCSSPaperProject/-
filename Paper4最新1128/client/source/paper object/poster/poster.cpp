@@ -149,4 +149,6 @@ void Huusenn::Subclass_update()
 			start_time = UINT_MAX;
 		}
 	}
+
+	Poster::Subclass_update();
 }

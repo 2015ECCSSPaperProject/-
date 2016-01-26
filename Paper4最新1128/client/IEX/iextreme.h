@@ -683,6 +683,7 @@ public:
 	void Render(int x, int y, int w, int h, int tx, int ty, int tw, int th, iexShader* shader, char* name);
 	// 3DÇÊÇËâúÇ…ï\é¶ÇµÇΩÇ¢èÍçá
 	void RenderBack(int x, int y, int w, int h, int tx, int ty, int tw, int th, u32 dwFlags = RS_COPY);
+	void RenderBack(int x, int y, u32 dwFlags = RS_COPY);
 	// 3Dï`âÊ
 	void Render3D(float x, float y, float z, u32 dwFlags = RS_COPY);
 	void Render3D(Vector3 pos, u32 dwFlags = RS_COPY);

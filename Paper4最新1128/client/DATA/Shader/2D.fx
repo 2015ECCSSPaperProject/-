@@ -1,3 +1,7 @@
+float4x4 Projection;	//	投影変換行列
+float4x4 TransMatrix;	//　ワールド変換
+float4x4 matView;		//　ビュー変換
+
 texture Texture;
 sampler DecaleSamp = sampler_state
 {
@@ -936,5 +940,94 @@ technique gaussian
 		ZEnable = False;
 
 		PixelShader = compile ps_3_0 PS_Gaussian();
+	}
+}
+
+
+
+
+
+//------------------------------------------------------
+//		頂点フォーマット
+//------------------------------------------------------
+struct VS_OUTPUT_POSTER
+{
+	float4 Pos		: POSITION;
+	float4 Color	: COLOR0;
+	float2 Tex		: TEXCOORD0;
+
+	float4 wPos			: TEXCOORD1;//　ピクセルに送る情報にワールドからのポジション追加
+	float4 ProjectionPos: TEXCOORD2;//　ピクセルに送る情報にゲーム画面ラストのポジション追加
+};
+
+struct VS_INPUT_POSTER
+{
+	float4 Pos    : POSITION;
+	float3 Normal : NORMAL;
+	float4 Color  : COLOR0;
+	float2 Tex	  : TEXCOORD0;
+};
+
+//------------------------------------------------------
+//		ポスター用サンプラー	
+//------------------------------------------------------
+texture PosterMap_0;		//	ポスターテクスチャ0
+sampler PosterSamp_0 = sampler_state
+{
+	Texture = <PosterMap_0>;
+	MinFilter = LINEAR;
+	MagFilter = LINEAR;
+	MipFilter = NONE;
+
+	AddressU = Wrap;
+	AddressV = Wrap;
+};
+
+//------------------------------------------------------
+//		頂点シェーダー	
+//------------------------------------------------------
+VS_OUTPUT_POSTER VS_Poster(VS_INPUT_POSTER In)
+{
+	VS_OUTPUT_POSTER Out = (VS_OUTPUT_POSTER)0;
+	//TransMatrixとPosを合成してwPosの情報生成
+	Out.wPos = mul(In.Pos, TransMatrix);
+
+	Out.Pos = mul(In.Pos, Projection);
+	Out.Tex = In.Tex;
+	Out.Color = 1.0f;
+
+	Out.ProjectionPos = Out.Pos;
+
+	return Out;
+}
+
+//------------------------------------------------------
+//		ポスター毎ピクセルシェーダーのみ変更	
+//------------------------------------------------------
+float4 PS_Poster_0(VS_OUTPUT_POSTER In) : COLOR
+{
+	float4	OUT;
+	//	ピクセル色決定
+	OUT = In.Color * tex2D(PosterSamp_0, In.Tex);
+
+	return OUT;
+}
+
+//------------------------------------------------------
+//		ポスター描画テクニック
+//------------------------------------------------------
+technique poster_0
+{
+	pass P0
+	{
+		AlphaBlendEnable = true;
+		BlendOp = Add;
+		SrcBlend = SrcAlpha;
+		DestBlend = InvSrcAlpha;
+		CullMode = CCW;
+		ZEnable = true;
+
+		VertexShader = compile vs_2_0 VS_Poster();
+		PixelShader = compile ps_2_0 PS_Poster_0();
 	}
 }

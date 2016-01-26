@@ -20,9 +20,10 @@ public:
 
 	enum STEP
 	{
-		START_NO = 0, START_OK = 1, GAME = 2
+		START = 0, MAIN = 1, END = 2
 	};
 	int step;//ステップ
+	int timer;
 
 private:
 	// 画像
@@ -69,5 +70,18 @@ private:
 	//---------------------------------------------------------------------
 	iex2DObj* posterScreen[PLAYER_MAX];
 	iex2DObj* posterFrame[PLAYER_MAX];
+
 	Surface* backbuffer;// サーフェイス　
+	iex2DObj* screen;
+
+	//---------------------------------------------------------------------
+	//   Screen
+	//---------------------------------------------------------------------
+	iex3DObj* breakScreen;
+	iex3DObj* normalScreen;
+
+
+
+	
+
 };

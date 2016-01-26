@@ -163,6 +163,7 @@
     <ClCompile Include="source\Player\PlayerManager.cpp" />
     <ClCompile Include="source\Random\Random_mt.cpp" />
     <ClCompile Include="source\Rush\Rush.cpp" />
+    <ClCompile Include="source\Scatter\Scatter.cpp" />
     <ClCompile Include="source\Scene\SceneMain.cpp" />
     <ClCompile Include="source\Scene\SceneMakePoster.cpp" />
     <ClCompile Include="source\Scene\SceneResult.cpp" />
@@ -247,6 +248,7 @@
     <ClInclude Include="source\poster\Poster_manager.h" />
     <ClInclude Include="source\Random\Random_mt.h" />
     <ClInclude Include="source\Rush\Rush.h" />
+    <ClInclude Include="source\Scatter\Scatter.h" />
     <ClInclude Include="source\Scene\SceneMain.h" />
     <ClInclude Include="source\Scene\SceneMakePoster.h" />
     <ClInclude Include="source\Scene\SceneResult.h" />

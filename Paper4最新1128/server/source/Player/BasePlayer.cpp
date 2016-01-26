@@ -223,7 +223,7 @@ void BasePlayer::Update()
 	else
 	{
 		Vector3 n;	// Žó‚¯Žæ‚é‚¯‚ÇŽg‚í‚È‚¢
-		stage->Collision(pos, &move, 5, 2, &n);
+		stage->Collision(pos, &move, 5.0f, 2, &n);
 	}
 
 	if (stage->Collision_rand(pos, &move))

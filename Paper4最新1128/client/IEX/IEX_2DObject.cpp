@@ -304,7 +304,107 @@ void iex2DObj::Render(iexShader* shader, char* tech)
 	iexPolygon::Render2D(v, 2, this, shader, tech);
 }
 
+void iex2DObj::RenderBack(int x, int y, u32 dwFlags)
+{
 
+
+	// 頂点情報
+	TLVERTEX	v[4];
+
+	// 順番　拡大(S)->回転(R)->移動(T)
+
+	// Zは0
+	//v[0].sz = v[1].sz = v[2].sz = v[3].sz = 0.0f;
+
+	// 原点から拡大
+	v[0].sx = v[2].sx = (float)(width * -0.5f - centerX) * scale;
+	v[1].sx = v[3].sx = (float)(width * 0.5f - centerX) * scale;
+	v[0].sy = v[1].sy = (float)(height * -0.5f - centerY) * scale;
+	v[2].sy = v[3].sy = (float)(height * 0.5f - centerY) * scale;
+
+
+	//v[0].sx = v[2].sx = (float)x;
+	//v[1].sx = v[3].sx = (float)(x + this->width) - abjustSize; //0.5fずらす
+	//v[0].sy = v[1].sy = (float)y;
+	//v[2].sy = v[3].sy = (float)(y + this->height) - abjustSize;
+
+	// 原点から回転
+	for (DWORD i = 0; i < 4; i++){
+		const float xrot = v[i].sx;
+		const float yrot = v[i].sy;
+		v[i].sx = xrot * cos(angle) + yrot * sin(angle);
+		v[i].sy = -xrot * sin(angle) + yrot * cos(angle);
+	}
+
+
+	// 移動
+	float transX = 0.0f;
+	float transY = 0.0f;
+	if (isShiftCenter)
+	{
+		// そのまま移動
+		transX = (float)(x);
+		transY = (float)(y);
+	}
+	else
+	{
+		// 元の位置に戻して移動
+		transX = (float)(x + centerX + (width * 0.5f));
+		transY = (float)(y + centerY + (height * 0.5f));
+	}
+
+	v[0].sx += transX;
+	v[2].sx += transX;
+	v[1].sx += transX - abjustSize; //0.5fずらす
+	v[3].sx += transX - abjustSize; //0.5fずらす	
+	v[0].sy += transY;
+	v[1].sy += transY;
+	v[2].sy += transY - abjustSize;
+	v[3].sy += transY - abjustSize;
+
+
+	// テクスチャ内の座標(UV)
+	if (isTurnOver == false)
+	{
+		v[0].tu = v[2].tu = (float)abjustSize / (float)this->width;// ほんの少しUV座標をずらす
+
+		// 回転を適用したなら　補間のずれを修正するため少しずらす
+		if (angle == 0.0f)
+			v[1].tu = v[3].tu = 1.0;
+		else
+			v[1].tu = v[3].tu = 1.0f - (float)abjustSize / (float)this->width;
+
+	}
+	else //反転するなら
+	{
+		// 回転を適用したなら　補間のずれを修正するため少しずらす
+		if (angle == 0.0f)
+			v[1].tu = v[3].tu = 0.0f;//
+		else
+			v[1].tu = v[3].tu = (float)abjustSize / (float)this->width;//
+
+		v[0].tu = v[2].tu = 1.0;
+	}
+	// 縦のuv座標は変わらず
+	v[0].tv = v[1].tv = (float)abjustSize / (float)this->height;// 
+	// 回転を適用したなら　補間のずれを修正するため少しずらす
+	if (angle == 0.0f)
+		v[2].tv = v[3].tv = 1.0;
+	else
+		v[2].tv = v[3].tv = 1.0f - (float)abjustSize / (float)this->height;
+
+
+	// ポリゴンの色
+	v[0].color = v[1].color = v[2].color = v[3].color = color;
+
+	v[0].rhw = v[1].rhw = v[2].rhw = v[3].rhw = 1.0f;//除算数?
+	v[0].sz = v[1].sz = v[2].sz = v[3].sz = 1.0f;// Zを1
+
+	// ↑の情報でポリゴン作成!!
+	iexPolygon::Render2D(v, 2, this, dwFlags);
+
+
+}
 
 //
 void iex2DObj::Render(int x, int y, u32 dwFlags)
