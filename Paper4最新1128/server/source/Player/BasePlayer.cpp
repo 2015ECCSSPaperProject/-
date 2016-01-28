@@ -191,8 +191,8 @@ void BasePlayer::Update()
 	// ‹~‹}ŽÔÕ“Ë
 	if (controlDesc.controlFlag&(BYTE)PLAYER_CONTROL::AMBULANCE && action_part != ACTION_PART::DIE)
 	{
-		jump_pow = JUMP_POW + move.LengthSq() * .5f;
-		huttobi = move * -2.0f;
+		jump_pow = JUMP_POW + move.LengthSq() * .4f;
+		huttobi = move * -2.1f;
 		isJump = true;
 		isLand = false;
 		//assert(huttobi.Length() != 0);
@@ -435,7 +435,7 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 	}
 
 	//	Ž©“®ƒ^[ƒQƒbƒeƒBƒ“ƒO
-	//me->poster_num = paper_obj_mng->Can_targeting(me, 10, 180);
+	me->poster_num = paper_obj_mng->Can_targeting(me, 10, 180);
 	//if (me->poster_num != -1 && auto_target)
 	//{
 	//	me->Change_action(ACTION_PART::MOVE_TARGET);
@@ -1096,7 +1096,7 @@ void BasePlayer::Action::Syuriken::Update(const CONTROL_DESC &_ControlDesc)
 	}
 
 	// Vs Poster
-	int rend_no = paper_obj_mng->Can_targeting(me, 18, 360);
+	int rend_no = paper_obj_mng->Can_targeting(me, 20, 360);
 
 	if (rend_no != -1)
 	{

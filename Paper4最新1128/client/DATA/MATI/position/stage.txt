@@ -1,4 +1,4 @@
-DATA/MATI/rapyuta.IMO 1
+DATA/MATI/rapyuta.IMO 0
 
 0
 0

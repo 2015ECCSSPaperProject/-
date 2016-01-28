@@ -11,6 +11,7 @@ void ShiningEffect(Vector3 _pos, float _scale = 1.0f);
 void AuraMAXEffect(Vector3 _pos, float _scale = 1.0f , Vector3 _col = Vector3(0.3f, 0.7f, 1.0f));
 
 void Sand_effect(float x, float y, float z);
+void Rend_effect(const Vector3 &pos, float scale);
 
 	//火花エフェクト
 	enum FIRE_COLOR

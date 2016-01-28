@@ -21,15 +21,11 @@ static const Vector2 MOUSE_POS[2] = { Vector2(960, 454), Vector2(136, 454) };
 const Vector2 max_v[SceneTitle::CURSOR_NO::CURSOR_MAX] = { Vector2(1245, 670), Vector2(410, 670) };
 const Vector2 min_v[SceneTitle::CURSOR_NO::CURSOR_MAX] = { Vector2(950, 470), Vector2(145, 480) };
 
-static int TIMER = 0;
-
 //******************************************************************
 //		èâä˙âªÅEâï˙
 //******************************************************************
 bool SceneTitle::Initialize()
 {
-	TIMER = 0;
-
 	movieStep = MOVIE_STEP::NORMAL;
 	movieTimer = 0;
 	movieStopTimer = 0;
@@ -352,7 +348,7 @@ bool SceneTitle::Update()
 
 	}
 
-
+	static int TIMER = 0;
 
 	if (movieStep == MOVIE_STEP::NORMAL)
 	{

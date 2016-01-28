@@ -134,6 +134,11 @@ void MyPlayer::Update()
 	hit_effect_pos = pos + shift;
 	hit_effect->Update(hit_effect_pos);
 	scatter->Update(pos+Vector3(0,12,0), Vector3(0, angleY+PI, 0), 0.075f);
+
+	if (KEY(KEY_ENTER) == 3)
+	{
+		Rend_effect(hit_effect_pos, 3.0f);
+	}
 	
 	BasePlayer::Update();
 	Update_action();
@@ -399,7 +404,7 @@ void MyPlayer::RendPosterSE()
 		{
 			if (poster_num != -1)
 			{
-				hit_effect->Action(HIT_TYPE::ALL);
+				hit_effect->Action(HitEffect::HIT_TYPE::ALL);
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 20, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
 			se_receive = se->Play("”j‚é");
@@ -418,7 +423,7 @@ void MyPlayer::RendFlyerSE()
 		{
 			if (poster_num != -1)
 			{
-				hit_effect->Action(HIT_TYPE::ALL);
+				hit_effect->Action(HitEffect::HIT_TYPE::ALL);
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 20, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
 			se_receive = se->Play("”j‚é");
@@ -477,7 +482,7 @@ void MyPlayer::RendMagazineSE()
 		{
 			if (poster_num != -1)
 			{
-				hit_effect->Action(HIT_TYPE::ALL);
+				hit_effect->Action(HitEffect::HIT_TYPE::ALL);
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
 			se->Stop("ƒ}ƒKƒWƒ“”j‚è", se_receive);
@@ -547,7 +552,7 @@ void MyPlayer::RendSeisyoSE()
 		{
 			if (poster_num != -1)
 			{
-				hit_effect->Action(HIT_TYPE::SLASH);
+				hit_effect->Action(HitEffect::HIT_TYPE::SLASH);
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
 			se->Stop("¹‘”j‚è", se_receive);
@@ -600,7 +605,7 @@ void MyPlayer::RendShinbunSE()
 		{
 			if (poster_num != -1)
 			{
-				hit_effect->Action(HIT_TYPE::ALL);
+				hit_effect->Action(HitEffect::HIT_TYPE::ALL);
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
 			se->Play("V•·”j‚è");
@@ -633,7 +638,7 @@ void MyPlayer::RendToileSE()
 		{
 			if (poster_num != -1)
 			{
-				hit_effect->Action(HIT_TYPE::ALL);
+				hit_effect->Action(HitEffect::HIT_TYPE::ALL);
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
 			se->Stop("ƒgƒCƒŒ”j‚è", se_receive);
@@ -653,7 +658,7 @@ void MyPlayer::RendZasshiSE()
 		{
 			if (poster_num != -1)
 			{
-				hit_effect->Action(HIT_TYPE::ALL);
+				hit_effect->Action(HitEffect::HIT_TYPE::ALL);
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
 			se_receive = se->Play("’Z‚¢”j‚è");
@@ -708,7 +713,7 @@ void MyPlayer::RendBalloonSE()
 		{
 			if (poster_num != -1)
 			{
-				hit_effect->Action(HIT_TYPE::ALL);
+				hit_effect->Action(HitEffect::HIT_TYPE::ALL);
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 20, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
 			se_receive = se->Play("Žè— Œ•”j‚è");
@@ -736,6 +741,15 @@ void MyPlayer::Set_action(ACTION_PART part)
 			rush->Stop();
 			Sand_effect(pos.x, pos.y, pos.z);
 		}
+		if (part == ACTION_PART::DIE)
+		{
+			if (isManhole)
+			{
+				isManhole = false;
+				event_bgm->Manhole_off();
+			}
+		}
+
 		if (action_part == ACTION_PART::MANHOLE && part == ACTION_PART::MOVE)
 		{
 			isManhole ^= 1;

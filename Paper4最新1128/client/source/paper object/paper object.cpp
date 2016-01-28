@@ -48,8 +48,8 @@ void Paper_obj::Rend()
 
 void Paper_obj::Rend_by_skill(BasePlayer *player)
 {
-	if(player->Get_action()==BasePlayer::ACTION_PART::GUN) hiteffect->Action(HIT_TYPE::ALL);
-	else if (player->Get_action() == BasePlayer::ACTION_PART::SYURIKEN) hiteffect->Action(HIT_TYPE::SLASH);
+	if (player->Get_action() == BasePlayer::ACTION_PART::GUN) hiteffect->Action(HitEffect::HIT_TYPE::ALL);
+	else if (player->Get_action() == BasePlayer::ACTION_PART::SYURIKEN) hiteffect->Action(HitEffect::HIT_TYPE::SLASH);
 	Number_Effect::SetNum(position + Vector3(0, 10, 0), point, 4);
 	if (player->Get_action() == BasePlayer::ACTION_PART::SYURIKEN) se->Play("Žè— Œ•”j‚è");
 	broken = true;

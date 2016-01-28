@@ -133,13 +133,13 @@ bool SceneResult::Initialize()
 	screen = new iex2DObj(1280, 720, IEX2D_RENDERTARGET);
 	// 壊れるスクリーン	
 	breakScreen = new iex3DObj("DATA/Screen/gamen.iem");//screen_grid
-	breakScreen->SetAngle(3.14);
+	breakScreen->SetAngle(3.14f);
 	breakScreen->SetPos(0, 0, 0);
 	breakScreen->SetScale(1.2f);
 	//breakScreen->SetMotion(1);
 	// ふつうのスクリーン	
 	normalScreen = new iex3DObj("DATA/Screen/gamen.iem");
-	normalScreen->SetAngle(3.14);
+	normalScreen->SetAngle(3.14f);
 	normalScreen->SetPos(0, 0, 11);
 	normalScreen->SetScale(2.2f);
 	normalScreen->Update();

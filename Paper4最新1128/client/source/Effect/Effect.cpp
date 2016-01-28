@@ -487,3 +487,24 @@ void AuraMAXEffect(Vector3 _pos, float _scale, Vector3 _col)
 				1.0f, 1.0f, 1.0f, 8.0f, 1.001f, RS_COPY);
 		}
 	}
+
+void Rend_effect(const Vector3 &pos, float scale)
+{
+	Vector3 Pos, Move, Power;
+
+	for (int i = 0; i < 20; i++){
+		//Pos.x = pos.x + (rand() % 12 - 6);
+		//Pos.y = pos.y + (rand() % 14 + 6);
+		//Pos.z = pos.z + (rand() % 12 - 6);
+		Pos = pos;
+		Move.x = (float)(rand() % 2 - 1);
+		Move.y = (float)(rand() % 3 + 2);
+		Move.z = (float)(rand() % 2 - 1);
+		Power.x = .0f;
+		Power.y = -.001f;
+		Power.z = .0f;
+
+		particle->Set3(1 + i % 3, 0, 0.8f, 60, .0f, 30, .45f, &Pos, &Move, &Power, 0, .01f,
+			1.0f, 1.0f, 1.0f, scale, 1.0f, RS_COPY);
+	}
+}
