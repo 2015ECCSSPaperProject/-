@@ -319,7 +319,7 @@ void MyPlayer::Control_all()
 	{
 		if (action_part != ACTION_PART::MOVE) return;
 		// ゲージが溜まってたら
-		if (skill_data[(int)select_skill].wait_time <= 0)
+		if (skill_data[select_skill].wait_time <= 0)
 		{
 			const int FLAG[] =
 			{
@@ -328,10 +328,20 @@ void MyPlayer::Control_all()
 				(int)PLAYER_SKILL::KABUTO,
 			};
 
-			m_controlDesc.skillFlag |= FLAG[(int)select_skill];
+			m_controlDesc.skillFlag |= FLAG[select_skill];
 			// スキル撃ったのでクールタイム設定
-			skill_data[(int)select_skill].wait_time = skill_data[(int)select_skill].cool_time;
+			skill_data[select_skill].wait_time = skill_data[(int)select_skill].cool_time;
 			skill_wait = 3;	// 1フレームだけしか送らなかったらたまに反応しないので3フレームぐらい送る
+
+			for (int i = 0; i < (int)SKILL::MAX; i++)
+			{
+				if (!skill_data[i].unlock) continue;
+				if (skill_data[i].cool_time <= 0)
+				{
+					select_skill = i;
+					break;
+				}
+			}
 		}
 		//SPI_GET_WHEELSCROLL
 	}

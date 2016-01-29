@@ -57,8 +57,8 @@ void Paper_obj::Rend_by_skill(BasePlayer *player)
 	}
 	else if (player->Get_action() == BasePlayer::ACTION_PART::SYURIKEN)
 	{
-		Rend_effect(position + Vector3(0, 10, 0), 3.0f, 20);
-		Rend_effect2(position + Vector3(0, 10, 0), 3.0f, 10);
+		Rend_effect(position + Vector3(0, 10, 0), 3.0f, 10);
+		Rend_effect2(position + Vector3(0, 10, 0), 3.0f, 1);
 		hiteffect->Action(HitEffect::HIT_TYPE::SLASH);
 		se->Play("Žè— Œ•”j‚è");
 	}
