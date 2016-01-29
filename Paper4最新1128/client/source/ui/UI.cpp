@@ -854,7 +854,7 @@ void UI::Append_telop(int id)
 	List.push_back(set);
 }
 
-Telop::Telop(int id) :app_timer(500), erase(false), step(0)
+Telop::Telop(int id) :app_timer(420), erase(false), step(0)
 {
 	switch ((TELOP_ID)id)
 	{
