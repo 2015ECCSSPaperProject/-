@@ -4,6 +4,8 @@
 
 #include "../../../share_data/Enum_public.h"
 
+enum KIND_PAPER_OBJECT;
+
 //	操作デスク
 struct	CONTROL_DESC
 {
@@ -286,7 +288,7 @@ protected:
 	//	手裏剣専用のあたり判定
 	//===============================================
 	void Collision_syuriken();
-
+	bool Check_rend_skill(KIND_PAPER_OBJECT kind);
 
 	//===============================================
 	//	委譲クラスへのポインタ

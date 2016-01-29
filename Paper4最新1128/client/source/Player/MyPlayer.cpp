@@ -137,7 +137,7 @@ void MyPlayer::Update()
 
 	if (KEY(KEY_ENTER) == 3)
 	{
-		Rend_effect(hit_effect_pos, 3.0f);
+		//Rend_effect(hit_effect_pos, 3.0f);
 	}
 	
 	BasePlayer::Update();

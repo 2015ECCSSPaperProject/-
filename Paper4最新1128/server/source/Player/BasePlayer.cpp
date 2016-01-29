@@ -277,6 +277,24 @@ void BasePlayer::Set_motion(int no)
 	}
 }
 
+bool BasePlayer::Check_rend_skill(KIND_PAPER_OBJECT kind)
+{
+	static const int NUM_NOT_REND_SKILL = 1;
+	static const KIND_PAPER_OBJECT NOT_REND_SKILL_OBJS[NUM_NOT_REND_SKILL] =
+	{
+		KIND_PAPER_OBJECT::SHOJI
+	};
+
+	for (int i = 0; i < NUM_NOT_REND_SKILL; i++)
+	{
+		// これはスキルでは破れない紙だよ
+		if (NOT_REND_SKILL_OBJS[i] == kind) return false;
+	}
+
+	// スキルで破れる紙だよ
+	return true;
+}
+
 
 //*****************************************************************************
 //
@@ -466,6 +484,11 @@ void BasePlayer::Action::MoveTarget::Initialize()
 void BasePlayer::Action::MoveTarget::Update(const CONTROL_DESC &_ControlDesc)
 {
 	// 距離範囲外
+	if (me->poster_num == -1)
+	{
+		me->Change_action(ACTION_PART::MOVE);
+		return;
+	}
 	if ((paper_obj_mng->Get_pos(me->poster_num) - me->pos).Length() > CAN_TARGET_DIST * 1.5f
 		|| (!auto_target && !(_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK)))
 	{
@@ -967,6 +990,12 @@ void BasePlayer::Action::Gun::Update(const CONTROL_DESC &_ControlDesc)
 
 		for (int i = 0; poster_numbers[i] != -1; i++)	// -1(終端)
 		{
+			// スキルで破れる紙かの判定
+			if (!me->Check_rend_skill(paper_obj_mng->Get_kind(poster_numbers[i])))
+			{
+				continue;
+			}
+
 			paper_obj_mng->Rend(poster_numbers[i]);
 			score->Add(paper_obj_mng->Get_point(poster_numbers[i]), me->mynumber);
 			me->god_gage++;
@@ -1100,6 +1129,13 @@ void BasePlayer::Action::Syuriken::Update(const CONTROL_DESC &_ControlDesc)
 
 	if (rend_no != -1)
 	{
+		// スキルで破れる紙かの判定
+		if (!me->Check_rend_skill(paper_obj_mng->Get_kind(rend_no)))
+		{
+			me->invincible = false;
+			me->Change_action(ACTION_PART::MOVE);
+			return;
+		}
 		paper_obj_mng->Rend(rend_no);
 		score->Add(paper_obj_mng->Get_point(rend_no), me->mynumber);
 		me->god_gage++;

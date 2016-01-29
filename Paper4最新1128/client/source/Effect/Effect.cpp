@@ -488,23 +488,46 @@ void AuraMAXEffect(Vector3 _pos, float _scale, Vector3 _col)
 		}
 	}
 
-void Rend_effect(const Vector3 &pos, float scale)
-{
-	Vector3 Pos, Move, Power;
+	// Ç¢Ç¡ÇœÇ¢àÍíºê¸éÜÇ”Ç‘Ç´
+	void Rend_effect(const Vector3 &pos, float scale)
+	{
+		Vector3 Pos, Move, Power;
 
-	for (int i = 0; i < 20; i++){
-		//Pos.x = pos.x + (rand() % 12 - 6);
-		//Pos.y = pos.y + (rand() % 14 + 6);
-		//Pos.z = pos.z + (rand() % 12 - 6);
-		Pos = pos;
-		Move.x = (float)(rand() % 2 - 1);
-		Move.y = (float)(rand() % 3 + 2);
-		Move.z = (float)(rand() % 2 - 1);
-		Power.x = .0f;
-		Power.y = -.001f;
-		Power.z = .0f;
+		for (int i = 0; i < 50; i++){
+			//Pos.x = pos.x + (rand() % 12 - 6);
+			//Pos.y = pos.y + (rand() % 14 + 6);
+			//Pos.z = pos.z + (rand() % 12 - 6);
+			Pos = pos;
+			const int M = 6;
+			Move.x = (Random_mt::Get(-M, M))*0.5f;
+			Move.y = (rand() % M + 1) * 0.5f;
+			Move.z = (Random_mt::Get(-M, M))*0.5f;
+			Power.x = .0f;
+			Power.y = -.005f;
+			Power.z = .0f;
 
-		particle->Set3(1 + i % 3, 0, 0.8f, 60, .0f, 30, .45f, &Pos, &Move, &Power, 0, .01f,
-			1.0f, 1.0f, 1.0f, scale, 1.0f, RS_COPY);
+			particle->Set3(1 + i % 3, 0, 1.0f, 30, .0f, 20, .9f, &Pos, &Move, &Power, (float)(rand() % (int)(PI * 2)), .0f,
+				1.0f, 1.0f, 1.0f, scale, 1.0f, RS_COPY);
+		}
 	}
-}
+
+
+	// èdóÕÇÃÇ†ÇÈíxÇ¢éÜÇ”Ç‘Ç´
+	void Rend_effect2(const Vector3 &pos, float scale)
+	{
+		Vector3 Pos, Move, Power;
+
+		for (int i = 0; i < 30; i++){
+			Pos = pos;
+			const int M = 5;
+			Move.x = (Random_mt::Get(-M, M))*0.1f;
+			Move.y = (rand() % 6 + 4) * 0.1f;
+			Move.z = (Random_mt::Get(-M, M))*0.1f;
+			Power.x = -Move.x*.01f;
+			Power.y = -.01f;
+			Power.z = -Move.z*.01f;
+			particle->Set3(2 + i % 2, 0, 1.0f, 100, .0f, 20, .9f, &Pos, &Move, &Power, (float)(rand() % (int)(PI * 2)), (Random_mt::Get(-1, 1))*0.05f,
+				1.0f, 1.0f, 1.0f, scale, 1.0f, RS_COPY);
+		}
+	}
+

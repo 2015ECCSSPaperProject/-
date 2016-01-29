@@ -156,6 +156,11 @@ float Paper_obj_mng::Get_angle(int index)
 	return obj_array[index]->Get_angle();
 }
 
+KIND_PAPER_OBJECT Paper_obj_mng::Get_kind(int index)
+{
+	return obj_array[index]->Get_kind();
+}
+
 //void Paper_obj_mng::Rend_poster(int number, int index)
 //{
 //	poster->Rend_poster(number, index);

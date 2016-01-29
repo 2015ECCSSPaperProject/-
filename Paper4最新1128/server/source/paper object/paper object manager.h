@@ -7,6 +7,8 @@ class iex3DObj;
 class BasePlayer;
 class Paper_obj;
 
+enum KIND_PAPER_OBJECT;
+
 class Paper_obj_mng
 {
 public:
@@ -52,6 +54,8 @@ public:
 	float Get_angle(int index);
 
 	const Vector3& Get_pos(int index);
+
+	KIND_PAPER_OBJECT Get_kind(int index);
 	
 	//**************************************************
 
