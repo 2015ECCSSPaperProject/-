@@ -86,7 +86,7 @@ void EffectCamera::Update()
 
 				// プレイヤー座標系にする
 				Rot2D(camera->Get_my_player()->Get_angleY(), &pt[0].z, &pt[0].x);
-				pt[0] += camera->Get_pos();
+				pt[0] += camera->Get_my_player()->Get_pos();
 				pt[1] += camera->Get_my_player()->Get_pos();
 				camera->Set(pt[0], pt[1]);
 				camera->shaderViewPos = pt[0];

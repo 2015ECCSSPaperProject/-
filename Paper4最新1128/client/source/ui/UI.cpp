@@ -866,6 +866,7 @@ Telop::Telop(int id) :app_timer(150), erase(false), step(0)
 		/* エリアが解放された！ */
 	case TELOP_ID::AREA_OPEN:
 		moji = new iex2DObj("DATA/UI/telop/AT.png");
+		se->Stop("AT", 0);	// ATフィールドの音止める
 		break;
 
 	case TELOP_ID::BALLOON:

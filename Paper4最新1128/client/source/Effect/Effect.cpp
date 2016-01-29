@@ -489,11 +489,11 @@ void AuraMAXEffect(Vector3 _pos, float _scale, Vector3 _col)
 	}
 
 	// ‚¢‚Á‚Ï‚¢ˆê’¼ü†‚Ó‚Ô‚«
-	void Rend_effect(const Vector3 &pos, float scale)
+	void Rend_effect(const Vector3 &pos, float scale, int num)
 	{
 		Vector3 Pos, Move, Power;
 
-		for (int i = 0; i < 50; i++){
+		for (int i = 0; i < num; i++){
 			//Pos.x = pos.x + (rand() % 12 - 6);
 			//Pos.y = pos.y + (rand() % 14 + 6);
 			//Pos.z = pos.z + (rand() % 12 - 6);
@@ -513,11 +513,11 @@ void AuraMAXEffect(Vector3 _pos, float _scale, Vector3 _col)
 
 
 	// d—Í‚Ì‚ ‚é’x‚¢†‚Ó‚Ô‚«
-	void Rend_effect2(const Vector3 &pos, float scale)
+	void Rend_effect2(const Vector3 &pos, float scale, int num)
 	{
 		Vector3 Pos, Move, Power;
 
-		for (int i = 0; i < 30; i++){
+		for (int i = 0; i < num; i++){
 			Pos = pos;
 			const int M = 5;
 			Move.x = (Random_mt::Get(-M, M))*0.1f;
@@ -530,4 +530,3 @@ void AuraMAXEffect(Vector3 _pos, float _scale, Vector3 _col)
 				1.0f, 1.0f, 1.0f, scale, 1.0f, RS_COPY);
 		}
 	}
-

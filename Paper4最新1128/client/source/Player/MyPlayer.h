@@ -52,6 +52,7 @@ private:
 	HitEffect *hit_effect;
 	Scatter *scatter;
 	Vector3 hit_effect_pos;
+	Vector3 particle_pos;
 
 	int se_step;
 	void (MyPlayer::*RendSE[12])();	// è¨ï®îjÇ≠SE

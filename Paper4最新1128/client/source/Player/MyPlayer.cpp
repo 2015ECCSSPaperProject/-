@@ -135,6 +135,8 @@ void MyPlayer::Update()
 	hit_effect->Update(hit_effect_pos);
 	scatter->Update(pos+Vector3(0,12,0), Vector3(0, angleY+PI, 0), 0.075f);
 
+	particle_pos = Vector3(pos.x + sinf(angleY) * 3, pos.y, pos.z + cosf(angleY) * 3);
+
 	if (KEY(KEY_ENTER) == 3)
 	{
 		//Rend_effect(hit_effect_pos, 3.0f);
@@ -404,6 +406,8 @@ void MyPlayer::RendPosterSE()
 		{
 			if (poster_num != -1)
 			{
+				Rend_effect(hit_effect_pos, 2.0f, 5);
+				Rend_effect2(hit_effect_pos, 2.0f, 10);
 				hit_effect->Action(HitEffect::HIT_TYPE::ALL);
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 20, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
@@ -423,6 +427,8 @@ void MyPlayer::RendFlyerSE()
 		{
 			if (poster_num != -1)
 			{
+				Rend_effect(hit_effect_pos, 2.0f, 5);
+				Rend_effect2(hit_effect_pos, 2.0f, 10);
 				hit_effect->Action(HitEffect::HIT_TYPE::ALL);
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 20, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
@@ -447,9 +453,13 @@ void MyPlayer::RendCalendarSE()
 		}
 		break;
 	case 1:
+		// 紙いっぱい飛んでる
+		Rend_effect(particle_pos, 3.0f, 1);
+
 		// 破き終わり
 		if (models[(int)model_part]->GetParam(5) == 2)
 		{
+			Rend_effect2(particle_pos, 3.0f);
 			se->Stop("カレンダー破り", se_receive);
 			se_step++;
 		}
@@ -482,6 +492,8 @@ void MyPlayer::RendMagazineSE()
 		{
 			if (poster_num != -1)
 			{
+				Rend_effect(hit_effect_pos, 3.0f);
+				Rend_effect2(hit_effect_pos, 3.0f, 10);
 				hit_effect->Action(HitEffect::HIT_TYPE::ALL);
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
@@ -507,6 +519,10 @@ void MyPlayer::RendMoneySE()
 		}
 		break;
 	case 1:
+		// 紙いっぱい飛んでる
+		Rend_effect(hit_effect_pos, 2.0f, 2);
+		Rend_effect2(hit_effect_pos, 2.0f, 1);
+
 		// 破き終わり
 		if (models[(int)model_part]->GetParam(5) == 2)
 		{
@@ -605,6 +621,8 @@ void MyPlayer::RendShinbunSE()
 		{
 			if (poster_num != -1)
 			{
+				Rend_effect(hit_effect_pos, 3.0f, 20);
+				Rend_effect2(hit_effect_pos, 3.0f, 5);
 				hit_effect->Action(HitEffect::HIT_TYPE::ALL);
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
@@ -641,6 +659,7 @@ void MyPlayer::RendToileSE()
 				hit_effect->Action(HitEffect::HIT_TYPE::ALL);
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
+			Rend_effect2(hit_effect_pos, 3.0f, 30);
 			se->Stop("トイレ破り", se_receive);
 			se->Play("トイレ破り2");
 			se_step = 99;	// ステップ終わり
@@ -661,6 +680,8 @@ void MyPlayer::RendZasshiSE()
 				hit_effect->Action(HitEffect::HIT_TYPE::ALL);
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}
+			Rend_effect(hit_effect_pos, 3.0f, 20);
+			Rend_effect2(hit_effect_pos, 3.0f, 10);
 			se_receive = se->Play("短い破り");
 			se_step = 99;	// ステップ終わり
 		}
@@ -681,6 +702,10 @@ void MyPlayer::RendShojiSE()
 		}
 		break;
 	case 1:
+		// 紙いっぱい飛んでる
+		Rend_effect(hit_effect_pos, 2.0f, 2);
+		Rend_effect2(hit_effect_pos, 2.0f, 1);
+
 		// 破き終わり
 		if (models[(int)model_part]->GetParam(5) == 2)
 		{
