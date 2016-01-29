@@ -144,6 +144,8 @@
     <ClCompile Include="source\Effect\Effect.cpp" />
     <ClCompile Include="source\Effekseer\Effector.cpp" />
     <ClCompile Include="source\Explosion\Explosion.cpp" />
+    <ClCompile Include="source\Fan\FanC.cpp" />
+    <ClCompile Include="source\Fan\FanEffect.cpp" />
     <ClCompile Include="source\fstream\fstream_paper.cpp" />
     <ClCompile Include="source\HitEffect\HitEffect.cpp" />
     <ClCompile Include="source\Manhole\Manhole.cpp" />
@@ -226,6 +228,8 @@
     <ClInclude Include="source\Effekseer\Effekseer.h" />
     <ClInclude Include="source\Effekseer\EffekseerRendererDX9.h" />
     <ClInclude Include="source\Explosion\Explosion.h" />
+    <ClInclude Include="source\Fan\FanC.h" />
+    <ClInclude Include="source\Fan\FanEffect.h" />
     <ClInclude Include="source\fstream\fstream_paper.h" />
     <ClInclude Include="source\HitEffect\HitEffect.h" />
     <ClInclude Include="source\Manhole\Manhole.h" />

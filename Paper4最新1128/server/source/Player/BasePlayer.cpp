@@ -15,6 +15,7 @@
 #include	"../timer/Timer.h"
 #include "../paperQueue/paperQueue.h"
 #include	"../Manhole/Manhole.h"
+#include	"../Fan/FanS.h"
 
 /*	ベースプレイヤー	*/
 
@@ -22,6 +23,7 @@ const float CAN_TARGET_DIST = 40.0f;
 const bool auto_target = false;
 const bool thrash_rend = true;
 static const float JUMP_POW = 1.8f;
+static const float FAN_RADIUS = 30.0f;
 
 //****************************************************************************************************************
 //
@@ -139,6 +141,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	action[(int)ACTION_PART::SYURIKEN] = new BasePlayer::Action::Syuriken(this);
 	action[(int)ACTION_PART::TRANS_FORM] = new BasePlayer::Action::TransForm(this);
 	action[(int)ACTION_PART::REND_OBJ] = new BasePlayer::Action::RendObj(this);
+	action[(int)ACTION_PART::RISE] = new BasePlayer::Action::Rise(this);
 
 	Change_action(ACTION_PART::MOVE);	// 最初は移動状態
 
@@ -454,12 +457,14 @@ void BasePlayer::Action::Move::Update(const CONTROL_DESC &_ControlDesc)
 
 	//	自動ターゲッティング
 	me->poster_num = paper_obj_mng->Can_targeting(me, 10, 180);
-	//if (me->poster_num != -1 && auto_target)
-	//{
-	//	me->Change_action(ACTION_PART::MOVE_TARGET);
-	//	return;
-	//}
 
+	// VS扇風機
+	if (Fan_mng->CheckFan(FAN_RADIUS, me->pos)!=-1)
+	{
+		me->Change_action(ACTION_PART::RISE);
+	}
+
+	// 例外処理
 	if (me->pos.y < -500)
 	{
 		me->Change_action(ACTION_PART::DIE);
@@ -1256,4 +1261,75 @@ void BasePlayer::Action::RendObj::Update(const CONTROL_DESC &_ControlDesc)
 			me->Change_action(ACTION_PART::MOVE);
 		}
 	}
+}
+
+
+//*****************************************************************************
+//
+//		「上昇」状態処理
+//
+//*****************************************************************************
+
+void BasePlayer::Action::Rise::Initialize()
+{
+	me->model_part = MODEL::NORMAL;
+	me->Set_motion(1);
+
+	me->isJump = true;
+	me->isLand = false;
+}
+
+void BasePlayer::Action::Rise::Update(const CONTROL_DESC &_ControlDesc)
+{
+	float AxisX = 0, AxisY = 0;
+
+	// ADWS
+	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::LEFT) AxisX += -1;
+	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::RIGHT) AxisX += 1;
+	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::UP) AxisY += 1;
+	if (_ControlDesc.moveFlag & (BYTE)PLAYER_IMPUT::DOWN) AxisY += -1;
+
+	float pow = sqrtf(AxisX*AxisX + AxisY*AxisY);
+	if (pow)
+	{
+		AxisX *= 1 / pow;
+		AxisY *= 1 / pow;
+	}
+
+	//アングル処理	角度補正
+	if (!(_ControlDesc.controlFlag & ((BYTE)PLAYER_CONTROL::LEFT_CLICK | (BYTE)PLAYER_CONTROL::RIGHT_CLICK))){
+		float	work;
+		work = _ControlDesc.mouseX *0.000001f;
+		if (work > 0.1f) work = 0.1f;
+		me->angleY += work;// Angleに加算
+	}
+
+	Vector3 front(sinf(me->angleY), 0, cosf(me->angleY));
+	Vector3 right(sinf(me->angleY + PI * .5f), 0, cosf(me->angleY + PI * .5f));
+
+
+	front.Normalize();
+	right.Normalize();
+	// 移動量決定
+	me->move.x = (front.x*AxisY + right.x*AxisX) * (me->speed);
+	me->move.z = (front.z*AxisY + right.z*AxisX) * (me->speed);
+
+	// 扇風機範囲内(X,Z)
+	const int fan_no = Fan_mng->CheckFan(FAN_RADIUS, me->pos);
+	if (fan_no != -1)
+	{
+		me->move.y *= .96f;
+		if (Fan_mng->CheckHeight(fan_no, 58, me->pos.y))
+			me->move.y += .1f;
+		else
+			me->move.y -= .1f;
+	}
+	else
+	{
+		me->Change_action(ACTION_PART::MOVE);
+		me->jump_pow = JUMP_POW*.75f;
+		me->isJump = true;
+	}
+
+
 }

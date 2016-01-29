@@ -78,6 +78,7 @@ SE_Manager::DATA all_dataS[] =
 	{ "スキルたまる", "DATA/Sound/SE/fill_skill.wav", 2, false },
 	{ "スキル発動", "DATA/Sound/SE/skill_begin.wav", 1, false },
 	{ "救急車衝突", "DATA/Sound/SE/collision_ambulance.wav", 1, false },
+	{ "テロップ", "DATA/Sound/SE/info.wav", 1, false },
 	{ "END", nullptr }
 };
 

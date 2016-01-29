@@ -4,6 +4,7 @@
 #include "../HitEffect/HitEffect.h"
 #include "../Player/BasePlayer.h"
 #include "../sound/SoundManager.h"
+#include "../Effect/Effect.h"
 Paper_obj::Paper_obj() : position(0, 0, 0), angle(0), broken(false), rend_delay_time(0)
 {
 	hiteffect = new HitEffect;
@@ -48,10 +49,20 @@ void Paper_obj::Rend()
 
 void Paper_obj::Rend_by_skill(BasePlayer *player)
 {
-	if (player->Get_action() == BasePlayer::ACTION_PART::GUN) hiteffect->Action(HitEffect::HIT_TYPE::ALL);
-	else if (player->Get_action() == BasePlayer::ACTION_PART::SYURIKEN) hiteffect->Action(HitEffect::HIT_TYPE::SLASH);
+	if (player->Get_action() == BasePlayer::ACTION_PART::GUN)
+	{
+		Rend_effect(position + Vector3(0, 10, 0), 3.0f, 10);
+		Rend_effect2(position + Vector3(0, 10, 0), 3.0f, 20);
+		hiteffect->Action(HitEffect::HIT_TYPE::ALL);
+	}
+	else if (player->Get_action() == BasePlayer::ACTION_PART::SYURIKEN)
+	{
+		Rend_effect(position + Vector3(0, 10, 0), 3.0f, 20);
+		Rend_effect2(position + Vector3(0, 10, 0), 3.0f, 10);
+		hiteffect->Action(HitEffect::HIT_TYPE::SLASH);
+		se->Play("Žè— Œ•”j‚è");
+	}
 	Number_Effect::SetNum(position + Vector3(0, 10, 0), point, 4);
-	if (player->Get_action() == BasePlayer::ACTION_PART::SYURIKEN) se->Play("Žè— Œ•”j‚è");
 	broken = true;
 }
 

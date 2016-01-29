@@ -37,7 +37,7 @@ public:
 	//===============================================
 	//	íËêî
 	//===============================================
-	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, REND, FREEZE, DIE, RESPAWN, GUN, MANHOLE, THROUGH, SYURIKEN, TRANS_FORM, REND_OBJ, START, MAX };
+	enum class ACTION_PART{ MOVE, MOVE_TARGET, ATTACK, REND, FREEZE, DIE, RESPAWN, GUN, MANHOLE, THROUGH, SYURIKEN, TRANS_FORM, REND_OBJ, RISE, START, MAX };
 	enum class DO_FLAG{ NONE, ATTACK, PASTE, REND, MAX };
 	enum class MODEL
 	{
@@ -140,7 +140,7 @@ protected:
 			Base(BasePlayer* me) :me(me){}
 			virtual void Initialize(){}
 			virtual void Update(){}
-			virtual void Render(iexShader *shader = nullptr, char *name = '\0'){}
+			virtual void Render(iexShader *shader = nullptr, char *name = '\0');
 
 
 
@@ -157,8 +157,6 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render(iexShader *shader = nullptr, char *name = '\0');
-			
 		};
 
 		//===========================================
@@ -170,7 +168,6 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 		//===========================================
@@ -182,7 +179,6 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 		//===========================================
@@ -196,7 +192,6 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 		//===========================================
@@ -208,7 +203,6 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 		//===========================================
@@ -250,7 +244,6 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 		//===========================================
@@ -262,7 +255,6 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 		//===========================================
@@ -274,7 +266,6 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 		//===========================================
@@ -288,7 +279,6 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 		//===========================================
@@ -300,7 +290,6 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 		//===========================================
@@ -312,7 +301,6 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render(iexShader *shader = nullptr, char *name = '\0');
 		};
 
 		//===========================================
@@ -324,7 +312,17 @@ protected:
 
 			void Initialize();
 			void Update();
-			void Render(iexShader *shader = nullptr, char *name = '\0');
+		};
+
+		//===========================================
+		//	è„è∏
+		class Rise : public Base
+		{
+		public:
+			Rise(BasePlayer*me) : Base(me){}
+
+			void Initialize();
+			void Update();
 		};
 	};
 

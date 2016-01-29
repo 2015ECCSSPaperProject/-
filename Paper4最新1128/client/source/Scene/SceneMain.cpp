@@ -14,7 +14,7 @@
 #include	"../sound/SoundManager.h"
 
 #include	"../Scene/SceneResult.h"
-//#include	"../data/LimitedData.h"
+#include	"../Fan/FanC.h"
 #include	"../ui/UI.h"
 #include	"../blur/blur.h"
 #include	"../Ambulance/Ambulance.h"
@@ -123,6 +123,9 @@ bool SceneMain::Initialize()
 	ui = new UI;
 	ui->Initialize(player_mng->Get_player(SOCKET_MANAGER->GetID()));
 
+	// 扇風機
+	Fan_mng->Initialize();
+
 	event_bgm->Initialize("フライハイ");
 	event_bgm->Set_mode(EventBGM::MODE::START);
 
@@ -191,7 +194,7 @@ SceneMain::~SceneMain()
 	SAFE_DELETE(water);
 
 	BlurFilter::CleanUp();
-
+	Fan_mng->Release();
 	particle->Release();
 }
 
@@ -244,6 +247,8 @@ bool SceneMain::Update()
 	// stage更新
 	stage->Update();
 
+	// 扇風機
+	Fan_mng->Update();
 
 	//フェード処理
 	FadeControl::Update();
@@ -391,6 +396,7 @@ void SceneMain::Render()
 		player_mng->Render(shaderD, "G_Buffer");
 		paper_obj_mng->Render(camera->shaderViewPos, shaderD, "G_Buffer");
 		ambulance_mng->Render(shaderD, "G_Buffer");
+		Fan_mng->RenderD(shaderD, "G_Buffer");
 
 		DeferredManager.G_End();// ここまで
 		/*■■■■■■■■G_Buffer終了■■■■■■*/
@@ -459,6 +465,7 @@ void SceneMain::Render()
 		stage->RenderForward();			// エリア
 		player_mng->Render_forword();	// バリアー	
 		paper_obj_mng->Forward_render();
+		Fan_mng->RenderF();
 
 		// ★地下にいるかいないか
 		if (player_mng->Get_player(SOCKET_MANAGER->GetID())->isManhole == true)

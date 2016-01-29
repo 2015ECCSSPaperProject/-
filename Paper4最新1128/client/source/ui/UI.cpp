@@ -854,7 +854,7 @@ void UI::Append_telop(int id)
 	List.push_back(set);
 }
 
-Telop::Telop(int id) :app_timer(150), erase(false), step(0)
+Telop::Telop(int id) :app_timer(420), erase(false), step(0)
 {
 	switch ((TELOP_ID)id)
 	{
@@ -892,6 +892,7 @@ void Telop::Update()
 		UI::tape_len += .02f;
 		if (UI::tape_len >= 1)
 		{
+			se->Play("ƒeƒƒbƒv");
 			UI::tape_len = 1;
 			step++;
 		}
@@ -912,9 +913,9 @@ void Telop::Update()
 
 void Telop::Render()
 {
-	if (step > 0)
+	if (step > 0 && step < 2)
 	{
-		moji->Render(378, 16, 1024, 128, 0, 0, 1024, 128);
+		moji->Render(320, 16, 760, 128, -app_timer*2, 0, 760, 128);
 	}
 }
 //

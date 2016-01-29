@@ -120,6 +120,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	action[(int)ACTION_PART::TRANS_FORM] = new BasePlayer::Action::TransForm(this);
 	action[(int)ACTION_PART::REND_OBJ] = new BasePlayer::Action::RendObj(this);
 	action[(int)ACTION_PART::START] = new BasePlayer::Action::Start(this);
+	action[(int)ACTION_PART::RISE] = new BasePlayer::Action::Rise(this);
 
 	Change_action(ACTION_PART::START);	// 最初の構え
 
@@ -306,6 +307,19 @@ void BasePlayer::Set_action(ACTION_PART part)
 	}
 }
 
+void BasePlayer::Action::Base::Render(iexShader *shader, char *name)
+{
+	me->models[(int)me->model_part]->Update();
+	if (shader)
+	{
+		me->models[(int)me->model_part]->Render(shader, name);
+	}
+	else
+	{
+		me->models[(int)me->model_part]->Render();
+	}
+}
+
 
 //*****************************************************************************
 //
@@ -377,21 +391,6 @@ void BasePlayer::Action::Move::Update()
 	//me->manhole_no_haninai = manhole_mng->CheckManhole((me->isManhole) ? ManholeMng::LAND_TYPE::TIKA : ManholeMng::LAND_TYPE::TIJOU, me->pos, 8, &me->next_manhole_pos);
 }
 
-void BasePlayer::Action::Move::Render(iexShader *shader, char *name)
-{
-	me->models[(int)me->model_part]->Update();
-	if (shader)
-	{
-		me->models[(int)me->model_part]->Render(shader, name);
-	}
-	else
-	{
-		me->models[(int)me->model_part]->Render();
-	}
-}
-
-
-
 //*****************************************************************************
 //
 //		「ターゲット移動移動」状態処理
@@ -415,19 +414,6 @@ void BasePlayer::Action::MoveTarget::Update()
 	me->Set_motion(me->motion_no);
 
 	Update_obj();
-}
-
-void BasePlayer::Action::MoveTarget::Render(iexShader *shader, char *name)
-{
-	me->models[(int)me->model_part]->Update();
-	if (shader)
-	{
-		me->models[(int)me->model_part]->Render(shader, name);
-	}
-	else
-	{
-		me->models[(int)me->model_part]->Render();
-	}
 }
 
 
@@ -455,18 +441,6 @@ void BasePlayer::Action::Attack::Update()
 	Update_obj();
 }
 
-void BasePlayer::Action::Attack::Render(iexShader *shader, char *name)
-{
-	me->models[(int)me->model_part]->Update();
-	if (shader)
-	{
-		me->models[(int)me->model_part]->Render(shader, name);
-	}
-	else
-	{
-		me->models[(int)me->model_part]->Render();
-	}
-}
 
 //*****************************************************************************
 //
@@ -500,19 +474,6 @@ void BasePlayer::Action::Rend::Update()
 	Update_obj();
 }
 
-void BasePlayer::Action::Rend::Render(iexShader *shader, char *name)
-{
-	me->models[(int)me->model_part]->Update();
-	if (shader)
-	{
-		me->models[(int)me->model_part]->Render(shader, name);
-	}
-	else
-	{
-		me->models[(int)me->model_part]->Render();
-	}
-}
-
 //*****************************************************************************
 //
 //		「固まる」状態処理
@@ -533,21 +494,6 @@ void BasePlayer::Action::Freeze::Update()
 	me->models[(int)me->model_part]->SetScale(me->scale);
 	me->models[(int)me->model_part]->SetAngle(me->angleY);
 	me->models[(int)me->model_part]->SetPos(me->pos);
-}
-
-void BasePlayer::Action::Freeze::Render(iexShader *shader, char *name)
-{
-
-	me->models[(int)me->model_part]->Update();
-
-	if (shader)
-	{
-		me->models[(int)me->model_part]->Render(shader, name);
-	}
-	else
-	{
-		me->models[(int)me->model_part]->Render();
-	}
 }
 
 //*****************************************************************************
@@ -679,20 +625,6 @@ void BasePlayer::Action::Gun::Update()
 	Update_obj();
 }
 
-void BasePlayer::Action::Gun::Render(iexShader *shader, char *name)
-{
-	me->models[(int)me->model_part]->Update();
-	if (shader)
-	{
-		me->models[(int)me->model_part]->Render(shader, name);
-	}
-	else
-	{
-		me->models[(int)me->model_part]->Render();
-	}
-}
-
-
 
 //*****************************************************************************
 //
@@ -718,21 +650,6 @@ void BasePlayer::Action::Manhole::Update()
 	Update_obj();
 }
 
-void BasePlayer::Action::Manhole::Render(iexShader *shader, char *name)
-{
-	me->models[(int)me->model_part]->Update();
-	if (shader)
-	{
-		me->models[(int)me->model_part]->Render(shader, name);
-	}
-	else
-	{
-		me->models[(int)me->model_part]->Render();
-	}
-}
-
-
-
 //*****************************************************************************
 //
 //		「狭い壁通り抜け」状態処理
@@ -754,19 +671,6 @@ void BasePlayer::Action::Through::Update()
 {
 	Update_obj();
 }
-
-void BasePlayer::Action::Through::Render(iexShader *shader, char *name)
-{
-	me->models[(int)me->model_part]->Update();
-	if (shader)
-	{
-		me->models[(int)me->model_part]->Render(shader, name);
-	}
-	{
-		me->models[(int)me->model_part]->Render();
-	}
-}
-
 
 //*****************************************************************************
 //
@@ -805,18 +709,6 @@ void BasePlayer::Action::Syuriken::Update()
 	me->models[(int)me->model_part]->SetPos(me->pos);
 }
 
-void BasePlayer::Action::Syuriken::Render(iexShader *shader, char *name)
-{
-	me->models[(int)me->model_part]->Update();
-	if (shader)
-	{
-		me->models[(int)me->model_part]->Render(shader, name);
-	}
-	{
-		me->models[(int)me->model_part]->Render();
-	}
-}
-
 //*****************************************************************************
 //
 //		「変身」状態処理
@@ -838,19 +730,6 @@ void BasePlayer::Action::TransForm::Update()
 {
 	Update_obj();
 }
-
-void BasePlayer::Action::TransForm::Render(iexShader *shader, char *name)
-{
-	me->models[(int)me->model_part]->Update();
-	if (shader)
-	{
-		me->models[(int)me->model_part]->Render(shader, name);
-	}
-	{
-		me->models[(int)me->model_part]->Render();
-	}
-}
-
 
 //*****************************************************************************
 //
@@ -955,18 +834,6 @@ void BasePlayer::Action::RendObj::Update()
 	}
 }
 
-void BasePlayer::Action::RendObj::Render(iexShader *shader, char *name)
-{
-	me->models[(int)me->model_part]->Update();
-	if (shader)
-	{
-		me->models[(int)me->model_part]->Render(shader, name);
-	}
-	{
-		me->models[(int)me->model_part]->Render();
-	}
-}
-
 //*****************************************************************************
 //
 //		「ゲームスタート」状態処理
@@ -991,16 +858,28 @@ void BasePlayer::Action::Start::Update()
 	}
 }
 
-void BasePlayer::Action::Start::Render(iexShader *shader, char *name)
+
+//*****************************************************************************
+//
+//		「上昇」状態処理
+//
+//*****************************************************************************
+
+void BasePlayer::Action::Rise::Initialize()
 {
-	me->models[(int)me->model_part]->Update();
-	if (shader)
-	{
-		me->models[(int)me->model_part]->Render(shader, name);
-	}
-	{
-		me->models[(int)me->model_part]->Render();
-	}
+	// 入力情報初期化
+	me->m_controlDesc.controlFlag &= 0x00000000;
+	me->m_controlDesc.moveFlag &= 0x00000000;
+	me->m_controlDesc.rendFlag &= 0x00000000;
+
+	me->model_part = MODEL::NORMAL;
+
+	me->Set_motion(8);
+}
+
+void BasePlayer::Action::Rise::Update()
+{
+	Update_obj();
 }
 
 //　実態

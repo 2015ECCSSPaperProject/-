@@ -520,8 +520,8 @@ void MyPlayer::RendMoneySE()
 		break;
 	case 1:
 		// Ž†‚¢‚Á‚Ï‚¢”ò‚ñ‚Å‚é
-		Rend_effect(hit_effect_pos, 2.0f, 2);
-		Rend_effect2(hit_effect_pos, 2.0f, 1);
+		Rend_effect(hit_effect_pos+Vector3(0,2,0), 2.0f, 1);
+		Rend_effect2(hit_effect_pos + Vector3(0, 2, 0), 2.0f, 1);
 
 		// ”j‚«I‚í‚è
 		if (models[(int)model_part]->GetParam(5) == 2)
