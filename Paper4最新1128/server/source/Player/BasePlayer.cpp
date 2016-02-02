@@ -1319,7 +1319,7 @@ void BasePlayer::Action::Rise::Update(const CONTROL_DESC &_ControlDesc)
 	if (fan_no != -1)
 	{
 		me->move.y *= .96f;
-		if (Fan_mng->CheckHeight(fan_no, 58, me->pos.y))
+		if (Fan_mng->CheckHeight(fan_no, me->pos.y))
 			me->move.y += .1f;
 		else
 			me->move.y -= .1f;

@@ -899,10 +899,10 @@ void Telop::Update()
 		break;
 	case 1:
 		if (--app_timer < 0)
-{
-step++;
-se->Play("テロップ終");
-}
+		{
+			step++;
+			se->Play("テロップ終");
+		}
 		break;
 	case 2:
 		UI::tape_len -= .04f;

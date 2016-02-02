@@ -13,9 +13,10 @@ public:
 
 	int num_fan;
 	Vector3 *fan_pos;
+	float *up_dist;
 
 	int CheckFan(float dist, const Vector3 &pos);
-	bool CheckHeight(int no, float dist, float pos_y);
+	bool CheckHeight(int no, float pos_y);
 
 private:
 	FanMng();

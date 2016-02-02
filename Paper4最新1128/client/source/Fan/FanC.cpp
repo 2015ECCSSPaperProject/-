@@ -6,12 +6,21 @@ void FanMng::Load(char *filename)
 {
 	std::ifstream infs(filename);
 
-	// 個数
-	infs >> num_fan;
-
 	// IEMファイル名
 	char iem_path[MAX_PATH];
 	infs >> iem_path;
+
+	Vector3 pos_array[32];
+	num_fan = 0;
+
+	while (!infs.eof())
+	{
+		infs >> pos_array[num_fan];
+		float yomitobasi(0);
+		infs >> yomitobasi;
+		num_fan++;
+	}
+	infs.close();
 
 	iex3DObj *clone = new iex3DObj(iem_path);
 	clone->SetMotion(0);
@@ -22,14 +31,14 @@ void FanMng::Load(char *filename)
 	fan_pos = new Vector3[num_fan];
 	fan_effect = new FanEffect*[num_fan];
 
+
 	// 位置とか
 	for (int i = 0; i < num_fan; i++)
 	{
-		infs >> fan_pos[i];
+		fan_pos[i] = pos_array[i];
 		fan_effect[i] = new FanEffect;
 		obj[i] = clone->Clone();
 	}
-	infs.close();
 }
 
 void FanMng::Initialize()

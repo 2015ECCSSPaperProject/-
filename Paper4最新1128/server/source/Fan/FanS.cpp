@@ -6,16 +6,28 @@ void FanMng::Load(char *filename)
 {
 	std::ifstream infs(filename);
 
-	// ŒÂ”
-	infs >> num_fan;
+	Vector3 pos_array[32];
+	float dist_array[32];
+	num_fan = 0;
+
+	while (!infs.eof())
+	{
+		infs >> pos_array[num_fan];
+		infs >> dist_array[num_fan];
+		num_fan++;
+	}
+	infs.close();
+
 	fan_pos = new Vector3[num_fan];
+	up_dist = new float[num_fan];
 
 	// ˆÊ’u‚Æ‚©
 	for (int i = 0; i < num_fan; i++)
 	{
-		infs >> fan_pos[i];
+		fan_pos[i] = pos_array[i];
+		up_dist[i] = dist_array[i];
 	}
-	infs.close();
+
 }
 
 FanMng::FanMng()
@@ -25,6 +37,7 @@ FanMng::FanMng()
 FanMng::~FanMng()
 {
 	delete fan_pos;
+	delete up_dist;
 }
 
 int FanMng::CheckFan(float dist, const Vector3 &pos)
@@ -40,11 +53,11 @@ int FanMng::CheckFan(float dist, const Vector3 &pos)
 	return -1;
 }
 
-bool FanMng::CheckHeight(int no, float dist, float pos_y)
+bool FanMng::CheckHeight(int no, float pos_y)
 {
 	assert(no != -1);
 	// x‚Æz‚Å‚Æ‚é(‰~’Œ)
-	if (pos_y - fan_pos[no].y > dist)
+	if (pos_y - fan_pos[no].y > up_dist[no])
 	{
 		return false;
 	}
