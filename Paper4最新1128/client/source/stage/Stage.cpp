@@ -222,7 +222,13 @@ void Stage::Load_mapdata()
 			if( i == 0 ) // 最初の一つはそのまま
 				smp = new Show_model_part( mesh );
 			else         // 残りはクローン
-				smp = new Show_model_part( mesh->Clone() );
+			{
+				// 応急処置(テクスチャが2以上貼り付けられてるモデルの場合、クローンするとエラーが出ます)
+				if (strcmp(c, "DATA/MATI/manho-ru.IMO") == 0)
+					smp = new Show_model_part(mesh->Clone(2));
+				else
+					smp = new Show_model_part(mesh->Clone());
+			}
 			// 角度と位置設定
 			smp->model->SetAngle( angle.x, angle.y, angle.z );
 			smp->model->SetPos( pos.x, pos.y, pos.z );

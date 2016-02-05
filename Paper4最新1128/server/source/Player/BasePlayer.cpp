@@ -991,7 +991,7 @@ void BasePlayer::Action::Gun::Update(const CONTROL_DESC &_ControlDesc)
 	{
 		// Vs Poster
 		int poster_numbers[128];
-		paper_obj_mng->Can_dist(me->pos, 80.0f, poster_numbers);	// 範囲内のポスター番号取得
+		paper_obj_mng->Can_dist(me->pos + Vector3(0, 10, 0), 80.0f, poster_numbers);	// 範囲内のポスター番号取得
 
 		for (int i = 0; poster_numbers[i] != -1; i++)	// -1(終端)
 		{

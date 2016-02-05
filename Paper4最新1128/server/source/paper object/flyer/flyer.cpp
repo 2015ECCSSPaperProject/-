@@ -72,13 +72,19 @@ bool Flyer::Can_rend()
 
 bool Flyer::Can_dist(const Vector3 &pos, float dist)
 {
-	if( broken )
+	if (broken)
 		return false;
 
-	if( ( pos - position ).LengthSq() > dist * dist )	// ‹——£”»’è
-		return false;
+	Vector3 p[2] = { pos, position };
+	p[0].y = p[1].y = 0;
 
-	return true;
+	float Y = position.y - pos.y;
+	Y = sqrtf(Y*Y);
+
+	if ((p[0] - p[1]).Length() < dist && Y < dist * .75f)	// ‹——£”»’è
+		return true;
+
+	return false;
 }
 
 void Flyer::Rend()

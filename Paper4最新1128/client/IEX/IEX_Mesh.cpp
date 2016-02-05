@@ -86,6 +86,17 @@ iexMesh*	iexMesh::Clone()
 	return obj;
 }
 
+iexMesh*	iexMesh::Clone(int num_tex)
+{
+	iexMesh*	obj = new iexMesh(*this);
+
+	obj->lpTexture = new Texture2D*[num_tex];
+	for (int i = 0; i < num_tex; i++) obj->lpTexture[i] = this->lpTexture[i];
+
+	obj->bLoad = FALSE;
+	return obj;
+}
+
 //*****************************************************************************
 //	î•ñİ’è
 //*****************************************************************************

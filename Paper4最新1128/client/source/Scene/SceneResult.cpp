@@ -309,25 +309,39 @@ void SceneResult::Render()
 		if (datas[i].p_num == -114514) continue;
 		image[IMAGE::P1 + datas[i].p_num]->RenderBack(MoveX[i] + 64, 136 + i * 96, 64, 64, 0, 0, 64, 64);
 
-		int iti, juu, hyaku, sen, man;
-		int s = datas[i].score;
-		man = s / 10000;
-		s %= 10000;
-		sen = s / 1000;
-		s %= 1000;
-		hyaku = s / 100;
-		s %= 100;
-		juu = s / 10;
-		s %= 10;
-		iti = s;
+		// ƒJƒ“ƒXƒg
+		if (datas[i].score >= 999999)
+		{
+			image[IMAGE::NUMBER]->RenderBack(MoveX[i] + 392, 138 + i * 96, 64, 64, 64 * 9, 0, 64, 64);
+			image[IMAGE::NUMBER]->RenderBack(MoveX[i] + 424, 138 + i * 96, 64, 64, 64 * 9, 0, 64, 64);
+			image[IMAGE::NUMBER]->RenderBack(MoveX[i] + 456, 138 + i * 96, 64, 64, 64 * 9, 0, 64, 64);
+			image[IMAGE::NUMBER]->RenderBack(MoveX[i] + 488, 138 + i * 96, 64, 64, 64 * 9, 0, 64, 64);
+			image[IMAGE::NUMBER]->RenderBack(MoveX[i] + 520, 138 + i * 96, 64, 64, 64 * 9, 0, 64, 64);
+			image[IMAGE::NUMBER]->RenderBack(MoveX[i] + 568, 138 + i * 96, 64, 64, 64 * 11, 0, 64, 64);
+		}
+		else
+		{
+			int iti, juu, hyaku, sen, man, juman;
+			int s = datas[i].score;
+			juman = s / 100000;
+			man = s / 10000;
+			s %= 10000;
+			sen = s / 1000;
+			s %= 1000;
+			hyaku = s / 100;
+			s %= 100;
+			juu = s / 10;
+			s %= 10;
+			iti = s;
 
-		image[IMAGE::NUMBER]->RenderBack(MoveX[i] + 392, 138 + i * 96, 64, 64, 64 * man, 0, 64, 64);
-		image[IMAGE::NUMBER]->RenderBack(MoveX[i] + 424, 138 + i * 96, 64, 64, 64 * sen, 0, 64, 64);
-		image[IMAGE::NUMBER]->RenderBack(MoveX[i] + 456, 138 + i * 96, 64, 64, 64 * hyaku, 0, 64, 64);
-		image[IMAGE::NUMBER]->RenderBack(MoveX[i] + 488, 138 + i * 96, 64, 64, 64 * juu, 0, 64, 64);
-		image[IMAGE::NUMBER]->RenderBack(MoveX[i] + 520, 138 + i * 96, 64, 64, 64 * iti, 0, 64, 64);
-		image[IMAGE::NUMBER]->RenderBack(MoveX[i] + 568, 138 + i * 96, 64, 64, 64 * 11, 0, 64, 64);
-	
+			image[IMAGE::NUMBER]->RenderBack(MoveX[i] + 360, 138 + i * 96, 64, 64, 64 * juman, 0, 64, 64);
+			image[IMAGE::NUMBER]->RenderBack(MoveX[i] + 392, 138 + i * 96, 64, 64, 64 * man, 0, 64, 64);
+			image[IMAGE::NUMBER]->RenderBack(MoveX[i] + 424, 138 + i * 96, 64, 64, 64 * sen, 0, 64, 64);
+			image[IMAGE::NUMBER]->RenderBack(MoveX[i] + 456, 138 + i * 96, 64, 64, 64 * hyaku, 0, 64, 64);
+			image[IMAGE::NUMBER]->RenderBack(MoveX[i] + 488, 138 + i * 96, 64, 64, 64 * juu, 0, 64, 64);
+			image[IMAGE::NUMBER]->RenderBack(MoveX[i] + 520, 138 + i * 96, 64, 64, 64 * iti, 0, 64, 64);
+			image[IMAGE::NUMBER]->RenderBack(MoveX[i] + 568, 138 + i * 96, 64, 64, 64 * 11, 0, 64, 64);
+		}
 
 	
 	}

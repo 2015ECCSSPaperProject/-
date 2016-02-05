@@ -163,7 +163,13 @@ bool Poster::Can_rend()
 
 bool Poster::Check_dist(const Vector3 &pos, float dist)
 {
-	return ((pos - position).Length() < dist);
+	Vector3 p[2] = { pos, position };
+	p[0].y = p[1].y = 0;
+
+	float Y = position.y - pos.y;
+	Y = sqrtf(Y*Y);
+
+	return ((p[0] - p[1]).Length() < dist && Y < dist * .75f);
 }
 
 //**************************************************

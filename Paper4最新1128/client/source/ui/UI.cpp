@@ -201,7 +201,7 @@ void UI::Render_mark()
 
 	float alphaRate ;
 	float alphaNear= 150;//šÀ‘Ì‰»‚·‚é‹——£
-	float alphaFar = 700;//š“§–¾‰»‚·‚é‹——£
+	float alphaFar = 450;//š“§–¾‰»‚·‚é‹——£
 
 	for (int i = 0; i < paper_obj_mng->Get_numof(); i++)
 	{

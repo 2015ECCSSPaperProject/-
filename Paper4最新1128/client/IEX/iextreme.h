@@ -831,6 +831,7 @@ public:
 	iexMesh( char* filename );
 	iexMesh(){ bLoad = FALSE; }
 	iexMesh*	Clone();
+	iexMesh*	Clone(int num_tex);
 	~iexMesh();
 	void Release();
 
