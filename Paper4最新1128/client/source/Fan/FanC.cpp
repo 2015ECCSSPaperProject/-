@@ -2,6 +2,7 @@
 #include "FanC.h"
 #include "FanEffect.h"
 #include "../fstream/fstream_paper.h"
+#include "../sound/SoundManager.h"
 void FanMng::Load(char *filename)
 {
 	std::ifstream infs(filename);
@@ -22,7 +23,7 @@ void FanMng::Load(char *filename)
 	}
 	infs.close();
 
-	iex3DObj *clone = new iex3DObj(iem_path);
+	clone = new iex3DObj(iem_path);
 	clone->SetMotion(0);
 	clone->SetScale(1.0f);
 	clone->SetAngle(0);
@@ -52,9 +53,11 @@ void FanMng::Release()
 	for (int i = 0; i < num_fan; i++)
 	{
 		delete fan_effect[i];
+		delete obj[i];
 	}
 	delete[] fan_effect;
-	delete obj;
+	delete[] obj;
+	delete clone;
 }
 
 void FanMng::Update()
@@ -65,6 +68,14 @@ void FanMng::Update()
 		obj[i]->Animation();
 		obj[i]->SetPos(fan_pos[i]);
 		obj[i]->Update();
+	}
+}
+
+void FanMng::SoundON()
+{
+	for (int i = 0; i < num_fan; i++)
+	{
+		se->Play("î•—‹@", fan_pos[i], Vector3(0, 0, 0), Vector3(0, 0, 0), true);
 	}
 }
 

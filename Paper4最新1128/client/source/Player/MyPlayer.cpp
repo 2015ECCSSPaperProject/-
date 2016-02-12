@@ -48,13 +48,7 @@ MyPlayer::MyPlayer() :BasePlayer()
 
 MyPlayer::~MyPlayer()
 {
-	//for (int i = 0; i < KIND_PAPER_OBJECT::KIND_MAX_PAPER_OBJ; i++)
-	//{
-	//	delete command_data[i];
-	//}
-	//delete[] command_data;
-
-	delete hit_effect;
+	Release();
 }
 
 void MyPlayer::Initialize(iex3DObj **obj)
@@ -97,7 +91,7 @@ void MyPlayer::Release()
 {
 	delete hit_effect;
 	delete scatter;
-	BasePlayer::Release();
+	//BasePlayer::Release();
 }
 
 

@@ -13,9 +13,11 @@ public:
 
 	int num_fan;
 	Vector3 *fan_pos;
+	iex3DObj *clone;
 
 	int CheckFan(const Vector3 &pos, float dist);
 
+	void SoundON();
 	void Initialize();
 	void Release();
 	void Update();

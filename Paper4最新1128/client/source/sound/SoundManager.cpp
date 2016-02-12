@@ -80,6 +80,7 @@ SE_Manager::DATA all_dataS[] =
 	{ "救急車衝突", "DATA/Sound/SE/collision_ambulance.wav", 1, false },
 	{ "テロップ", "DATA/Sound/SE/info.wav", 1, false },
 	{ "テロップ終", "DATA/Sound/SE/infoEnd.wav", 1, false },
+	{ "扇風機", "DATA/Sound/SE/fan.wav", 10, true },
 	{ "END", nullptr }
 };
 

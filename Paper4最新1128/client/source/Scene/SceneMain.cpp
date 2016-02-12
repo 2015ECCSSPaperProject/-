@@ -286,6 +286,7 @@ void SceneMain::Start()
 		se->Play("AT", true);
 		// ピーポーならす
 		ambulance_mng->PlayAmbulanceSE();
+		Fan_mng->SoundON();
 	}
 }
 void SceneMain::Main()
