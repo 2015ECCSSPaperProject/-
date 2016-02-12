@@ -152,3 +152,8 @@ void Huusenn::Subclass_update()
 
 	Poster::Subclass_update();
 }
+
+KIND_PAPER_OBJECT Kaopanel::Get_kind()
+{
+	return KIND_PAPER_OBJECT::KAOPANEL;
+}

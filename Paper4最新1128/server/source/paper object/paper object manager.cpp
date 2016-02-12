@@ -119,6 +119,37 @@ int Paper_obj_mng::Can_targeting(BasePlayer *player, float range_dist, int range
 	return ret_num;
 }
 
+bool Paper_obj_mng::Collision( const Vector3 &pos, Vector3 *move, float radius, int recursive_counter, Vector3 *n )
+{
+	bool ret( false );
+	float nearlestLength( FLT_MAX );
+	Vector3 nearlestMove( 0, 0, 0 ), inMove;
+	Vector3 nearlestN( 0, 0, 0 ), inN;
+
+	for( unsigned int i = 0; i < number_of_objects; i++ )
+	{
+		inMove = *move;
+		inN = *n;
+		if( obj_array[i]->Collision( pos, &inMove, radius, recursive_counter, &inN ) == false )
+			continue;
+
+		float l = inMove.LengthSq();
+		if( nearlestLength > l )
+		{
+			nearlestLength = l;
+			nearlestMove = inMove;
+			nearlestN = inN;
+		}
+
+		*move = nearlestMove;
+		*n = nearlestN;
+
+		ret = true;
+	}
+
+	return ret;
+}
+
 
 
 int Paper_obj_mng::Get_numof()
@@ -225,6 +256,7 @@ void Paper_obj_mng::Load()
 	Load_poster_tmp<Shinbun>( "DATA/MATI/position/shinbun_pos.txt" );
 	Load_poster_tmp<Shoji>( "DATA/MATI/position/shoji_pos.txt" );
 	Load_timeposter_tmp<Huusenn>( "DATA/MATI/position/huusen_pos.txt", ( int ) TELOP_ID::BALLOON );
+	//Load_poster_tmp<Kaopanel>( "DATA/MATI/kaopanel/kaopanel_pos.txt" );
 }
 
 void Paper_obj_mng::Load_flyer()

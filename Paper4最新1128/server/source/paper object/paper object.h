@@ -31,6 +31,11 @@ public:
 	virtual bool Can_dist(const Vector3 &pos, float dist) = 0;
 	// ”j‚é
 	virtual void Rend();
+	// “–‚½‚è”»’è
+	inline virtual bool Collision( const Vector3 &pos, Vector3 *move, float radius, int recursive_counter, Vector3 *n )
+	{
+		return false;
+	}
 
 	//**************************************************
 

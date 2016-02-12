@@ -98,3 +98,9 @@ public:
 private:
 	int start_time;
 };
+
+class Kaopanel : public Poster
+{
+public:
+	KIND_PAPER_OBJECT Get_kind();
+};

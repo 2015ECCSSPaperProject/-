@@ -246,7 +246,34 @@ KIND_PAPER_OBJECT Shoji::Get_kind()
 	return KIND_PAPER_OBJECT::SHOJI;
 }
 
+bool Shoji::Collision( const Vector3 &pos, Vector3 *move, float radius, int recursive_counter, Vector3 *n )
+{
+	// ìñÇΩÇËîÕàÕ
+	const float rangeX( 5 ), rangeY( 5 );
+	// è„â∫
+	if( pos.y <= this->position.y - 1 || this->position.y + 5 <= pos.y )
+		return false;
+	// ç∂âE
+	Vector3 vec( pos - this->position );
+
+	Vector3 right;
+	Vector3Cross( right, Vector3( 0, 1, 0 ), forward );
+	float rightLen( Vector3Dot( vec, right ) );
+	if( rightLen < -rangeX || rangeX < rightLen )
+		return false;
+	
+	float forwardLen( Vector3Dot( vec, forward ) );
+	return false;
+
+	return true;
+}
+
 KIND_PAPER_OBJECT Huusenn::Get_kind()
 {
 	return KIND_PAPER_OBJECT::HUUSENN;
+}
+
+KIND_PAPER_OBJECT Kaopanel::Get_kind()
+{
+	return KIND_PAPER_OBJECT::KAOPANEL;
 }

@@ -37,6 +37,9 @@ public:
 
 	int Paper_obj_mng::Can_targeting(BasePlayer *player, float range_dist, int range_degree); // カメラ注目できるか
 
+	// アタリハンテイ
+	bool Collision( const Vector3 &pos, Vector3 *move, float radius, int recursive_counter, Vector3 *n );
+
 	//**************************************************
 	/// Get Set
 	//**************************************************

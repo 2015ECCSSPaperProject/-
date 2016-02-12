@@ -148,9 +148,17 @@ class Shoji : public Poster
 {
 public:
 	KIND_PAPER_OBJECT Get_kind();
+
+	bool Collision( const Vector3 &pos, Vector3 *move, float radius, int recursive_counter, Vector3 *n );
 };
 
 class Huusenn : public Poster
+{
+public:
+	KIND_PAPER_OBJECT Get_kind();
+};
+
+class Kaopanel : public Poster
 {
 public:
 	KIND_PAPER_OBJECT Get_kind();
