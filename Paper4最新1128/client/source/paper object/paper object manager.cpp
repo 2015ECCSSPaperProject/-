@@ -147,7 +147,7 @@ void Paper_obj_mng::Load()
 
 	// モデルロード
 	original_flyer = new iex3DObj( "DATA/paper object/flyer/flyer.IEM" );
-	unsigned int num_models = 11;							// モデルの種類
+	unsigned int num_models = 12;							// モデルの種類
 	original_model = new iexMesh[num_models]{};
 	original_model[0].LoadIMO( "DATA/paper object/Poster/posuta-.IMO" );
 	original_model[1].LoadIMO( "DATA/paper object/calendar/calendar.IMO" );
@@ -160,7 +160,7 @@ void Paper_obj_mng::Load()
 	original_model[8].LoadIMO( "DATA/paper object/shinbun/shinbun.IMO" );
 	original_model[9].LoadIMO( "DATA/paper object/shoji/shoji.IMO" );
 	original_model[10].LoadIMO( "DATA/paper object/huusen/kamiHuusen.IMO" );
-	//original_model[11].LoadIMO( "DATA/paper object/kaopanel/kaopanel.IMO" );
+	original_model[11].LoadIMO( "DATA/paper object/kaopanel/kaopanel.IMO" );
 
 	// 位置ロード
 	Load_timeposter_tmp<Flyer>( "DATA/MATI/position/flyer pos.txt", original_flyer );
@@ -175,7 +175,7 @@ void Paper_obj_mng::Load()
 	Load_poster_tmp<Shinbun>( "DATA/MATI/position/shinbun_pos.txt", &original_model[8] );
 	Load_poster_tmp<Shoji>( "DATA/MATI/position/shoji_pos.txt", &original_model[9] );
 	Load_timeposter_tmp<Huusenn>( "DATA/MATI/position/huusen_pos.txt", &original_model[10] );
-	//Load_poster_tmp<Kaopanel>( "DATA/MATI/position/kaopanel_pos.txt", &original_model[9] );
+	Load_poster_tmp<Kaopanel>( "DATA/MATI/position/kaopanel_pos.txt", &original_model[11] );
 }
 
 template<class POSTERCLASS, class MESHCLASS>void Paper_obj_mng::Load_timeposter_tmp( char *filename, MESHCLASS *model )

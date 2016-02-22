@@ -44,6 +44,7 @@ MyPlayer::MyPlayer() :BasePlayer()
 	RendSE[KIND_PAPER_OBJECT::ZASSHI] = &MyPlayer::RendZasshiSE;
 	RendSE[KIND_PAPER_OBJECT::SHOJI] = &MyPlayer::RendShojiSE;
 	RendSE[KIND_PAPER_OBJECT::HUUSENN] = &MyPlayer::RendBalloonSE;
+	RendSE[KIND_PAPER_OBJECT::KAOPANEL] = &MyPlayer::RendPanelSE;
 }
 
 MyPlayer::~MyPlayer()
@@ -749,6 +750,51 @@ void MyPlayer::RendBalloonSE()
 			se_step = 99;	// ステップ終わり
 		}
 		break;
+	}
+}
+
+void MyPlayer::RendPanelSE()
+{
+	switch (se_step)
+	{
+	case 0:
+		se_receive = se->Play("トイレ破り");
+		se_step++;
+		break;
+
+	case 1:
+		// 破き始め
+		if (models[(int)model_part]->GetParam(5) == 1)
+		{
+			Rend_effect(hit_effect_pos, 3.0f, 10);
+			hit_effect->Action(HitEffect::HIT_TYPE::ALL);
+			se->Play("新聞破り");
+			se->Play("聖書破り3");
+			se->Stop("トイレ破り", se_receive);
+			se_step++;
+		}
+		break;
+	case 2:
+		// 破き終わり
+		if (models[(int)model_part]->GetParam(5) == 2)
+		{
+			se->Play("ジャンプ", pos);
+			se->Play("落ちる");
+			se_step++;
+		}
+		break;
+	case 3:
+		// 蹴り
+		if (models[(int)model_part]->GetParam(5) == 3)
+		{
+			if (poster_num != -1)
+			{
+				hit_effect->Action((HitEffect::HIT_TYPE::ALL ^ HitEffect::HIT_TYPE::SLASH));
+				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
+			}
+			se->Play("サイン破り");
+			se_step = 99;	// ステップ終わり
+		}
 	}
 }
 

@@ -256,7 +256,7 @@ void Paper_obj_mng::Load()
 	Load_poster_tmp<Shinbun>( "DATA/MATI/position/shinbun_pos.txt" );
 	Load_poster_tmp<Shoji>( "DATA/MATI/position/shoji_pos.txt" );
 	Load_timeposter_tmp<Huusenn>( "DATA/MATI/position/huusen_pos.txt", ( int ) TELOP_ID::BALLOON );
-	//Load_poster_tmp<Kaopanel>( "DATA/MATI/kaopanel/kaopanel_pos.txt" );
+	Load_poster_tmp<Kaopanel>( "DATA/MATI/position/kaopanel_pos.txt" );
 }
 
 void Paper_obj_mng::Load_flyer()

@@ -60,6 +60,12 @@ void Poster::Rend()
 	rend_delay_time = 20;
 }
 
+void Kaopanel::Rend()
+{
+	rend_delay_time = 1;
+}
+
+
 //**************************************************
 
 struct Receive_data

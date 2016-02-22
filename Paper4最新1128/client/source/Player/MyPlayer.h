@@ -55,7 +55,7 @@ private:
 	Vector3 particle_pos;
 
 	int se_step;
-	void (MyPlayer::*RendSE[12])();	// è¨ï®îjÇ≠SE
+	void (MyPlayer::*RendSE[13])();	// è¨ï®îjÇ≠SE
 	void RendPosterSE();
 	void RendFlyerSE();
 	void RendCalendarSE();
@@ -68,4 +68,5 @@ private:
 	void RendZasshiSE();
 	void RendShojiSE();
 	void RendBalloonSE();
+	void RendPanelSE();
 };

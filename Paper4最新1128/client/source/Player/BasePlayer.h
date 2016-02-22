@@ -55,6 +55,7 @@ public:
 		REND_SEISHO,
 		REND_SHOJI,
 		REND_FLYER,
+		REND_PANEL,
 		START,
 		MAX
 	};

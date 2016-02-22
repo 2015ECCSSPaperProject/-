@@ -131,7 +131,7 @@ void Camera::Mode::Base::Collision()
 	if (me->collision_stage->RayPick(&Out, &ray_Pos, &Vec, &Dist) != -1){
 	
 		//もし注視点から壁の距離がradiusより小さい場合
-		if ((Out - me->target).Length() < (me->pos - me->target).Length() +15)
+		if ((Out - me->target).Length() < (me->pos - me->target).Length())
 		{
 			me->pos = Out;
 	
@@ -301,7 +301,7 @@ void Camera::Mode::TPS::Update()
 	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::MANHOLE&&!in_manhole)
 	{
 		me->angle.y = iangle = me->my_player->Get_angleY();
-		me->effect_camera->Set_pattern((me->my_player->isManhole) ? 12 : 11);
+		me->effect_camera->Set_pattern((me->my_player->isManhole) ? 13 : 11);
 		in_manhole = true;
 		return;
 	}
@@ -366,7 +366,6 @@ void Camera::Mode::TPS::Update()
 	p_pos.y += 5.0f;	// 少し上に
 
 
-
 	// 角度の値のベクトルとプレイヤーからカメラ位置算出
 	me->ipos.x = p_pos.x - vec.x;
 	me->ipos.y = p_pos.y - vec.y;
@@ -383,8 +382,7 @@ void Camera::Mode::TPS::Update()
 	me->pos = me->pos * .0f + me->ipos * 1.0f;
 	me->parth.fovY = me->parth.fovY * .8f + FOVY[(int)FOV_TYPE::DEFAULT] * .2f;
 
-	//if (!me->my_player->isManhole)
-		Collision();
+	Collision();
 
 	me->Set(me->pos, me->target);
 }

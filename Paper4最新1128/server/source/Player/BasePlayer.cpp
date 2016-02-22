@@ -282,13 +282,13 @@ void BasePlayer::Set_motion(int no)
 
 bool BasePlayer::Check_rend_skill(KIND_PAPER_OBJECT kind)
 {
-	static const int NUM_NOT_REND_SKILL = 1;
-	static const KIND_PAPER_OBJECT NOT_REND_SKILL_OBJS[NUM_NOT_REND_SKILL] =
+	static const KIND_PAPER_OBJECT NOT_REND_SKILL_OBJS[] =
 	{
-		KIND_PAPER_OBJECT::SHOJI
+		KIND_PAPER_OBJECT::SHOJI,
+		KIND_PAPER_OBJECT::KAOPANEL
 	};
 
-	for (int i = 0; i < NUM_NOT_REND_SKILL; i++)
+	for (int i = 0; i < _countof(NOT_REND_SKILL_OBJS); i++)
 	{
 		// ‚±‚ê‚ÍƒXƒLƒ‹‚Å‚Í”j‚ê‚È‚¢Ž†‚¾‚æ
 		if (NOT_REND_SKILL_OBJS[i] == kind) return false;

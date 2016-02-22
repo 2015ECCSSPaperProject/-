@@ -80,6 +80,7 @@ void BasePlayer::Initialize(iex3DObj **objs)
 	models[(int)MODEL::REND_SHOJI] = objs[(int)PlayerManager::CLONE_TYPE::REND_SHOJI]->Clone(2);
 	models[(int)MODEL::REND_FLYER] = objs[(int)PlayerManager::CLONE_TYPE::REND_FLYER]->Clone(2);
 	models[(int)MODEL::START] = objs[(int)PlayerManager::CLONE_TYPE::START]->Clone(2);
+	models[(int)MODEL::REND_PANEL] = objs[(int)PlayerManager::CLONE_TYPE::REND_PANEL]->Clone(2);
 
 	skill_data[(int)SKILL::GUN].do_action = ACTION_PART::GUN;
 	skill_data[(int)SKILL::SYURIKEN].do_action = ACTION_PART::SYURIKEN;
@@ -133,7 +134,8 @@ void BasePlayer::Initialize(iex3DObj **objs)
 
 void BasePlayer::Release()
 {
-	for (int i = 0; i < (int)MODEL::MAX; i++) SAFE_DELETE(models[i]);
+	for (int i = 0; i < (int)MODEL::MAX; i++)
+		SAFE_DELETE(models[i]);
 
 	for (int i = 0; i < (int)ACTION_PART::MAX; i++)
 	{
@@ -805,6 +807,10 @@ void BasePlayer::Action::RendObj::Initialize()
 	case KIND_PAPER_OBJECT::HUUSENN:
 		me->model_part = MODEL::NORMAL;
 		me->Set_motion(21);
+		break;
+
+	case KIND_PAPER_OBJECT::KAOPANEL:
+		me->model_part = MODEL::REND_PANEL;
 		break;
 	}
 
