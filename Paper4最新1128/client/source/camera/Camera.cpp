@@ -19,6 +19,7 @@ const float FOVY[2] =
 	1.75f
 };
 
+//iexMesh *hit = nullptr;
 
 Camera::Camera() : iexView(), collision_stage(nullptr), scriptON(false)
 {
@@ -33,6 +34,8 @@ Camera::~Camera()
 	}
 	delete collision_stage;
 	delete effect_camera;
+
+	//delete hit;
 }
 
 void Camera::Initialize(BasePlayer *my)
@@ -76,6 +79,8 @@ void Camera::Initialize(BasePlayer *my)
 	effect_camera->Initialize(this, "DATA/Camera/save_data.ecd");
 
 	isStart = false;
+
+	//hit = new iexMesh("DATA/CHR/airou/airou_obj.IMO");
 }
 
 void Camera::Update()
@@ -94,6 +99,8 @@ void Camera::Update()
 
 	// 投影設定
 	SetProjection(parth.fovY, parth.Near, parth.Far);
+
+	//hit->Update();
 }
 
 void Camera::Render()
@@ -106,6 +113,10 @@ void Camera::Render()
 	//Text::Draw(32, 128, 0xff00ff33, "c.z:%.1f", pos.z);
 }
 
+void Camera::RenderDebug(iexShader *s, char *name)
+{
+	//hit->Render(s, name);
+}
 
 //*****************************************************************************
 //
@@ -119,28 +130,34 @@ void Camera::Mode::Base::Collision()
 	//レイを飛ばす原点は注視点
 	ray_Pos = me->target;
 
+	Out = me->pos;
+	Out.y = ray_Pos.y;
+	Out.y -= 5.0f;
+
 	//ベクトルはその注視点からカメラ自身の座標
-	Vec = me->pos - me->target;
+	Vec = Out - ray_Pos;
 	Vec.Normalize();
 
 	float Dist = 500.0f;
 
-	ray_Pos -= Vec;
+	//ray_Pos -= Vec;
 
 	//stage->Collision(ray_Pos, &Vec, Dist, 1);
 	if (me->collision_stage->RayPick(&Out, &ray_Pos, &Vec, &Dist) != -1){
 	
 		//もし注視点から壁の距離がradiusより小さい場合
-		if ((Out - me->target).Length() < (me->pos - me->target).Length())
+		if ((Out - me->target).Length() < dist)
 		{
 			me->pos = Out;
-	
+			//hit->SetPos(Out);
+
 			if (me->my_player->isManhole)
 			{
 				Vec.Normalize();
 				me->pos += Vec * 2;
 			}
 		}
+		//else hit->SetPos(me->target);
 	}
 
 	//if(Vec.Length()<)me->pos = me->target + Vec;
@@ -440,7 +457,7 @@ void Camera::Mode::FPS::Update()
 	me->target.y = me->pos.y + (tanf(me->angle.x));
 	me->target.z = me->pos.z + (cosf(me->angle.y));
 
-	Collision();
+	//Collision();
 
 	me->Set(me->pos, me->target);
 
@@ -520,7 +537,7 @@ void Camera::Mode::Zoom::Update()
 	me->parth.fovY = me->parth.fovY * .9f + FOVY[(int)FOV_TYPE::HARD] * .1f;
 
 	//壁判定
-	Collision();
+	//Collision();
 
 	me->Set(me->pos, me->target);
 

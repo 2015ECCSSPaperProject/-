@@ -51,14 +51,40 @@ private:
 	AnimationRippleEx* Info;
 	AnimationRippleEx* InfoOK;
 	AnimationRippleEx* InfoNO;
+	AnimationRippleEx* ControlInfo;		// 操作説明の表示
 	bool onePlay;
 	bool InfoFlag; //Infoを表示さすフラグ
-
-
+	bool isReadInfo;	// 操作説明を読んでいる最中
+	bool isViewStage;	// ステージを見ている最中
 
 
 	//================================
 	//		ボタン
+	enum class REND_STEP
+	{
+		WAIT,
+		CLICK,
+		DRAG,
+		REND_PAPER,
+	}rend_step;
+	enum class REND_BUTTON
+	{
+		MODORU,			// タイトルに戻る
+		ENTRY,			// 参加
+		SETSUMEI,		// 操作説明
+		VIEW_STAGE,		// ステージを見る
+		MAX
+	}rend_cursor;
+	struct PaperButton
+	{
+		Vector2 min_pos;	// 左上	
+		Vector2 max_pos;	// 右上
+		Vector3 pos;		// 座標(ほぼ2D)
+		iex3DObj *obj;		// 3D実体
+		bool pointing;		// カーソル範囲内
+		bool rend;			// 破れたかどうか
+		bool enable;		// C#でいうVisible
+	};
 	struct Button
 	{
 		int dstX;
@@ -70,9 +96,10 @@ private:
 		bool in;		// 画像範囲内
 		iex2DObj *lpButton;
 	};
-	Button modoru;
+
+	float org_scale, pointing_scale;
+	PaperButton rend_buttons[(int)REND_BUTTON::MAX];
 	Button entry;
-	Button entry2;
 	Button OKInfo_B;
 	Button NOInfo_B;
 
