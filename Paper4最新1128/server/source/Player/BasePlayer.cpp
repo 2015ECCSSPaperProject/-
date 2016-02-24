@@ -785,6 +785,12 @@ void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
 			}
 			me->Change_action(ACTION_PART::REND_OBJ);
 			me->push_rend = true;
+
+			// 顔出しパネル時は向きをパネルに合わせる
+			if (paper_obj_mng->Get_kind(me->poster_num) == KIND_PAPER_OBJECT::KAOPANEL)
+			{
+				me->angleY = paper_obj_mng->Get_angle(me->poster_num);
+			}
 		}
 		else if (_ControlDesc.rendFlag & (BYTE)PLAYER_FLAG::REND)
 		{
@@ -802,6 +808,12 @@ void BasePlayer::Action::Rend::Update(const CONTROL_DESC &_ControlDesc)
 			}
 			me->Change_action(ACTION_PART::REND_OBJ);
 			me->push_rend = true;
+
+			// 顔出しパネル時は向きをパネルに合わせる
+			if (paper_obj_mng->Get_kind(me->poster_num) == KIND_PAPER_OBJECT::KAOPANEL)
+			{
+				me->angleY = paper_obj_mng->Get_angle(me->poster_num);
+			}
 		}
 		// マウス離したらモード戻す
 		else if ((_ControlDesc.controlFlag & (BYTE)PLAYER_CONTROL::LEFT_CLICK) == 0)
@@ -991,7 +1003,7 @@ void BasePlayer::Action::Gun::Update(const CONTROL_DESC &_ControlDesc)
 	{
 		// Vs Poster
 		int poster_numbers[128];
-		paper_obj_mng->Can_dist(me->pos + Vector3(0, 10, 0), 80.0f, poster_numbers);	// 範囲内のポスター番号取得
+		paper_obj_mng->Can_dist(me->pos + Vector3(0, 15, 0), 80.0f, poster_numbers);	// 範囲内のポスター番号取得
 
 		for (int i = 0; poster_numbers[i] != -1; i++)	// -1(終端)
 		{
@@ -1097,7 +1109,7 @@ void BasePlayer::Action::Syuriken::Initialize()
 	me->motion_no = 1;
 	me->Set_motion(1);
 
-	max_speed = 6.0f;
+	max_speed = 6.5f;
 	accel = max_speed;
 	kasoku = .25f;
 

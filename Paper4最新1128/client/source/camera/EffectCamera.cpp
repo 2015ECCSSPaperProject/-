@@ -97,7 +97,7 @@ void EffectCamera::Update()
 		if (++current_frame > time_line_data->data[time_line_data->data_count - 1].end_frame)
 		{
 			current_frame = 0;
-			camera->scriptON = false;
+			camera->effectON = false;
 			for (int i = 0; i < time_line_data->data_count; i++)
 			{
 				delete time_line_data->data[i].pos_array;
@@ -137,7 +137,7 @@ bool EffectCamera::Jump(char *label_name)
 bool EffectCamera::Set_pattern(int pat)
 {
 	// スクリプトエンジンON
-	camera->scriptON = true;
+	camera->effectON = true;
 	current_frame = 0;
 	data_cursor = 0;
 
@@ -307,7 +307,7 @@ void EffectCamera::Out_event()
 		if (strcmp(com, "END") == 0)
 		{
 			// スクリプトOFFにして、読み込むファイルの一番先頭にポインタを戻す(Set_patternが呼び出されるまでスクリプト停止)
-			camera->scriptON = false;
+			camera->effectON = false;
 			Jump("START");
 			break;
 		}

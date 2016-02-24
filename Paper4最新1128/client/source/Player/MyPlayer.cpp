@@ -218,7 +218,7 @@ void MyPlayer::Update_action()
 		//	command_data[paper_obj_mng->Get_kind(poster_num)]->Reset();
 		//}
 
-		if (sqrtf(m_controlDesc.mouseX*m_controlDesc.mouseX + m_controlDesc.mouseY*m_controlDesc.mouseY) > 80000) m_controlDesc.rendFlag |= (BYTE)PLAYER_FLAG::REND;
+		if (sqrtf(m_controlDesc.mouseX*m_controlDesc.mouseX + (m_controlDesc.mouseY*1.1f)*(m_controlDesc.mouseY*1.1f)) > 80000) m_controlDesc.rendFlag |= (BYTE)PLAYER_FLAG::REND;
 
 		break;
 
@@ -771,6 +771,7 @@ void MyPlayer::RendPanelSE()
 			se->Play("V•·”j‚è");
 			se->Play("¹‘”j‚è3");
 			se->Stop("ƒgƒCƒŒ”j‚è", se_receive);
+			BlurFilter::Set(8, 0, 0);
 			se_step++;
 		}
 		break;
@@ -789,6 +790,7 @@ void MyPlayer::RendPanelSE()
 		{
 			if (poster_num != -1)
 			{
+				BlurFilter::Set(4, 0, 0);
 				hit_effect->Action((HitEffect::HIT_TYPE::ALL ^ HitEffect::HIT_TYPE::SLASH));
 				if (on_number)Number_Effect::SetNum(paper_obj_mng->Get_pos(poster_num) + Vector3(0, 10, 0), paper_obj_mng->Get_point(poster_num), 4);
 			}

@@ -30,6 +30,21 @@ private:
 
 	iexMesh *collision_stage;
 
+
+	//------------------------------------------------------
+	//		スクリプト(エフェクトカメラとは別)
+	//------------------------------------------------------
+	struct ScriptContents
+	{
+		float	hit_radius;			// 判定半径
+		Vector3 hit_pos;			// 判定座標
+		Vector3 pos;				// 座標
+		Vector3 target;				// 注視点
+	}*script_contents;	// 可変長で使う
+	int num_contents;	// 可変長の数
+	void LoadScript();
+	void ScriptCheck();		// 判定に入ったときとか
+
 	//------------------------------------------------------
 	//		投影関係
 	//------------------------------------------------------
@@ -201,6 +216,7 @@ public:
 	//------------------------------------------------------
 	//	スクリプト実行状態
 	//------------------------------------------------------
+	bool effectON;
 	bool scriptON;
 
 	//===============================================
@@ -256,6 +272,7 @@ public:
 		ipos = Next_pos;
 		itarget = Next_target;
 		slerp_percentage = percentage;
+		Change_mode(MODE::M_SLERP);
 	}
 
 	void Set_slerp(Vector3 &Next_pos, const Vector3 Next_target, float percentage)

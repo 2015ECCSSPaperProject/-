@@ -7,7 +7,7 @@
 #include	"../paper object/paper object manager.h"
 #include	"../Ambulance/Ambulance.h"
 #include	"../stage/Stage.h"
-
+#include	"../fstream/fstream_paper.h"
 #include	"../../../share_data/Enum_public.h"
 
 // カメラ⇒プレイヤーの基本距離
@@ -21,7 +21,7 @@ const float FOVY[2] =
 
 //iexMesh *hit = nullptr;
 
-Camera::Camera() : iexView(), collision_stage(nullptr), scriptON(false)
+Camera::Camera() : iexView(), collision_stage(nullptr), effectON(false), scriptON(false)
 {
 
 }
@@ -34,7 +34,7 @@ Camera::~Camera()
 	}
 	delete collision_stage;
 	delete effect_camera;
-
+	delete script_contents;
 	//delete hit;
 }
 
@@ -78,20 +78,95 @@ void Camera::Initialize(BasePlayer *my)
 	effect_camera = new EffectCamera;
 	effect_camera->Initialize(this, "DATA/Camera/save_data.ecd");
 
+	LoadScript();
+
 	isStart = false;
 
 	//hit = new iexMesh("DATA/CHR/airou/airou_obj.IMO");
+}
+
+void Camera::LoadScript()
+{
+	std::ifstream ifs("DATA/Camera/camera_script.txt");
+
+	char skip[128];
+
+	// 要素数読み込み(要素数*3)
+	ifs >> skip;
+	ifs >> num_contents;
+	num_contents *= 3;
+
+	// 実体確保
+	script_contents = new ScriptContents[num_contents];
+
+	int no(0);
+	while (!ifs.eof())
+	{
+		// 半径読み込み
+		float rad;
+		ifs >> skip;
+		ifs >> skip;
+		ifs >> rad;
+
+		ifs >> skip;
+		for (int i = 0; i < 3; i++)
+		{
+			// 判定範囲
+			script_contents[no + i].hit_radius = rad;
+
+			// 判定座標
+			ifs >> script_contents[no + i].hit_pos;
+		}
+		ifs >> skip;
+		for (int i = 0; i < 3; i++)
+		{
+			// カメラ座標
+			ifs >> script_contents[no + i].pos;
+		}
+		ifs >> skip;
+		for (int i = 0; i < 3; i++)
+		{
+			// 注視点
+			ifs >> script_contents[no + i].target;
+		}
+		no += 3;
+	}
+}
+
+void Camera::ScriptCheck()
+{
+	for (int i = 0; i < num_contents; i++)
+	{
+		// スクリプト範囲内
+		if ((script_contents[i].hit_pos - my_player->Get_pos()).LengthSq() < script_contents[i].hit_radius * script_contents[i].hit_radius)
+		{
+			if (!scriptON)
+			{
+				Set_slerp(script_contents[i].pos, script_contents[i].target, .05f);
+				scriptON = true;
+			}
+			return;
+		}
+	}
+
+	if (mode_part == MODE::M_SLERP)
+	{
+		Change_mode(MODE::M_TPS);
+	}
+	scriptON = false;
 }
 
 void Camera::Update()
 {
 	//shaderD->SetValue("ViewPos", pos);
 
-	if (scriptON)
+	if (effectON)
 	{
 		effect_camera->Update();
 		return;
 	}
+
+	//ScriptCheck();
 
 	mode[mode_part]->Update();
 
@@ -205,6 +280,40 @@ void Camera::Mode::Pan::Update()
 
 void Camera::Mode::Slerp::Update()
 {
+	static bool in_manhole = false;
+	//static int k = -1;
+	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::REND_OBJ)
+	{
+		int kind = paper_obj_mng->Get_kind(me->my_player->Get_poster_num());
+		if ((kind != 0))
+			//		&& !(frame <= 180 && k == kind))
+		{
+			//		frame = 0;
+			//		k = kind;
+			me->effect_camera->Set_pattern(kind);
+			return;
+		}
+	}
+	//else frame++;
+
+	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::MANHOLE&&!in_manhole)
+	{
+		//me->angle.y = iangle = me->my_player->Get_angleY();
+		me->effect_camera->Set_pattern((me->my_player->isManhole) ? 13 : 11);
+		in_manhole = true;
+		return;
+	}
+	else if (me->my_player->Get_action() == BasePlayer::ACTION_PART::MOVE)
+	{
+		in_manhole = false;
+	}
+
+	if (me->my_player->Get_action() == BasePlayer::ACTION_PART::SYURIKEN)
+	{
+		me->Change_mode(MODE::M_SYURIKEN);
+		return;
+	}
+
 	me->pos = me->pos * (1 - me->slerp_percentage) + me->ipos * me->slerp_percentage;
 	me->target = me->target * (1 - me->slerp_percentage) + me->itarget * me->slerp_percentage;
 	me->Set(me->pos, me->target);
@@ -724,7 +833,6 @@ void Camera::Mode::Syuriken::Initialize(const Vector3 &pos, const Vector3 &targe
 	dist = 1.0f;
 }
 
-static float f = 0;
 
 void Camera::Mode::Syuriken::Update()
 {
@@ -754,8 +862,6 @@ void Camera::Mode::Syuriken::Update()
 	me->my_player->Get_pos(p_pos);
 
 	p_pos.y += 5.0f;	// 少し上に
-
-	if (KEY(KEY_ENTER) == 3) f += 1;
 
 	// 角度の値のベクトルとプレイヤーからカメラ位置算出
 	me->ipos.x = p_pos.x - vec.x;
