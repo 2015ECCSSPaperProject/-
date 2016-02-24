@@ -250,20 +250,38 @@ bool Shoji::Collision( const Vector3 &pos, Vector3 *move, float radius, int recu
 {
 	// 当たり範囲
 	const float rangeX( 5 ), rangeY( 5 );
+
 	// 上下
 	if( pos.y <= this->position.y - 1 || this->position.y + 5 <= pos.y )
 		return false;
-	// 左右
-	Vector3 vec( pos - this->position );
 
+	// 右方向
 	Vector3 right;
 	Vector3Cross( right, Vector3( 0, 1, 0 ), forward );
+	right.Normalize();
+	// 左右距離
+	Vector3 vec( pos - this->position );
 	float rightLen( Vector3Dot( vec, right ) );
 	if( rightLen < -rangeX || rangeX < rightLen )
 		return false;
 	
-	float forwardLen( Vector3Dot( vec, forward ) );
-	return false;
+	// 裏から表へ移動してる
+	if( Vector3Dot( *move, forward ) > 0 )
+		return false;
+
+	// 前距離
+	float movel = move->LengthSq();
+	float forwardLen( -Vector3Dot( vec, forward ) );
+	if( forwardLen < 0 || forwardLen * forwardLen > movel )
+		return false;
+
+	// 移動後
+	Vector3 posV = pos + *move;
+	float backL = radius - Vector3Dot( posV - this->position, forward );
+	*move += forward * backL;
+
+	// 法線
+	*n = forward;
 
 	return true;
 }
