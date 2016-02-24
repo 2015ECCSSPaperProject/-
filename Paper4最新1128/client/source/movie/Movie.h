@@ -40,5 +40,6 @@ public:
 	void Play( float rate = 1.0f );
 	void Stop();
 	void Pause();
+	void Reset();
 
 };

@@ -131,6 +131,7 @@
     </ClCompile>
     <ClCompile Include="source\Ambulance\Ambulance.cpp" />
     <ClCompile Include="source\Animation\Animation3D.cpp" />
+    <ClCompile Include="source\Animation\AnimationPanel.cpp" />
     <ClCompile Include="source\Animation\AnimationRipple.cpp" />
     <ClCompile Include="source\Animation\AnimationRippleEx.cpp" />
     <ClCompile Include="source\Animation\AnimationUV.cpp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="source\Ambulance\Ambulance.h" />
     <ClInclude Include="source\Animation\Animation3D.h" />
+    <ClInclude Include="source\Animation\AnimationPanel.h" />
     <ClInclude Include="source\Animation\AnimationRipple.h" />
     <ClInclude Include="source\Animation\AnimationRippleEx.h" />
     <ClInclude Include="source\Animation\AnimationUV.h" />

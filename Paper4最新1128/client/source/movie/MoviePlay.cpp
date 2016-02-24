@@ -85,6 +85,16 @@ void MoviePlay::Pause()
 	
 }
 
+void MoviePlay::Reset()
+{
+	//pMediaControl->
+	LONGLONG hoge = 0;
+	pMediaSeeking->SetPositions(&hoge, AM_SEEKING_AbsolutePositioning, NULL, AM_SEEKING_NoPositioning);
+
+
+}
+
+
 bool MoviePlay::GetStateRun()
 {
 	if( moviestate == State_Running ) return true;

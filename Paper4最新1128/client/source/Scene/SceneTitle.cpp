@@ -13,6 +13,10 @@
 
 #include "../Animation/AnimationRippleEx.h"
 #include	"../movie/Movie.h"
+#include	"../Animation/AnimationPanel.h"
+
+AnimationPanel* a;
+
 MoviePlay *test;
 
 using namespace std;
@@ -21,21 +25,25 @@ static const Vector2 MOUSE_POS[2] = { Vector2(960, 454), Vector2(136, 454) };
 const Vector2 max_v[SceneTitle::CURSOR_NO::CURSOR_MAX] = { Vector2(1245, 670), Vector2(410, 670) };
 const Vector2 min_v[SceneTitle::CURSOR_NO::CURSOR_MAX] = { Vector2(950, 470), Vector2(145, 480) };
 
+static int TIMER = 0;
 //******************************************************************
 //		初期化・解放
 //******************************************************************
 bool SceneTitle::Initialize()
 {
+	a = new AnimationPanel("DATA/Anim/event_chirashi.png", 256, 256, 40, 4, 8);
+
 	movieStep = MOVIE_STEP::NORMAL;
 	movieTimer = 0;
 	movieStopTimer = 0;
 
 	/*動画再生*/
+	TIMER = 0;
 	test = new MoviePlay();
 	test->SetSource("DATA/MOVIE/t2.wmv");
 	//test->SetSource( "DATA/MOVIE/SAO.MP4" );
 	test->SetWindow((OAHWND)iexSystem::Window, 0, 0, iexSystem::ScreenWidth, iexSystem::ScreenHeight);
-
+	test->Reset();
 
 	// ディファード
 	LightVec = Vector3(1, 1, 1);
@@ -348,7 +356,7 @@ bool SceneTitle::Update()
 
 	}
 
-	static int TIMER = 0;
+	
 
 	if (movieStep == MOVIE_STEP::NORMAL)
 	{
@@ -387,6 +395,7 @@ bool SceneTitle::Update()
 			if (!bgm->isPlay("TAPTAP"))bgm->Fade_in("TAPTAP", .1f);
 			movieStep = MOVIE_STEP::NORMAL;
 			test->Stop();
+			test->Reset();
 			// Fade処理
 			FadeControl::Setting(FadeControl::FADE_IN_W, 22);
 			titleEx->Action();
@@ -394,6 +403,18 @@ bool SceneTitle::Update()
 
 
 	}
+
+
+	if (KeyBoard('G') == 2)
+	{
+		test->Reset();
+	}
+
+	if (KeyBoard('F') == 2)
+	{
+		a->Action();
+	}
+	a->Update();
 
 
 	/*　動画が動いてたらここへ行って描画を止める　*/
@@ -544,6 +565,8 @@ void SceneTitle::Render()
 		//	わっしょい
 		images[IMAGE::ICON]->Render(mouse->pos.x - 32, mouse->pos.y - 32, 64, 64, 0, 64, 64, 64);
 	}
+
+	a->Render(100, 100);
 
 	//ナンバーエフェクト
 	Number_Effect::Render();

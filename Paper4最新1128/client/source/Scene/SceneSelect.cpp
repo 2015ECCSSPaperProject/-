@@ -179,6 +179,8 @@ bool SceneSelect::Initialize()
 	else bgm->Fade_in("ドッグラン", .05f);
 	bgm->SetFX("ドッグラン", DXA_FX::DXAFX_OFF);
 
+	rend_cursor = (REND_BUTTON)0;
+
 	return true;
 }
 
